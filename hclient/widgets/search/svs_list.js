@@ -962,10 +962,10 @@ $.widget( "heurist.svs_list", {
 
                 let shint = window.hWin.HRJ('ui_notes', params, this.options.language);
 
-                $('<button>', {label: sname, 'data-svs-id':svsID})
+                $('<button>', {'data-svs-id':svsID})
                 .attr('title', shint)
                 .css({'width':'100%','margin-top':'0.8em','max-width':'300px','text-align':'left'})
-                .button({icon: iconBtn}).on("click", function(event){
+                .button({label: sname, icon: iconBtn}).on("click", function(event){
 
                     let svs_ID = $(this).attr('data-svs-id');
                     if (svs_ID){
