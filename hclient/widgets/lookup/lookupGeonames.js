@@ -90,7 +90,51 @@ $.widget("heurist.lookupGeonames", $.heurist.lookupBase, {
         res['ext_url'] = recset.fld(record, link_field);
         res = this.prepareValues(recset, record, res, {check_term_codes: this._country_vocab_id});
 
+        res = this.handleGeoValue(res);
+
         // Pass mapped values and close dialog
         this.closingAction(res);
+    },
+
+    handleGeoValue: function(res){
+
+        let geo_keys = Object.keys(res);
+        geo_keys = geo_keys.filter((key) => key.indexOf('lat') > 0 || key.indexOf('long') > 0);
+
+        if(geo_keys.length != 2){
+            return res;            
+        }
+
+        let location_key = geo_keys[0].split('_')[0];
+
+        if(!Object.hasOwn(res, location_key)){
+            return res;
+        }
+
+        let locations = res[location_key];
+        let latitude = res[geo_keys[0]];
+        let longitude = res[geo_keys[1]];
+
+        let idx = 0;
+        while(idx < latitude.length && idx < longitude.length){
+
+            const lat = latitude[idx];
+            const long = longitude[idx];
+
+            if(locations.indexOf(lat) >= 0 && locations.indexOf(long) >= 0){
+
+                latitude.splice(idx, 1);
+                longitude.splice(idx, 1);
+
+                continue;
+            }
+
+            idx ++;
+        }
+
+        res[geo_keys[0]] = latitude;
+        res[geo_keys[1]] = longitude;
+
+        return res;
     }
 });
