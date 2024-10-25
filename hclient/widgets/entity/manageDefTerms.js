@@ -1423,8 +1423,10 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
             }
             this.options.trm_ParentTermID = -1;
 
-            this._editing.getFieldByName('trm_VocabularyGroupID').hide();
-
+            ele = this._editing.getFieldByName('trm_VocabularyGroupID');
+            if(ele){
+                ele.hide();
+            }
 
             let vocab_ID = $Db.getTermVocab(this.options.trm_VocabularyID);
             currentDomain = $Db.trm(vocab_ID, 'trm_Domain');
