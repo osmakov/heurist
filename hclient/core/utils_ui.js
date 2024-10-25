@@ -1525,7 +1525,7 @@ window.hWin.HEURIST4.ui = {
                                 _innerTitle = $('<div>').addClass('ui-heurist-header').appendTo($helper_div);  
                                 
                                 $('<span>').appendTo(_innerTitle);
-                                $('<button>').button({icon:'ui-icon-closethick',showLabel:false, label:'Close'}) 
+                                $('<button>').button({icon:'ui-icon-closethick',showLabel:false, title:'Close'}) 
                                                         //classes:'ui-corner-all ui-dialog-titlebar-close'})
                                          .css({'position':'absolute', 'right':'4px', 'top':'6px', height:24, width:24})
                                          .appendTo(_innerTitle)

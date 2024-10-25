@@ -350,10 +350,12 @@ $.widget( "heurist.app_storymap", {
         if(this.options.show_print_button){
 
             this._print_button = $('<button>', {
-                text: window.HR('Print'), title: window.hWin.HR('Print current story'),
+                text: window.HR('Print'), 
+                title: window.hWin.HR('Print current story'),
                 class: 'btnPrintStory'
             })
             .button({
+                label: window.HR('Print'), 
                 icon: 'ui-icon-print', 
                 showLabel: false
             })

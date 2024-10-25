@@ -2830,7 +2830,9 @@ $.widget( "heurist.search_faceted", {
                             });
 
                             // Search button
-                            let $search = $('<button>', {title: window.hWin.HR('filter_facet_reset'), class: 'smallbutton ui-button ui-corner-all ui-widget ui-button-icon-only'})
+                            let $search = $('<button>', {
+                                        title: window.hWin.HR('filter_facet_reset'), 
+                                        class: 'smallbutton ui-button ui-corner-all ui-widget ui-button-icon-only'})
                                         .html('<span class="ui-button-icon ui-icon ui-icon-search"></span>')
                                         .insertAfter($max_date);
 

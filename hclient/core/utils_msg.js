@@ -955,7 +955,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
             };
 
             //init close button     
-            $('<button>').button({icon:'ui-icon-closethick',showLabel:false, label:'Close'}) 
+            $('<button>').button({icon:'ui-icon-closethick',showLabel:false, title:'Close'}) 
                                     //classes:'ui-corner-all ui-dialog-titlebar-close'})
                      .css({'position':'absolute', 'right':'4px', 'top':'6px', height:24, width:24})
                      .appendTo(_innerTitle)

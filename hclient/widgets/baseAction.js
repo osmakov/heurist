@@ -155,7 +155,7 @@ $.widget( "heurist.baseAction", {
             
                 this._innerTitle.text(this.options.title);
 
-                this.closeBtn = $('<button>').button({icon:'ui-icon-closethick',showLabel:false, label:window.hWin.HR('Close')}) 
+                this.closeBtn = $('<button>').button({icon:'ui-icon-closethick',showLabel:false, title:window.hWin.HR('Close')}) 
                 .css({'position':'absolute', 'right':'4px', 'top':'6px', height:24, width:24})
                 .addClass('ui-fade-color')
                 .insertBefore( fele );
@@ -174,7 +174,11 @@ $.widget( "heurist.baseAction", {
             if(btnPanel.length>0){
                 let btn_array = this._getActionButtons();
                 btn_array.forEach(function(btn){
-                     $('<button>',btn).button().appendTo(btnPanel);
+                    let btn_opts = {label:btn.label || btn.text,
+                                   icon:btn.icon || btn.icons,
+                                   showLabel:btn.showLabel!==false};
+                    
+                    $('<button>',btn).button(btn_opts).appendTo(btnPanel);
                 });
             }
         }
