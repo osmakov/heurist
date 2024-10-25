@@ -86,7 +86,7 @@ $.widget( "heurist.recordDataTable", $.heurist.recordAction, {
                 if(!treediv.is(':empty') && treediv.fancytree("instance")){
                     let tree = $.ui.fancytree.getTree(treediv);
                     tree.visit(function(node){
-                        if(!node.hasChildren() && node.data.type != "relmarker" && node.data.type != "resource" 
+                        if(!node.hasChildren() && node.type != "relmarker" && node.type != "resource" 
                             && (node.getLevel()==2 || (!window.hWin.HEURIST4.util.isempty(node.span) && $(node.span.parentNode.parentNode).is(":visible")))
                         ){    
                             node.setSelected(check_status);
@@ -518,7 +518,7 @@ $.widget( "heurist.recordDataTable", $.heurist.recordAction, {
                     if(data.node.data.is_generic_fields) { // hide blue arrow for generic fields
                         $(data.node.span.childNodes[1]).hide();
                     }
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         $(data.node.span).attr('style', 'background: none !important;color: black !important;'); //stop highlighting
                         $(data.node.span.childNodes[1]).hide(); //checkbox for separators
                     }
@@ -569,7 +569,7 @@ $.widget( "heurist.recordDataTable", $.heurist.recordAction, {
                 },
                 click: function(e, data){
 
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         return false;
                     }
 
@@ -586,7 +586,7 @@ $.widget( "heurist.recordDataTable", $.heurist.recordAction, {
                     }
                 },
                 dblclick: function(e, data) {
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         return false;
                     }
                     data.node.toggleSelected();

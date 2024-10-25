@@ -363,15 +363,15 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
             },
             renderNode: function(event, data){
                 /*
-                if(false && data.node.data.type == "enum") { 
+                if(false && data.node.type == "enum") { 
                     // hide blue and expand arrows for terms
                     $(data.node.span.childNodes[0]).hide();
                     $(data.node.span.childNodes[1]).hide();
                 }*/
-                if(data.node.parent && (data.node.parent.data.type == 'resource' || data.node.parent.data.type == 'rectype')){ // add left border+margin
+                if(data.node.parent && (data.node.parent.type == 'resource' || data.node.parent.type == 'rectype')){ // add left border+margin
                     $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                 }
-                if(!(data.node.data.type == 'resource' || data.node.data.type == 'rectype'))
+                if(!(data.node.type == 'resource' || data.node.type == 'rectype'))
                 {
                     //define action button
                    
@@ -431,7 +431,7 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
                     }
                     
                     /*
-                    if(data.node.parent && data.node.parent.data.type == 'enum'){ // make term options inline and smaller
+                    if(data.node.parent && data.node.parent.type == 'enum'){ // make term options inline and smaller
                         $(data.node.li).css('display', 'inline-block');
                         $(data.node.span.childNodes[0]).css('display', 'none');
 
@@ -441,7 +441,7 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
                     }
                     */
                 }
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     $(data.node.span).attr('style', 'background: none !important;color: black !important;'); //stop highlighting
                     $(data.node.span.childNodes[1]).hide(); //checkbox for separators
                 }
@@ -471,7 +471,7 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
             },
             click: function(e, data){
 
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     return false;
                 }
 
@@ -498,7 +498,7 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
                 }
             },
             dblclick: function(e, data) {
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     return false;
                 }
                 data.node.toggleSelected();

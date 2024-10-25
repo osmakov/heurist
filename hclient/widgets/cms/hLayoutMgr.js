@@ -84,7 +84,6 @@ function hLayoutMgr(){
         container.empty();
         
         const res = window.hWin.HEURIST4.util.isJSON(layout);
-        
         if(res===false){
             //this is not json - HTML
             

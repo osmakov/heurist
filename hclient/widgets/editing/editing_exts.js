@@ -660,10 +660,10 @@ function editSymbology(current_value, mode_edit, callback){
                 }
             },
             renderNode: function(event, data){
-                if(data.node.parent && (data.node.parent.data.type == 'resource' || data.node.parent.data.type == 'rectype')){ // add left border+margin
+                if(data.node.parent && (data.node.parent.type == 'resource' || data.node.parent.type == 'rectype')){ // add left border+margin
                     $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                 }
-                if(data.node.data.type == 'resource' || data.node.data.type == 'rectype'){
+                if(data.node.type == 'resource' || data.node.type == 'rectype'){
                     $(data.node.li).find('.fancytree-checkbox').hide();
                 }
             },

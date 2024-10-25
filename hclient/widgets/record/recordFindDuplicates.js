@@ -612,7 +612,7 @@ $.widget( "heurist.recordFindDuplicates", $.heurist.recordAction, {
             let node =  fieldIds[k];
             if(window.hWin.HEURIST4.util.isempty(node.data.code)) continue;
             
-            if(node.data.type=='freetext' || node.data.type=='blocktext'){
+            if(node.type=='freetext' || node.type=='blocktext'){
                 let key = node.key.split(':');
                 key = key[key.length-1];
                 window.hWin.HEURIST4.ui.addoption(sel[0], key, node.data.name);

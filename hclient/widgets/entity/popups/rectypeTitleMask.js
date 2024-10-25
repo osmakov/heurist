@@ -84,7 +84,7 @@ $.widget( "heurist.rectypeTitleMask", $.heurist.recordAction, {
                     let tree = $.ui.fancytree.getTree(treediv);
                     tree.visit(function(node){ 
 
-                        if(!node.hasChildren() && node.data.type != "relmarker" && node.data.type != "resource" 
+                        if(!node.hasChildren() && node.type != "relmarker" && node.type != "resource" 
                             && (node.getLevel()==1 || (!window.hWin.HEURIST4.util.isempty(node.span) && $(node.span.parentNode.parentNode).is(":visible")))
                         ){    
                             node.setSelected(check_status);
@@ -427,16 +427,15 @@ $.widget( "heurist.rectypeTitleMask", $.heurist.recordAction, {
                 }
             },
             renderNode: function(event, data){
-
-                if(data.node.data.type == "enum") { // hide blue and expand arrows for terms
+                if(data.node.type == "enum") { // hide blue and expand arrows for terms
                     $(data.node.span.childNodes[0]).hide();
                     $(data.node.span.childNodes[1]).hide();
                 }
-                if(data.node.parent && (data.node.parent.data.type == 'resource' || data.node.parent.data.type == 'rectype')){ // add left border+margin
+                if(data.node.parent && (data.node.parent.type == 'resource' || data.node.parent.type == 'rectype')){ // add left border+margin
                     $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                 }else{
 
-                    if(data.node.parent && data.node.parent.data.type == 'enum'){ // make term options inline and smaller
+                    if(data.node.parent && data.node.parent.type == 'enum'){ // make term options inline and smaller
                         $(data.node.li).css('display', 'inline-block');
                         $(data.node.span.childNodes[0]).css('display', 'none');
 
@@ -445,7 +444,7 @@ $.widget( "heurist.rectypeTitleMask", $.heurist.recordAction, {
                         }
                     }
                 }
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     $(data.node.span).attr('style', 'background: none !important;color: black !important;'); //stop highlighting
                     $(data.node.span.childNodes[1]).hide(); //checkbox for separators
                 }
@@ -475,7 +474,7 @@ $.widget( "heurist.rectypeTitleMask", $.heurist.recordAction, {
             },
             click: function(e, data){
 
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     return false;
                 }
 
@@ -502,7 +501,7 @@ $.widget( "heurist.rectypeTitleMask", $.heurist.recordAction, {
                 }
             },
             dblclick: function(e, data) {
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     return false;
                 }
                 data.node.toggleSelected();

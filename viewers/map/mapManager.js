@@ -526,7 +526,7 @@ function HMapManager( _options )
 
                     setTimeout(function(){
                         
-                        if(data.node.data.type=='mapdocument'){
+                        if(data.node.type=='mapdocument'){
                             data.node.setSelected(true, {noEvents:true} );
                             //enable buttons
                             let btns = $(data.node.li).find('.svs-contextmenu3');
@@ -540,7 +540,7 @@ function HMapManager( _options )
 
                     let node = data.node;
                     let is_selected = node.isSelected();
-                    if(node.data.type=='mapdocument'){
+                    if(node.type=='mapdocument'){
 
                         const mapdoc_id = node.key;
 
@@ -623,7 +623,7 @@ function HMapManager( _options )
                         //
                         //mapDocuments.openMapDocument(node.key, dfd);
                     }
-                    else if(node.data.type=='layer'){   //show/hide layer
+                    else if(node.type=='layer'){   //show/hide layer
                         
                         if(_suppress_select_event) return;
                         
@@ -676,7 +676,7 @@ function HMapManager( _options )
                             }
                         }
                     }
-                    else if(node.data.type=='theme'){ //on show/hide theme
+                    else if(node.type=='theme'){ //on show/hide theme
                     
                         //theme is obtained from resdata.fld(record, DT_SYMBOLOGY); see _getTreeData
 
@@ -728,9 +728,10 @@ function HMapManager( _options )
                 },
                 renderNode: function(event, data) {
                     // Optionally tweak data.node.span
+                    
                     let item = data.node;
                     let $span = $(item.span);
-                    if(item.data.type=='layer'){
+                    if(item.type=='layer'){
                         let rec_id = item.key;
                         let mapdoc_id = item.data.mapdoc_id;
                         
@@ -743,16 +744,16 @@ function HMapManager( _options )
                         .css(dcss);
 
                     }else 
-                    if(item.data.type=='theme'){ //render theme label in treeview
+                    if(item.type=='theme'){ //render theme label in treeview
                     
                         
                     
 
-                    }else if(item.data.type=='mapdocument'){
+                    }else if(item.type=='mapdocument'){
                         $span.find("> span.fancytree-checkbox").addClass('fancytree-radio');
                     }
 
-                    if(item.data.type!='theme'){
+                    if(item.type!='theme'){
                         _defineActionIcons( item );                                        
                     }
                 }
@@ -828,7 +829,7 @@ function HMapManager( _options )
             
         if($(item.span).find('.svs-contextmenu3').length==0){
             
-            if(item.data.type=='layer'){
+            if(item.type=='layer'){
                 mapdoc_id = item.data.mapdoc_id;
             }else{
                 mapdoc_id = item.key;
@@ -846,12 +847,12 @@ function HMapManager( _options )
                     +(recid>0?('" data-recid="'+recid+'"'):'')+'>'
                 +(is_image_layer || recid > 0 ? '<span class="ui-icon ui-icon-opacity" title="Change layer\'s opacity"></span>' : '')
                 +'<span class="ui-icon ui-icon-zoom zoom-to-extent" '
-                    +((item.data.type=='mapdocument' && !item.data.extent)?'style="color:gray"':'')
-                    +' title="Zoom to '+item.data.type+' extent"></span>';
+                    +((item.type=='mapdocument' && !item.data.extent)?'style="color:gray"':'')
+                    +' title="Zoom to '+item.type+' extent"></span>';
                     
             if(isEditAllowed){        
                 
-                if(item.data.type=='mapdocument' && mapdoc_id>0){
+                if(item.type=='mapdocument' && mapdoc_id>0){
 
                     actionspan += (
                         '<span class="ui-icon ui-icon-pencil" title="Modify the map document"></span>'
@@ -1612,7 +1613,7 @@ function HMapManager( _options )
             let res = [];
             let tree = $.ui.fancytree.getTree( mapdoc_treeview );
             tree.visit(function(node){
-                if(node.data.type=='mapdocument'){
+                if(node.type=='mapdocument'){
                     if((mode=='visible'&& node.isSelected()) ||
                        (mode=='loaded'&& node.hasChildren()) || (mode=='all'))
                     {
@@ -1823,7 +1824,7 @@ function HMapManager( _options )
             let res = null;
 
             tree.visit(function(node){
-                    if(node.data.type=='mapdocument' && node.isSelected()){
+                    if(node.type=='mapdocument' && node.isSelected()){
                         res = $(node.li).html();
                         return false;
                     }
@@ -1850,7 +1851,7 @@ function HMapManager( _options )
                         //find node
                         let tree = $.ui.fancytree.getTree( mapdoc_treeview );
                         tree.visit(function(node){
-                                if(node.data.type=='layer' && node.key==layer_id && node.data.mapdoc_id===mapdoc_id){
+                                if(node.type=='layer' && node.key==layer_id && node.data.mapdoc_id===mapdoc_id){
         
                                     let ele = $(node.li).find('.fancytree-title');
                                     

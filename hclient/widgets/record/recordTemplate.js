@@ -157,7 +157,7 @@ $.widget( "heurist.recordTemplate", $.heurist.recordAction, {
             if(!treediv.is(':empty') && treediv.fancytree("instance")){
                 let tree = $.ui.fancytree.getTree(treediv);
                 tree.visit(function(node){
-                    if(!node.hasChildren() && node.data.type != "relmarker" && node.data.type != "resource" 
+                    if(!node.hasChildren() && node.type != "relmarker" && node.type != "resource" 
                         && (node.getLevel()==2 || (!window.hWin.HEURIST4.util.isempty(node.span) && $(node.span.parentNode.parentNode).is(":visible")))
                     ){    
                         node.setSelected(check_status);
@@ -213,10 +213,10 @@ $.widget( "heurist.recordTemplate", $.heurist.recordAction, {
                 },
                 renderNode: function(event, data){
 
-                    if(data.node.parent && data.node.parent.data.type == 'resource' || data.node.parent.data.type == 'relmarker'){ // add left border+margin
+                    if(data.node.parent && data.node.parent.type == 'resource' || data.node.parent.type == 'relmarker'){ // add left border+margin
                         $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                     }
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         $(data.node.span).attr('style', 'background: none !important;color: black !important;'); //stop highlighting
                         $(data.node.span.childNodes[1]).hide(); //checkbox for separators
                     }
@@ -244,7 +244,7 @@ $.widget( "heurist.recordTemplate", $.heurist.recordAction, {
                 },
                 click: function(e, data){
 
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         return false;
                     }
 
@@ -266,7 +266,7 @@ $.widget( "heurist.recordTemplate", $.heurist.recordAction, {
                     }
                 },
                 dblclick: function(e, data) {
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         return false;
                     }
                     data.node.toggleSelected();

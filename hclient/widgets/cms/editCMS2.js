@@ -969,13 +969,13 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
                 dragStart: function(node, data) {
 
                     let is_last_root = node.getParent().isRootNode() && node.getParent().countChildren(false) == 1;
-                    let is_cardinal = (node.data.type=='north' || node.data.type=='south' || 
-                               node.data.type=='east' || node.data.type=='west' || node.data.type=='center');
+                    let is_cardinal = (node.type=='north' || node.type=='south' || 
+                               node.type=='east' || node.type=='west' || node.type=='center');
                     
                     return !(is_last_root || is_cardinal);
                 },
                 dragEnter: function(node, data) {
-                    if(node.data.type=='cardinal'){
+                    if(node.type=='cardinal'){
                         return false;
                     }else{
                         return (node.folder) ?true :["before", "after"];
@@ -985,8 +985,8 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
                     // data.otherNode - dragging node
                     // node - target
                    
-                    let is_cardinal = (node.data.type=='north' || node.data.type=='south' || 
-                               node.data.type=='east' || node.data.type=='west' || node.data.type=='center');
+                    let is_cardinal = (node.type=='north' || node.type=='south' || 
+                               node.type=='east' || node.type=='west' || node.type=='center');
                     let hitMode = (is_cardinal)?'child' :data.hitMode;                    
                     
                     data.otherNode.moveTo(node, hitMode);    
@@ -1174,7 +1174,6 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
             if(node==null){
                 return;
             }
-
             let is_intreeview = $(item).hasClass('fancytree-node');
             if(is_intreeview && !$(item).hasClass('fancytree-hide')){       
                 $(item).css('display','block');   
@@ -1182,9 +1181,9 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
 
             let is_folder = node.folder;  //$(item).hasClass('fancytree-folder'); 
             let is_last_root = node.getParent().isRootNode() && node.getParent().countChildren(false) == 1;
-            let is_cardinal = (node.data.type=='north' || node.data.type=='south' || 
-                node.data.type=='east' || node.data.type=='west' || node.data.type=='center');
-
+            let is_cardinal = (node.type=='north' || node.type=='south' || 
+                node.type=='east' || node.type=='west' || node.type=='center');
+                
             let actionspan = '<div class="lid-actionmenu mceNonEditable" '
             +' style="'+style_pos+';display:none;z-index:999;color:black;background: rgba(201, 194, 249, 1) !important;'
             +'font-size:'+(is_intreeview?'12px;right:13px':'16px')
@@ -1200,7 +1199,7 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
             +'<span class="ui-icon ui-icon-pencil"></span>Style</span>';               
             
             //hide element for cardinal and delete for its panes                     
-            if(node.data.type!='cardinal'){
+            if(node.type!='cardinal'){
                 actionspan += '<span data-action="element" style="display:block;padding:4px" title="Add a new element/widget"><span class="ui-icon ui-icon-plus"></span>Insert</span>';
             }
             if(!is_cardinal){
@@ -1211,7 +1210,7 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
                     +'<span class="ui-icon ui-icon-delete"></span>Delete</span>');
             }
 
-            if(node.data.type=='text'){
+            if(node.type=='text'){
                 let stitle = 'To enable multilanguage support define more than one language for web home parameter "Languages"';
                 let codes = '';
                 if(website_languages!=''){

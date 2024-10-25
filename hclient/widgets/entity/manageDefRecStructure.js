@@ -513,7 +513,7 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
                 that._treeview.closest('.treeview_with_header').scrollLeft(0);
             },
             beforeExpand: function(event, data) {
-                if(available_outer_groups.includes(data.node.data.type) && data.node.isExpanded()){
+                if(available_outer_groups.includes(data.node.type) && data.node.isExpanded()){
                     return false;
                 }
             },

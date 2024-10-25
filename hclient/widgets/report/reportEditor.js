@@ -459,8 +459,8 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         let field = codes[codes.length-1];
         
         
-        let loopname = (_nodep.data.type=='enum')?'ptrloop':'valueloop';
-        let getrecord = (_nodep.data.type=='resource')? ('{$'+field+'=$heurist->getRecord($'+field+')}') :'';
+        let loopname = (_nodep.parent?.type=='enum')?'ptrloop':'valueloop';
+        let getrecord = (_nodep.parent?.type=='resource')? ('{$'+field+'=$heurist->getRecord($'+field+')}') :'';
 
         if(!window.hWin.HEURIST4.util.isempty(language_handle)){
             language_handle = '\n\t' + language_handle.replace('replace_id', field) + '\n';
@@ -522,12 +522,12 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
 
             res = _nodep.title+": {$"+varname+"}";  //not used
 
-        }else if(_nodep){ // insert with 'wrap' fumction which provides URL and image handling
-            let dtype = _nodep.data.type;
+        }else if(_nodep){ // insert with 'wrap' function which provides URL and image handling
+            let dtype = _nodep.type;
             res = '{wrap var=$'+varname;
             if(!(_nodep.data.code && _nodep.data.code.indexOf('Relationship')==0))
             {
-                if(window.hWin.HEURIST4.util.isempty(dtype) || _nodep.key === 'recURL'){
+                if(_nodep.parent?.type!='enum' && (window.hWin.HEURIST4.util.isempty(dtype) || _nodep.key === 'recURL')){
                     res = res + ' dt="url"';
                 }else if(dtype === 'geo'){
                     res = res + '_originalvalue dt="'+dtype+'"';
@@ -796,7 +796,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
             },
             click: function(e, data){
 
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     return false;
                 }
 
@@ -839,12 +839,12 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
                 let $span = $(node.span);
                 let new_title = node.title;//debug + '('+node.data.code+'  key='+node.key+  ')';
 
-                if(data.node.data.type == 'separator'){
+                if(data.node.type == 'separator'){
                     $(data.node.span).attr('style', 'background: none !important;color: black !important;'); //stop highlighting
                     $(data.node.span.childNodes[1]).hide(); //checkbox for separators
-                }else if(node.data.type!='enum' && node.data.is_rec_fields == null && node.data.is_generic_fields == null){
+                }else if(node.type!='enum' && node.data.is_rec_fields == null && node.data.is_generic_fields == null){
                     let op = '';
-                    if(node.data.type=='resource' || node.title=='Relationship'){ //resource (record pointer)
+                    if(node.type=='resource' || node.title=='Relationship'){ //resource (record pointer)
                         op = 'repeat';
                     }else if(node.children){
                         op = 'if';
@@ -856,7 +856,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
                     }
                 }
 
-                if(data.node.parent && data.node.parent.data.type == 'resource' || data.node.parent.data.type == 'relmarker'){ // add left border+margin
+                if(data.node.parent && data.node.parent.type == 'resource' || data.node.parent.type == 'relmarker'){ // add left border+margin
                     $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                 }
                 
@@ -957,7 +957,7 @@ this_id       : "term"
                             _varname = key.replace('_','');
                         }
                         
-                        if(codes[0]=='Relationship'){ //_nodep.data.type == 'relationship'){
+                        if(codes[0]=='Relationship'){ //_nodep.type == 'relationship'){
                             this._insertGetRelatedRecords();
                             if(_varname!='') {
                                 if(inloop!=1) inloop = 2; //Relationship will be without prefix $r
@@ -971,7 +971,7 @@ this_id       : "term"
                             let offset = 3;
                             let lastcode = codes[codes.length-1];
                                                 
-                            if(_nodep.data.type == 'rectype'){
+                            if(_nodep.type == 'rectype'){
                                 rectypeId = _nodep.data.rtyID_local;
                                 _varname = '';
                             }else if(!key.startsWith('rec_'))
@@ -1058,7 +1058,7 @@ this_id       : "term"
 
                             language_handle = `{$translated_label = $heurist->getTranslation("trm", $${fld}, "${trm_fld}", "${language_code}")} {* Get translated label *}\n\n`
                                 + (inloop==1 ? '\n\t' : '') + `{$translated_label} {* Print translated label *}`;
-                        }else if(file_field && _nodep.data.type == 'file'){
+                        }else if(file_field && _nodep.type == 'file'){
 
                             let fld = (inloop==1) ? 'replace_id' : _varname;
                             file_handle = `{$file_details = $${fld}_originalvalue|file_data:${file_field}} {* Get the requested field *}\n\n`
@@ -1108,10 +1108,10 @@ this_id       : "term"
         let that = this;
 
         // show hide         
-        let no_loop = (_nodep.data.type=='enum' || _nodep.key.indexOf('rec_')==0 || 
+        let no_loop = (_nodep.type=='enum' || _nodep.key.indexOf('rec_')==0 || 
                     (_nodep.data.code && _nodep.data.code.indexOf('Relationship')==0));
         let show_languages = _nodep.key=='term' || _nodep.key=='desc';
-        let show_file_data = _nodep.data.type=='file';
+        let show_file_data = _nodep.type=='file';
         let h;
         if(no_loop){
             h = 260;

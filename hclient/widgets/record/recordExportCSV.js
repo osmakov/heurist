@@ -569,7 +569,7 @@ $.widget( "heurist.recordExportCSV", $.heurist.recordAction, {
                 source: treedata,
                 beforeSelect: function(event, data){
                     // A node is about to be selected: prevent this, for folder-nodes:
-                    if( data.node.data.type== 'rectype' && data.node.hasChildren() ){
+                    if( data.node.type== 'rectype' && data.node.hasChildren() ){
                         
                         if(data.node.isExpanded()){
                             for(let i=0; i<data.node.children.length; i++){
@@ -627,10 +627,10 @@ $.widget( "heurist.recordExportCSV", $.heurist.recordAction, {
                         }
                     }
 
-                    if(data.node.parent && data.node.parent.data.type == 'resource' || data.node.parent.data.type == 'relmarker'){ // add left border+margin
+                    if(data.node.parent && data.node.parent.type == 'resource' || data.node.parent.type == 'relmarker'){ // add left border+margin
                         $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                     }
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         $(data.node.span).attr('style', 'background: none !important;color: black !important;'); //stop highlighting
                         $(data.node.span.childNodes[1]).hide(); //checkbox for separators
 
@@ -684,7 +684,7 @@ $.widget( "heurist.recordExportCSV", $.heurist.recordAction, {
                         let rectypeId = data.node.data.rtyID_local ? data.node.data.rtyID_local : null;
                         rectypeId = data.node.data.rt_ids && data.node.data.rt_ids.indexOf(',') < 0 ? data.node.data.rt_ids : rectypeId;
 
-                        that._addFieldAdvancedOptions(data.node.title, data.node.data.type, data.node.data.code, data.node.li, rectypeId);
+                        that._addFieldAdvancedOptions(data.node.title, data.node.type, data.node.data.code, data.node.li, rectypeId);
                     } else {
                         that._removeFieldAdvancedOptionsByCode(data.node.data.code);
                     }
@@ -696,7 +696,7 @@ $.widget( "heurist.recordExportCSV", $.heurist.recordAction, {
                 },
                 click: function(e, data){
 
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         return false;
                     }
 
@@ -709,7 +709,7 @@ $.widget( "heurist.recordExportCSV", $.heurist.recordAction, {
                     }
                 },
                 expand: function(e, data) {
-                    if(data.node.data.type== 'rectype' && data.node.children.length > 0){
+                    if(data.node.type== 'rectype' && data.node.children.length > 0){
                         for(let i = 0; i < data.node.children.length; i++){
                             let node = data.node.children[i];
                             if(node.key=='rec_ID' || node.key=='rec_Title'){
@@ -729,7 +729,7 @@ $.widget( "heurist.recordExportCSV", $.heurist.recordAction, {
                     }
                 },
                 dblclick: function(e, data) {
-                    if(data.node.data.type == 'separator'){
+                    if(data.node.type == 'separator'){
                         return false;
                     }
                     data.node.toggleSelected();

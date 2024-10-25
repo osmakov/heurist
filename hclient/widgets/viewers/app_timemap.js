@@ -336,7 +336,6 @@ $.widget( "heurist.app_timemap", {
     // called as soon as map.php is loaded into iframe and on _refresh (after search finished)
     //
     _initmap: function( cnt_call ){
-
         if( !window.hWin.HEURIST4.util.isnull(this.mapframe) && this.mapframe.length > 0){
 
             if(this.options.leaflet){
@@ -368,7 +367,6 @@ $.widget( "heurist.app_timemap", {
             //google to remove
             this.is_map_inited = true;
             this.options.init_completed = true;
-            
             mapping.load( null, //mapdataset,
                 this.options.selection,  //array of record ids
                 this.options.mapdocument,    //map document on load
