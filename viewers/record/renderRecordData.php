@@ -324,7 +324,7 @@ if(!($is_map_popup || $without_header)){
 
                         let cur_params = window.hWin.HEURIST4.util.getUrlParams(location.href);
                         if(Object.hasOwn(cur_params, 'privateDetails')){
-                            href += `&privateDetails=${cur_params['privateDetails']}`;
+                            href += `?privateDetails=${cur_params['privateDetails']}`;
                         }
 
                         let cur_dlg = window.frameElement?.parentElement.parentElement; // dialog's widget

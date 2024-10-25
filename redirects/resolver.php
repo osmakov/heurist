@@ -237,6 +237,12 @@ $requestUri:
 
             if($action=='view' || $action=='edit'){
 
+                if(array_key_exists('privateDetails', $_REQUEST)){
+                    $parts = explode('?', $requestUri[3]); // remove query from record viewer link
+                    $requestUri[3] = $parts[0];
+                    $params['privateDetails'] = $_REQUEST['privateDetails']; // add privateDetails to parameters
+                }
+
                 if(@$requestUri[3] && ctype_digit($requestUri[3]) && $requestUri[3]>0){
                     $redirect .= ("viewers/record/viewRecord.php?db=$database&recID=".intval($requestUri[3]));
                     $params['recID'] = intval($requestUri[3]);

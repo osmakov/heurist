@@ -93,6 +93,7 @@ if(!($bkm_ID>0) && $system->get_user_id()>0 ){ //logged in
 
 $noclutter = array_key_exists('noclutter', $_REQUEST)? '&noclutter' : '';
 $hideImages = array_key_exists('hideImages', $_REQUEST) ? '&hideImages='.intval($_REQUEST['hideImages']) : '';
+$hideImages = '&privateDetails=' . (array_key_exists('privateDetails', $_REQUEST) ? intval($_REQUEST['privateDetails']) : 1);
 
 $rec_title = $rec['rec_Title'];
 
