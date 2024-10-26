@@ -4,6 +4,7 @@ use hserv\entity\DbEntityBase;
 use hserv\utilities\UArchive;
 use hserv\utilities\USanitize;
 use hserv\utilities\DbUtils;
+use hserv\utilities\UImage;
 
     /**
     * db access to recUploadedFiles table
