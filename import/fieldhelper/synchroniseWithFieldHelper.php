@@ -116,7 +116,8 @@ $system_folders = $system->getSystemFolders();
 $failed_exts = array();
 
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>Import Records In Situ / FieldHelepr Manifests</title>

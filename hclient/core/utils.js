@@ -723,7 +723,7 @@ window.hWin.HEURIST4.util = {
 
             try{
                 let temporal;
-                if(start!="" && $.type( start ) === "string"){
+                if(start!='' && typeof start === 'string'){
 
                     if(start.search(/VER=/)!==-1){
                         temporal = new Temporal(start);
@@ -750,7 +750,7 @@ window.hWin.HEURIST4.util = {
                     }
                 }
 
-                if(end!="" && $.type( end ) === "string") {
+                if(end!='' && typeof end === 'string') {
                     if(end.search(/VER=/)!==-1){
                         temporal = new Temporal(end);
                         if(temporal){
