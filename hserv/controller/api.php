@@ -174,8 +174,6 @@ if (@$requestUri[3]=='iiif') {
 }elseif (@$entities[@$requestUri[3]]=='System') {
     //login and logout actions
 
-    include_once '../autoload.php';
-
     $system = new hserv\System();
     if( ! $system->init($req_params['db']) ){
         //get error and response
