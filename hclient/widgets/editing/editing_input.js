@@ -2732,7 +2732,7 @@ $.widget( "heurist.editing_input", {
                 //folder icon in the begining of field
                 let $gicon = $('<span class="ui-icon ui-icon-folder-open"></span>')
                     .css({position: 'absolute', margin: '5px 0px 0px 8px', cursor:'hand'}).insertBefore( $input ); 
-                
+
                 /* Image and Player (enalrged image) container */
                 $input_img = $('<br><div class="image_input ui-widget-content ui-corner-all thumb_image" style="margin:5px 0px;border:none;background:transparent;">'
                 + '<img id="img'+f_id+'" class="image_input" style="max-width:none;">'
@@ -2753,7 +2753,7 @@ $.widget( "heurist.editing_input", {
                 let url = window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database+'&file='+f_nonce+'&mode=tag&origin=recview'; 
 
                 /* Anchors (download and show thumbnail) container */
-                let $dwnld_anchor = $('<br><div class="download_link" style="font-size: smaller;">'
+                let $dwnld_anchor = $('<div class="download_link" style="font-size: smaller;"><br>'
                     + '<a id="lnk'+f_id+'" href="#" oncontextmenu="return false;" style="display:none;padding-right:5px;text-decoration:underline;color:blue"'
                     + '>show thumbnail</a>'
                     + '<a id="dwn'+f_id+'" href="'+window.hWin.HEURIST4.util.htmlEscape(dwnld_link)+'" target="_surf" class="external-link image_tool'
@@ -2865,7 +2865,6 @@ $.widget( "heurist.editing_input", {
 
                 /* Input element's hover handler */
                 function __showImagePreview(event){
-
                     let imgAvailable = !window.hWin.HEURIST4.util.isempty($input_img.find('img').attr('src'));
                     let invalidURL = $inputdiv.find('div.smallText').hasClass('invalidImg');
 
@@ -3385,7 +3384,6 @@ $.widget( "heurist.editing_input", {
                             // we get image via fileGet.php
                             $input_img.find('img').prop('src', '');
                             $input_img.find('img').prop('src', urlThumb);
-                            
                             if(that.configMode.entity=='recUploadedFiles'){
                                 that.newvalues[$input.attr('id')] = file;
                             }else{
@@ -4520,13 +4518,16 @@ $.widget( "heurist.editing_input", {
                             
                             ele.attr('data-mimetype', response.data.mimetype);
                             
-                            if(response.data.mimetype && response.data.mimetype.indexOf('image/')===0)
+                            const isMiradorManifest = response.data.original_name=='_iiif';
+                            
+                            if ((response.data.mimetype && response.data.mimetype.indexOf('image/')===0)
+                                || isMiradorManifest)
                             {
                                 ele.parent().find('.image_input > img').attr('src',
 								    window.hWin.HAPI4.baseURL + '?db=' + window.hWin.HAPI4.database + '&thumb='+
 									    value.ulf_ObfuscatedFileID);
                                         
-                                if(response.data.width > 0 && response.data.height > 0) {
+                                if((response.data.width > 0 && response.data.height > 0) || isMiradorManifest) {
 
                                     ele.parent().find('.smallText').text('Click image to freeze in place').css({
                                         "font-size": "smaller", 
@@ -4561,11 +4562,12 @@ $.widget( "heurist.editing_input", {
                             let mimetype = response.data.mimetype;
                             if(response.data.original_name.indexOf('_iiif')===0){
                                 
-                                if(response.data.original_name=='_iiif'){
+                                if(isMiradorManifest){
                                     mirador_link.attr('data-manifest', '1');    
                                 }
                                 
                                 mirador_link.show();
+                                ele.parent().find('div.download_link').show();                                
                             }else
                             if(mimetype.indexOf('image/')===0 || (
                                     (mimetype.indexOf('video/')===0 || mimetype.indexOf('audio/')===0) &&
@@ -4574,6 +4576,7 @@ $.widget( "heurist.editing_input", {
                                    mimetype.indexOf('soundcloud')<0)) ){
                                    
                                 mirador_link.show();
+                                ele.parent().find('div.download_link').show();                                
                             }else{
                                 mirador_link.hide();           
                             }

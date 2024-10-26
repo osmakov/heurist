@@ -203,7 +203,8 @@ window.hWin.HEURIST4.util = {
                     ele = $(ele);    
                 }
                 
-                if( ($.heurist.hSelect !=='undefined') && window.hWin.HEURIST4.util.isFunction($.heurist.hSelect) && ele.hSelect('instance')!=undefined){              
+                if( ($.heurist.hSelect !=='undefined') && window.hWin.HEURIST4.util.isFunction($.heurist.hSelect) 
+                        && window.hWin.HEURIST4.util.isFunction(ele.hSelect) && ele.hSelect('instance')!=undefined){              
 
                     if (mode) {
                         ele.hSelect( 'disable' );
