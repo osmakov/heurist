@@ -125,8 +125,8 @@ function __editTheme_continue(){
             if(_theme_editing_symbology.isModified()){
                 
                 window.hWin.HEURIST4.msg.showMsgOnExit(window.hWin.HR('Warn_Lost_Data'),
-                    ()=>{edit_symb_dialog.parent().find('#btnRecSave').trigger('click');}, //save
-                    ()=>{_theme_editing_symbology.setModified(false); edit_symb_dialog.dialog('close'); }); //ignore and close
+                    ()=>{edit_dialog.parent().find('#btnRecSave').trigger('click');}, //save
+                    ()=>{_theme_editing_symbology.setModified(false); edit_dialog.dialog('close'); }); //ignore and close
                 return false;   
             }
             return true;
