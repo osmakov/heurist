@@ -1080,10 +1080,12 @@ function HMapManager( _options )
 
                         if(is_image_layer){
                             
-                            style = layer_rec['d'][DT_SYMBOLOGY][0];
-                            style = window.hWin.HEURIST4.util.isJSON(style);
+                            style = layer_rec['d'][DT_SYMBOLOGY];
+                            if(style){
+                                style = window.hWin.HEURIST4.util.isJSON(style[0]);
+                            }
 
-                            opacity = style && style.opacity ? parseFloat(style.opacity) : 1;
+                            opacity = style?.opacity ? parseFloat(style.opacity) : 1;
                             
                         }else{
                             
