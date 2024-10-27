@@ -202,7 +202,7 @@ let maxCountForNodes, maxCountForLinks;
             }
         );
 
-        $('#btnRefreshData').button({icon:'ui-icon-refresh'}).click(
+        $('#btnRefreshData').button({icon:'ui-icon-refresh'}).on('click',
             function(){
                 location.reload();
             }

@@ -103,22 +103,22 @@ $.widget( "heurist.ruleBuilder", {
         //(this.options.level<3)?'12em':
         this.div_btn2 =  $('<div>').css({'width':'60px'}).appendTo(this.element); //,'margin-left':'0.5em'
 
-        this.btn_edit = $( "<button>", {label:'Filter'})
+        this.btn_edit = $( "<button>")
         .attr('title', 'Create additional filter' )
         .css('font-size','0.8em')
-        .button({icon: "ui-icon-pencil", showLabel:false}).appendTo(this.div_btn2);
+        .button({icon: "ui-icon-pencil", label:'Filter', showLabel:false}).appendTo(this.div_btn2);
         
-        this.btn_delete = $( "<button>", {label:'Delete'})
+        this.btn_delete = $( "<button>")
         .attr('title', 'Delete this step in the rule' )
         .css('font-size','0.8em')
-        .button({icon: "ui-icon-closethick", showLabel:false}).appendTo(this.div_btn2);
+        .button({icon: "ui-icon-closethick", label:'Delete', showLabel:false}).appendTo(this.div_btn2);
 
         if(this.options.level<3)
             this.div_btn =  $('<div>').css({'display':'block','margin': '4px 0 0 '+this.options.level*25+'px'}).appendTo(this.element); //,'margin-left':'0.5em'
-            this.btn_add_next_level = $( "<button>", {label:'Add Step '+this.options.level} )
+            this.btn_add_next_level = $( "<button>" )
             .attr('title', 'Adds another step to this rule' )
             .css('font-size','0.8em')
-            .button().appendTo(this.div_btn);
+            .button({{label:'Add Step '+this.options.level}}).appendTo(this.div_btn);
 
 
         //event handlers

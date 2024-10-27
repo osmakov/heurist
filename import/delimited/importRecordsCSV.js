@@ -281,7 +281,7 @@ function hImportRecordsCSV(_imp_ID, _max_upload_size, _format) {
                         window.hWin.HEURIST4.util.setDisabled($('#btnClearAllSessions'), $(sel).find('option').length<2 );
                         
                         session_selector = window.hWin.HEURIST4.ui.initHSelect(sel, false);
-                        session_selector.change(function(event){
+                        session_selector.on('change', function(event){
                            if($(event.target).val()>0){
                                 imp_ID = $(event.target).val();
                                 _loadSession();    
@@ -3074,7 +3074,7 @@ function hImportRecordsCSV(_imp_ID, _max_upload_size, _format) {
                             let select_rectype = $("select[id^='id_rectype']");
                             $.each(select_rectype, function(idx, item){
                                 let sel = window.hWin.HEURIST4.ui.createRectypeSelect( item, null, 'select...', false);    
-                                sel.change(function(evt){
+                                sel.on('change', function(evt){
                                     let is_disabled = __isAllRectypesSelectedForIdFields();
                                     if(is_disabled){ $('#lblParseStep2').show(); } else $('#lblParseStep2').hide();
                                     window.hWin.HEURIST4.util.setDisabled( $('#btnParseStep2'), is_disabled );
@@ -3492,7 +3492,7 @@ function hImportRecordsCSV(_imp_ID, _max_upload_size, _format) {
                                                 }
                                                 
                                                 //sel = window.hWin.HEURIST4.ui.initHSelect(sel, false);
-                                                sel.change(function(event){
+                                                sel.on('change', function(event){
                                                    let sessionName = $(event.target).val();
                                                    if(sessionName && preset_mappings[sessionName]){
                                                        _initFieldMapppingSelectors( preset_mappings[sessionName] );
