@@ -122,7 +122,7 @@ if( @$_REQUEST['recID'] || @$_REQUEST['recid'] || array_key_exists('website', $_
 }elseif (@$_REQUEST['controller']=='ReportController' || array_key_exists('template',$_REQUEST) || array_key_exists('template_id',$_REQUEST)){
 
     //execute smarty template
-    $controller = new FrontController();
+    $controller = new FrontController($_REQUEST);
     $controller->run();
     exit;
     

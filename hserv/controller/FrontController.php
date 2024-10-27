@@ -54,10 +54,10 @@ class FrontController
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($params=null)
     {
         // Take from GET or POST
-        $this->req_params = USanitize::sanitizeInputArray();
+        $this->req_params = $this->req_params = is_array($params) ? $params : USanitize::sanitizeInputArray();
 
         $system = new System();
         if (!$system->init(@$this->req_params['db'])) {
