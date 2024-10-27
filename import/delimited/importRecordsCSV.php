@@ -141,7 +141,7 @@ if(!$format){ $format='csv';}
     </head>
 
     <!-- HTML -->
-    <body class="ui-heurist-bg-light ui-heurist-populate" style="overflow:hidden;min-height:400px;font-size:0.7em;">
+    <body class="ui-heurist-bg-light ui-heurist-populate" style="overflow-x:hidden;min-height:400px;font-size:0.7em;">
 
 <!-- STEP 1 upload data/select session -->
 <div style="width:100%; height:100%;padding:20px;min-width:670px;" id="divStep1">

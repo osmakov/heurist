@@ -189,16 +189,8 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
 // BASE tag is convenient however it does not suit
 // reason: some jquery widgets uses href (tabcontrol for example)
 // <base href="<?php echo PDIR;">
-/*
-<!doctype html>
-<html  class="no-js" lang="en" dir="ltr">
-*/
-if(defined('IS_INDEX_PAGE')){
 ?>
 <!DOCTYPE html>
-<?php
-}
-?>
 <html lang="en">
 <head>
 

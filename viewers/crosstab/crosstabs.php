@@ -75,11 +75,11 @@ require_once dirname(__FILE__) . '/../../hclient/framecontent/initPage.php';
 <link rel=stylesheet href="crosstabs.css" media="all">
 </head>
 
-<body style="padding:5px;overflow-x:auto;" class="popup selectmenu-parent">
+<body style="padding:5px;overflow:auto;" class="popup selectmenu-parent">
 
     <script src="crosstabs.js"></script>
 
-    <div style="margin:0px auto; padding: 0.5em; height: 100%;overflow: auto;">
+    <div style="padding: 0.5em; height: 100%;"> <!-- margin:0px auto; overflow: auto; -->
         <div class="container-fluid">
             <!-- Page container -->
             <div class="row">

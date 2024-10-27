@@ -40,7 +40,7 @@ $.widget( "heurist.connections", {
         
         this.framecontent = $('<div>')
                    .css({
-                        width:'100%', height:'100%',
+                        width:'100%', height:'100%', overflow:'hidden',
                        // position:'absolute', top:'2.5em', bottom:0, left:0, right:0,
                         'background':'url('+window.hWin.HAPI4.baseURL+'hclient/assets/loading-animation-white.gif) no-repeat center center'})
                    .appendTo( this.element );

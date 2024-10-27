@@ -400,7 +400,7 @@ if (!(@$_REQUEST['notimeline']=='true' || @$_REQUEST['notimeline']=='1')) { ?>
 <!-- HTML -->
 
 <body>
-    <div id="mapping" style="min-height:1px;height:100%; width:100%;cursor:progress">
+    <div id="mapping" style="min-height:1px;height:100%; width:100%;cursor:progress;position:absolute;">
         <!-- Map -->
         <div class="ui-layout-center">
                 <div id="map" style="width:100%; height:100%" class="ui-layout-content"><span id="map-loading">Mapping...</span></div>
