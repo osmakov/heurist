@@ -30,9 +30,21 @@ $.widget( "heurist.searchRecUploadedFiles", $.heurist.searchEntity, {
         this.btn_add_record_ext = this.element.find('#btn_add_record_ext');
         this.btn_edit_mimetypes = this.element.find('#btn_edit_mimetypes');
 
-
-        if(this.options.edit_mode=='none' || this.options.select_mode != 'manager'){
+        if(this.options.edit_mode=='none' || (this.options.select_mode != 'manager' && this.options.select_mode!='select_single')){
             this.element.find('#div_add_record').hide();
+        }else if(this.options.select_mode=='select_single'){
+            
+            this.element.find('#btn_menu').buttonsMenu({
+                menuContent:
+                    '<div>'
+                    +'<ul id="menu-file-add-local" link-style="background:#ededed" title="Select file to upload" data-icon="ui-icon-plus"></ul>'
+                    +'<ul id="menu-file-add-ext" link-style="background:#ededed" title="Select external file/URL" data-icon="ui-icon-plus"></ul>'
+                    +'</div>',
+                manuActionHandler:function(action){
+                    that._trigger('onaction', null, action);   
+                }
+            });
+            
         }else{
             this.btn_edit_mimetypes
                     .button({label: window.hWin.HR("Define mime types"),icon:'ui-icon-pencil'})
