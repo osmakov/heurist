@@ -56,7 +56,7 @@ $.widget( "heurist.searchDefDetailTypes", $.heurist.searchEntity, {
         this.element.find('.heurist-helper1').find('span').hide();
         this.element.find('.heurist-helper1').find('span.'+smode+',span.common_help').show();
         
-        this.btn_add_record = this.element.find('#btn_add_record');
+        this.btn_add_record = this.element.find('.btn_AddRecord');
         this.btn_find_record = this.element.find('#btn_find_record');
         this.btn_csv_import = this.element.find('#btn_csv_import');
 
@@ -140,8 +140,9 @@ $.widget( "heurist.searchDefDetailTypes", $.heurist.searchEntity, {
                     this.startSearch();
                 }
             });
+            this.input_filter_rectype.parent().show();
         }else{
-            this.input_filter_rectype.hide();
+            this.input_filter_rectype.parent().hide();
         }
         
         if(this.options.simpleSearch){

@@ -65,7 +65,7 @@ $.widget( "heurist.searchRecords", $.heurist.searchEntity, {
             recType_topOption, 
             false);
             
-        this.btn_add_record = this.element.find('#btn_add_record');    
+        this.btn_add_record = this.element.find('.btn_AddRecord');    
         this.btn_select_rt = this.element.find( "#btn_select_rt");
         
         let is_browse = (that.options.pointer_mode == 'browseonly' || window.hWin.HAPI4.is_guest_user());

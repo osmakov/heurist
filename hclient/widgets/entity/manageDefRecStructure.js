@@ -91,7 +91,7 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
                     +'<div style="padding:0px 20px 4px 0px;border-bottom:1px solid lightgray">' //instruction and close button
                         +'<span style="font-style:italic;display:inline-block;line-height:1.3;">Drag to reposition<br>Select to navigate<br>'
                         +'Double click or <span class="ui-icon ui-icon-gear" style="font-size: small;"></span> to modify</span>&nbsp;&nbsp;&nbsp;'
-                        //+'<button style="vertical-align:top;margin-top:4px;" class="closeRtsEditor"/>'
+                        //+'<button style="vertical-align:top;margin-top:4px;" class="closeRtsEditor"></button>'
                         +'<span style="position:absolute; right:4px;width:32px;top:26px;height:32px;font-size:32px;cursor:pointer" class="closeTreePanel ui-icon ui-icon-carat-2-w"></span>'
                         +'<button id="download_structure">Export fields as CSV</button>'
                         +'<button id="field_usage">Calculate usage</button>'
@@ -99,7 +99,7 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
                     +`<span id="field_ttl_usage" title="Count of values in each field for this record type (n = ${$Db.rty(this.options.rty_ID, 'rty_RecCount')})"`
                         +'style="display: inline-block;position:absolute;right:8px;padding-top:5px;font-weight:bold;cursor:pointer;text-decoration:underline;">Count'
                     +'</span>'
-                    +'<div class="treeView" style="margin:12px -10px 0 -10px;"></div>' //treeview
+                    +'<div class="treeView" style="margin:12px -10px 0 -10px;padding-left:3px"></div>' //treeview
                     +'<div class="editForm editFormRtStructure" style="display:none;padding:5px;">EDITOR</div>'
                     +'<div class="recordList" style="display:none"></div>'
                 +'</div>';
@@ -119,7 +119,7 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
                                     +'<div style="padding:10px 20px 4px 10px;border-bottom:1px solid lightgray">' //instruction and close button
                                         +'<span style="font-style:italic;display:inline-block">Drag to reposition<br>'
                                         +'Select or <span class="ui-icon ui-icon-gear" style="font-size: small;"></span> to modify</span>&nbsp;&nbsp;&nbsp;'
-                                        //+'<button style="vertical-align:top;margin-top:4px;" class="closeRtsEditor"/>'
+                                        //+'<button style="vertical-align:top;margin-top:4px;" class="closeRtsEditor"></button>'
                                         +'<span style="position:absolute; right:4px;width:32px;top:26px;height:32px;font-size:32px;cursor:pointer" class="closeTreePanel ui-icon ui-icon-carat-2-w"></span>'
                                     +'</div>'
                                     +'<div class="treeView" style="margin-left:-27px;"></div>' //treeview
@@ -1072,20 +1072,14 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
                         && this._editing && this._editing.isModified();
         this.editForm.find('.btnRecSaveAndClose_rts').css('display', 
                 (isChanged)?'block':'none');
+/*                
 console.log('onEditFormChange @todo check buttons!!!');
         let btnSave = $(document).find('.btnRecSave'); //CHECK!!!
         let btnClose = $(btnSave[0].parentNode).find('button:contains("Close")')[1];
-        if (isChanged){
-            btnSave.prop('disabled', true);
-            $(btnClose).prop('disabled', true);
-            $(btnClose).css('opacity', '0.35');
-        }
-        else{
-            btnSave.prop('disabled', false);
-            $(btnClose).prop('disabled', false);
-            $(btnClose).css('opacity', '');
-        }
-		   
+        
+        window.hWin.HEURIST4.util.setDisabled(btnSave, isChanged);
+        window.hWin.HEURIST4.util.setDisabled(btnClose, isChanged);
+*/
         if(this._toolbar){
             this._toolbar.find('.btnRecPreview_rts').css('display', 
                     (isChanged)?'none':'block');
@@ -1685,7 +1679,7 @@ console.log('onEditFormChange @todo check buttons!!!');
             
             let v = that._editing.getValue('rst_CreateChildIfRecPtr')[0];
            
-            this._rst_PointerMode_Enable(v!=1);
+            this._rst_PointerMode_EnableBrowse(v!=1);
             
             this.editForm.show();
             this._editing.setFocus();
@@ -2172,6 +2166,7 @@ console.log('onEditFormChange @todo check buttons!!!');
     _recreateResourceSelector: function(){
         
         let ptrIds = this._editing.getValue('rst_PtrFilteredIDs')[0];
+        let ptrMode = this._editing.getValue('rst_PointerMode')[0];
         
         //disable
         let edit_ele = this._editing.getFieldByName('rst_PtrFilteredIDs');
@@ -2188,7 +2183,8 @@ console.log('onEditFormChange @todo check buttons!!!');
         }
         let ele = this._editing.getFieldByName('rst_DefaultValue_resource');
         ele.editing_input('fset','rst_PtrFilteredIDs', ptrIds);
-        ele.editing_input('fset','rst_PointerMode', 'dropdown_add');
+        
+        ele.editing_input('fset','rst_PointerMode', ptrMode?ptrMode:'dropdown_add');
         this._editing.setFieldValueByName('rst_DefaultValue_resource', defval, false); //recreates
         
     },
@@ -2747,15 +2743,24 @@ console.log('onEditFormChange @todo check buttons!!!');
     //
     // enable or disable dropdown entries for rst_PointerMode
     //
-    _rst_PointerMode_Enable: function(is_enable){
+    _rst_PointerMode_EnableBrowse: function(is_enable){
         
+        let ptrMode = this._editing.getValue('rst_PointerMode')[0];
         let pointer_mode = this._editing.getFieldByName('rst_PointerMode');
-        let value = is_enable ? 'dropdown_add' : 'addorbrowse';
-        pointer_mode.editing_input('setValue', [value], true);
+        
+        //ENUM('dropdown_add', 'dropdown', 'addorbrowse', 'addonly', 'browseonly')        
+        if(!is_enable && (ptrMode=='dropdown' || ptrMode=='browseonly')){
+                ptrMode = 'addorbrowse';
+                pointer_mode.editing_input('setValue', [ptrMode], true);
+        }
 
         let inpt = pointer_mode.editing_input('getInputs');
         inpt = inpt[0];
-
+        
+        //for parent-child disable browse only modes
+        window.hWin.HEURIST4.util.setDisabled(inpt.find('option[value^="dropdown"]'), !is_enable);
+        window.hWin.HEURIST4.util.setDisabled(inpt.find('option[value^="browseonly"]'), !is_enable);
+/*        
         if(is_enable){
             inpt.find('option[value^="dropdown"]').prop('disabled',false); //removeProp('disabled');
             inpt.find('option[value^="browseonly"]').prop('disabled',false);
@@ -2763,6 +2768,7 @@ console.log('onEditFormChange @todo check buttons!!!');
             inpt.find('option[value^="dropdown"]').prop('disabled',true);
             inpt.find('option[value^="browseonly"]').prop('disabled',true);
         }
+*/        
         inpt.parent().addClass('selectmenu-parent');
 
         if(!window.hWin.HEURIST4.browseRecordMax){
@@ -2807,7 +2813,7 @@ console.log('onEditFormChange @todo check buttons!!!');
                 +'<div><label><input type="checkbox">Yes, I want to turn child-record function OFF for this field</label></div>',
                 {'Proceed':function(){ 
                     ed_input.setValue(0, false);
-                    that._rst_PointerMode_Enable(true); 
+                    that._rst_PointerMode_EnableBrowse(true); 
                     that.onEditFormChange();
                     $dlg.dialog('close'); },
                 'Cancel':function(){ ed_input.setValue(1, true); $dlg.dialog('close'); } },
@@ -2887,7 +2893,7 @@ console.log('onEditFormChange @todo check buttons!!!');
 
                             $Db.rst(rty_ID, dty_ID, 'rst_CreateChildIfRecPtr', 1);
                             
-                            that._rst_PointerMode_Enable(false);
+                            that._rst_PointerMode_EnableBrowse(false);
                         }else{
                             ed_input.setValue(0, true);
                            

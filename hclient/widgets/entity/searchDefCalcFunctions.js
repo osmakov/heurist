@@ -23,7 +23,7 @@ $.widget( "heurist.searchDefCalcFunctions", $.heurist.searchEntity, {
     _initControls: function() {
         this._super();
         
-        this.btn_add_record = this.element.find('#btn_add_record');
+        this.btn_add_record = this.element.find('.btn_AddRecord');
         this.btn_add_record
                     .button({label: window.hWin.HR('Add New Formula'), showLabel:true, 
                             icon:"ui-icon-plus"})

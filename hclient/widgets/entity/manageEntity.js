@@ -909,7 +909,7 @@ $.widget( "heurist.manageEntity", {
                     click: function() { that._saveEditAndClose(); }}
                  /* IJ 2018-10-17 request   
                  {text:window.hWin.HR('Remove'), 
-                    id:'btnRecRemove',
+                    class:'btnRecRemove',
                     css:{'float':'left'},
                     click: function() { that._deleteAndClose(); },
                  } */
@@ -971,7 +971,7 @@ $.widget( "heurist.manageEntity", {
                 let cancelbutton_label = (options['select_mode']=='select_multi' || options['select_mode']=='select_roles')
                     ?'Cancel':'Close';
                 
-                btn_array.push({id:'btn_close_cancel', text:window.hWin.HR(cancelbutton_label), 
+                btn_array.push({class:'btn_close_cancel', text:window.hWin.HR(cancelbutton_label), 
                         click: function() { 
                             that.closeDialog(); }}); //use usual close dialog 
             }

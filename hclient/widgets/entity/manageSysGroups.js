@@ -533,7 +533,7 @@ $.widget( "heurist.manageSysGroups", $.heurist.manageEntity, {
         //hide after edit init btnRecRemove for group=1
         if(this._currentEditID==window.hWin.HAPI4.sysinfo.db_managers_groupid){ //sys_OwnerGroupID
             let ele = this._toolbar;
-            ele.find('#btnRecRemove').hide();
+            ele.find('.btnRecRemove').hide();
         }
 
     },

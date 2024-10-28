@@ -42,7 +42,7 @@ $.widget( "heurist.searchUsrSavedSearches", $.heurist.searchEntity, {
         this.element.find('.heurist-helper1').find('span').hide();
         this.element.find('.heurist-helper1').find('span.'+smode+',span.common_help').show();
         
-        this.btn_add_record = this.element.find('#btn_add_record');
+        this.btn_add_record = this.element.find('.btn_AddRecord');
 
         if(this.options.edit_mode=='none' || this.options.search_form_visible==false){
             this.btn_add_record.hide();

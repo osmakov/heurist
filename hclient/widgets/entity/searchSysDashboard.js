@@ -32,7 +32,7 @@ $.widget( "heurist.searchSysDashboard", $.heurist.searchEntity, {
         this.element.find('.heurist-helper1').find('span').hide();
         this.element.find('.heurist-helper1').find('span.'+smode+',span.common_help').show();
         */
-        this.btn_add_record = this.element.find('#btn_add_record')
+        this.btn_add_record = this.element.find('.btn_AddRecord')
                 .css({'min-width':'9m','z-index':2})
                     .button({label: window.hWin.HR("Add New Entry"), icon: "ui-icon-plus"})
                 .on('click', function(e) {

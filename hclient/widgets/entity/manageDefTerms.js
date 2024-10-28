@@ -194,13 +194,13 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 let btn_array = [
 
                     {showLabel:true, icon:'ui-icon-plus', text:window.hWin.HR('Add'), //Add Vocab
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnAddButton',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnAddButton',
                         click: function() { that._onActionListener(null, 'add'); }},
                     {showLabel:false, icon:'ui-icon-download', text:window.hWin.HR('Export Vocabularies'),
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnExportVocab',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnExportVocab',
                         click: function() { that._onActionListener(null, 'term-export'); }},
                     {showLabel:false, icon:'ui-icon-upload', padding:'2px', text:window.hWin.HR('Import Vocabularies'),
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnImportVocab',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnImportVocab',
                         click: function() { that._onActionListener(null, 'term-import'); }}
                 ];
 
@@ -336,35 +336,35 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 let btn_array = [
 
                     {showLabel:true, icon:'ui-icon-plus', text:window.hWin.HR('Add'), //Add Term
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnAddButton',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnAddButton',
                         class: 'ui-button-action',click: function() { that._onActionListener(null, 'add'); }},
 
                     {showLabel:true, icon:'ui-icon-link', text:window.hWin.HR('Ref'), //Add Term
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnAddButton2',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnAddButton2',
                         click: function() { that._onActionListener(null, 'add-reference'); }},
 
                     {showLabel:false, icon:'ui-icon-download', text:window.hWin.HR('Export Terms'), //ui-icon-arrowthick-1-e
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnExportVocab',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnExportVocab',
                         click: function() { that._onActionListener(null, 'term-export'); }},
 
                     {showLabel:false, icon:'ui-icon-upload', text:window.hWin.HR('Import Terms'), //ui-icon-arrowthick-1-w  padding:'2px',
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnImportVocab',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnImportVocab',
                         click: function() { that._onActionListener(null, 'term-import'); }},
                         
                     {showLabel:false, icon:'ui-icon-translate', text:window.hWin.HR('Import Translations'),  //padding:'2px'
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, id:'btnImportTranslations',
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnImportTranslations',
                         click: function() { that._onActionListener(null, 'term-import-translations'); }}
                 ];
 
                 let btn_array2 = [
                     {showLabel:false, icon:'ui-icon-menu', text:window.hWin.HR('Show as plain list'),
-                        css:{'margin-right':'0.5em','display':'inline-block'}, id:'btnViewMode_List',
+                        css:{'margin-right':'0.5em','display':'inline-block'}, class:'btnViewMode_List',
                         click: function() { that._onActionListener(null, 'viewmode-list'); }},
                     /*{showLabel:false, icon:'ui-icon-structure', text:window.hWin.HR('Show as tree'),
-                    css:{'margin-right':'0.5em','display':'inline-block'}, id:'btnViewMode_Tree',
+                    css:{'margin-right':'0.5em','display':'inline-block'}, class:'btnViewMode_Tree',
                     click: function() { that._onActionListener(null, 'viewmode-tree'); }},*/
                     {showLabel:false, icon:'ui-icon-view-icons', text:window.hWin.HR('Show as images'),
-                        css:{'margin-right':'0.5em','display':'inline-block'}, id:'btnViewMode_List',
+                        css:{'margin-right':'0.5em','display':'inline-block'}, class:'btnViewMode_List',
                         click: function() { that._onActionListener(null, 'viewmode-thumbs'); }}
                 ];
 
@@ -402,13 +402,13 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
 
                     this._defineActionButton2(btn_array[idx], c1_btns);
 
-                    if(btn_array[idx]['id'] == 'btnAddButton'){ // remove bold effect from button
-                        this.searchForm.find('#btnAddButton')[0].style.setProperty('font-weight', 'normal', 'important');
+                    if(btn_array[idx]['class'] == 'btnAddButton'){ // remove bold effect from button
+                        this.searchForm.find('.btnAddButton')[0].style.setProperty('font-weight', 'normal', 'important');
                     }
                 }
 
                 let del_multi_btn = {showLabel:true, text:window.hWin.HR('Delete selected'), //Delete selected terms
-                                    css:{'margin-left':'0.75em','display':'inline-block',padding:'2px'}, id:'btnDelMulti',
+                                    css:{'margin-left':'0.75em','display':'inline-block',padding:'2px'}, class:'btnDelMulti',
                                     click: function() { that._onActionListener(null, 'term-delete-mutliple'); }};
                 this._defineActionButton2(del_multi_btn, c1_btns);
 
@@ -3216,7 +3216,7 @@ function correctionOfInvalidTerm(trm_ID, wrong_vocab_id, correct_vocab_id,  dty_
     
     let $dlg, buttons = [
         {text:window.hWin.HR('Cancel'),
-            //id:'btnRecCancel',
+            //class:'btnRecCancel',
             css:{'float':'right',margin:'.5em .4em .5em 0px'},  
             click: function() { $dlg.dialog( "close" ); }},
         {text:window.hWin.HR('Apply'),

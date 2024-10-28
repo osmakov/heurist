@@ -47,7 +47,7 @@ $.widget( "heurist.searchSysUsers", $.heurist.searchEntity, {
         this.element.find('.heurist-helper1').find('span').hide();
         this.element.find('.heurist-helper1').find('span.'+smode+',span.common_help').show();
         
-        this.btn_add_record = this.element.find('#btn_add_record');
+        this.btn_add_record = this.element.find('.btn_AddRecord');
         this.btn_find_record = this.element.find('#btn_find_record');
 
         if(this.options.edit_mode=='none'){

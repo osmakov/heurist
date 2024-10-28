@@ -955,7 +955,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                 
                         let $dlg, buttons = [
                             {text:window.hWin.HR('Cancel'),
-                                //id:'btnRecCancel',
+                                //class:'btnRecCancel',
                                 css:{'float':'right',margin:'.5em .4em .5em 0px'},  
                                 click: function() { $dlg.dialog( "close" ); }},
                             {text:window.hWin.HR('Use this field type'),
@@ -1669,9 +1669,6 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                     let child_rec = this._editing.getFieldByName('rst_CreateChildIfRecPtr');
                     let resource_default = this._editing.getFieldByName('rst_DefaultValue_resource');
                     let default_val = this._editing.getValue('rst_DefaultValue')[0];
-
-                    
-console.log('1>>>', pointer_mode);                    
                     
                     // Setup default value
                     resource_default.editing_input('fset','rst_PtrFilteredIDs', fields['dty_PtrTargetRectypeIDs']);
@@ -1689,15 +1686,10 @@ console.log('1>>>', pointer_mode);
                         let inpt = pointer_mode.editing_input('getInputs');
                         inpt = inpt[0];
 
-console.log('2>>>', inpt.val());                    
+                        window.hWin.HEURIST4.util.setDisabled(inpt.find('option[value^="dropdown"]'), !is_enable);
+                        window.hWin.HEURIST4.util.setDisabled(inpt.find('option[value^="browseonly"]'), !is_enable);
 
-                        if(is_enable){
-                            inpt.find('option[value^="dropdown"]').prop('disabled',false);//.removeProp('disabled');
-                            inpt.find('option[value^="browseonly"]').prop('disabled',false);
-                            inpt.val('dropdown_add');
-                        }else{
-                            inpt.find('option[value^="dropdown"]').prop('disabled',true); //'disabled'
-                            inpt.find('option[value^="browseonly"]').prop('disabled',true);
+                        if(!is_enable){
                             inpt.val('addorbrowse');
                         }
                         inpt.hSelect('refresh');
@@ -1746,8 +1738,6 @@ console.log('2>>>', inpt.val());
                         open: function(event){
 
                             let cur_val = pointer_mode_inpt.val(); // retain current value
-
-console.log('3>>>', cur_val);                                  
                             // Reset mode selector
                             if(pointer_mode_inpt.hSelect('instance')!=undefined){
 

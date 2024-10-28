@@ -36,7 +36,7 @@ $.widget( "heurist.searchDefRecTypes", $.heurist.searchEntity, {
         this.element.find('.heurist-helper1').find('span').hide();
         this.element.find('.heurist-helper1').find('span.'+smode+',span.common_help').show();
         
-        this.btn_add_record = this.element.find('#btn_add_record');
+        this.btn_add_record = this.element.find('.btn_AddRecord');
         this.btn_find_record = this.element.find('#btn_find_record');
         this.btn_csv_import = this.element.find('#btn_csv_import');
 
@@ -120,8 +120,7 @@ $.widget( "heurist.searchDefRecTypes", $.heurist.searchEntity, {
         if( this.options.simpleSearch){
             
             this.element.find('#input_sort_type_div').hide();
-        }else{
-            if(smode=='select_multi' || smode=='select_single'){
+        }else if(smode=='select_multi' || smode=='select_single'){
                 
                 this.element.find('#btn_ui_config').hide();
                 this.element.find('#div_show_all_groups').hide();
@@ -144,9 +143,8 @@ $.widget( "heurist.searchDefRecTypes", $.heurist.searchEntity, {
                 window.hWin.HEURIST4.ui.createRectypeGroupSelect(this.input_search_group[0], 
                             [{key:'any',title:'all groups'}]);
                 this._on(this.input_search_group,  { change:this.startSearch });
-        
                 
-            }else{
+        }else{
                 
                 this.btn_ui_config = this.element.find('#btn_ui_config')
                         //.css({'width':'6em'})
@@ -156,9 +154,6 @@ $.widget( "heurist.searchDefRecTypes", $.heurist.searchEntity, {
                     this._on( this.btn_ui_config, {
                             click: this.configureUI });
                 }
-            
-                
-            }
 
         }
        
@@ -177,7 +172,6 @@ $.widget( "heurist.searchDefRecTypes", $.heurist.searchEntity, {
         if(key == 'rtg_ID'){
             if(!this.element.find('#chb_show_all_groups').is(':checked'))
                 this.startSearch();
-               
                 
                 if(value==$Db.getTrashGroupId('rtg')){
                     this.btn_add_record.hide();

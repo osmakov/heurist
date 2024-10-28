@@ -32,7 +32,7 @@ $.widget( "heurist.searchSysGroups", $.heurist.searchEntity, {
             }
         }
         
-        this.btn_add_record = this.element.find('#btn_add_record');
+        this.btn_add_record = this.element.find('.btn_AddRecord');
         
         if(this.options.edit_mode=='none'){
             this.btn_add_record.hide();

@@ -48,7 +48,7 @@ $.widget( "heurist.manageDefVocabularyGroups", $.heurist.manageDefGroups, {
             +'<h4 style="display:inline-block;margin: 0 10px 0 0; vertical-align: middle;">Groups</h4></div>')
         .appendTo( this.searchForm );
         
-        this.searchForm.find('#btnAddButton').css('float','none').appendTo(this.searchForm.find('.action-buttons'));
+        this.searchForm.find('.btnAddButton').css('float','none').appendTo(this.searchForm.find('.action-buttons'));
         //this._defineActionButton2(btn_array[0], this.searchForm.find('.action-buttons'));
         
         this.searchForm.css({padding:'6px 0 0 0'});
