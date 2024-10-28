@@ -61,7 +61,7 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
         let btns = this._super();
         
         for(let idx in btns){
-            if(btns[idx].id=='btnRecSave'){
+            if(btns[idx].class.indexOf('btnRecSave')>=0){
                 btns[idx].text = window.hWin.HR('Send to heurist development team');
                 break;
             }

@@ -1297,8 +1297,7 @@ this_id       : "term"
         
         if(!this.options.is_snippet_editor){
         res.splice(1,0,{text:window.hWin.HR('Save As'),
-                    id:'btnDoAction2',
-                    class:'ui-button-action',
+                    class:'ui-button-action btnDoAction2',
                     css:{'float':'right'},  
                     click: function() { 
                             that.doAction(true); 

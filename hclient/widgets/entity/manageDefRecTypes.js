@@ -1156,7 +1156,7 @@ $.widget( "heurist.manageDefRecTypes", $.heurist.manageEntity, {
             
             //hide save button
             if(this._toolbar){
-                this._toolbar.find('#btnRecSave').css('visibility', 'visible');
+                this._toolbar.find('.btnRecSave').css('visibility', 'visible');
             }
             
             //hide title mask

@@ -684,7 +684,7 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
             //force show save button
             let ele = this._toolbar;
             if(ele){
-                ele.find('#btnRecSave').css('visibility', 'visible');
+                ele.find('.btnRecSave').css('visibility', 'visible');
             }
         }
 
@@ -710,7 +710,7 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
         }
 
         //hide after edit init btnRecRemove
-        this._toolbar.find('#btnRecRemove').hide();
+        this._toolbar.find('.btnRecRemove').hide();
     },    
     
     _getValidatedValues: function(){
@@ -847,7 +847,7 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
             /*
             let ele = that._toolbar;
             if(ele){
-                ele.find('#btnRecSave').css('visibility', msg_error?'hidden':'visible');
+                ele.find('.btnRecSave').css('visibility', msg_error?'hidden':'visible');
             }*/
             
     

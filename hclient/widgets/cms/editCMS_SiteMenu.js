@@ -39,14 +39,13 @@ function editCMS_SiteMenu( $container, editCMS2 ){
         /*not used as dialog 
         var buttons= [
             {text:window.hWin.HR('Cancel'), 
-                id:'btnCancel',
+                class:'btnCancel',
                 css:{'float':'right','margin-left':'30px','margin-right':'20px'}, 
                 click: function() { 
                     $dlg.dialog( "close" );
             }},
             {text:window.hWin.HR('Apply'), 
-                id:'btnDoAction',
-                class:'ui-button-action',
+                class:'ui-button-action btnDoAction',
                 //disabled:'disabled',
                 css:{'float':'right'}, 
                 click: function() { 
@@ -611,7 +610,7 @@ title: "Overview"
                 }
                 , open: function(){
                     $dlg.find('#pageName').on('keyup', function(e){
-                        window.hWin.HEURIST4.util.setDisabled($dlg.parent().find('#btnDoAction'), $(e.taget).val()=='');
+                        window.hWin.HEURIST4.util.setDisabled($dlg.parent().find('.btnDoAction'), $(e.taget).val()=='');
                     } );
                 }
         });

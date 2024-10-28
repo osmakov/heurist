@@ -663,7 +663,8 @@ $.widget( "heurist.manageEntity", {
                     .on('click',options.click)
                     .appendTo(container);
         if(options.id){
-            btn.attr('id', options.id);
+            //btn.attr('id', options.id);
+            btn.addClass(options.id);
         }
         if(options.css){
             btn.css(options.css);
@@ -889,7 +890,7 @@ $.widget( "heurist.manageEntity", {
         let that = this;        
         let btn_array = [
                  {text:window.hWin.HR((this.options.edit_mode=='popup' || this.options.isdialog)?'Close':'Drop Changes'), 
-                    id:'btnRecCancel',
+                    class:'btnRecCancel',
                     css:{'visibility':(this.options.edit_mode=='popup' || 
                                 (that.options.edit_mode=='editonly' && that.options.isdialog) ?'visible':'hidden')
                         ,'float':'right',margin:'.5em .4em .5em 0'}, 
@@ -903,9 +904,8 @@ $.widget( "heurist.manageEntity", {
                         }
                     }},
                  {text:window.hWin.HR('Save'),
-                    id:'btnRecSave',
                     css:{'visibility':'hidden', 'float':'right',margin:'.5em .4em .5em 0'},  
-                    class: 'ui-button-action',
+                    class: 'ui-button-action btnRecSave',
                     click: function() { that._saveEditAndClose(); }}
                  /* IJ 2018-10-17 request   
                  {text:window.hWin.HR('Remove'), 
@@ -1632,17 +1632,17 @@ $.widget( "heurist.manageEntity", {
         //show/hide save,cancel,remove buttons
         let ele = this._toolbar;
         if(ele){
-            let btn = ele.find('#btnRecCancel');
+            let btn = ele.find('.btnRecCancel');
             if( this.options.edit_mode!='popup' && !(this.options.edit_mode=='editonly' && this.options.isdialog)
                  && !btn.hasClass('alwaysvisible')) { //for popup and editonly always visible
                     btn.css('visibility', mode);
             }
-            ele.find('#btnRecSave').css('visibility', mode);
+            ele.find('.btnRecSave').css('visibility', mode);
             /* IJ 2018-10-17 request   
             if(this._currentEditRecordset==null){            
-                ele.find('#btnRecRemove').css('visibility', 'hidden');
+                ele.find('.btnRecRemove').css('visibility', 'hidden');
             }else{
-                ele.find('#btnRecRemove').css('visibility', 'visible');    
+                ele.find('.btnRecRemove').css('visibility', 'visible');    
             }*/
         }
     },

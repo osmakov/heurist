@@ -205,14 +205,13 @@ $.widget( "heurist.emailForm", {
         let that = this;        
         return [
                  {text:window.hWin.HR('Cancel'), 
-                    id:'btnCancel',
+                    class:'btnCancel',
                     css:{'float':'right','margin-left':'30px','margin-right':'20px'}, 
                     click: function() { 
                         that.closeDialog();
                     }},
                  {text:window.hWin.HR('Send'),
-                    id:'btnDoAction',
-                    class:'ui-button-action',
+                    class:'ui-button-action btnDoAction',
                     //disabled:'disabled',
                     css:{'float':'right'},  
                     click: function() { 
@@ -222,7 +221,7 @@ $.widget( "heurist.emailForm", {
     },
 
     //
-    // define action buttons (if isdialog is false)
+    // define action buttons (if isdialog is false) NOT USED
     //
     _defineActionButton2: function(options, container){        
         

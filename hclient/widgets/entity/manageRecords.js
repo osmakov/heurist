@@ -826,12 +826,12 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                          let dlged = that._as_dialog.parent('.ui-dialog');   
                          $__dlg.parent('.ui-dialog').css({
                                 top: dlged.position().top+dlged.height()-200,
-                                left:that._toolbar.find('#btnPrev').position().left});    
+                                left:that._toolbar.find('.btnPrev').position().left});    
                     }else if(this._toolbar) {
-                        this._toolbar.find('#divNav').html( (idx+1)+'/'+order.length);
+                        this._toolbar.find('.divNav').html( (idx+1)+'/'+order.length);
                         
-                        window.hWin.HEURIST4.util.setDisabled(this._toolbar.find('#btnPrev'), (idx==0));
-                        window.hWin.HEURIST4.util.setDisabled(this._toolbar.find('#btnNext'), (idx+1==order.length));
+                        window.hWin.HEURIST4.util.setDisabled(this._toolbar.find('.btnPrev'), (idx==0));
+                        window.hWin.HEURIST4.util.setDisabled(this._toolbar.find('.btnNext'), (idx+1==order.length));
                         
                         if(dest!=0){
                             this.addEditRecord(newRecID);
@@ -846,29 +846,28 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
     //
     //
     _getEditDialogButtons: function(){
-                                    
+        
             let that = this;        
             let btns = [];
 
                 if(this.options.selectOnSave==true){
                     btns = [               
                                 
-                        {text:window.hWin.HR('Save'), id:'btnRecSave',
+                        {text:window.hWin.HR('Save'), class:'btnRecSave',
                               accesskey:"S",
                               css:{'font-weight':'bold'},
                               click: function() { that._saveEditAndClose( null, 'none' ); }},
-                        {text:window.hWin.HR('Save + Close'), id:'btnRecSaveAndClose',
+                        {text:window.hWin.HR('Save + Close'), class:'btnRecSaveAndClose',
                               css:{'margin-left':'0.5em'},
                               click: function() { that._saveEditAndClose( null, 'close' ); }},
                         {text:window.hWin.HR('Close'), 
                               css:{'margin-left':'0.5em'},
                               click: function() { 
-                                  
                                     that.options.select_mode = 'select_single'
                                     that.selectedRecords(that._currentEditRecordset);
                                   
                               }},
-                        {text:window.hWin.HR('Drop Changes'), id:'btnRecCancel', 
+                        {text:window.hWin.HR('Drop Changes'), class:'btnRecCancel', 
                               css:{'margin-left':'3em'},
                               click: function() { that._initEditForm_step3(that._currentEditID) }},  //reload edit form
                               
@@ -877,7 +876,7 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                 }else if(this.options.edit_structure==true){
                     // Check if rectype has fields
                     btns = [ 
-                        {text:window.hWin.HR('Save'), id:'btnRecSave', //AndClose
+                        {text:window.hWin.HR('Save'), class:'btnRecSave', //AndClose
                           css:{'margin-left':'0.5em'},
                           click: function() { that._saveEditAndClose( null, 'none' ); }}, //'close'
                         {text:window.hWin.HR('Close'), 
@@ -921,13 +920,13 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                     btns = [
 
                         {showLabel:false, icon:'ui-icon-circle-triangle-w',title:window.hWin.HR('Previous'),
-                              css:{'display':'none','margin-right':'0.5em',}, id:'btnPrev',
+                              css:{'display':'none','margin-right':'0.5em',}, class:'btnPrev',
                               click: function() { that._navigateToRec(-1); }},
                         {showLabel:false, icon:'ui-icon-circle-triangle-e',iconPosition:'end',title:window.hWin.HR('Next'),
-                              css:{'display':'none','margin-left':'0.5em','margin-right':'1.5em'}, id:'btnNext',
+                              css:{'display':'none','margin-left':'0.5em','margin-right':'1.5em'}, class:'btnNext',
                               click: function() { that._navigateToRec(1); }},
                               
-                        {text:window.hWin.HR('Dupe'), id:'btnRecDuplicate',
+                        {text:window.hWin.HR('Dupe'), class:'btnRecDuplicate',
                             css:{'margin-left':'1em'},
                             click: function(event) { 
 
@@ -970,7 +969,7 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                                     duplicate_record();
                                 }
                             }},
-                        {text:window.hWin.HR('New'), id:'btnRecSaveAndNew',
+                        {text:window.hWin.HR('New'), class:'btnRecSaveAndNew',
                               css:{'margin-left':'0.5em','margin-right':'10em'},
                               click: function() { 
 
@@ -982,11 +981,11 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                                     }
                               }},
                               
-                        {text:window.hWin.HR('Save'), id:'btnRecSave',
+                        {text:window.hWin.HR('Save'), class:'btnRecSave',
                               accesskey:"S",
                               css:{'font-weight':'bold'},
                               click: function() { that._saveEditAndClose( null, 'none' ); }},
-                        {text:window.hWin.HR('Save + Close'), id:'btnRecSaveAndClose',
+                        {text:window.hWin.HR('Save + Close'), class:'btnRecSaveAndClose',
                               css:{'margin-left':'0.5em'},
                               click: function() { that._saveEditAndClose( null, 'close' ); }},
                         {text:window.hWin.HR('Close'), 
@@ -994,7 +993,7 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                               click: function() { 
                                   that.closeEditDialog(); 
                               }},
-                        {text:window.hWin.HR('Drop Changes'), id:'btnRecCancel', 
+                        {text:window.hWin.HR('Drop Changes'), class:'btnRecCancel', 
                               css:{'margin-left':'3em'},
                               click: function() { that._initEditForm_step3(that._currentEditID) }},  //reload edit form
                               
@@ -1141,10 +1140,10 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
             if(this._toolbar){
                 this._toolbar.find('.ui-dialog-buttonset').css({'width':'100%','text-align':'right'});
             
-                if(this._toolbar.find('#divNav3').length===0){
+                if(this._toolbar.find('.divNav3').length===0){
                        
-                        $('<div id="divNav3" style="font-weight:bold;display:inline-block;text-align:right">Save then</div>')
-                            .insertBefore(this._toolbar.find('#btnRecDuplicate'));
+                        $('<div class="divNav3" style="font-weight:bold;display:inline-block;text-align:right">Save then</div>')
+                            .insertBefore(this._toolbar.find('.btnRecDuplicate'));
                 }
             }
             
@@ -1152,22 +1151,22 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
             let recset = this.recordList.resultList('getRecordSet');
             if(recset && recset.length()>1 && recID>0){
                 if(this._toolbar){
-                    this._toolbar.find('#btnPrev').css({'display':'inline-block','height':'2.1em','background':'#f2f2f2'});
-                    this._toolbar.find('#btnNext').css({'display':'inline-block','height':'2.1em','background':'#f2f2f2'});
-                    if(this._toolbar.find('#divNav').length===0){
-                        $('<div id="divNav2" style="display:inline-block;font-weight:bold;padding:0.8em 1em;text-align:right">Step through filtered subset</div>')
-                        .insertBefore(this._toolbar.find('#btnPrev'));
+                    this._toolbar.find('.btnPrev').css({'display':'inline-block','height':'2.1em','background':'#f2f2f2'});
+                    this._toolbar.find('.btnNext').css({'display':'inline-block','height':'2.1em','background':'#f2f2f2'});
+                    if(this._toolbar.find('.divNav').length===0){
+                        $('<div class="divNav2" style="display:inline-block;font-weight:bold;padding:0.8em 1em;text-align:right">Step through filtered subset</div>')
+                        .insertBefore(this._toolbar.find('.btnPrev'));
                         
-                        $('<div id="divNav" style="display:inline-block;font-weight:bold;padding-top:0.8em;min-width:40px;text-align:center">')
-                        .insertBefore(this._toolbar.find('#btnNext'));
+                        $('<div class="divNav" style="display:inline-block;font-weight:bold;padding-top:0.8em;min-width:40px;text-align:center">')
+                        .insertBefore(this._toolbar.find('.btnNext'));
                     }
                 }
                 this._navigateToRec(0); //reload
             }else if(this._toolbar){
-                this._toolbar.find('#btnPrev').hide();
-                this._toolbar.find('#btnNext').hide();
-                this._toolbar.find('#divNav').hide();
-                this._toolbar.find('#divNav2').hide();
+                this._toolbar.find('.btnPrev').hide();
+                this._toolbar.find('.btnNext').hide();
+                this._toolbar.find('.divNav').hide();
+                this._toolbar.find('.divNav2').hide();
             }
             
             if(this.options.allowAdminToolbar===false){
@@ -1484,7 +1483,7 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
 +'</div></div>'
 
 +'<div>'
-+'<div class="truncate"><label class="small-header">Added By:</label><span id="recAddedBy">'+that._getField('rec_AddedByUGrpID')+'</span></div>'
++'<div class="truncate"><label class="small-header">Added By:</label><span class="recAddedBy">'+that._getField('rec_AddedByUGrpID')+'</span></div>'
 + ((that._getField('rec_Added')=='')?'':
   '<div class="truncate"    ><label class="small-header">Added:</label>'+that._getField('rec_Added')
                 +' ('+window.hWin.HEURIST4.util.getTimeForLocalTimeZone(that._getField('rec_Added'))+' local)</div>')
@@ -1501,7 +1500,7 @@ $.widget( "heurist.manageRecords", $.heurist.manageEntity, {
                 window.hWin.HAPI4.SystemMgr.usr_names({UGrpID:that._getField('rec_AddedByUGrpID')},
                     function(response){
                         if(response.status == window.hWin.ResponseStatus.OK){
-                            panel.find('#recAddedBy').text(response.data[that._getField('rec_AddedByUGrpID')]);
+                            panel.find('.recAddedBy').text(response.data[that._getField('rec_AddedByUGrpID')]);
                         }
                 });
 
@@ -4117,24 +4116,24 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
         //show/hide save buttons
         if(this._toolbar){
             let ele = this._toolbar;
-            /*ele.find('#btnRecCancel').css('visibility', mode);
-            ele.find('#btnRecSaveAndNew').css('visibility', mode);
-            ele.find('#btnRecSave').css('visibility', mode);
-            ele.find('#btnRecSaveAndClose').css('visibility', mode);*/
+            /*ele.find('.btnRecCancel').css('visibility', mode);
+            ele.find('.btnRecSaveAndNew').css('visibility', mode);
+            ele.find('.btnRecSave').css('visibility', mode);
+            ele.find('.btnRecSaveAndClose').css('visibility', mode);*/
             
             
             
-            
-            window.hWin.HEURIST4.util.setDisabled(ele.find('#btnRecCancel'), (mode=='hidden'));
-            window.hWin.HEURIST4.util.setDisabled(ele.find('#btnRecSaveAndClose'), (mode=='hidden'));
+console.log('DIIIIs');
+            window.hWin.HEURIST4.util.setDisabled(ele.find('.btnRecCancel'), (mode=='hidden'));
+            window.hWin.HEURIST4.util.setDisabled(ele.find('.btnRecSaveAndClose'), (mode=='hidden'));
             
             
             
             //save buton is always enabled - just greyout in nonchanged state
             if(mode=='hidden'){
-                ele.find('#btnRecSave').css({opacity: '.35'});  //addClass('ui-state-disabled'); 
+                ele.find('.btnRecSave').css({opacity: '.35'});  //addClass('ui-state-disabled'); 
             }else{
-                ele.find('#btnRecSave').css({opacity: '1'}); //.removeClass('ui-state-disabled'); // ui-button-disabled
+                ele.find('.btnRecSave').css({opacity: '1'}); //.removeClass('ui-state-disabled'); // ui-button-disabled
             }
         
         }
@@ -4364,10 +4363,10 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
         if(this._as_dialog && this._as_dialog.dialog('instance')){
 
             let $dlg = this._as_dialog.dialog('widget');
-            $('<span>', {id: 'btn_Fullscreen'}).appendTo($dlg.find('.ui-dialog-titlebar'));
-            $('<span>', {id: 'btn_Standard'}).appendTo($dlg.find('.ui-dialog-titlebar'));
+            $('<span>', {class: 'btn_Fullscreen'}).appendTo($dlg.find('.ui-dialog-titlebar'));
+            $('<span>', {class: 'btn_Standard'}).appendTo($dlg.find('.ui-dialog-titlebar'));
 
-            $dlg.find('#btn_Fullscreen').button({label:window.hWin.HR('Fullscreen')}).css({
+            $dlg.find('.btn_Fullscreen').button({label:window.hWin.HR('Fullscreen')}).css({
                 margin: '-0.9em 0 0 0',
                 right: '12.5em',
                 top: '45%',
@@ -4378,7 +4377,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                 that._setDialogSize(true);
             });
 
-            $dlg.find('#btn_Standard').button({label:window.hWin.HR('Standard')}).css({
+            $dlg.find('.btn_Standard').button({label:window.hWin.HR('Standard')}).css({
                 margin: '-0.9em 0 0 0',
                 right: '5.5em',
                 top: '45%',
@@ -6398,6 +6397,12 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
             }
 
             that._record_history = response.data.history;
+            
+            if(window.hWin.HEURIST4.util.isempty(that._record_history)){
+                that._check_history = false;
+                that._getRecordHistory();
+                return;
+            }
 
             let rst_fields = [];
             let fld_name_css = "font-size: 14px;";
@@ -7120,7 +7125,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                 $dlg.dialog('close');
 
                 if(struct_changes){
-                    $('#btnRecSaveAndClose_rts').click();
+                    that.element.find('.btnRecSaveAndClose_rts').trigger('click');
                     setTimeout(() => {that._switchToDataMode(true);}, 2500);
                 }else{
                     that._saveEditAndClose(null, 'close_rst');

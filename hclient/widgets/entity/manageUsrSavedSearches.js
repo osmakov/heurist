@@ -272,13 +272,13 @@ $.widget( "heurist.manageUsrSavedSearches", $.heurist.manageEntity, {
             ele.editing_input('setValue', ugl_GroupID);
             //hide save button
             if(this._toolbar){
-                this._toolbar.find('#btnRecSave').css('visibility', 'visible');
+                this._toolbar.find('.btnRecSave').css('visibility', 'visible');
             }
         }else
         //hide after edit init btnRecRemove for dbowner (user #2)
         if(this._currentEditID==2 || !window.hWin.HAPI4.is_admin()){
             var ele = this._toolbar;
-            ele.find('#btnRecRemove').hide();
+            ele.find('.btnRecRemove').hide();
         }
         
         if(!window.hWin.HAPI4.is_admin()){

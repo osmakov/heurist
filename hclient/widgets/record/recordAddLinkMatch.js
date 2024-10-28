@@ -194,7 +194,7 @@ $.widget( "heurist.recordAddLinkMatch", $.heurist.recordAction, {
         
         let fieldSelect = $(event.target);
         
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), true);
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), true);
         
         if(fieldSelect.attr('id')=='sel_fieldtype_source'){
 
@@ -336,7 +336,7 @@ $.widget( "heurist.recordAddLinkMatch", $.heurist.recordAction, {
                 isEnabled = (termID>0);
             }                
         }  
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), !isEnabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), !isEnabled );
     }, 
     
     _getRecordsScope: function()
@@ -454,8 +454,8 @@ $.widget( "heurist.recordAddLinkMatch", $.heurist.recordAction, {
             lab1 = 'Create links';
             lab2 = 'Cancel';
         }
-        this.element.parents('.ui-dialog').find('#btnDoAction').button({label:window.hWin.HR(lab1)});
-        this.element.parents('.ui-dialog').find('#btnCancel').button({label:window.hWin.HR(lab2)});
+        this.element.parents('.ui-dialog').find('.btnDoAction').button({label:window.hWin.HR(lab1)});
+        this.element.parents('.ui-dialog').find('.btnCancel').button({label:window.hWin.HR(lab2)});
     }
     
         

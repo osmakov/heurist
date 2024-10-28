@@ -161,8 +161,8 @@ $.widget("heurist.baseConfig", {
             this.element.find('.ui-heurist-header').text(this.options.title);
 
             // bottom bar buttons
-            this.save_btn = this.element.find('#btnSave').button();
-            this.close_btn = this.element.find('#btnClose').button();
+            this.save_btn = this.element.find('.btnSave').button();
+            this.close_btn = this.element.find('.btnClose').button();
 
             this._on(this.save_btn, {
                 click: () => {
@@ -208,7 +208,7 @@ $.widget("heurist.baseConfig", {
 
         return [{
             text:window.hWin.HR('Close'), 
-            id:'btnClose',
+            class:'btnClose',
             css:{'float':'right','margin-left':'30px'}, 
             click: function() { 
                 that._closeHandler(false, false, null);
@@ -216,7 +216,7 @@ $.widget("heurist.baseConfig", {
         },
         {
             text:window.hWin.HR('Save'),
-            id:'btnSave',
+            class:'btnSave',
             css:{'float':'right'},
             click: function() {
                 that._closeHandler(true, false, null);
@@ -291,8 +291,8 @@ $.widget("heurist.baseConfig", {
             window.hWin.HEURIST4.ui.initDialogHintButtons(this._as_dialog, null, helpURL, false);    
         }
 
-        this.save_btn = this._as_dialog.find('#btnSave');
-        this.close_btn = this._as_dialog.find('#btnClose');
+        this.save_btn = this._as_dialog.find('.btnSave');
+        this.close_btn = this._as_dialog.find('.btnClose');
     },
 
     //

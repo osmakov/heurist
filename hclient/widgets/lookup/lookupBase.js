@@ -108,7 +108,7 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
             this._on( this.recordList, {
                 resultlistonselect: function(event, selected_recs){
                     window.hWin.HEURIST4.util.setDisabled(
-                        this.element.parents('.ui-dialog').find('#btnDoAction'),
+                        this.element.parents('.ui-dialog').find('.btnDoAction'),
                         selected_recs && selected_recs.length() < 1
                     );
                 },
@@ -188,7 +188,7 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         this._setupSettings();
 
         // By default action button is disabled
-        window.hWin.HEURIST4.util.setDisabled(this.element.parents('.ui-dialog').find('#btnDoAction'), true);
+        window.hWin.HEURIST4.util.setDisabled(this.element.parents('.ui-dialog').find('.btnDoAction'), true);
 
         return this._super();
     },

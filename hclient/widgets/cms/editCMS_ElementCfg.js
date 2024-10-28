@@ -782,14 +782,13 @@ function editCMS_ElementCfg( element_cfg, _layout_content, _layout_container, $c
                 
         let codeEditorBtns = [
                     {text:window.hWin.HR('Cancel'), 
-                        id:'btnCancel',
+                        class:'btnCancel',
                         css:{'float':'right','margin-left':'30px','margin-right':'20px'}, 
                         click: function() { 
                             codeEditorDlg.dialog( "close" );
                     }},
                     {text:window.hWin.HR('Apply'), 
-                        id:'btnDoAction',
-                        class:'ui-button-action',
+                        class:'ui-button-action btnDoAction',
                         //disabled:'disabled',
                         css:{'float':'right'}, 
                         click: function() { 

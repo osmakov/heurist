@@ -486,7 +486,7 @@ $.widget( "heurist.recordAdd", $.heurist.recordAccess, {
     {
         let isdisabled = !this.getSelectedParameters( false );
 
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), isdisabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), isdisabled );
         window.hWin.HEURIST4.util.setDisabled( this._$('#btnAddRecordInNewWin'), isdisabled);
         window.hWin.HEURIST4.util.setDisabled( this._$('#btnAddRecord'), isdisabled);
         

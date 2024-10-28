@@ -153,7 +153,7 @@ $.widget( "heurist.manageDefFileExtToMimetype", $.heurist.manageEntity, {
                 click: function() { that._initEditForm_step3(that._currentEditID) }},  //reload edit form*/
                       
                 {showLabel:true, icon:'ui-icon-plus',text:window.hWin.HR('Add New File Type'),
-                      css:{'margin-right':'0.5em','float':'left'}, id:'btnAddButton',
+                      css:{'margin-right':'0.5em','float':'left'}, class:'btnAddButton',
                       click: function() { that._onActionListener(null, 'add'); }},
                       
                       
@@ -162,10 +162,10 @@ $.widget( "heurist.manageDefFileExtToMimetype", $.heurist.manageEntity, {
                       click: function() { 
                           that.closeDialog(); 
                       }},
-                {text:window.hWin.HR('Drop Changes'), id:'btnRecCancel', 
+                {text:window.hWin.HR('Drop Changes'), class:'btnRecCancel', 
                       css:{'margin-left':'0.5em','float':'right'},
                       click: function() { that._initEditForm_step3(that._currentEditID) }},  //reload edit form
-                {text:window.hWin.HR('Save'), id:'btnRecSave',
+                {text:window.hWin.HR('Save'), class:'btnRecSave',
                       accesskey:"S",
                       css:{'font-weight':'bold','float':'right'},
                       click: function() { that._saveEditAndClose( null, 'none' ); }},

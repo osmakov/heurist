@@ -140,7 +140,7 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         this.getKeywords('assigned');
         
         // Add msg next to save button
-        this.element.parents('.ui-dialog').find('#btnDoAction').before('<span id="save-msg" style="display:none;font-size:1.2em;">Add or Uncheck Selections</span>');        
+        this.element.parents('.ui-dialog').find('.btnDoAction').before('<span id="save-msg" style="display:none;font-size:1.2em;">Add or Uncheck Selections</span>');        
 
         // NEXT >> handler
         this._on($('#assoc_next'), {
@@ -1257,11 +1257,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
     disableUpdateBtn: function(){
 
         if($('.mpce').find('input:checked').not('.check-all').length > 0 || this.assoc_selected.length > 0){
-            $($('.mpce')[0].parentNode.parentNode).find('#btnDoAction').attr('disabled', true).css({'cursor': 'default', 'opacity': '0.5'});
+            $($('.mpce')[0].parentNode.parentNode).find('.btnDoAction').attr('disabled', true).css({'cursor': 'default', 'opacity': '0.5'});
             $($('.mpce')[0].parentNode.parentNode).find('#save-msg').css({'margin':'10px', 'display':'inline-block'});
         }
         else{
-            $($('.mpce')[0].parentNode.parentNode).find('#btnDoAction').attr('disabled', false).css({'cursor': 'default', 'opacity': '1'});
+            $($('.mpce')[0].parentNode.parentNode).find('.btnDoAction').attr('disabled', false).css({'cursor': 'default', 'opacity': '1'});
             $($('.mpce')[0].parentNode.parentNode).find('#save-msg').css({'margin':'10px', 'display':'none'});
         }
     },

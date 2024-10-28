@@ -73,10 +73,10 @@ $.widget( "heurist.searchByEntity", {
                 +'<div style="top:37px;position:absolute;width:100%">' 
                     +'<div class="ui-heurist-title favorites" style="width: 100%;padding:12px 0px 0px 6px;">'
                                 +window.hWin.HR('Favorites')+'</div>'
-                    +'<ul class="by-selected" style="list-style-type:none;margin:0;padding:6px"/>'
+                    +'<ul class="by-selected" style="list-style-type:none;margin:0;padding:6px"></ul>'
                     +'<div class="ui-heurist-title" style="width: 100%;border-top:1px gray solid; padding:12px 0px 0px 6px;">'
                                 +window.hWin.HR('By Usage')+'</div>'
-                    +'<ul class="by-usage" style="list-style-type:none;margin:0;padding:6px"/>'
+                    +'<ul class="by-usage" style="list-style-type:none;margin:0;padding:6px"></ul>'
                     )
                 .appendTo(this.element);
 
@@ -99,8 +99,7 @@ $.widget( "heurist.searchByEntity", {
                                         'height':this.options.by_favorites?'auto':'10px'})
                                     .appendTo( this.element );
             //Main label
-            let $d2 = $('<div>').css('float','left');
-            $('<label>').text(window.hWin.HR('Entities')).appendTo($d2);
+            let $d2 = $(`<div><span>${window.hWin.HR('Entities')}</span></div>`).css('float','left');
             
             //quick filter by entity  "by usage" 
             if(this.options.by_usage)

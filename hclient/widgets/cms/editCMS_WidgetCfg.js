@@ -57,14 +57,13 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
 
         let buttons= [
             {text:window.hWin.HR('Cancel'), 
-                id:'btnCancel',
+                class:'btnCancel',
                 css:{'float':'right','margin-left':'30px','margin-right':'20px'}, 
                 click: function() { 
                     $dlg.dialog( "close" );
             }},
             {text:window.hWin.HR('Apply'), 
-                id:'btnDoAction',
-                class:'ui-button-action',
+                class:'ui-button-action btnDoAction',
                 //disabled:'disabled',
                 css:{'float':'right'}, 
                 click: function() { 

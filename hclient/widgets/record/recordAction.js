@@ -164,7 +164,7 @@ $.widget( "heurist.recordAction", $.heurist.baseAction, {
     _onRecordScopeChange: function () 
     {
         let isdisabled = (this.selectRecordScope.val()=='');
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), isdisabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), isdisabled );
         
         return isdisabled;
     },

@@ -1054,7 +1054,7 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
         //show hide buttons in treeview
         let isEditOpen = this.editForm.is(':visible');
         
-        this.editForm.find('#btnCloseEditor_rts').css('display', 
+        this.editForm.find('.btnCloseEditor_rts').css('display', 
                 (isEditOpen)?'block':'none');
                 
         //show/hide action buttons in tree
@@ -1070,10 +1070,10 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
         
         let isChanged = this.editForm.is(':visible') 
                         && this._editing && this._editing.isModified();
-        this.editForm.find('#btnRecSaveAndClose_rts').css('display', 
+        this.editForm.find('.btnRecSaveAndClose_rts').css('display', 
                 (isChanged)?'block':'none');
-           
-        let btnSave = $(document).find('#btnRecSave');
+console.log('onEditFormChange @todo check buttons!!!');
+        let btnSave = $(document).find('.btnRecSave'); //CHECK!!!
         let btnClose = $(btnSave[0].parentNode).find('button:contains("Close")')[1];
         if (isChanged){
             btnSave.prop('disabled', true);
@@ -1087,7 +1087,7 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
         }
 		   
         if(this._toolbar){
-            this._toolbar.find('#btnRecPreview_rts').css('display', 
+            this._toolbar.find('.btnRecPreview_rts').css('display', 
                     (isChanged)?'none':'block');
         }
             
@@ -1128,11 +1128,11 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
 
             let btns = [                       
                 {text:window.hWin.HR('Refresh Preview'),
-                    css:{'float':'left',display:'block'}, id:'btnRecPreview_rts',
+                    css:{'float':'left',display:'block'}, class:'btnRecPreview_rts',
                     click: function() { that._showRecordEditorPreview(); }},
                     
                 {text:window.hWin.HR(this.options.external_toolbar?'Back to Whole Form':'Close Dialog'), 
-                      css:{'float':'right'}, id:'btnClose_rts',
+                      css:{'float':'right'}, class:'btnClose_rts',
                       click: function() { 
                           that.closeDialog(); 
                       }},
@@ -1968,15 +1968,16 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
             }
         }
 
-        let btnCancel = $('<button>').attr('id', 'btnCloseEditor_rts')
+        let btnCancel = $('<button>')
                 .button({label:window.hWin.HR('Close')})
+                .addClass('btnCloseEditor_rts')
                 .css({'margin-right':'20px','float':'right',display:'none','margin-top':'2px'})
                 .appendTo(bottom_div);
 
-        let btnSave = $('<button>').attr('id', 'btnRecSaveAndClose_rts')
+        let btnSave = $('<button>')
                 .button({label:window.hWin.HR('Save')})
                 .css({'font-weight':'bold','float':'right',display:'none','margin-top':'2px','margin-right':'15px'})
-                .addClass('ui-button-action')
+                .addClass('ui-button-action btnRecSaveAndClose_rts')
                 .appendTo(bottom_div);
             
         this._on( btnCancel,{click: function() { 
@@ -2756,11 +2757,11 @@ $.widget( "heurist.manageDefRecStructure", $.heurist.manageEntity, {
         inpt = inpt[0];
 
         if(is_enable){
-            inpt.find('option[value^="dropdown"]').removeProp('disabled');
-            inpt.find('option[value^="browseonly"]').removeProp('disabled');
+            inpt.find('option[value^="dropdown"]').prop('disabled',false); //removeProp('disabled');
+            inpt.find('option[value^="browseonly"]').prop('disabled',false);
         }else{
-            inpt.find('option[value^="dropdown"]').prop('disabled','disabled');
-            inpt.find('option[value^="browseonly"]').prop('disabled','disabled');
+            inpt.find('option[value^="dropdown"]').prop('disabled',true);
+            inpt.find('option[value^="browseonly"]').prop('disabled',true);
         }
         inpt.parent().addClass('selectmenu-parent');
 

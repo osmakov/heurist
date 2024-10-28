@@ -168,7 +168,7 @@ $.widget( "heurist.recordDelete", $.heurist.recordAction, {
                         
                         that.recordList.resultList('updateResultSet', resdata, null); //render
 
-                        window.hWin.HEURIST4.util.setDisabled( that.element.parents('.ui-dialog').find('#btnDoAction'), false );
+                        window.hWin.HEURIST4.util.setDisabled( that.element.parents('.ui-dialog').find('.btnDoAction'), false );
                         
                     }else {
                         window.hWin.HEURIST4.msg.showMsgErr(response);
@@ -276,7 +276,7 @@ $.widget( "heurist.recordDelete", $.heurist.recordAction, {
             return;
         }   
         
-        //window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), true );
+        //window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), true );
             
             let scope = [], 
             rec_RecTypeID = 0;

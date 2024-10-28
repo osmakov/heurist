@@ -120,10 +120,9 @@ $.widget( "heurist.recordTag", $.heurist.recordAction, {
         
         if(this.options.modes.indexOf('assign')>=0)
             res.push({text:window.hWin.HR('Add tags'),
-                    id:'btnDoAction2',
                     disabled:'disabled',
                     css:{'float':'right'},
-                    class: 'ui-button-action',
+                    class: 'ui-button-action btnDoAction2',
                     click: function() { 
                             that.doAction('assign'); 
                     }});
@@ -226,8 +225,8 @@ $.widget( "heurist.recordTag", $.heurist.recordAction, {
         let isdisabled = (this.options.modes.indexOf('bookmark_url')<0 && this.selectRecordScope.val()=='') 
                         || !(this._tags_selection.length>0);
         
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction2'), isdisabled );
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), isdisabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction2'), isdisabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), isdisabled );
 
     },
 

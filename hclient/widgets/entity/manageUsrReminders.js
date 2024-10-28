@@ -227,7 +227,7 @@ $.widget( "heurist.manageUsrReminders", $.heurist.manageEntity, {
                 
                 let btn_save;
                 if(that._toolbar){
-                    btn_save = that._toolbar.find('#btnRecSave');
+                    btn_save = that._toolbar.find('.btnRecSave');
                 }
                 
                 let res = ele.editing_input('getValues'); 

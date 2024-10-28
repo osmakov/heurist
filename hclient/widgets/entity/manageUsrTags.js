@@ -808,7 +808,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                         +'Confirm&nbsp;and&nbsp;assign&nbsp;new&nbsp;Tag</div>')
                             .appendTo(that.list_div)
                                 .click( function(event){
-                                    btn_add.click();
+                                    btn_add.trigger('click');
                                     that.list_div.hide();
                                 });
                         that.list_div.show()

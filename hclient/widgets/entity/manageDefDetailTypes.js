@@ -718,7 +718,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
         this._super();
         
         if(this._toolbar){
-            this._toolbar.find('#btnRecSave').button({label:window.hWin.HR(this._currentEditID>0?'Save':'Create New Field')});
+            this._toolbar.find('.btnRecSave').button({label:window.hWin.HR(this._currentEditID>0?'Save':'Create New Field')});
         }
         let dty_DetailTypeGroupID = this.options.dtg_ID;
         
@@ -1038,7 +1038,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
             }
 
             //add extra click functionalities to save buttons
-            this._toolbar.find('#btnSaveExt').show().on('click', function(){
+            this._toolbar.find('.btnSaveExt').show().on('click', function(){
                 window.hWin.HAPI4.save_pref('edit_rts_open_formlet_after_add', 1);
             }); 
 
@@ -1670,6 +1670,9 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                     let resource_default = this._editing.getFieldByName('rst_DefaultValue_resource');
                     let default_val = this._editing.getValue('rst_DefaultValue')[0];
 
+                    
+console.log('1>>>', pointer_mode);                    
+                    
                     // Setup default value
                     resource_default.editing_input('fset','rst_PtrFilteredIDs', fields['dty_PtrTargetRectypeIDs']);
                     resource_default.editing_input('fset','rst_PointerMode', 'dropdown_add');
@@ -1686,13 +1689,15 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                         let inpt = pointer_mode.editing_input('getInputs');
                         inpt = inpt[0];
 
+console.log('2>>>', inpt.val());                    
+
                         if(is_enable){
-                            inpt.find('option[value^="dropdown"]').removeProp('disabled');
-                            inpt.find('option[value^="browseonly"]').removeProp('disabled');
+                            inpt.find('option[value^="dropdown"]').prop('disabled',false);//.removeProp('disabled');
+                            inpt.find('option[value^="browseonly"]').prop('disabled',false);
                             inpt.val('dropdown_add');
                         }else{
-                            inpt.find('option[value^="dropdown"]').prop('disabled','disabled');
-                            inpt.find('option[value^="browseonly"]').prop('disabled','disabled');
+                            inpt.find('option[value^="dropdown"]').prop('disabled',true); //'disabled'
+                            inpt.find('option[value^="browseonly"]').prop('disabled',true);
                             inpt.val('addorbrowse');
                         }
                         inpt.hSelect('refresh');
@@ -1742,6 +1747,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
 
                             let cur_val = pointer_mode_inpt.val(); // retain current value
 
+console.log('3>>>', cur_val);                                  
                             // Reset mode selector
                             if(pointer_mode_inpt.hSelect('instance')!=undefined){
 
@@ -1854,10 +1860,10 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                 if(!cannotEdit){
 
                     if($Db.rst_usage(res.dty_ID).length == 0){ // check if in use
-                        msg += '<span id="btnDelete">DELETE</span> <span style="margin-left: 20px">Delete the existing base field (it has not been used)</span><br><br>';
+                        msg += '<span class="btnDelete">DELETE</span> <span style="margin-left: 20px">Delete the existing base field (it has not been used)</span><br><br>';
                     }
 
-                    msg += '<span id="btnRename">RENAME</span> <span style="margin-left: 20px; display: inline-block; vertical-align: middle;">'
+                    msg += '<span class="btnRename">RENAME</span> <span style="margin-left: 20px; display: inline-block; vertical-align: middle;">'
                             + 'Rename the existing base field so you can use this name for the new field<br>'
                             + '(this will not affect the name of the field in any other record type)'
                         + '</span><br><br>'
@@ -1868,7 +1874,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
 
                 let $dlg = window.hWin.HEURIST4.msg.showMsgDlg(msg, null, {title: 'Name already in use'}, {default_palette_class: 'ui-heurist-design', dialogId: 'basefield-dup-name'});
 
-                $dlg.find('#btnDelete').button().css('width', '50px').on('click', function(){
+                $dlg.find('.btnDelete').button().css('width', '50px').on('click', function(){
 
                     let request = {
                         'a'          : 'delete',
@@ -1896,7 +1902,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                     );
                 });
 
-                $dlg.find('#btnRename').button().css('width', '50px').on('click', function(){
+                $dlg.find('.btnRename').button().css('width', '50px').on('click', function(){
 
                     let $rdlg = window.hWin.HEURIST4.msg.showMsgDlg('Please enter a new name: <input class="text ui-corner-all" style="width: 150px" />', 
                         null, null, {
@@ -2169,9 +2175,8 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                 
                 btn_array.splice(1, 0, {
                     text:window.hWin.HR('Create and customise new field'),
-                    id:'btnSaveExt',
                     css:{'display':'none','float':'right',margin:'.5em .8em .5em .4em'},
-                    class:'ui-button-action',
+                    class:'ui-button-action btnSaveExt',
                     click: function() {
                         that._saveEditAndClose();
                     }

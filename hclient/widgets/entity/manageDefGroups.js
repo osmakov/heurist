@@ -130,11 +130,11 @@ $.widget( "heurist.manageDefGroups", $.heurist.manageEntity, {
             //specify add new/save order buttons above record list
             let btn_array = [
                 {showLabel:true, icon:'ui-icon-plus',label:window.hWin.HR('Add'),
-                      css:{'margin':'5px','float':'left',padding:'3px'}, id:'btnAddButton',
+                      css:{'margin':'5px','float':'left',padding:'3px'}, class:'btnAddButton',
                       click: function() { that._onActionListener(null, 'add'); }},
 
                 {label:window.hWin.HR('Save'),
-                          css:{'margin-right':'0.5em','float':'left',display:'none'}, id:'btnApplyOrder',
+                          css:{'margin-right':'0.5em','float':'left',display:'none'}, class:'btnApplyOrder',
                       click: function() { that._onActionListener(null, 'save-order'); }}
                       ];
 
@@ -277,7 +277,7 @@ $.widget( "heurist.manageDefGroups", $.heurist.manageEntity, {
                 let recordset = this.getRecordSet();
                 let that = this;
                 window.hWin.HEURIST4.dbs.applyOrder(recordset, this._entityPrefix, function(res){
-                    that._toolbar.find('#btnApplyOrder').hide();
+                    that._toolbar.find('.btnApplyOrder').hide();
                     that._triggerRefresh(this._entityPrefix);
                 });
                 

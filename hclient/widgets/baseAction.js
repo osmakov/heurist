@@ -195,24 +195,27 @@ $.widget( "heurist.baseAction", {
     //
     // array of button defintions
     //
+    // id is not applicable since buttons with the smae id can be in different popup dialogs
+    // in this case jquery handles events wrong
+    // we indetify buttons by class name: btnDoAction, btnCancel etc
+    //
     _getActionButtons: function(){
-
+        
         let that = this;        
         return [
                  {text:window.hWin.HR('Cancel'), 
-                    id:'btnCancel',
+                    class:'btnCancel',
                     css:{'float':'right','margin-left':'30px','margin-right':'20px'}, 
                     click: function() { 
                         that.closeDialog();
                     }},
                  {text:window.hWin.HR('Go'),
-                    id:'btnDoAction',
-                    class:'ui-button-action',
+                    class:'ui-button-action btnDoAction',
                     disabled:'disabled',
                     css:{'float':'right'},  
-                    click: function() { 
+                    click:function() { 
                             that.doAction(); 
-                    }}
+                    }}  
                  ];
     },
     
@@ -240,7 +243,8 @@ $.widget( "heurist.baseAction", {
                     .click(options.click)
                     .appendTo(container);
         if(options.id){
-            btn.attr('id', options.id);
+            //btn.attr('id', options.id); 
+            btn.addClass(options.id);
         }
         if(options.css){
             btn.css(options.css);

@@ -240,7 +240,7 @@ $.widget( "heurist.recordTemplate", $.heurist.recordAction, {
                     let node = data.node;
                     let fieldIds = node.tree.getSelectedNodes(false);
                     let isdisabled = fieldIds.length<1;
-                    window.hWin.HEURIST4.util.setDisabled( that.element.parents('.ui-dialog').find('#btnDoAction'), isdisabled );
+                    window.hWin.HEURIST4.util.setDisabled( that.element.parents('.ui-dialog').find('.btnDoAction'), isdisabled );
                 },
                 click: function(e, data){
 

@@ -101,9 +101,8 @@ $.widget( "heurist.recordAddLink", $.heurist.recordAction, {
             //enable for relationships only
             res.splice(1, 0, 
                  {text:window.hWin.HR('Edit attributes'),
-                    id:'btnDoAction2',
                     disabled:'disabled',
-                    class: 'ui-button-action',
+                    class: 'ui-button-action btnDoAction2',
                     css:{'float':'right'}, //'font-size':'0.82em', 'margin-top':'0.6em', 'padding':'6.1px' 
                     click: function() { 
                             that._openRelationRecordEditor = true;
@@ -440,8 +439,8 @@ $.widget( "heurist.recordAddLink", $.heurist.recordAction, {
             isEnabled = (termID>0);
         }                
                         
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction'), !isEnabled );
-        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('#btnDoAction2'), !isEnabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), !isEnabled );
+        window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction2'), !isEnabled );
         
     }, 
     

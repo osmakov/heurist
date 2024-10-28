@@ -893,7 +893,7 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 }else{
                     let rdiv = this.recordList.find('.recordDiv:first');
                     if(rdiv.length){
-                        rdiv.click();
+                        rdiv.trigger('click');
                     }else if(window.hWin.HEURIST4.util.isFunction(this.options.onSelect)){
                         this.options.onSelect.call( this, null );
                     }
@@ -1561,7 +1561,7 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
 
                 btns[0].text = 'Close';
                 btns[0].css['visibility'] = 'visible';
-                btns[0].class = 'alwaysvisible';
+                btns[0].class = btns[0].class+' alwaysvisible';
 
                 btns[0].click = function(){
                     if(that.defaultBeforeClose()){
@@ -1625,7 +1625,7 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
 
         if(this._toolbar && this.options.edit_mode=='editonly'){
             let isChanged = this._editing.isModified();
-            this._toolbar.find('#btnEditAll').css('visibility', isChanged?'hidden':'visible');
+            this._toolbar.find('.btnEditAll').css('visibility', isChanged?'hidden':'visible');
         }
 
     },
@@ -1840,11 +1840,9 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
 
         let $dlg, buttons = [
             {text:window.hWin.HR('Cancel'),
-                //id:'btnRecCancel',
                 css:{'float':'right',margin:'.5em .4em .5em 0'},  
                 click: function() { $dlg.dialog( "close" ); }},
             {text:window.hWin.HR('Merge'),
-                //id:'btnRecSave',
                 css:{'float':'right',margin:'.5em .4em .5em 0'},  
                 class: 'ui-button-action',
                 click: function() { 

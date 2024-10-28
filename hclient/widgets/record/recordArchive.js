@@ -77,7 +77,7 @@ $.widget( "heurist.recordArchive", $.heurist.recordAction, {
         this._on( this.recordList, {        
                 "resultlistonselect": function(event, selected_recs){
                             window.hWin.HEURIST4.util.setDisabled( 
-                                this.element.parents('.ui-dialog').find('#btnDoAction'), 
+                                this.element.parents('.ui-dialog').find('.btnDoAction'), 
                                 (selected_recs && selected_recs.length()!=1));
                         },
                 "resultlistondblclick": function(event, selected_recs){

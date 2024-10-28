@@ -521,21 +521,21 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
             ele.editing_input('setValue', ugl_GroupID);
             //hide save button
             if(this._toolbar){
-                this._toolbar.find('#btnRecSave').css('visibility', 'visible');
+                this._toolbar.find('.btnRecSave').css('visibility', 'visible');
             }
         }else
         //hide after edit init btnRecRemove for dbowner (user #2)
         if(this._currentEditID==2 || !window.hWin.HAPI4.is_admin()){
             let ele = this._toolbar;
-            ele.find('#btnRecRemove').hide();
+            ele.find('.btnRecRemove').hide();
         }
         
-        let btnTrOwner = this._toolbar.find('#btnTransferOwnership');
+        let btnTrOwner = this._toolbar.find('.btnTransferOwnership');
         
         if(this._currentEditID>0 && this._currentEditID!=2 && window.hWin.HAPI4.user_id()==2){
             //add ownershup transfer button
             if(btnTrOwner.length==0){
-                btnTrOwner = $('<button id="btnTransferOwnership">')
+                btnTrOwner = $('<button class="btnTransferOwnership">')
                         .appendTo(this._toolbar);
             }
             btnTrOwner.button({

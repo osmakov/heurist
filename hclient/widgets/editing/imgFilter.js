@@ -42,20 +42,19 @@ function imgFilter( current_cfg, main_callback, $container=null ){
             //open as popup
             let buttons= [
                 {text:window.hWin.HR('Cancel'), 
-                    id:'btnCancel',
+                    class:'btnCancel',
                     css:{'float':'right','margin-left':'10px','margin-right':'20px'}, 
                     click: function() { 
                         $dlg.dialog( "close" );
                 }},
                 {text:window.hWin.HR('Reset'), 
-                    id:'btnReset',
+                    class:'btnReset',
                     css:{'float':'right','margin-left':'10px'}, 
                     click: function() { 
                         _resetValues();
                 }},
                 {text:window.hWin.HR('Apply'), 
-                    id:'btnDoAction',
-                    class:'ui-button-action',
+                    class:'ui-button-action btnDoAction',
                     //disabled:'disabled',
                     css:{'float':'right'}, 
                     click: function() { 

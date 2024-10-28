@@ -36,7 +36,7 @@ $.widget( "heurist.recordBookmark", $.heurist.recordAction, {
             .addClass('heurist-helper1')
             .html(window.hWin.HR('recordUnbookmark_hint'));
         
-        this.element.parents('.ui-dialog').find('#btnDoAction').attr('label', window.hWin.HR('Remove Bookmarks'));
+        this.element.parents('.ui-dialog').find('.btnDoAction').attr('label', window.hWin.HR('Remove Bookmarks'));
         
         return this._super();
     },

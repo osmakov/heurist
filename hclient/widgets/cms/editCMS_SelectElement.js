@@ -77,14 +77,13 @@ function editCMS_SelectElement( callback ){
 
     let buttons= [
         {text:window.hWin.HR('Cancel'), 
-            id:'btnCancel',
+            class:'btnCancel',
             css:{'float':'right','margin-left':'30px','margin-right':'20px'}, 
             click: function() { 
                 $dlg.dialog( "close" );
         }},
         {text:window.hWin.HR('Insert'), 
-            id:'btnDoAction',
-            class:'ui-button-action',
+            class:'ui-button-action btnDoAction',
             disabled:'disabled',
             css:{'float':'right'}, 
             click: function() { 
@@ -156,7 +155,7 @@ function editCMS_SelectElement( callback ){
                 });
 
                 sel.on('change',function(e){
-                    window.hWin.HEURIST4.util.setDisabled( $dlg.parents('.ui-dialog').find('#btnDoAction'), false );
+                    window.hWin.HEURIST4.util.setDisabled( $dlg.parents('.ui-dialog').find('.btnDoAction'), false );
                     let sel = e.target;
                     let t_name = $(sel).val();
                     selected_element  = t_name;
