@@ -235,7 +235,7 @@ function showLoginDialog(isforsed, callback, parentwin, dialog_id){
                     $dlg.find('#login_guest').css({'display': 'block', 'margin-left':'133px'});
                 }
 
-                $dlg.find('#btn_guest_auth').button().click(()=>doRegister( parentwin, true ));
+                $dlg.find('#btn_guest_auth').button().on('click',()=>doRegister( parentwin, true ));
             }
                 
             $dlg.find('#span-database').text(window.hWin.HAPI4.database);

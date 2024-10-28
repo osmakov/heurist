@@ -290,14 +290,11 @@ class HSystemMgr {
           window.hWin.HAPI4.callserver(
               'usr_info',
               { a: 'verify_credentials', permissions: requiredPermission },
-              __response_handler   //.bind(this)   //, callback, password_protected, password_entered, requiredLevel
+              __response_handler   //, callback, password_protected, password_entered, requiredLevel
           );
       }      
 
   }
-  
-
-
   
   repositoryAction(request, callback) {
       window.hWin.HAPI4.callserver('repoController', request, callback);

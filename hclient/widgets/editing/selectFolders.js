@@ -38,7 +38,7 @@ $.widget( "heurist.selectFolders", $.heurist.selectMultiValues, {
 
         let ent_header = this.element.find('.ent_header');        
 
-        $('<div>').button({label:window.hWin.HR('New folder')}).click(
+        $('<div>').button({label:window.hWin.HR('New folder')}).on('click',
             function() {
                 let node = that._treeview.fancytree('getRootNode');
                 node.editCreateNode("child", "new folder");                    
@@ -91,7 +91,7 @@ $.widget( "heurist.selectFolders", $.heurist.selectMultiValues, {
 
         /*
         $('<label><input type="checkbox">Show system folders</label>').css({'margin-left':'20px'}).appendTo(ent_header);
-        ent_header.find('input').click(
+        ent_header.find('input').on('click',
         function(event){
         that._show_system_folders = $(event.target).is(':checked');
 

@@ -240,8 +240,12 @@ $.widget( "heurist.baseAction", {
         let btn_opts = {label:options.label || options.text, icon:options.icon || options.icons, title:options.title};
         
         let btn = $('<button>').button(btn_opts)
-                    .click(options.click)
                     .appendTo(container);
+
+        if(window.hWin.HEURIST4.util.isFunction(options.click)){
+            btn.on('click', options.click);
+        }                    
+                    
         if(options.id){
             //btn.attr('id', options.id); 
             btn.addClass(options.id);

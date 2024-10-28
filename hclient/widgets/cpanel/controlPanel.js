@@ -197,7 +197,7 @@ $.widget( "heurist.controlPanel", {
                         window.open(url, '_blank');
                     }
                 }
-                $(event.target).blur();//remove focus
+                $(event.target).trigger('blur');//remove focus
             })
             .addClass('ui-heurist-header2')
             .uniqueId()

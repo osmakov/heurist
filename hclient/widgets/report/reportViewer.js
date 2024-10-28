@@ -292,7 +292,7 @@ $.widget( "heurist.reportViewer", {
                     }
                 });        
         }
-        file_upload.click();
+        file_upload.trigger('click');
     },
 
     //

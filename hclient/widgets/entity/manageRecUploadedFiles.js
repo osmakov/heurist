@@ -1465,7 +1465,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                             /*that._editing.setFieldValueByName2('ulf_ExternalFileReference', response.data, false);
                             let ele = that._editing.getFieldByName('ulf_ExternalFileReference');
                             if(ele.editing_input('instance') !== undefined){ // trigger blur event
-                                ele.editing_input('getInputs')[0].blur();
+                                ele.editing_input('getInputs')[0].trigger('blur');
                             }*/
 
                             that._afterExternalUpload(response.data);

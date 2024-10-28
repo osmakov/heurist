@@ -288,7 +288,7 @@ $.widget( "heurist.ruleBuilder", {
         });
 
         }
-        this._arr_rectypes = $.unique(arr_rectypes);
+        this._arr_rectypes = $.uniqueSort(arr_rectypes);
         
         //make list of options for selector
         // relation than links

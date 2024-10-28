@@ -1631,7 +1631,7 @@ mapDraw.js initial_wkt -> parseWKT -> GeoJSON -> _loadGeoJSON (as set of separat
                 let rectypes2 = recordset2.getRectypes();
                 if(!$.isEmptyObject(rectypes2)) {
                     jQuery.merge( rectypes2, rectypes );
-                    rectypes = jQuery.unique( rectypes2 );
+                    rectypes = jQuery.uniqueSort( rectypes2 );
                 }
             }else{
                 rectypes = recordset2.getRectypes();
@@ -1698,14 +1698,14 @@ mapDraw.js initial_wkt -> parseWKT -> GeoJSON -> _loadGeoJSON (as set of separat
             
             /*var fields2 = recordset2.getFields();
             jQuery.merge( fields2, fields );
-            fields2 = jQuery.unique( fields2 );*/
+            fields2 = jQuery.uniqueSort( fields2 );*/
 
             let rectypes2 = recordset2.getRectypes();
             if(!rectypes2) {
                 rectypes2 = rectypes;
             }else{
                 jQuery.merge( rectypes2, rectypes );
-                rectypes2 = jQuery.unique( rectypes2 );
+                rectypes2 = jQuery.uniqueSort( rectypes2 );
             }
             
             let relationship2 = recordset2.getRelationship();
@@ -1713,7 +1713,7 @@ mapDraw.js initial_wkt -> parseWKT -> GeoJSON -> _loadGeoJSON (as set of separat
                 relationship2 = relationship;   
             }else{
                 jQuery.merge( relationship2, relationship );
-                relationship2 = jQuery.unique( relationship2 );
+                relationship2 = jQuery.uniqueSort( relationship2 );
             }
             
             return new HRecordSet({

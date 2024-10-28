@@ -537,7 +537,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                 item.find('label').text(fields['tag_Text']); //set new tagname
 
                 const usage = fields['tag_Usage'];
-                
+ console.log(usage);               
                 item.find('span.user-list-edit')
                     .css('display',usage>0?'inline-block':'none').text(usage);
                     
@@ -780,7 +780,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                                 is_added = true;
                                 label = recordset.fld(records[recID],'tag_Text');
                                 $('<div recid="'+recID+'" class="truncate">'+label+'</div>').appendTo(that.list_div)
-                                .click( function(event){
+                                .on('click', function(event){
                                     $(event.target).hide();
                                     let recID = $(event.target).attr('recid');
                                     that._addTagToPicked(recID);
@@ -807,7 +807,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                         +'style="display:inline-block;vertical-align:bottom;"/>'
                         +'Confirm&nbsp;and&nbsp;assign&nbsp;new&nbsp;Tag</div>')
                             .appendTo(that.list_div)
-                                .click( function(event){
+                                .on('click',  function(event){
                                     btn_add.trigger('click');
                                     that.list_div.hide();
                                 });
@@ -1057,7 +1057,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                                 const label = recordset.fld(records[recID],'tag_Text');
                                 $('<div recid="'+recID+'" class="truncate">'
                                 +label+'</div>').appendTo(that.list_div)
-                                .click( function(event){
+                                .on('click',  function(event){
                                     $(event.target).hide();
                                     const newTagID = $(event.target).attr('recid');
                                     
@@ -1076,7 +1076,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                         that.list_div.empty();
                         $('<div><span class="ui-icon ui-icon-check" style="display:inline-block;vertical-align:bottom"/>Confirm Rename</div>')
                             .appendTo(that.list_div)
-                                .click( function(event){
+                                .on('click',  function(event){
                                     that._renameTag( 1 );
                                 });
                         that.list_div.show()

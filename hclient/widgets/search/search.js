@@ -920,7 +920,7 @@ $.widget( "heurist.search", {
                 window.hWin.HEURIST4.util.setDisabled(this.input_search, false);
 
                 if(!this._is_publication && data.showing_subset && !window.hWin.HEURIST4.util.isempty(data.query)){
-                    this.input_search.val(data.query).change();
+                    this.input_search.val(data.query).trigger('change');
 
                     if(window.hWin.HEURIST4?.current_query_request?.q){
                         that._use_global_query = true;

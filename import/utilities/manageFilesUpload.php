@@ -740,7 +740,7 @@ if(!($max_size>0)) {$max_size = 0;}
                 //cancel and close window
                 $('#btnFinished')
                         .button({icon: 'ui-icon-check'})
-                        .click( function(e){
+                        .on('click', function(e){
                             e.preventDefault();
                             closeCheck(e);
                             return false;
@@ -805,7 +805,7 @@ if(!($max_size>0)) {$max_size = 0;}
 
                             var buttons = {};
                             buttons[window.hWin.HR('OK')] = function(){
-                                    ele.click();
+                                    ele.trigger('click');
                                     $dlg.dialog('close');
                                 };
                             buttons[window.hWin.HR('Cancel')] = function(){
@@ -815,7 +815,7 @@ if(!($max_size>0)) {$max_size = 0;}
                             $dlg = window.hWin.HEURIST4.msg.showMsgDlg(msg, buttons,
                             'Uploading FOLDER and sub-folders', { default_palette_class: 'ui-heurist-populate' });
                         }else{
-                            ele.click();
+                            ele.trigger('click');
                         }
                     }
                 });

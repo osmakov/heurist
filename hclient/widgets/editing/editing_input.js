@@ -5748,7 +5748,6 @@ $.widget( "heurist.editing_input", {
     // browse for heurist uploaded/registered files/resources and add player link
     //         
     _addHeuristMedia: function(){
-
         let that = this;
 
         let popup_options = {
