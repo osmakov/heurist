@@ -332,7 +332,7 @@ function editCMS2(website_document){
             _editor_panel.find('.btn-website-edit')
                          .button({classes:{'ui-button': 'ui-button-action'}})
                          .css({'padding':'5px','font-size':'9px'})
-                         .click(_editHomePageRecord);
+                         .on('click', _editHomePageRecord);
         }else{
             _editor_panel.find('.btn-website-edit').on('click',_editHomePageRecord);
         }

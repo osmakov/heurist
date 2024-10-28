@@ -664,7 +664,7 @@ $.widget( "heurist.navigation", {
     highlightTopItem: function(page_id){
 
         //dim all
-        this.divMainMenuItems.find('a').mouseout().removeClass('selected');
+        this.divMainMenuItems.find('a').trigger('mouseout').removeClass('selected');
 
         // find item
         let $ele = null;

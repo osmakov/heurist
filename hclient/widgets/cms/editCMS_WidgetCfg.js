@@ -215,6 +215,9 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
 
             if(widget_name=='heurist_Map'){
                 //special behaviour for map widget
+                if(!opts.layout_params){
+                    opts.layout_params = {};
+                }
                 
                 //map symbology editor            
                 window.hWin.HEURIST4.ui.initEditSymbologyControl($dlg.find('#map_default_style'), opts.layout_params.style);

@@ -88,7 +88,7 @@ $.widget( "heurist.selectFile", {
             +(this._is_archive_folder?'given folder':this.options.source);
         
         //resultList with images
-//init record list
+        //init record list
         this.recordList = this.element.find('.recordList');
         this.recordList
                     .resultList({
@@ -101,7 +101,7 @@ $.widget( "heurist.selectFile", {
                        show_viewmode: false,
                        
                        
-                       entityName: this._entityName,
+                       entityName: 'files', //this._entityName,
                        view_mode: this._is_archive_folder?'list':'thumbs',
                        
                        pagesize: 500,
@@ -236,7 +236,6 @@ $.widget( "heurist.selectFile", {
                     if(response.status == window.hWin.ResponseStatus.OK){
                         
                         that._is_source_changed = false;
-                        
                         let recset = new HRecordSet(response.data);
                         if(recset.length()>0){
                             

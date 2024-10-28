@@ -4120,10 +4120,6 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
             ele.find('.btnRecSaveAndNew').css('visibility', mode);
             ele.find('.btnRecSave').css('visibility', mode);
             ele.find('.btnRecSaveAndClose').css('visibility', mode);*/
-            
-            
-            
-console.log('DIIIIs');
             window.hWin.HEURIST4.util.setDisabled(ele.find('.btnRecCancel'), (mode=='hidden'));
             window.hWin.HEURIST4.util.setDisabled(ele.find('.btnRecSaveAndClose'), (mode=='hidden'));
             
@@ -4363,30 +4359,36 @@ console.log('DIIIIs');
         if(this._as_dialog && this._as_dialog.dialog('instance')){
 
             let $dlg = this._as_dialog.dialog('widget');
-            $('<span>', {class: 'btn_Fullscreen'}).appendTo($dlg.find('.ui-dialog-titlebar'));
-            $('<span>', {class: 'btn_Standard'}).appendTo($dlg.find('.ui-dialog-titlebar'));
+            let dlg_header = $dlg.find('.ui-dialog-titlebar');
+            
+            if(dlg_header.find('.btn_Fullscreen').length==0){
+            
+                $('<span>', {class: 'btn_Fullscreen'}).appendTo(dlg_header);
+                $('<span>', {class: 'btn_Standard'}).appendTo(dlg_header);
 
-            $dlg.find('.btn_Fullscreen').button({label:window.hWin.HR('Fullscreen')}).css({
-                margin: '-0.9em 0 0 0',
-                right: '12.5em',
-                top: '45%',
-                position: 'absolute',
-                background: 'none',
-                color: 'white'
-            }).on('click',(e) => {
-                that._setDialogSize(true);
-            });
+                dlg_header.find('.btn_Fullscreen').button({label:window.hWin.HR('Fullscreen')}).css({
+                    margin: '-0.9em 0 0 0',
+                    right: '12.5em',
+                    top: '45%',
+                    position: 'absolute',
+                    background: 'none',
+                    color: 'white'
+                }).on('click',(e) => {
+                    that._setDialogSize(true);
+                });
 
-            $dlg.find('.btn_Standard').button({label:window.hWin.HR('Standard')}).css({
-                margin: '-0.9em 0 0 0',
-                right: '5.5em',
-                top: '45%',
-                position: 'absolute',
-                background: 'none',
-                color: 'white'
-            }).on('click',(e) => {
-                that._setDialogSize(false);
-            });
+                dlg_header.find('.btn_Standard').button({label:window.hWin.HR('Standard')}).css({
+                    margin: '-0.9em 0 0 0',
+                    right: '5.5em',
+                    top: '45%',
+                    position: 'absolute',
+                    background: 'none',
+                    color: 'white'
+                }).on('click',(e) => {
+                    that._setDialogSize(false);
+                });
+                
+            }
 
             $dlg.css('box-shadow', '2px 3px 10px #00000080');
         }
@@ -4720,6 +4722,7 @@ console.log('DIIIIs');
     _reloadRtsEditor: function(force_reload = false){            
 
             if(!force_reload && this.options.rts_editor 
+                    && window.hWin.HEURIST4.util.isFunction(this.options.rts_editor.manageDefRecStructure)
                     && this.options.rts_editor.manageDefRecStructure('instance') 
                     && this.options.rts_editor.manageDefRecStructure('option','rty_ID')==this._currentEditRecTypeID)
             {

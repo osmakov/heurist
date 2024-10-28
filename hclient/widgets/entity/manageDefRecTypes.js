@@ -1280,7 +1280,7 @@ $.widget( "heurist.manageDefRecTypes", $.heurist.manageEntity, {
         
         window.hWin.HEURIST4.ui.switchHintState2(ishelp_on, this.editForm, '.heurist-helper1');
         
-        this.editForm.find('div.header').css({'min-widht':160, width:160});
+        this.editForm.find('div.header').css({'min-widht':'160px', width:'160px'});
         
         this._adjustEditDialogHeight();
 
