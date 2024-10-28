@@ -446,18 +446,9 @@ $.widget( "heurist.profile_edit", {
         }
     },
     
-    enable_register: function (value){
-        let that = this;
+    enable_register: function (is_enabled){
         let ele = this.edit_form.parent().find('#btn_save');
-        if(ele){
-            if(value){
-                ele.removeAttr("disabled");
-                ele.removeClass("ui-button-disabled ui-state-disabled");
-            } else {
-                ele.attr("disabled", "disabled");
-                ele.addClass("ui-button-disabled ui-state-disabled");
-            }
-        }
+        window.hWin.HEURIST4.util.setDisabled(ele, !is_enabled);
     }
     
 

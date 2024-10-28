@@ -21,7 +21,7 @@
 -->
 
 
-<div  style="position:absolute;top:0;bottom:0;left:0;right:0;overflow-y: auto;">
+<form name="formReg"  style="position:absolute;top:0;bottom:0;left:0;right:0;overflow-y: auto;">
 <fieldset><legend style="display:none"></legend>
 
     <div class="mode-edit">
@@ -51,7 +51,7 @@
     </div>
     <div>
         <div class="header"><label for="ugr_Password">Password</label></div>
-        <input type="password" name="ugr_Password" id="ugr_Password" class="text ui-widget-content ui-corner-all" style="width:10em;" maxlength="16" />&nbsp;
+        <input type="password" name="ugr_Password" id="ugr_Password" autocomplete="new-password" class="text ui-widget-content ui-corner-all" style="width:10em;" maxlength="16" />&nbsp;
         <i>3 - 16 char.</i>
         <span class="mode-edit">Leave blank for no change</span>
         <div style="font-size: smaller; margin-top: 2px;">
@@ -59,7 +59,7 @@
     </div>
     <div>
         <div class="header"><label for="password2">Repeat password</label></div>
-        <input type="password" name="password2" id="password2" class="text ui-widget-content ui-corner-all" style="width:10em;" maxlength="16"/>
+        <input type="password" name="password2" id="password2" autocomplete="new-password" class="text ui-widget-content ui-corner-all" style="width:10em;" maxlength="16"/>
         <div class="heurist-helper1"  style="display:none;">
             Note: http:// web traffic is non-encrypted. You should not assume this server is secure.<br>
             Therefore, please don't use an important password such as institutional or banking login.<br>
@@ -187,7 +187,7 @@
 <br>
 <p class="messages"></p>
 
-</div>
+</form>
 <!--
 <div class="mode-registration" style="position:absolute;height:2em;bottom:0;width:90%; margin-left: 60px;">
 <input type="checkbox" id="agree" onClick="enable_register(this.checked)">

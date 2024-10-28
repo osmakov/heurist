@@ -192,37 +192,46 @@ window.hWin.HEURIST4.util = {
     //
     // enable or disable element
     //
-    setDisabled: function(element, mode){
-        if(element){
-            if(!Array.isArray(element)){
-                element = [element];
-            }
-            $.each(element, function(idx, ele){
-                
-                if (!ele.jquery) {
-                    ele = $(ele);    
-                }
-                
-                if( ($.heurist.hSelect !=='undefined') && window.hWin.HEURIST4.util.isFunction($.heurist.hSelect) 
-                        && window.hWin.HEURIST4.util.isFunction(ele.hSelect) && ele.hSelect('instance')!=undefined){              
-
-                    if (mode) {
-                        ele.hSelect( 'disable' );
-                    }else{
-                        ele.hSelect( 'enable' );    
-                    }
-
-                }else{
-                    if (mode) {
-                        ele.prop('disabled', 'disabled');
-                        ele.addClass('ui-state-disabled');
-                    }else{
-                        ele.removeProp('disabled');
-                        ele.removeClass('ui-state-disabled ui-button-disabled');
-                    }
-                }
-            });
+    setDisabled: function(element, is_disabled){
+        if(!element){
+            return;    
         }
+        
+        if(!Array.isArray(element)){
+            element = [element];
+        }
+        
+        $.each(element, function(idx, ele){
+            
+            if (!ele.jquery) {
+                ele = $(ele);    
+            }
+               
+            // ($.heurist.hSelect !=='undefined') && window.hWin.HEURIST4.util.isFunction($.heurist.hSelect)    
+                                                                                                             
+            if(window.hWin.HEURIST4.util.isFunction(ele?.hSelect) && ele.hSelect('instance')!=undefined){              
+
+                if (is_disabled) {
+                    ele.hSelect( 'disable' );
+                }else{
+                    ele.hSelect( 'enable' );    
+                }
+
+            }else if (ele.length>0){
+                
+                ele = ele[0];
+                
+                if (is_disabled) {
+                    ele.setAttribute('disabled', 'disabled'); // Disable the element
+                    ele.classList.add('ui-state-disabled');   // Add the 'ui-state-disabled' class
+                } else {
+                    ele.removeAttribute('disabled');      // Enable the element
+                    ele.classList.remove('ui-state-disabled', 'ui-button-disabled'); // Remove specified classes
+                }                    
+                
+            }
+        });
+        
     },
     
     isIE: function () {

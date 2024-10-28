@@ -975,7 +975,7 @@ $.widget( "heurist.search_faceted_wiz", {
 
 
                 svs_ugrid.val(this.options.domain);
-                svs_ugrid.removeAttr('disabled');;
+                svs_ugrid[0].removeAttribute('disabled');
                
                 $dlg.find('#svs_Title').val('');
                 $dlg.find('#svs_SearchOnReset').prop('checked', false);

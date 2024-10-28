@@ -330,15 +330,10 @@ function SelectLinkField()
                     
             }
             
-            let f_new = $('#t_add_new_field');
-            let f_exs = $('#t_use_existing_field');
-            if(is_fields_available){
-                  f_exs.removeProp('disabled');
-                  f_exs.removeClass('ui-state-disabled ui-button-disabled');
-            }else{
-                  f_new.prop('checked', true);
-                  f_exs.prop('disabled', 'disabled');
-                  f_exs.addClass('ui-state-disabled');
+            window.hWin.HEURIST4.util.setDisabled($('#t_use_existing_field'), !is_fields_available);
+            
+            if(!is_fields_available){
+                  $('#t_add_new_field').prop('checked', true);
             }
             
             let is_add_new = f_new.is(':checked');

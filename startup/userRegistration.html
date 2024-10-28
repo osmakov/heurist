@@ -1,7 +1,7 @@
 
 <h1>Register for Heurist</h1>
 
-<div class="registration-form"  style="display: inline-block;width:60%">
+<form name="formRegistration" class="registration-form"  style="display: inline-block;width:60%">
     <div>
         <div class="header"><label for="ugr_FirstName">Given name</label></div>
         <input type="text" name="ugr_FirstName" id="ugr_FirstName" class="text ui-widget-content ui-corner-all mandatory"  maxlength="40" style="width:35em"/>
@@ -76,7 +76,7 @@
             class="text ui-widget-content ui-corner-all"></textarea>
     </div>
 
-</div>
+</form>
 <div class="entry-box" style="float: right;max-width: 270px;min-height: 229px;padding-top: 20px;">
     Note: This system should not be used for the storage of confidential and/or personally-identifiable information, such as health information, without the express permission of the system managers.
     <br><br>
@@ -88,7 +88,7 @@
 
 <div style="text-align:center;padding:20px">
 
-    <button id="btnRegisterDo" disabled class="ui-button-disabled ui-state-disabled">Register</button>
+    <button id="btnRegisterDo" disabled class="ui-button-action ui-button-disabled ui-state-disabled">Register</button>
     <button id="btnRegisterCancel" data-step="1">Cancel</button>
 
 </div>
