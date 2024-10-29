@@ -251,7 +251,7 @@ window.hWin.HEURIST4.query = {
 
 /*        
         var sPlain1 = false, sPlain2 = false;
-        if(jQuery.type(query2) === "string"){
+        if(typeof query2 === "string"){
             var notJson = true;
             try{
                

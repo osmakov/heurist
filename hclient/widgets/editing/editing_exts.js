@@ -1101,7 +1101,7 @@ function openSearchMenu(that, $select, has_filter=true, is_terms=false){
                         window.hWin.HEURIST4.util.stopEvent(event);
                         event.stopImmediatePropagation();
 
-                        $($menu.find('.ui-menu-item:visible')[1]).mouseover();
+                        $($menu.find('.ui-menu-item:visible')[1]).trigger('mouseover');
                     }else if((event.key == "A" || code == 13) && ctrl_pressed){
 
                         window.hWin.HEURIST4.util.stopEvent(event);

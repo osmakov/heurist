@@ -2585,7 +2585,6 @@ $.widget( "heurist.editing_input", {
                         that._on( $input, { click: function(){ if ($input.val()!='') window.open($input.val(), '_blank') }} );
                     }
 
-                    //$input.focusout( __url_input_state ); 
                     __url_input_state(true);               
                 
             }

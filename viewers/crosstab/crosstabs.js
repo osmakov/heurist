@@ -769,7 +769,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
                         //.css({'width':'160px','display':'inline-block'})
                         .html(interval.name)
                         .css({'font-weight':'bold'} )
-                        .dblclick(function(event){
+                        .on('dblclick', function(event){
                             //Collect the interval number of the clicked row
                             let intervalElement = $(this).parent();
                             let intervalPosition = intervalElement.attr('id').replace(name, '');
@@ -1158,7 +1158,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
                 $('<div class="col-4">').html(betweenText).appendTo($intRows);
 
                 $('<div class="col-4 pointer">').html(int[i].values[1].toFixed(decimalPlace))
-                .dblclick(function(){
+                .on('dblclick', function(){
                     let intervalId = parseInt($(this).parent().attr('id').replace(name,''));
                     let intervalValue = fields3[name].intervals[intervalId].values[1];
 
@@ -1599,7 +1599,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
             //.css({'width':'160px','display':'inline-block'})
             .html(interval.name)
             .css({'font-weight':'bold'} )
-            .dblclick(function(event){
+            .on('dblclick', function(event){
                 //Collect the interval number of the clicked row
                 let intervalElement = $(this).parent();
                 let intervalPosition = intervalElement.attr('id').replace(name, '');

@@ -743,10 +743,10 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                 }
                 
                 if(options['onmouseover']){ 
-                    $dlg.parent().find('.ui-dialog-titlebar').mouseover(function(){
+                    $dlg.parent().find('.ui-dialog-titlebar').on('mouseover', function(){
                         options['onmouseover'].call();
                     });
-                    $dosframe.mouseover(function(){
+                    $dosframe.on('mouseover', function(){
                         options['onmouseover'].call();
                     });
                 }
@@ -813,7 +813,6 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                             $dlg.dialog( 'option', 'height', dialog_height);
                             $dlg.dialog( 'option', 'width', '100%'); //dialog_width
                         }
-                        //$(window).resize(__maximizeOneResize)
                         __maximizeOneResize();
             }     
             if(options.borderless){
@@ -859,7 +858,6 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                             let dialog_width = window.innerWidth - $dlg.parent().position().left - 5;
                             $dlg.dialog( 'option', 'width', dialog_width);
                         }
-                        //$(window).resize(__maximizeOneResize)
                         __maximizeOneResize();
                     }else{
                         if($dlg.parent().position().left<0){

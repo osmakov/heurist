@@ -287,7 +287,7 @@ $system->defineConstants();
             mapping.onWinResize();
         });
 
-        $( "#timeline" ).mousedown(function(){
+        $( "#timeline" ).on('mousedown', function(){
             $( document ).bubble("closeAll");
         });
 

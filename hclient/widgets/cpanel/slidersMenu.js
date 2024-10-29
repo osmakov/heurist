@@ -2136,7 +2136,7 @@ $.widget( "heurist.slidersMenu", {
                     'cursor': 'pointer'
                 })
                 .on('click', function(){
-                    $('li.menu-explore[data-action-popup="recordAdd"]').mouseover();
+                    $('li.menu-explore[data-action-popup="recordAdd"]').trigger('mouseover');
                 });
 
                 // Explanation Text for each section

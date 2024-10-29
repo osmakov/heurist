@@ -3455,7 +3455,7 @@ $.fn.sideFollow = function(dtime) {
 
     goFollow();
 
-    $(window).scroll(function() {
+    $(window).on('scroll', function() {
         goFollow();
     });
 
