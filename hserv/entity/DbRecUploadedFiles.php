@@ -903,6 +903,11 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             $ret = $this->deleteSelected();
 
         }
+        elseif(@$this->data['regRawImages']){
+
+            $ret = $this->bulkRegisterImages();
+
+        }
         elseif(@$this->data['regExternalFiles']){ // attempt to register multiple URLs at once, and return necessary information for record editor
 
             $rec_fields = $this->data['regExternalFiles'];
@@ -1235,7 +1240,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                                 $file_details['ulf_WhoCanSee'] = 'loginrequired';
                                 break;
                             default:
-                                $ret[] = 'Invalid visibility setting, please use either public or private';
+                                $file_details['ulf_WhoCanSee'] = 'viewable';
                                 break;
                         }
                     }
@@ -1466,18 +1471,18 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             $type = strtolower($type[1]);// jpg, png, gif
 
             if (!in_array($type, [ 'jpg', 'jpeg', 'jpe', 'jfif', 'gif', 'png' ])) {
-                //throw new \Exception('invalid image type');
+                $this->system->addError(HEURIST_REQUEST_DENIED, "Image format \"{$type}\" is not supported for encoded images");
                 return false;
             }
 
             $data = base64_decode($data);
 
             if ($data === false) {
-                //throw new \Exception('base64_decode failed');
+                $this->system->addError(HEURIST_ACTION_BLOCKED, "Invalid encoded image provided, the image needs to be in base64 format.");
                 return false;
             }
         } else {
-            //throw new \Exception('did not match data URI with image data');
+            $this->system->addError(HEURIST_INVALID_REQUEST, "Unable to match data URI with image data, encoded image must be in base64 format");
             return false;
         }
 
@@ -2505,6 +2510,47 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
 
             return $ret;
 
+    }
+
+    //
+    // Bulk register base64 encoded (i.e. starts with data:image) images
+    //
+    private function bulkRegisterImages(){
+
+        $files = @$this->data['files'];
+
+        if(empty($files)){
+            $this->system->addError(HEURIST_INVALID_REQUEST, 'No files have been provided');
+            return false;
+        }
+
+        $files = !is_array($files) ? json_decode($files, true) : $files;
+
+        if(empty($files) || json_last_error() !== JSON_ERROR_NONE){
+            $this->system->addError(HEURIST_ACTION_BLOCKED, 'Invalid file details provided, ' . (empty($files) ? 'none provided' : 'formatting issues'));
+            return false;
+        }
+
+        $rtn = [];
+        foreach($files as $idx => $file_details){
+
+            $filename = empty(@$file_details['name']) ? "snapshot_{$idx}" : $file_details['name'];
+            $res = $this->registerImage(@$file_details['encoded'], $filename);
+
+            $last_error = $this->system->getError();
+            if(!$res && !empty($last_error)){
+                $rtn = false;
+                break;
+            }
+
+            if(is_array($res)){
+                $res = $res[0];
+            }
+
+            $rtn[] = intval($res);
+        }
+
+        return $rtn;
     }
 }
 ?>

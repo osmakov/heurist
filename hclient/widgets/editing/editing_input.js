@@ -2803,6 +2803,36 @@ $.widget( "heurist.editing_input", {
                 if(!f_id || f_id < 0){
                     $edit_details.hide();
                 }
+
+                // Use camera
+                let $camera = $('<span>', {class: 'ui-icon ui-icon-camera use_camera', title: 'Take a photo with your camera', style: 'cursor: pointer; padding-left: 5px;'})
+                    .insertBefore($clear_container);
+                this._on($camera, {
+                    click: this._photoMode
+                });
+                let check_camera = typeof navigator?.mediaDevices?.enumerateDevices === 'function' && window.self === window.top;
+                if(check_camera){ // check for camera input
+                    navigator.mediaDevices.enumerateDevices()
+                    .then((devices) => {
+                        let show_camera = false;
+                        for(const device of devices){
+                            if(device.kind === 'videoinput'){
+                                show_camera = true;
+                                break;
+                            }
+                        }
+                        if(!show_camera){
+                            $camera.hide();
+                            this._off($camera, 'click');
+                        }
+                    }).catch(() => {
+                        $camera.hide();
+                        this._off($camera, 'click');
+                    });
+                }else{
+                    $camera.hide();
+                    this._off($camera, 'click');
+                }
                 
                 /* Change Handler */
                 this._on($input,{change: 
@@ -3502,7 +3532,8 @@ $.widget( "heurist.editing_input", {
                                 $input.val(JSON.stringify(that.newvalues[$input.attr('id')])).trigger('change');
                             }
                         };
-                        
+                        dlg_options.default_palette_class = 'ui-heurist-populate';
+
                         window.hWin.HEURIST4.ui.showRecordActionDialog( this.configMode.actionName, dlg_options );
                 };
 
@@ -4150,7 +4181,7 @@ $.widget( "heurist.editing_input", {
         btn_field_visibility.hide();
                     
                     
-                let chbox_field_visibility = $( '<div><span class="smallicon ui-icon ui-icon-check-off" style="font-size:1em"></span> '
+        let chbox_field_visibility = $( '<div><span class="smallicon ui-icon ui-icon-check-off" style="font-size:1em"></span> '
                     +'Hide this value from public<div>', 
                     {title: 'Per record visibility'})
                     .addClass('field-visibility2 graytext')
@@ -6723,5 +6754,211 @@ $.widget( "heurist.editing_input", {
         this._external_relmarker.relation = relation_value;
 
         this._external_relmarker.callback = callback;
+    },
+
+    //
+    // Take a photo using the user's camera
+    //
+    _photoMode: async function(){
+
+        // Check if camera permissions have been granted
+        const permissions = await navigator.permissions.query({ name: "camera" });
+        if(permissions.state !== 'granted'){
+
+            const chrome = 'https://support.google.com/chrome/answer/2693767?hl=en&co=GENIE.Platform%3DDesktop#:~:text=On%20your%20computer%2C%20open%20Chrome.,-At%20the%20top&text=Settings.,-Select%20Privacy%20and&text=Site%20settings.,%2C%22%20select%20Camera%20or%20Microphone.';
+            const firefox = 'https://support.mozilla.org/en-US/kb/how-manage-your-camera-and-microphone-permissions';
+            const opera = 'https://help.opera.com/en/latest/web-preferences/#camera';
+
+            window.hWin.HEURIST4.msg.showMsgErr({
+                status: window.hWin.ResponseStatus.ACTION_BLOCKED,
+                message: 'Heurist is unable to access your camera due to a lack of permissions.<br>'
+                        +`Please grant camera permission for "${window.hWin.HAPI4.baseURL}" to use your camera before trying again.<br>`
+                        +`<a href="${chrome}" target="_blank" rel="noopener">Google Chrome</a>&nbsp;&nbsp;&nbsp;<a href="${firefox}" target="_blank" rel="noopener">Firefox</a>&nbsp;&nbsp;&nbsp;<a href="${opera}" target="_blank" rel="noopener">Opera</a>`
+            });
+
+            return;
+        }
+
+        let that = this;
+        let video_strean = null;
+
+        let $dlg, $canvas, $video, $img, $doAction;
+        let width = 1280, height;
+
+        //
+        // Stop/close video streams
+        //
+        let stop_stream = () => {
+
+            if(!video_strean){
+                return;
+            }
+
+            video_strean.getTracks().forEach(track => {
+                if(track.readyState === 'live' && track.kind === 'video'){
+                    track.stop();
+                }
+            });
+        };
+
+        //
+        // Handle height and width for camera
+        //
+        let stream_started = false;
+        let start_stream = () => {
+
+            if(stream_started){
+                $video[0].removeEventListener('canplay', start_stream); // remove event listener
+                return;
+            }
+
+            height = $video[0].videoHeight / ($video[0].videoWidth / width);
+
+            if(!window.hWin.HEURIST4.util.isPositiveInt(height)){
+                height = width / (4 / 3);
+            }
+
+            $video.prop('width', width);
+            $video.prop('height', height);
+            $canvas.prop('width', width);
+            $canvas.prop('height', height);
+
+            stream_started = true;
+            
+            $dlg.css('max-width', 'none');
+
+            $dlg.dialog('option', 'position', {my: "center", at: "center"});
+        };
+
+        // Retrieve video stream
+        try{
+            video_strean = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false
+            });
+        }catch{
+
+            window.hWin.HEURIST4.msg.showMsgErr({
+                status: window.hWin.ResponseStatus.ACTION_BLOCKED,
+                message: `Heurist is unable to access your camera, it may already be in use by another program.`
+            });
+
+            return;
+        }
+
+        // Setup popup
+        let content = '<div id="feed">'
+                        + '<video id="video-stream"> Stream unavailable </video>'
+                        + '<button class="take-photo ui-button-action">Take photo</button>'
+                    + '</div>'
+                    + '<canvas id="photo-canvas" style="display:none;"></canvas>'
+                    + '<div id="photo-taken" style="display:none;">'
+                        + '<img id="photo" alt="Photo taken appears here" />'
+                        + '<button class="retake-photo ui-button-action">Retake photo</button>'
+                    + '</div>';
+        
+        let btns = {};
+        btns[window.hWin.HR('Use photo')] = () => {
+
+            const encoded_str = $img.prop('src');
+            const name = `snapshot_${window.hWin.HEURIST4.util.random()}`;
+
+            let request = {
+                entity: 'recUploadedFiles',
+                a: 'batch',
+                regRawImages: 1,
+                files: [{encoded: encoded_str, name: name}]
+            };
+
+            window.hWin.HEURIST4.msg.bringCoverallToFront(null, null, 'Registering snapshot...');
+
+            window.hWin.HAPI4.EntityMgr.doRequest(request, (response) => {
+
+                window.hWin.HEURIST4.msg.sendCoverallToBack();
+
+                if(window.hWin.ResponseStatus.OK != response.status){
+                    window.hWin.HEURIST4.msg.showMsgErr(response);
+                    return;
+                }else if(!window.hWin.HEURIST4.util.isArrayNotEmpty(response?.data)){
+                    window.hWin.HEURIST4.msg.showMsgErr({
+                        status: window.hWin.ResponseStatus.UNKNOWN_ERROR,
+                        message: 'Image was not registered due to unknown issue, please report this to the Heurist team'
+                    });
+                    return;
+                }
+
+                // Set field value
+                let values = that.getValues();
+                values = [...values, ...response.data];
+                values = values.filter((ulf_ID) => !window.hWin.HEURIST4.util.isempty(ulf_ID));
+                that.setValue(values);
+
+                // End video stream and close dialog
+                stop_stream();
+                $dlg.dialog('close');
+            });
+
+        };
+        btns[window.hWin.HR('Close')] = () => {
+            stop_stream();
+            $dlg.dialog('close');
+        };
+
+        $dlg = window.hWin.HEURIST4.msg.showMsgDlg(content, btns, {title: 'Photo mode'}, {default_palette_class: 'ui-heurist-populate', dialogId: 'photo-mode', beforeClose: stop_stream});
+
+        $video = $dlg.find('#video-stream');
+        $canvas = $dlg.find('#photo-canvas');
+        $img = $dlg.find('#photo');
+        $doAction = $($dlg.parent().find('.ui-dialog-buttonset .ui-button')[0]);
+
+        // Connect stream to video element
+        $video.prop('srcObject', video_strean);
+        $video[0].play();
+        $video[0].addEventListener('canplay', start_stream, false);
+
+        $dlg.find('.take-photo').button().on('click', () => {
+
+            // Set canvas
+            let context = $canvas[0].getContext('2d');
+
+            $canvas.prop('width', width);
+            $canvas.prop('height', height);
+
+            context.drawImage($video[0], 0, 0, width, height);
+
+            // Set snapshot image
+            const url = $canvas[0].toDataURL('image/png');
+            $img.prop('src', url);
+
+            $dlg.find('#photo-taken').show();
+            $dlg.find('#feed').hide();
+
+            window.hWin.HEURIST4.util.setDisabled($doAction, false);
+        });
+
+        $dlg.find('.retake-photo').button().on('click', () => {
+
+            // Reset canvas
+            let context = $canvas[0].getContext('2d');
+            context.fillStyle = '#AAA';
+            context.fillRect(0, 0, $canvas.width(), $canvas.height());
+
+            // Reset snapshot image
+            $img.prop('src', '');
+
+            $dlg.find('#photo-taken').hide();
+            $dlg.find('#feed').show();
+
+            window.hWin.HEURIST4.util.setDisabled($doAction, true);
+        });
+
+        $dlg.find('.take-photo, .retake-photo').css({
+            float: 'right',
+            'font-size': '12px',
+            'font-weight': 'bold',
+            'margin-left': '10px'
+        });
+
+        window.hWin.HEURIST4.util.setDisabled($doAction, true);
     }
 });
