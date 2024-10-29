@@ -923,7 +923,6 @@ $.widget( "heurist.manageDefRecTypes", $.heurist.manageEntity, {
     //
     _onActionListener:function(event, action){
         
-
         if(action && (action.action=='delete' || action.action=='delete_hasrecs')){
 
 			if(action.action == 'delete_hasrecs'){
@@ -1061,6 +1060,7 @@ $.widget( "heurist.manageDefRecTypes", $.heurist.manageEntity, {
                         
                         if(!this.fieldSelector){
                             this.fieldSelectorOrig = document.createElement("select");    
+                            $(this.fieldSelectorOrig).appendTo(this.element);
                             window.hWin.HEURIST4.ui.fillSelector(this.fieldSelectorOrig, options);
                             this.fieldSelector = window.hWin.HEURIST4.ui.initHSelect(this.fieldSelectorOrig, false);
                             
@@ -1086,10 +1086,11 @@ $.widget( "heurist.manageDefRecTypes", $.heurist.manageEntity, {
                         }
                     }
                     this.fieldSelector.hSelect('open');
+                    this.fieldSelector.hSelect('widget').hide(); //hide selector
                     this.fieldSelector.val(-1);
                     this.fieldSelector.hSelect('menuWidget')
-                        .position({my: "left top", at: "left+10 bottom-4", of: $(target)});
-                    
+                        .position({my: "left top", at: "left+10 bottom-4", of: $(target)})
+                        .show();
                     this.fieldSelector.hSelect('hideOnMouseLeave', $(target));
                 }
                 

@@ -631,6 +631,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
 
                         if(!this.fieldSelector){
                             this.fieldSelectorOrig = document.createElement("select");    
+                            $(this.fieldSelectorOrig).appendTo(this.element);
                             window.hWin.HEURIST4.ui.fillSelector(this.fieldSelectorOrig, options);
                             this.fieldSelector = window.hWin.HEURIST4.ui.initHSelect(this.fieldSelectorOrig, false);
                             
@@ -653,10 +654,11 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                     }
                     if(this.fieldSelectorLast>0){
                         this.fieldSelector.hSelect('open');
+                    this.fieldSelector.hSelect('widget').hide(); //hide selector
                         this.fieldSelector.val(-1);
                         this.fieldSelector.hSelect('menuWidget')
-                            .position({my: "left top", at: "left+10 bottom-4", of: $(target)});
-                        
+                            .position({my: "left top", at: "left+10 bottom-4", of: $(target)})
+                            .show();                        
                         this.fieldSelector.hSelect('hideOnMouseLeave', $(target));                    
                     }
                     
