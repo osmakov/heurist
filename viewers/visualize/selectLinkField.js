@@ -336,7 +336,7 @@ function SelectLinkField()
                   $('#t_add_new_field').prop('checked', true);
             }
             
-            let is_add_new = f_new.is(':checked');
+            let is_add_new = $('#t_add_new_field').is(':checked');
             let clr = (is_add_new)?'lightgray':'none';   
             $('#sel_resource_fields').css('background', clr);
             $('#sel_relmarker_fields').css('background', clr);

@@ -118,7 +118,7 @@ $.widget( "heurist.ruleBuilder", {
             this.btn_add_next_level = $( "<button>" )
             .attr('title', 'Adds another step to this rule' )
             .css('font-size','0.8em')
-            .button({{label:'Add Step '+this.options.level}}).appendTo(this.div_btn);
+            .button({label:'Add Step '+this.options.level}).appendTo(this.div_btn);
 
 
         //event handlers
