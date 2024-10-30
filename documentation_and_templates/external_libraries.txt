@@ -19,7 +19,7 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-Updated 4 March 2019, Artem Osmakov, revised Ian Johnson 23 Aug 2021
+Updated 4 March 2019, Artem Osmakov, revised Ian Johnson 23 Aug 2021, updated 30 Oct 2024 
 
 External code libraries, not included in the Heurist git repository, are in the following directories simlinked from each instance of the Heurist code:
 
@@ -29,51 +29,82 @@ External code libraries, not included in the Heurist git repository, are in the 
 
 External libraries managed by composer (see composer.json) are in .../HEURIST_SUPPORT/vendors
 
-Note: The following libraries are accessed directly on the web via their URL. They also exist in HEURIST_SUPPORT/external-h5 so that Heurist can be run on a local machine with no internet access and in case the web versions should ever disappear.
-
-    Datatables 1.10.21
-    Fancytree 2.16.1
-    JQuery 1.12  version 2 and 3 are very different, large cost to upgrade
-    JQuery-file-upload 9.5.7
-
 See also /documentation_and_templates/modifications_to_external_functions.txt for specific changes that have been made to the source code of these functions (where unavoidable), and the reasons for modification.
 
-Contents of …/HEURIST_SUPPORT/external_h7
+Contents of /HEURIST_SUPPORT/external_h5
 ------------------------------------------------------------------
 
-codemirror-5.61        - smarty template editor and direct html editor for CMS
-
+codemirror-5.61        - code editor (smarty template editor, html editor)
 d3                     - links visualization  http://d3js.org/, https://github.com/d3/d3-plugins/tree/master/fisheye
 
-jquery-file-upload     - upload files in editTerms,smarty template, manageFilesUpload.php
-                                                 and main usage in editing_input.js/fileUpload.php  - original code was modified
-jquery-ui-1.12.1
-jquery-ui-themes-1.12.1   - heurist theme added
-jquery-ui-iconfont-master - icons compliant with jquery ui-icon-xxx. Works with all jQuery UI themes
-jquery.calendars-1.2.1    - editTemporalObject
-jquery.fancybox           - gallery and image viewer - original code was modified
-jquery.fancytree          - treeview component (saved searches, terms, rt structure) - css was modified
-jquery.layout             - cardinal layout control - original code was modified
+jquery-file-upload     - upload files in editTerms, smarty template, manageFilesUpload.php
+			 and main usage in editing_input.js/fileUpload.php  - original code was modified
+			 (v9.12.1, original project is discontinued in 2021)
 
-tinymce                - wyswyg editor for blocktext fields in record edit
+jquery-ui-1.12.1				
+jquery-ui-themes-1.12.1   - heuist theme added
 
-vis                    - we use only timeline (original code was modified) need to extract only code for timeline
-                                                 since the size of package is 1.5Mb  (used in map.php)
+jquery-ui-iconfont-master - icons compliant with jquery ui-icon-xxx. Works with all jQuery UI themes (original project is discontinued)
+jquery.calendars-2.1.1    - calendar control  (see editTemporalObject)
+jquery.fancybox           - gallery and image viewer - v3.3.5 (5.0, discontinued) - original code was modified
 
-php/Mysqldump8.php      - dump database in dbUtils.php exportMyDataPopup.php.
+jquery.widgets/
+	jquery.fancytree    - treeview component (saved searches, terms, rt structure). css was modified (version for offlie/localhost)
+	evol.colorpicker.js - color picker (3.2.4 (3.4.3)) - original code was modified
+	jquery.layout       - cardinal layout control - original code was modified ( 1.3.0 (1.4.3, original project is discontinued 2014)
+	jquery.ui-contextmenu.js - context menu plugin - original code was modified ( 1.8.0 (1.8.1, original project is discontinued 2016)
+	ui.tabs.paging      - tabs paging extension
+
+js/databale	       - version for offlie/localhost
+js/geodesy-master      - converts UTM to/from WGS in mapDraw.php
+js/shapefile           - shp to json parser see map.php 
+js/platform.js         - browser and platform detect
+js/cheapRuler.js       - collection of very fast approximations to common geodesic measurements
+js/wellknown.js        - parse/stringfy WKT to json in mapDraw.php and in utils_geo.parseWKTCoordinates
+
+
+leaflet		       - v1.9.4 version for offlie/localhost
+leaflet.plugins/
+	bookmarks          - https://github.com/w8r/Leaflet.Bookmarks
+	leaflet.draw       - editor https://github.com/Leaflet/Leaflet.draw
+	geocoder           - https://github.com/perliedman/leaflet-control-geocoder
+	markercluster      - https://github.com/Leaflet/Leaflet.markercluster
+
+	leaflet-iiif.js      - L.TileLayer extension
+	leaflet-providers.js - https://github.com/leaflet-extras/leaflet-providers
+	leaflet-tileLayerPixelFilter.js - https://github.com/greeninfo/L.TileLayer.PixelFilter
+	leaflet.browser.print.min - https://github.com/Igor-Vladyka/leaflet.browser.print
+	leaflet.circle.topolygon-src.js 
+	wise-leaflet-pip.js
+
+mirador3               - webpack mirador viewer and annotation tool (https://github.com/ProjectMirador/mirador-integration)                          
+                         mirador-integration-changes.zip - customized files in this project
+                         for details: hclient/widgets/viewers/miradorViewer.php
+	
+tinymce5                - wyswyg editor for blocktext fields in record edit (5.0.11)
+
+timemap.js             - timemap libarary plugin for google map - todo replace to native google.map.data (original project is stopped)
+vis                    - we use only timeline (original code was modified) need to extract only code for timeline 
+						 since the size of package is 1.5Mb  (used in map.php)
+
+php/Mysqldump8.php      - dump database in dbUtils.php exportMyDataPopup.php. 
 php/phpZotero.php       - syncZotero.php
 php/tileserver.php      - server to distribute pre-rendered map tiles (OGC WMTS standard)
-
-js/geodesy-master           - convert UTM to/from WGS in mapDraw.php
-js/wellknown.js             - parse/stringfy WKT to json in mapDraw.php and in utils_geo.parseWKTCoordinates
-js/shapefile                - shp to json parser see map.php
-js/evol.colorpicker.js      - color picker in map.php (@todo replace with colpick or vv)
-js/platform.js              - browser and platform detect
-js/jquery.ui-contextmenu.js - context menu plugin (used in saved search treeview)
-
-Candidates to remove as at Jan 2024
-------------------------------
-timemap.js             - timemap libarary - todo repalce to native google.map.data
+                         
+----						 
+To be removed (as soon as Heurist will be upgraded to jQuery v3.7.1):
+jquery.calendars-1.2.1 
+jquery-ui-1.12.1
+jquery-ui-themes-1.12.1
 
 
+----
+Note: The following libraries are accessed directly on the web via their URL. They also exist in HEURIST_SUPPORT/external 
+so that Heurist can be run on a local machine with no internet access and in case the web versions should ever disappear.
 
+To be updated to specified vesion
+jquery-3.7.1.js
+jquery-ui.js (1.14.0)
+jquery.fancytree (2.38.3)
+leaflet  (1.9.4)
+datatable (3.10.1)

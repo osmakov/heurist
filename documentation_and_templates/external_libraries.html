@@ -28,9 +28,9 @@
     </head>
     <body>
 
-        <u>Last updated 3 Jan 2024</u>
+        <u>Last updated 30 Oct 2024</u>
         <p>Where a version is indicated followed by a later version in brackets the brackets indicate the current version as at Jan 2024.</p>
-        <p>Note: The statuses indicated here reflect HEURIST_SUPPORT/external_h7 (in prep. Jan 2024)</p>
+        <p>Note: The statuses indicated here reflect HEURIST_SUPPORT/external_h5</p>
         <p> ** See also external_libraries.txt ** </p>
 
         
@@ -83,7 +83,7 @@
                     </td>
                     <td>yes</td>
                     <td>1.12.4</td>
-                    <td>3.7</td>
+                    <td>3.7.1</td>
                     <td></td>
                 </tr>
 
@@ -93,29 +93,31 @@
                     </td>
                     <td>yes</td>
                     <td>1.12.1</td>
-                    <td>1.13</td>
+                    <td>1.14.0</td>
                     <td></td>
                 </tr>
                 
                 <tr>
                     <td>
-                        <p>JQuery widgets</p>
+                        <p>jquery.widgets</p>
                     </td>
                     <td></td>
                     <td>various</td>
                     <td></td>
                     <td>
-                        <p>jquery-file-upload 9.12.1 (10.32.0 last mod ~2021) - upload files in editTerms,smarty template, manageFilesUpload.php 
-                            and main usage in editing_input. js/fileUpload.php. 
-                            <br>Heavily modified UploadHandler,php has been integrated into heurist repo. Minor modifications in js. <br>
-                            jquery-ui-themes-1.12.1  - heurist theme added<br>
+                        <p>
+                            jquery-file-upload 9.12.1 (10.32.0 last mod ~2021) - upload files in editTerms,smarty template, manageFilesUpload.php 
+                                    and main usage in editing_input.<br>
+                                    Heavily modified UploadHandler,php has been integrated into heurist repo. Minor modifications in js. <br>
                             jquery-ui-iconfont-master - icons compliant with jquery ui-icon-xxx. Works with all jQuery UI themes. Discontinued. May replace with fontawesome.<br>
                             jquery.calendars-1.2.1- editTemporalObject (2.1.1)<br>
                             jquery.fancybox 3.3.5 (5.0, discontinued)- gallery and image viewer - original code was modified<br>
                             jquery.fancytree 2.16.1 (2.38.3) - treeview component (saved searches, terms, rt structure) - small mods in css<br>
                             jquery.layout 1.3.0 (1.4.3, discontinued 2014)- cardinal layout control - original code was modified<br>
-                            see also: js/jquery.ui-contextmenu.js 1.8.0 (1.8.1 ~2016) - context menu plugin (used in saved search treeview)<br>
-                            jquery.datatable
+                            jquery.ui-contextmenu.js 1.8.0 (1.8.1 ~2016) - context menu plugin (used in saved search treeview)<br>
+                            jquery.datatable<br>
+                            ui.tabs.paging<br>
+                            evol.colorpicker.js 3.2.4 (3.4.3) - color picker in map.php, modified<br>
                         </p>
                     </td>
                 </tr>
@@ -133,13 +135,14 @@
 
                 <tr>
                     <td>
-                        <p>Leaflet plugins</p>
+                        <p>leaflet.plugins</p>
                     </td>
                     <td></td>
                     <td>various</td>
                     <td></td>
                     <td>
                         <p>bookmarks - https://github.com/w8r/Leaflet.Bookmarks<br>
+                           draw 
                            geocoder - https://github.com/perliedman/leaflet-control-geocoder<br>
                            providers - https://github.com/leaflet-extras/leaflet-providers<br>
                            print - https://github.com/Igor-Vladyka/leaflet.browser.print<br>
@@ -147,8 +150,8 @@
                            leaflet.draw - editor https://github.com/Leaflet/Leaflet.draw<br>
                            leaflet-iiif.js - L.TileLayer extension<br> 
                            leaflet-tileLayerPixelFilter.js  - https://github.com/greeninfo/L.TileLayer.PixelFilter<br>
-                           wise-leaflet-pip - extension for Polygon
-                           leaflet.circle.topolygon - converter for drawn cirle to polygon
+                           wise-leaflet-pip - extension for Polygon<br>
+                           leaflet.circle.topolygon - converter for drawn cirle to polygon<br>
                            
                         </p>
                     </td>
@@ -160,12 +163,12 @@
                     <td></td>
                     <td></td>
                     <td>
-                        <p>js/geodesy-master- convert UTM to/from WGS in mapDraw.php<br>
+                        <p>js/geodesy-master - convert UTM to/from WGS in mapDraw.php<br>
                             js/wellknown.js - parse/stringfy WKT to json in mapDraw.php and in utils_geo.parseWKTCoordinates<br>
                             js/shapefile - shp to json parser see map.php<br>
-                            js/evol.colorpicker.js 3.2.4 (3.4.3) - color picker in map.php, modified<br>
-                            js/platform.js- browser and platform detect<br>
-                            js/jquery.ui-contextmenu.js 1.8.0 (1.8.1 ~2016) - context menu plugin (used in saved search treeview)</p>
+                            js/platform.js - browser and platform detect<br>
+                            js/cheapRuler.js - collection of very fast approximations to common geodesic measurements
+                        </p>
                     </td>
                 </tr>
 
@@ -178,7 +181,7 @@
                     <td>3</td>
                     <td></td>
                     <td>
-                        <p>Image visualisation client. </p>
+                        <p>Image visualisation client. https://github.com/ProjectMirador/mirador-integration</p>
                     </td>
                 </tr>
 
@@ -262,7 +265,7 @@
 
                 <tr>
                     <td>
-                        <p>tileserver.php (serving tilemaps)</p>
+                        <p>php/tileserver.php (serving tilemaps)</p>
                     </td>
                     <td></td>
                     <td>2016</td>
