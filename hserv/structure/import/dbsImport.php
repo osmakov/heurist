@@ -889,7 +889,7 @@ foreach ($this->imp_recordtypes as $rtyID){
                 //add
                 $fields[ $trg_dty_id ] = $def_field;
 
-            }else  if($this->rename_target_entities){
+            }elseif($this->rename_target_entities){
 
                 $fields[$trg_dty_id][$idx_name] = $def_field[$idx_name];
                 $fields[$trg_dty_id][$idx_desc] = $def_field[$idx_desc];

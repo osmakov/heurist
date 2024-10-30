@@ -335,8 +335,7 @@ class RecordsBatch
 
                     if(!($row[3]>0)){  //rec_RecTypeID
                         array_push($childNotFound, $row[0]);
-                    }else
-                    if(in_array($row[2], $groups)){  //rec_OwnerUGrpID
+                    }elseif(in_array($row[2], $groups)){  //rec_OwnerUGrpID
                         if($allow_multi_parent || !@$childRecords[$row[1]]){
 
                             $toProcess[] = $row;  //parent_id,child_id,0,child_rectype,child_title
@@ -935,8 +934,7 @@ class RecordsBatch
 
                         $newVal = replaceAbsPathinCMS($recID, $dtlVal);
 
-                    }else
-                    if (!$replace_all_occurences && $partialReplace) {// need to replace sVal with rVal
+                    }elseif (!$replace_all_occurences && $partialReplace) {// need to replace sVal with rVal
                         $newVal = preg_replace("/".preg_quote($this->data['sVal'], "/")."/i", $this->data['rVal'], $dtlVal);
                     }else{
                         $newVal = $this->data['rVal'];
@@ -1518,8 +1516,7 @@ class RecordsBatch
 
             if(!$hasPDFs){
                 $skippedNoPDF[] = $recID;
-            }else
-            if(!empty($details)){
+            }elseif(!empty($details)){
 
                 /*
                 // 4. remove old 2-652 "Extracted text"

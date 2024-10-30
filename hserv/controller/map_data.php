@@ -192,8 +192,7 @@ function getRecordDetails($system, $record) {
             /* GENERAL */
             if($type == DT_NAME) {
                 $record->name = $value; //for layers use it instead of title (rec_Title)
-            }else
-            if($type == DT_SHORT_SUMMARY) {
+            }elseif($type == DT_SHORT_SUMMARY) {
                 // Description
                 $record->description = $value;
 
@@ -234,7 +233,7 @@ function getRecordDetails($system, $record) {
                 }
                 array_push($record->layers, getDetailedRecord($system, $value));
 
-            }else  if(defined('DT_MAP_BOOKMARK') && $type == DT_MAP_BOOKMARK) {
+            }elseif(defined('DT_MAP_BOOKMARK') && $type == DT_MAP_BOOKMARK) {
                 //string in format <xmin>,<xmax>,<ymin>,<ymax>,<tmin>,<tmax>
                 array_push($record->bookmarks, explode(',', $value));
 

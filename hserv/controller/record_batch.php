@@ -42,8 +42,7 @@
 
             $res = $dbRecDetails->multiAction();
 
-        }else
-        if(@$_REQUEST['a'] == 'add'){
+        }elseif(@$_REQUEST['a'] == 'add'){
 
             $res = $dbRecDetails->detailsAdd();
 

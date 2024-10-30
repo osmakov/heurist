@@ -37,8 +37,7 @@ if(@$_REQUEST['type']=='titles'){
     }
     $sTitle = 'Recalculation of composite record titles';
 
-}else
-if(@$_REQUEST['type']=='calcfields'){
+}elseif(@$_REQUEST['type']=='calcfields'){
     if($recTypeIDs){
         $srcURL = 'rebuildCalculatedFields.php?recTypeIDs='.$recTypeIDs.'&db='.$dbname;
     }else{
@@ -46,12 +45,10 @@ if(@$_REQUEST['type']=='calcfields'){
     }
     $sTitle = 'Recalculation of calculated fields';
 
-}else
-if(@$_REQUEST['type']=='files'){
+}elseif(@$_REQUEST['type']=='files'){
     $srcURL = 'listUploadedFilesErrors.php?db='.$dbname;
     $sTitle = 'Verifying files';
-}else
-if(@$_REQUEST['type']=='urls'){
+}elseif(@$_REQUEST['type']=='urls'){
     $srcURL = 'checkRecURL.php?db='.$dbname;
     $sTitle = 'Check Records URL';
 }else{

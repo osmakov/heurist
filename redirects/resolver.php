@@ -95,8 +95,7 @@ if(count($requestUri)==1 && ($requestUri[0]=='heurist' || $requestUri[0]=='h6-al
     redirectURL2('/'.rawurlencode($requestUri[0]).'/index.php');
     exit;
 
-}else
-if ((count($requestUri)==1)
+}elseif ((count($requestUri)==1)
      ||
     (count($requestUri)==2 && (!in_array($requestUri[1],$allowedActions) || $requestUri[1]=='startup'))
     )
@@ -106,8 +105,7 @@ if ((count($requestUri)==1)
     if($dbname=='startup'){
         redirectURL2('/'.rawurlencode($requestUri[0]).'/startup/index.php');
         exit;
-    }else
-    if(!preg_match('/[^A-Za-z0-9_\$]/', $dbname)){
+    }elseif(!preg_match('/[^A-Za-z0-9_\$]/', $dbname)){
         redirectURL2('/'.rawurlencode($dbname).'/web/');
         exit;
     }

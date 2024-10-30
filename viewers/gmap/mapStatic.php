@@ -272,16 +272,14 @@
                                 .$crd['x0'].','.$crd['y0'];
                 }
 
-            }else
-            if($geoObject['type']=="circle"){
+            }elseif($geoObject['type']=="circle"){
                 if(USE_GOOGLE){
                     $markers = $markers.$geoObject['geo']['y'].",".$geoObject['geo']['x']."|";
                 }else{
                     $markers = $markers.$geoObject['geo']['x'].','.$geoObject['geo']['y'].',pm2rdm';
                 }
                 $verties_cnt++;
-            }else
-            if(USE_GOOGLE){
+            }elseif(USE_GOOGLE){
 
                     $points = array();
                     $points2 = $geoObject['geo'];

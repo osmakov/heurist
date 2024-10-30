@@ -1876,8 +1876,7 @@ class FieldPredicate extends Predicate {
 
             }
 
-        }else
-        if (strpos($this->value,"<>")>0) {  //(preg_match('/^\d+(\.\d*)?|\.\d+(?:<>\d+(\.\d*)?|\.\d+)+$/', $this->value)) {
+        }elseif (strpos($this->value,"<>")>0) {  //(preg_match('/^\d+(\.\d*)?|\.\d+(?:<>\d+(\.\d*)?|\.\d+)+$/', $this->value)) {
 
             $vals = explode("<>", $this->value);
             $match_pred = SQL_BETWEEN.$vals[0].SQL_AND.$vals[1].' ';

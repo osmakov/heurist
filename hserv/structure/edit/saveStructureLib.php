@@ -1297,7 +1297,7 @@ function createDetailTypes($commonNames, $dt) {
 
         if($rows === "1062"){
             $ret =  "Field type with specified name already exists in the database, please use the existing field type.\nThe field may be hidden - turn it on through Database > Manage base field types";
-        }else  if ($rows==0 || is_string($rows) ) {
+        }elseif ($rows==0 || is_string($rows) ) {
             $ret = "Error inserting data into defDetailTypes table: ".$rows;
         } else {
             $dtyID = $mysqli->insert_id;

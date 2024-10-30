@@ -1147,14 +1147,12 @@ public static function validateImport($params) {
                 $geo_fields = array($field_name1,$field_name2);
             }
 
-        }else
-        if($ft_vals[$idx_fieldtype] == "geo"){
+        }elseif($ft_vals[$idx_fieldtype] == "geo"){
 
             //for geo fields take first
             $geo_fields = array(preg_replace(REGEX_ALPHANUM, '', $field_name[0]));//WKT field
 
-        }else
-        if($ft_vals[$idx_reqtype] == "required"){
+        }elseif($ft_vals[$idx_reqtype] == "required"){
             if(!$field_name){ //required field is not mapped - error
                 //$ft_vals[$idx_fieldtype] == "file" ||
                 if(!($ft_vals[$idx_fieldtype] == "resource")){ //except file and resource (record pointer)
@@ -2805,8 +2803,7 @@ public static function performImport($params, $mode_output){
 
                         if(@$mapping_keys_values_curr[@$field_indexes[$index]]){
                             $values = array( $mapping_keys_values_curr[$field_indexes[$index]] );
-                        }else
-                        if(strpos($row[$index], $csv_mvsep)!==false){ //multivalue
+                        }elseif(strpos($row[$index], $csv_mvsep)!==false){ //multivalue
                             $values = self::getMultiValues($row[$index], $csv_enclosure, $csv_mvsep);
                         }else{
                             $values = array($row[$index]);
@@ -3118,8 +3115,7 @@ public static function performImport($params, $mode_output){
                                     }
                                 }
 
-                            }else
-                            if($params['sa_upd']==2 && $params['sa_upd2']==1
+                            }elseif($params['sa_upd']==2 && $params['sa_upd2']==1
                                      && @$details_orig["t:".$field_type]
                                      && $recordTypeStructure[$field_type][$idx_reqtype] != "required") { //delete old even if new is not provided
 

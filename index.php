@@ -107,8 +107,7 @@ if( @$_REQUEST['recID'] || @$_REQUEST['recid'] || array_key_exists('website', $_
     redirectURL('hserv/controller/api.php?'.$query_string);
     return;
 
-}else
-    if (@$_REQUEST['rty'] || @$_REQUEST['dty'] || @$_REQUEST['trm']){
+}elseif (@$_REQUEST['rty'] || @$_REQUEST['dty'] || @$_REQUEST['trm']){
         //download xml template for given db defintion
 
         if(@$_REQUEST['rty']) {$s = 'rty='.$_REQUEST['rty'];}

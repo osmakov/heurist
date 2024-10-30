@@ -830,8 +830,7 @@
 
                     if($is_guest_registration){
                         $record['ugr_Enabled'] = "n";
-                    }else
-                    if($allow_registration){
+                    }elseif($allow_registration){
                         $record['ugr_Enabled'] = "y";
                     }else{
 

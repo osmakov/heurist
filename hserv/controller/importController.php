@@ -175,8 +175,7 @@ if(!$system->init(@$_REQUEST['db'])){
                 $system->addError(HEURIST_INVALID_REQUEST, error_WrongParam('"table"'));
                 $res = false;
 
-            }else
-            if(@$_REQUEST['imp_ID']){
+            }elseif(@$_REQUEST['imp_ID']){
                 $res = ImportSession::getRecordsFromImportTable1($table_name, intval($_REQUEST['imp_ID']));
             }else{
                 $res = ImportSession::getRecordsFromImportTable2($table_name,

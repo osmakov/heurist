@@ -437,14 +437,12 @@ function resolveFilePath($path, $db_name=null){
                         if(file_exists($fpath)){
                             return $fpath;
                         }
-                    }else
-                    if(strpos($path, '/misc/heur-filestore/')===0){
+                    }elseif(strpos($path, '/misc/heur-filestore/')===0){
                         $fpath = str_replace('/misc/heur-filestore/', HEURIST_FILESTORE_ROOT, $path);
                         if(file_exists($fpath)){
                             return $fpath;
                         }
-                    }else
-                    if(strpos($path, '/data/HEURIST_FILESTORE/')===0){ //for huma-num
+                    }elseif(strpos($path, '/data/HEURIST_FILESTORE/')===0){ //for huma-num
                         $fpath = str_replace('/data/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $path);
                         if(file_exists($fpath)){
                             return $fpath;
@@ -726,8 +724,7 @@ function fileGetPlayerTag($system, $fileid, $mimeType, $params, $external_url, $
         $result = '<iframe '.$size.$style.' src="'.$playerURL.'" frameborder="0" '
             . ' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
         */
-    }else
-    if ( $is_video ) {
+    }elseif ( $is_video ) {
 
         if(($size==null || $size=='') && $style==''){
             //$size = '';
@@ -801,8 +798,7 @@ EXP;
 
         }
 
-    }else
-    if( $is_iiif ){
+    }elseif( $is_iiif ){
 
         if(($size==null || $size=='') && $style==''){
             $size = ' height="640" width="800" ';
@@ -821,8 +817,7 @@ EXP;
 
         $result = "<iframe $size $style src=\"$miradorViewer\" frameborder=\"0\"></iframe>";
 
-    }else
-    if($is_image){
+    }elseif($is_image){
 
             if(($size==null || $size=='') && $style==''){
                 $size = 'width="300"';
@@ -1280,8 +1275,7 @@ function fileCreateThumbnail( $system, $fileid, $is_download ){
                 //@todo for image services (flikr...) take thumbnails directly
                 $img = UImage::getRemoteImage($file['ulf_ExternalFileReference'], $orientation);
 
-            }else
-            if( @$file['fxm_MimeType'] == MT_YOUTUBE
+            }elseif( @$file['fxm_MimeType'] == MT_YOUTUBE
                 || strpos($file['ulf_ExternalFileReference'], 'youtu.be')>0
                 || strpos($file['ulf_ExternalFileReference'], 'youtube.com')>0){ //match('https://(www.)?youtube|youtu\.be')
 

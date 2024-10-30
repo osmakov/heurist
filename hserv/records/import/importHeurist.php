@@ -92,8 +92,7 @@ private static function _readDataFile($filename, $type=null, $validate=true){
         if(!file_exists($filename)){
 
             self::$system->addError(HEURIST_ACTION_BLOCKED, 'Import file doesn\'t exist');
-        }else
-        if(!is_readable($filename))
+        }elseif(!is_readable($filename))
         {
             self::$system->addError(HEURIST_ACTION_BLOCKED, 'Import file is not readable. Check permissions');
         }else
@@ -1201,8 +1200,7 @@ $query3 = 'select rec_ID from Records, recDetails where dtl_RecID=rec_ID  AND dt
 
                            if($recid_already_checked[$value]){
                                $resourse_id = $value;
-                           }else
-                           if(is_numeric($value) && $value>0){
+                           }elseif(is_numeric($value) && $value>0){
                                //check existence
                                $is_found = (mysql__select_value($mysqli,
                                         'select rec_ID from Records where rec_ID='

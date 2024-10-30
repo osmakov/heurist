@@ -151,11 +151,9 @@ if(!($max_size>0)) {$max_size = 0;}
                             //realpath gives real path on remote file server
                             if(strpos($dir, '/srv/HEURIST_FILESTORE/')===0){
                                 $dir = str_replace('/srv/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $dir);
-                            }else
-                            if(strpos($dir, '/misc/heur-filestore/')===0){
+                            }elseif(strpos($dir, '/misc/heur-filestore/')===0){
                                 $dir = str_replace('/misc/heur-filestore/', HEURIST_FILESTORE_ROOT, $dir);
-                            }else
-                            if(strpos($dir, '/data/HEURIST_FILESTORE/')===0){  //for huma-num
+                            }elseif(strpos($dir, '/data/HEURIST_FILESTORE/')===0){  //for huma-num
                                 $dir = str_replace('/data/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $dir);
                             }
                             $dir = str_replace('\\','/',$dir);

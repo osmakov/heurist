@@ -907,8 +907,7 @@ function getDateHistogramData($system, $range, $interval, $rec_ids, $dty_id, $fo
         $date_int = new DateInterval('P'.$interval.'Y');
         $count = ceil($count);
 
-    }else
-    if($format == 'month'){
+    }elseif($format == 'month'){
 
         // Round up, +1 for any days and +12 for any years
         if($days > 0){
@@ -2070,8 +2069,7 @@ function recordSearch($system, $params, $relation_query=null)
             ($system->user_GetPreference('deriveMapLocation', 1)==1);
         }
 
-    }else
-    if(  !in_array($params['detail'], array('count','count_by_rty','ids','header','timemap','detail','structure')) ){ //list of specific detailtypes
+    }elseif(  !in_array($params['detail'], array('count','count_by_rty','ids','header','timemap','detail','structure')) ){ //list of specific detailtypes
             //specific set of detail fields and header fields
             if(is_array($params['detail'])){
                 $fieldtypes_ids = $params['detail'];
@@ -3074,8 +3072,7 @@ function recordSearch($system, $params, $relation_query=null)
 
                         $records = $tm_records;
                         $total_count_rows = $istimemap_counter;
-                    }else
-                        if($needCompleteInformation){
+                    }elseif($needCompleteInformation){
                             $relations = recordSearchRelated($system, $all_rec_ids);
                             if($relations['status']==HEURIST_OK){
                                 $relations = $relations['data'];

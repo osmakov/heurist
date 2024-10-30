@@ -434,22 +434,17 @@ private function _setResourceProps($record, &$resource){
                     }
 
 
-                }else
-                if($field_type=='date' || $field_type=='year'){
+                }elseif($field_type=='date' || $field_type=='year'){
                     //http://www.w3.org/2001/XMLSchema#date
                     $dtype = 'xsd:dateTime';
                     //$dtype = 'xsd:date';'xsd:gYear'
-                }else
-                if($field_type=='float'){
+                }elseif($field_type=='float'){
                     $dtype = 'xsd:decimal';
-                }else
-                if($field_type=='integer'){
+                }elseif($field_type=='integer'){
                     $dtype = 'xsd:integer';
-                }else
-                if($field_type=='boolean'){
+                }elseif($field_type=='boolean'){
                     $dtype = 'xsd:boolean';
-                }else
-                if($field_type=='freetext' || $field_type=='blocktext'){
+                }elseif($field_type=='freetext' || $field_type=='blocktext'){
                     //detect language
                     // it does not work in EasyRdf
                     /*

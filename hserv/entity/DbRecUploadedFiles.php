@@ -639,8 +639,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                         }
                         $file2['ulf_FilePath'] = '';
 
-                    }else
-                    if(!@$record['ulf_ExternalFileReference'] && !@$record['ulf_FileName'])
+                    }elseif(!@$record['ulf_ExternalFileReference'] && !@$record['ulf_FileName'])
                     {
                         $this->records[$rec_idx]['ulf_FileName'] = 'ulf_'.$ulf_ID.'_'.$record['ulf_OrigFileName'];
                         $file2['ulf_FileName'] = $this->records[$rec_idx]['ulf_FileName'];
@@ -1057,7 +1056,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                 $provided_file = $file;
                 if(strpos($file, HEURIST_FILESTORE_URL) === 0){
                     $file = str_replace(HEURIST_FILESTORE_URL, HEURIST_FILESTORE_DIR, $file);
-                }else if(strpos($file, HEURIST_FILESTORE_DIR) === false){
+                }elseif(strpos($file, HEURIST_FILESTORE_DIR) === false){
                     $file = HEURIST_FILESTORE_DIR . $file;
                 }
 

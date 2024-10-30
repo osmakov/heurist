@@ -119,8 +119,7 @@
 
     if(@$params['format']=='gephi' || @$params['format']=='geojson'){
         $search_params['limit'] = (@$params['limit']>0)?intval($params['limit']):null;
-    }else
-    if(!(@$params['offset'] || @$params['limit'])){
+    }elseif(!(@$params['offset'] || @$params['limit'])){
         $search_params['needall'] = 1;  //search without limit of returned record count
     }
 
@@ -131,7 +130,7 @@
         $search_params['q'] = array('ids'=>intval($params['recID']));
     }elseif(@$params['ids']){
         $search_params['q'] = array('ids'=>filter_var(implode(',', prepareIds($params['ids']) ), FILTER_SANITIZE_STRING));
-    }else  if(@$params['iiif_image']){
+    }elseif(@$params['iiif_image']){
         $params['format'] = 'iiif';
         $search_params['q'] = '*file @'.filter_var($params['iiif_image'],FILTER_SANITIZE_STRING);
 

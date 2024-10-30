@@ -213,8 +213,7 @@ class DbUtils {
             if($verbose) {echo '<br>'.htmlspecialchars($msg);}
             self::$db_del_in_progress = null;
             return false;
-        }else
-        if($createArchive) {
+        }elseif($createArchive) {
             // Create DELETED_DATABASES directory if needed
             if(!folderCreate($archiveFolder, true)){
                     $system->addError(HEURIST_ACTION_BLOCKED,

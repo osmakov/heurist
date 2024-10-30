@@ -43,8 +43,7 @@ if($error!=null){
 
     if(!$sp){
         $system->addError(HEURIST_INVALID_REQUEST, 'Database '.$dbname.' does not support SAML authorisation');
-    }else
-    if ($action == "logout"){ //save preferences into session
+    }elseif ($action == "logout"){ //save preferences into session
 
         if($system->set_dbname_full($dbname)){
 

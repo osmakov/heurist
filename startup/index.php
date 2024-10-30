@@ -265,7 +265,7 @@ if (!defined('PDIR')){
             if(password.val()!=password2.val()){
                 err_text = err_text + ', '+window.hWin.HR(' Passwords do not match');
                 password.addClass( "ui-state-error" );
-            }else  if(password.val()!=''){
+            }else if(password.val()!=''){
                 /* restrict password to alphanumeric only - removed at 2016-04-29
                 if(!window.hWin.HEURIST4.util.checkRegexp( password, /^([0-9a-zA-Z])+$/)){  //allow : a-z 0-9
                     err_text = err_text + ', '+window.hWin.HR('Wrong password format');

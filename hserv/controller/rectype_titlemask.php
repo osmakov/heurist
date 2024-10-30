@@ -57,8 +57,7 @@ if( $system->init(@$_REQUEST['db']) ){
                     $response = $res;
                 }
 
-            }else
-            if($check_mode==3){ //to human readable
+            }elseif($check_mode==3){ //to human readable
 
                 $res = TitleMask::execute($mask, $rectypeID, 2, null, ERROR_REP_MSG);
 
@@ -68,8 +67,7 @@ if( $system->init(@$_REQUEST['db']) ){
                     $response = $res;
                 }
 
-            }else
-            if($check_mode==1){ //verify text title mask
+            }elseif($check_mode==1){ //verify text title mask
 
                 $check = TitleMask::check($mask, $rectypeID, true);
 

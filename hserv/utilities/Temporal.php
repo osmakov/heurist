@@ -1108,7 +1108,7 @@ class Temporal {
 
                 if($y>22 && $y<100){
                     $value = '19'.$y.'-'.$m;
-                }else  if($y>=0 && $y<22){
+                }elseif($y>=0 && $y<22){
                     $value = '20'.$y.'-'.$m;
                 }
 
@@ -1116,7 +1116,7 @@ class Temporal {
 
                 if($m>22 && $m<100){
                     $value = '19'.$m.'-'.$y;
-                }else  if($m>=0 && $m<22){
+                }elseif($m>=0 && $m<22){
                     $value = '20'.$m.'-'.$y;
                 }
             }

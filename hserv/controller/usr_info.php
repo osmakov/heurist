@@ -45,8 +45,7 @@
         $system->addError(HEURIST_INVALID_REQUEST, $error);
         $res = false;
 
-    }else
-    if($action=='verify_credentials'){ //just check only if logged in (db connection not required)
+    }elseif($action=='verify_credentials'){ //just check only if logged in (db connection not required)
 
         $res = $system->verify_credentials($dbname);
 
@@ -474,8 +473,7 @@
 
                   if($folders[strtolower($dir_name)]){
                       $response = $system->addError(HEURIST_ACTION_BLOCKED, 'Cannot modify system folder');
-                  }else
-                  if($op=='rename'){
+                  }elseif($op=='rename'){
 
                       $new_name = USanitize::sanitizePath(@$req_params['newname']);
                       if($new_name==''){
@@ -621,7 +619,7 @@
                 }
                 */
 
-            } else  if ($action=="action_password") { //special passwords for some admin actions - defined in configIni.php
+            } elseif ($action=="action_password") { //special passwords for some admin actions - defined in configIni.php
 
                 $actions = array('DatabaseCreation', 'DatabaseDeletion', 'ReservedChanges', 'ServerFunctions');
                 $action = @$req_params['action'];

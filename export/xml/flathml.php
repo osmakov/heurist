@@ -1170,9 +1170,6 @@ function outputRecord($recID, $depth, $outputStub = false, $parentID = null){
     if (isset($filter) && !in_array($record['rec_RecTypeID'], $filter)) {
         if ($record['rec_RecTypeID'] != $relRT) { //not a relationship rectype
             if ($depth > 0) {
-                //				if ($USEXINCLUDELEVEL){
-
-                //				}else
                 if ($outputStub) {
                     outputRecordStub($record);
                 } else {

@@ -1287,7 +1287,7 @@ function recognizeMimeTypeFromURL($mysqli, $url, $use_default_ext = true){
             $mimeType  = MT_VIMEO;
             $extension = 'vimeo';
             $force_add = "('vimeo','".MT_VIMEO."', '0','','Vimeo Video','')";
-        }else  if(strpos($url, 'youtu.be')!==false || strpos($url, 'youtube.com')!==false){
+        }elseif(strpos($url, 'youtu.be')!==false || strpos($url, 'youtube.com')!==false){
             $mimeType  = MT_YOUTUBE;
             $extension = 'youtube';
             $force_add = "('youtube','".MT_YOUTUBE."', '0','','Youtube Video','')";

@@ -1601,8 +1601,7 @@ class HPredicate {
                         $this->error_message = 'Full text search is allowed for rec_Title only';
                         return null;
                     }
-                }else
-                if($ignoreApostrophe){
+                }elseif($ignoreApostrophe){
                     $res = "( replace( r".$this->qlevel.".$sHeaderField, \"'\", \"\")".$val.")";
                 }else{
                     $res = "(r".$this->qlevel.".$sHeaderField ".$val.")";
@@ -2523,8 +2522,7 @@ class HPredicate {
 
             if($datestamp==null){
                 return null;
-            }else
-            if ($this->exact) {
+            }elseif ($this->exact) {
                 $ret = ($this->negate?'!':'')."= '$datestamp'";
                 return $ret;
             }
@@ -2617,8 +2615,7 @@ class HPredicate {
             //search dates are comletely within the specified interval
             $res = "({$timespan[0]} <= rdi_estMinDate  AND rdi_estMaxDate <= {$timespan[1]})";
 
-        }else
-        if ($this->exact) {
+        }elseif ($this->exact) {
             //either begin or end of date range is exact to specified interval
             $res = "(rdi_estMinDate = {$timespan[0]} OR rdi_estMaxDate = {$timespan[1]})";
         }
@@ -2899,8 +2896,7 @@ class HPredicate {
                         .$mysqli->real_escape_string($this->value).'")';
             }
 
-        }else
-        if ($this->field_type=='file'){
+        }elseif ($this->field_type=='file'){
 
             $value = $mysqli->real_escape_string($this->value);
 
@@ -2910,8 +2906,7 @@ class HPredicate {
                 $this->fulltext = false;
                 $res = "ulf_ObfuscatedFileID = '".$this->value."'";
 
-            }else
-            if(strpos($value,'^')===0){ //search file size
+            }elseif(strpos($value,'^')===0){ //search file size
 
                 $this->value = substr($this->value, 1);
                 $res = "ulf_FileSizeKB $eq ".intval($this->value);
@@ -2928,8 +2923,7 @@ class HPredicate {
             }
             $res = ' in (select ulf_ID from recUploadedFiles where '.$res.')';
 
-        }else
-        if (($this->field_type=='float' || $this->field_type=='integer' || $this->field_type=='link') && (is_numeric($this->value) || strpos($this->value, "<>") !== false)) {
+        }elseif (($this->field_type=='float' || $this->field_type=='integer' || $this->field_type=='link') && (is_numeric($this->value) || strpos($this->value, "<>") !== false)) {
 
             if (strpos($this->value,"<>")>0) {
                 $vals = explode("<>", $this->value);
@@ -2967,8 +2961,7 @@ class HPredicate {
                 $this->field_type = 'date';
                 $cs_ids = null;
                 $isHeaderDate = true;
-            }else
-            if($this->pred_type=='title' || $this->pred_type=='url' || $this->pred_type=='notes'
+            }elseif($this->pred_type=='title' || $this->pred_type=='url' || $this->pred_type=='notes'
                 || $this->field_type=='date'){
                 $cs_ids = null;
             }else{

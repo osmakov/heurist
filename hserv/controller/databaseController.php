@@ -236,8 +236,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
 
                     $res = DbUtils::databaseEmpty($db_target, false);
 
-                }else
-                if($action=='delete'){
+                }elseif($action=='delete'){
                     //keep owner info to send email after deletion
                     $usr_owner = user_getByField($mysqli, 'ugr_ID', 2, $db_target);
 
@@ -350,8 +349,7 @@ $sErrorMsg = "Sorry, the database $db_source must be registered with an ID less 
                                 'warning'    => $system->getErrorMsg());
                     }
 
-                }else
-                if($action=='clone'){
+                }elseif($action=='clone'){
 
                     $res = DbUtils::databaseCloneFull($db_source, $db_target, $nodata, $is_template);
 

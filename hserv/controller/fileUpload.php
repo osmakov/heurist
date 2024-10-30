@@ -42,8 +42,7 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
         /*
             $response = $system->addError(HEURIST_ACTION_BLOCKED, $response);
         */
-}else
-if($system->init(@$_REQUEST['db'])){
+}elseif($system->init(@$_REQUEST['db'])){
 
     $params = USanitize::sanitizeInputArray();
 
@@ -105,8 +104,7 @@ if($system->init(@$_REQUEST['db'])){
 
             sendEmailToAdmin('Allowed disk quota reached', 'Database '.$system->dbname().'. '.$error, false);
 
-        }else
-        if ($quota_not_defined && $post_max_size && ($content_length > $post_max_size)) { //quota not defined - multipart upload disabled
+        }elseif ($quota_not_defined && $post_max_size && ($content_length > $post_max_size)) { //quota not defined - multipart upload disabled
 
         }
 
@@ -170,8 +168,7 @@ if($response!=null){
             <input type="hidden" name="upload_thumb_url" value="<?php echo defined('HEURIST_THUMB_URL')?HEURIST_THUMB_URL:'';?>"/>
 */
 
-    }else
-    if($entity_name=="temp"){//redirect uploaded content back to client side after some processing
+    }elseif($entity_name=="temp"){//redirect uploaded content back to client side after some processing
                                    // for example in term list import
 
         $max_file_size = intval(@$params['max_file_size']);
