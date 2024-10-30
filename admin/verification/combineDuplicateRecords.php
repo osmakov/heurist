@@ -96,9 +96,9 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>Merging records</title>
 
-<?php 
+<?php
         includeJQuery();
-?>        
+?>
 
         <!-- CSS -->
         <?php include_once dirname(__FILE__).'/../../hclient/framecontent/initPageCss.php';?>

@@ -480,7 +480,7 @@ class DbUtils {
                 if(HEURIST_DB_PORT){
                     $port = " -P ".HEURIST_DB_PORT;
                 }
-                
+
                 $cmd = $cmd
                 ." -h ".HEURIST_DBSERVER_NAME." ".$port
                 ." -u".ADMIN_DBUSERNAME." -p".ADMIN_DBUSERPSWD
@@ -688,7 +688,7 @@ class DbUtils {
 
         }
         if(self::setSessionVal(4)) {return false;} //import core defs
-        
+
         return true;
     }
 

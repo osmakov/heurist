@@ -1403,9 +1403,9 @@
 
         $mysqli = $system->get_mysqli();
         $res = $mysqli->query($query);//ugr_Type
-        
+
         if(!$res){
-            return array();    
+            return array();
         }
 
         //2. loop and parse preferences

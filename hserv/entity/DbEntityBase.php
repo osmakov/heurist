@@ -13,7 +13,7 @@ use hserv\entity\DbEntitySearch;
 
 /**
 * Base class for all database entities.
-* 
+*
 * This abstract class handles core functionalities such as reading configurations, handling
 * field data, and providing save, delete, and search operations for database entities.
 * Base class for all db entities
@@ -36,7 +36,7 @@ abstract class DbEntityBase
     /** @var bool $is_addition Flag to reset all primary fields to zero to force addition (POST request) */
     protected $is_addition = false;
 
-    /** 
+    /**
      * @var array|null $data Field values used for search and update.
      * Contains `data[fields]` for particular records, initiated in prepareRecords().
      * usually this is $_REQUEST
@@ -88,11 +88,11 @@ abstract class DbEntityBase
     protected $requireAdminRights = true;
 
     /** @var array|null $duplicationCheck Check for duplication */
-    protected $duplicationCheck = null;    
+    protected $duplicationCheck = null;
 
      /**
      * Constructor - Loads configuration from JSON file.
-     * 
+     *
      * @param mixed $system The system instance.
      * @param array|null $data The data to be initialized.
      */
@@ -116,7 +116,7 @@ abstract class DbEntityBase
 
     /**
      * Verify if the entity is valid (configuration loaded and fields not empty).
-     * 
+     *
      * @return bool True if valid, otherwise false.
      */
     public function isvalid(){
@@ -125,7 +125,7 @@ abstract class DbEntityBase
 
     /**
      * Read configuration from the JSON file.
-     * 
+     *
      * @return void
      */
     private function _readConfig(){
@@ -162,14 +162,14 @@ abstract class DbEntityBase
 
     /**
      * Initialize the entity (abstract method to be implemented in subclasses).
-     * 
+     *
      * @return void
      */
     public function init(){}
 
     /**
      * Set data for the entity from the client request.
-     * 
+     *
      * @param array $data Data to be set.
      * @return void
      */
@@ -192,7 +192,7 @@ abstract class DbEntityBase
 
     /**
      * Get the current data of the entity.
-     * 
+     *
      * @return array|null Returns the current data.
      */
     public function getData(){
@@ -201,7 +201,7 @@ abstract class DbEntityBase
 
     /**
      * Set records for deletion or update actions.
-     * 
+     *
      * @param array $records Records to be set.
      * @return void
      */
@@ -212,7 +212,7 @@ abstract class DbEntityBase
 
     /**
      * Get the current records.
-     * 
+     *
      * @return array Returns the current records.
      */
     public function records(){
@@ -222,7 +222,7 @@ abstract class DbEntityBase
 
      /**
      * Set whether a transaction is required.
-     * 
+     *
      * @param bool $value True if transaction is required, false otherwise.
      * @return void
      */
@@ -232,7 +232,7 @@ abstract class DbEntityBase
 
      /**
      * Get the configuration.
-     * 
+     *
      * @param string $locale Locale for configuration.
      * @return array|null Configuration data.
      */
@@ -415,7 +415,7 @@ abstract class DbEntityBase
 
     /**
      * Perform actions based on the current data request.
-     * 
+     *
      * @return mixed Result of the action.
      */
     public function run(){
@@ -491,7 +491,7 @@ abstract class DbEntityBase
 
     /**
      * Save the records to the database.
-     * 
+     *
      * @return array|false An array of saved record IDs or false on failure.
      */
     public function save(){
@@ -621,7 +621,7 @@ abstract class DbEntityBase
 
     /**
      * Prepare records for deletion by checking their IDs and permissions.
-     * 
+     *
      * @return bool True if the records are ready for deletion, false otherwise.
      */
      protected function deletePrepare(){
@@ -673,7 +673,7 @@ abstract class DbEntityBase
 
     /**
      * Delete records from the database.
-     * 
+     *
      * @param bool $disable_foreign_checks Disable foreign key checks.
      * @return bool True on successful deletion, false otherwise.
      */
@@ -721,7 +721,7 @@ abstract class DbEntityBase
 
     /**
      * Batch action handler (to be implemented in subclasses).
-     * 
+     *
      * @return mixed Result of the batch action.
      */
     public function batch_action(){
@@ -791,7 +791,7 @@ abstract class DbEntityBase
     }
 
     //
-    // 
+    //
     //
     protected function _validateValues(){
 
@@ -1187,7 +1187,7 @@ abstract class DbEntityBase
 
     /**
      * Perform search on the database records.
-     * 
+     *
      * @return mixed Result of the search.
      */
     public function search(){

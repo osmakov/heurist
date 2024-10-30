@@ -536,7 +536,7 @@ class DbsImport {
             return false;
         }
 
-        if(empty($this->imp_recordtypes) && empty($this->imp_fieldtypes)){  
+        if(empty($this->imp_recordtypes) && empty($this->imp_fieldtypes)){
             //only terms we can exit
             $mysqli->commit();
             $this->system->cleanDefCache();
@@ -978,7 +978,7 @@ foreach ($this->imp_recordtypes as $rtyID){
         $mysqli->close();
         return true;
     }
-    
+
 }
 
 TitleMask::set_fields_correspondence(null);

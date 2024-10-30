@@ -309,7 +309,7 @@ $requestUri:
                 if(@$requestUri[3]){
 
                     if(@$requestUri[4]){
-                        
+
                         $redirect .= ('?db='.$database.'&template='.basename($requestUri[3]).'&w=a&q=');
 
                         $ids = prepareIds(@$requestUri[4]);

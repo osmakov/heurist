@@ -72,7 +72,7 @@ if(@$_REQUEST['type']=='titles'){
                         dosframe.style.width = '97%';
                         dosframe.style.height = '97%';
                         dosframe.style.display = 'block';
-                        
+
                         var inProgress = document.getElementById('in_porgress');
                         if (inProgress) {
                             inProgress.style.display = 'none';

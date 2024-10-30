@@ -91,12 +91,12 @@ class SystemEmailExt {
 
         if (!$this->validateDatabaseInput($data)) {
             return -1;
-        }     
-        
+        }
+
         if (!$this->validateUserInput($data)) {
             return -1;
-        }           
-        
+        }
+
 		// Get record filtering options, use defaults if none supplied
 		$this->rec_count = (isset($data["recTotal"]) && is_numeric($data["recTotal"]) && $data["recTotal"] >= 0) ? $data["recTotal"] : "none";
 
@@ -138,7 +138,7 @@ class SystemEmailExt {
 
 		return 0;
 	}
-    
+
     private function validateDatabaseInput($data) {
         if (!isset($data["db"])) {
             $this->set_error('No current database has been provided<br>Please contact the Heurist team if this problem persists.');
@@ -160,16 +160,16 @@ class SystemEmailExt {
             $this->set_error('No valid databases have been provided.' . $provided_dbs);
             return false;
         }
-        
-        return true;        
-        
+
+        return true;
+
     }
-    
+
     private function validateUserInput($data) {
         if (isset($data["users"]) && in_array($data["users"], $this->user_options)) {
             $this->users = $data["users"];
         } else {
-            $main_msg = 'No valid users have been provided.<br>users => ' 
+            $main_msg = 'No valid users have been provided.<br>users => '
                 . (isset($data["users"]) ? htmlspecialchars(print_r($data["users"], true)) : ' not defined');
             $this->set_error($main_msg);
             return false;
@@ -181,10 +181,10 @@ class SystemEmailExt {
             $this->set_error('No email body has been provided');
             return false;
         }
-        
+
         $this->email_body = $data["emailBody"];
         return true;
-    }    
+    }
 
 	/*
 	 * Get current user's email
@@ -268,7 +268,7 @@ class SystemEmailExt {
 		$wg_count = 0;
 
 		foreach ($dbs as $db){
-            
+
              $where_clause = $this->generateWhereClause($this->users, $db);
 
             if (empty($where_clause)) {
@@ -276,7 +276,7 @@ class SystemEmailExt {
                                  . htmlspecialchars($this->users));
                 return -1;
             }
-            
+
 				$query = "SELECT DISTINCT ugr.ugr_FirstName, ugr.ugr_LastName, ugr.ugr_eMail, ugr.ugr_ID
 						  FROM " . $db . ".sysUsrGrpLinks AS ugl
 						  INNER JOIN " . $db . ".sysUGrps AS ugr ON ugl.ugl_UserID = ugr.ugr_ID "
@@ -287,16 +287,16 @@ class SystemEmailExt {
 
 					continue;
 				}
-                
+
                 $this->processUserResults($res, $db);
 
 				$res->close();
-			
+
 		}
 
 		return 0;
 	}
-    
+
     private function generateWhereClause($users, $db) {
         switch ($users) {
             case "owner":
@@ -311,14 +311,14 @@ class SystemEmailExt {
             default:
                 return "";
         }
-    }    
-    
+    }
+
     private function processUserResults($res, $db) {
         while ($row = $res->fetch_row()) {
-            $db_name = substr($db, strlen(HEURIST_DB_PREFIX));    
-    
+            $db_name = substr($db, strlen(HEURIST_DB_PREFIX));
+
             $email = filter_var($row[2], FILTER_VALIDATE_EMAIL);
-    
+
 
             if (!$email) {
                 $this->user_invalid_email[] = array($db, $row[0], $row[1], $row[3], $row[2]);
@@ -333,11 +333,11 @@ class SystemEmailExt {
                         "last_name" => $row[1],
                         "db_list" => [$db_name]
                     ];
-                }                
-            }    
+                }
+            }
         }
     }
-    
+
     /*
      * Retrieve the record count and newest last modified date
      *
@@ -345,7 +345,7 @@ class SystemEmailExt {
      *
      * Return: VOID || Error Code
      */
-	
+
 
 	private function createRecordsList() {
 
@@ -486,9 +486,9 @@ class SystemEmailExt {
         $mailer->SetFrom($email_from, $email_from_name);
 
 		foreach ($this->user_details as $email => $details) {
-            
+
             $email_rtn = $this->processEmailForUser($email, $details, $mailer, $mailRelayPwd);
-            
+
             if ($email_rtn != 0) {
                 //ERROR
                 $this->save_receipt($email_rtn, $this->email_subject, $this->email_body, $user_cnt);
@@ -503,10 +503,10 @@ class SystemEmailExt {
 
 		return $email_rtn;
 	}
-    
+
     private function processEmailForUser($email, $details, $mailer, $mailRelayPwd) {
         $email_rtn = 0;
-        
+
         list($db_listed, $db_url_listed, $records_listed, $lastmod_listed) = $this->prepareEmailContent($details);
 
         $replace_with = [$details['first_name'], $details['last_name'], $email, $db_listed, $db_url_listed, $records_listed, $lastmod_listed];
@@ -616,8 +616,8 @@ class SystemEmailExt {
                      . ", record_count: {" . $records_listed . "}, last_modified: {" . $lastmod_listed . "} },"
                      . "Timestamp: " . date(DATE_8601) . ", Status: " . $status_msg)
                      . '<br><br>';
-    }    
-    
+    }
+
 
 	/*
 	 * Export Email Detail's as a CSV File
@@ -797,7 +797,7 @@ class SystemEmailExt {
 		}
 
 	}
-    
+
     private function composeList($list){
 
         $main_t = mb_convert_encoding($list, "UTF-8", "auto");
@@ -812,7 +812,7 @@ class SystemEmailExt {
             }
         }
     }
-    
+
 	private function get_receipt() {
 		return $this->receipt;
 	}

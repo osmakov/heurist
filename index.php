@@ -117,14 +117,14 @@ if( @$_REQUEST['recID'] || @$_REQUEST['recid'] || array_key_exists('website', $_
                 redirectURL('redirects/resolver.php?db='.@$_REQUEST['db'].'&'.$s);
     return;
 
-    
+
 }elseif (@$_REQUEST['controller']=='ReportController' || array_key_exists('template',$_REQUEST) || array_key_exists('template_id',$_REQUEST)){
 
     //execute smarty template
     $controller = new FrontController($_REQUEST);
     $controller->run();
     exit;
-    
+
 }elseif (array_key_exists('file',$_REQUEST) || array_key_exists('thumb',$_REQUEST) ||
           array_key_exists('icon',$_REQUEST)){
 
@@ -152,7 +152,7 @@ if( @$_REQUEST['recID'] || @$_REQUEST['recid'] || array_key_exists('website', $_
     if($part){
          $name = strstr($name,'#');
     }
-    
+
     //default ext is html
     $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
     if(!$extension){
@@ -160,7 +160,7 @@ if( @$_REQUEST['recID'] || @$_REQUEST['recid'] || array_key_exists('website', $_
     }
 
     $help_folder = 'context_help/';
-    
+
     $locale = $params['lang'];//locale
     if($locale && preg_match('/^[A-Za-z]{3}$/', $locale)){
         $locale = strtolower($locale);

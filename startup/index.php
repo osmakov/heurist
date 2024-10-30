@@ -45,7 +45,7 @@ if (!defined('PDIR')){
 
 <?php
     includeJQuery();
-?>   
+?>
 
 <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>external/jquery-ui-iconfont-master/jquery-ui.icon-font.css" />
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>

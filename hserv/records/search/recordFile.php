@@ -562,9 +562,9 @@ function downloadFile($mimeType, $filename, $originalFileName=null){
             echo $output;
             unset($output);
         }else{
-            
+
             fileReadByChunks($filename, $range_min, $range_max);
-/*            
+/*
             if(false && filesize($filename)<10*1024*1024){
                 readfile($filename);//if less than 10MB download at once
             }else{
@@ -583,7 +583,7 @@ function downloadFile($mimeType, $filename, $originalFileName=null){
                     //error_log('file not found: '.htmlspecialchars($filename));
                 }
             }
-*/            
+*/
         }
     }
 }

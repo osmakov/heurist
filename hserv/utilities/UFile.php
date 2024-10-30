@@ -32,8 +32,8 @@ use hserv\utilities\USystem;
     * getRelativePath
     * folderRecurseCopy
     * folderSubs - list of subfolders
-    * 
-    * 
+    *
+    *
     * fileReadByChunks - Reads a file in chunks and outputs it to the client in a memory-efficient manner.
     * getFileSize - Retrieves the size of a file, with an optional cache-clearing mechanism.
     *
@@ -717,7 +717,7 @@ use hserv\utilities\USystem;
             return 0;
         }
     }
-    
+
     //
     // Adds counter to the end of file name
     //
@@ -739,7 +739,7 @@ use hserv\utilities\USystem;
         }else{
             $cnt = 0;
         }
-       
+
         do{
             if(file_exists($file_fullpath)){
                 $cnt++;
@@ -748,9 +748,9 @@ use hserv\utilities\USystem;
         }while (file_exists($file_fullpath));
 
         return $file_fullpath;
-    }  
-    
-    
+    }
+
+
 
     /**
      * Returns the target path as relative reference from the base path.
@@ -1894,12 +1894,12 @@ function flush_buffers($start=true){
 
 /**
  * Reads a file in chunks and outputs it to the client in a memory-efficient manner.
- * 
+ *
  * This method is particularly useful for large files, as it reads the file in 10 MB chunks
  * and outputs it directly to the client to avoid exhausting memory.
- * 
+ *
  * @param string $file_path The path to the file to be read and output.
- * 
+ *
  * @return int|false Returns the size of the file in bytes if successful, or false on failure.
  */
 function fileReadByChunks($file_path, $range_min=0, $range_max=0)
@@ -1910,7 +1910,7 @@ function fileReadByChunks($file_path, $range_min=0, $range_max=0)
     if($file_size==0){
         return; //file does not exist
     }
-    
+
     // Set the chunk size to 10 MB (10 * 1024 * 1024 bytes)
     $chunk_size = 10 * 1024 * 1024;
 
@@ -1919,7 +1919,7 @@ function fileReadByChunks($file_path, $range_min=0, $range_max=0)
         // If the file is smaller than the chunk size, output the entire file
         return readfile($file_path);
     }
-    
+
     // Open the file in binary read mode
     $handle = fopen($file_path, 'rb');
     if(!$handle){
@@ -1948,15 +1948,15 @@ function fileReadByChunks($file_path, $range_min=0, $range_max=0)
 
 /**
  * Retrieves the size of a file, with an optional cache-clearing mechanism.
- * 
+ *
  * This function checks the existence of the file and returns its size in bytes. It can optionally
  * clear the file status cache to ensure the most up-to-date file size is retrieved, which is useful
  * if the file is being modified during runtime.
- * 
+ *
  * @param string $file_path The path to the file whose size is to be determined.
- * @param bool $clear_stat_cache (Optional) If true, clears the file status cache before checking the file size. 
+ * @param bool $clear_stat_cache (Optional) If true, clears the file status cache before checking the file size.
  *                               Default is false.
- * 
+ *
  * @return int The size of the file in bytes. Returns 0 if the file does not exist.
  */
 function getFileSize($file_path, $clear_stat_cache = false) {

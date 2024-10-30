@@ -80,9 +80,9 @@ if($mode>1){
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>Create data archive package</title>
 
-<?php 
+<?php
         includeJQuery();
-?>        
+?>
 
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils_msg.js"></script>
@@ -506,7 +506,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
             $folders_to_copy = [];
 
             $copy_uploaded_files = (@$_REQUEST['includeresources']=='1');
-            
+
             //copy resource folders
             if(@$_REQUEST['include_docs']=='1'){
                 $folders_to_copy = folderSubs(HEURIST_FILESTORE_DIR,
@@ -522,7 +522,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
             $user_media_folders = $system->get_system('sys_MediaFolders');
             $user_media_folders = explode(';', $user_media_folders);
             foreach($user_media_folders as $dir){
-               
+
                 $path = HEURIST_FILESTORE_DIR . $dir;
                 if(file_exists($path)){
                     if(substr($path, -1, 1) != '/'){
@@ -534,21 +534,21 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
                     //exclude from full list of folders
                     $key = array_search($path, $folders_to_copy);
                     if($key!==false){
-                       unset($folders_to_copy[$key]); 
+                       unset($folders_to_copy[$key]);
                     }
                 }
             }//for
-            
+
             if($copy_uploaded_files){ //uploaded images in standard folder
 
                 $folders_to_copy[] = HEURIST_FILES_DIR;
                 $folders_to_copy[] = HEURIST_THUMB_DIR;
                 $copy_files_in_root = true; //copy all files within database folder
-                
+
             }else{
                 $copy_files_in_root = false;
             }
-            
+
             if(@$_REQUEST['include_tilestacks']=='1' && defined('HEURIST_TILESTACKS_DIR')){
                 $folders_to_copy[] = HEURIST_TILESTACKS_DIR;
             }

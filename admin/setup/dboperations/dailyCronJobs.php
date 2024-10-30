@@ -182,22 +182,22 @@ foreach ($databases as $idx=>$db_name){
     $system->set_dbname_full($db_name);
 
     if($do_reports){
-        
+
         $report = $reports->updateTemplate(); //update all templates for database
-        
+
         if(@$report[5]['fatal']){
             echo 'Fatal error for database '.htmlspecialchars($db_name).'  '.$report[5]['fatal'].$eol;
         }else{
             if(!empty($report[4])){
-                $long_reports[$db_name] = $report[4];    
+                $long_reports[$db_name] = $report[4];
                 $long_reports_count = $long_reports_count + count($report[4]);
             }
-            
+
             $report_list[$db_name] = $report;
 
             echo $eol.htmlspecialchars($db_name).$tabs;
             echo ' reports errors:'.$report[0].' created:'.$report[1].' updated:'.$report[2].' unchanged:'.$report[3].$eol;
-            
+
             if(!empty($report[5])){
                 echo 'Reports with errors:'.$eol;
                 foreach($report[5] as $id=>$err){
@@ -240,8 +240,8 @@ foreach ($databases as $idx=>$db_name){
             continue;
         }
 
-        echo $eol.$db_name;        
-        
+        echo $eol.$db_name;
+
         $checkerURL = new URLChecker($mysqli, HEURIST_SERVER_URL, false);
         $url_results = $checkerURL->checkURLs();
 
@@ -249,11 +249,11 @@ foreach ($databases as $idx=>$db_name){
         $invalid_fb_urls = $url_results[1];
         $invalid_file_urls = $url_results[2];
         $fatal_curl_error = $url_results[3];
-        
+
         if(!$fatal_curl_error){
-        
+
             $url_list[$db_name] = array([], []);
-        
+
             if(!empty($invalid_rec_urls)){
                 echo $eol.'Records with invalid urls: ';
                 foreach ($invalid_rec_urls as $rec_id => $url) {
@@ -265,7 +265,7 @@ foreach ($databases as $idx=>$db_name){
             if(!empty($invalid_fb_urls)){
 
                     echo $eol.'text fields containing invalid urls: ';
-                    
+
                     foreach ($invalid_fb_urls as $rec_id => $flds) {
                         echo $eol.$rec_id.': ';
                         foreach($flds as $dty_id => $urls){
@@ -277,7 +277,7 @@ foreach ($databases as $idx=>$db_name){
 
             }
             if(!empty($invalid_file_urls)){
-                
+
                     echo $eol.'file fields contain invalid urls: ';
                     foreach ($invalid_file_urls as $rec_id => $flds) {
                         echo $eol.$rec_id.': ';
@@ -295,7 +295,7 @@ foreach ($databases as $idx=>$db_name){
                 $fatal_curl_error.' It stopped on '.$db_name);
 
         }
-        
+
     }
 }//foreach database
 
@@ -381,7 +381,7 @@ if($long_reports_count > 0){
 
 if($errors>0){
     $email_body = "The following report" . ($errors > 1 ? "s have" : " has") . " errors and can not be executed/regenerated:\n";
-    
+
     foreach($report_list as $dbname=>$report){
             if(!empty($report[5])){
                 echo 'Reports with errors:'.$eol;
