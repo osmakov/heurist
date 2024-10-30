@@ -191,13 +191,10 @@ foreach($databases as $db){
                     $res = $mysqli->query(str_replace(array('dtyID', 'rtyID'), array(intval($dty_id), intval($rty_id)), $field_in_rst));
 
                     if($res){
-
                         if($res->num_rows == 0){
                             $results[$db][$svs_ID][] = "Field #$dty_id does not exist within record type #$rty_id code => $code";
                         }
                         $res->close();
-
-                        continue;
                     }
                 }
             }

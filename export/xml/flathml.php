@@ -1427,7 +1427,6 @@ function makeFileContentNode($file) {
         }elseif ($content) {
             makeTag('content', array("type" => "xml"), $content, true, false);
         }
-        return;
 }
 
 

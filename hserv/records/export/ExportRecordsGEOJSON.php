@@ -500,10 +500,9 @@ private function _getGeoJsonFeature($record, $extended=false, $simplify=false, $
             }*/
         }
 
-    }else
-    //record does not contains geo field - search geo in linked records
-    if( (isEmptyArray($geovalues)) &&
+    }elseif( (isEmptyArray($geovalues)) &&
         ($this->find_geo_by_pointer_rty===true || (!isEmptyArray($this->find_geo_by_pointer_rty))) ){
+        //record does not contains geo field - search geo in linked records
 
         //this record does not have geo value - find it in related/linked places
         $point0 = array();

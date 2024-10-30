@@ -240,9 +240,9 @@ class SystemEmailExt {
 			$table_listing = $mysqli->query($query);
 			if (!$table_listing || mysqli_num_rows($table_listing) != 4) { // Skip, missing required tables
 				continue;
-			}else{
-				$valid_dbs[] = $db;
 			}
+            
+			$valid_dbs[] = $db;
 		}
 
 		return $valid_dbs;

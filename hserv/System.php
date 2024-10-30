@@ -2020,25 +2020,26 @@ $allowed = array(HEURIST_MAIN_SERVER, 'https://epigraphia.efeo.fr', 'https://nov
 
             if(file_exists($flag_file)){
                 return;
-            }else{
-                file_put_contents($flag_file,'1');
-
-                //remove flag files for previous days
-                for($i=1;$i<10;$i++){
-                    $d = $this->getNow();
-                    $yesterday = $d->sub(new \DateInterval('P'.sprintf('%02d', $i).'D'));
-                    $arc_flagfile = HEURIST_FILESTORE_ROOT.'flag_'.$yesterday->format('Y-m-d');
-                    //if yesterday log file exists
-                    if(file_exists($arc_flagfile)){
-                        unlink($arc_flagfile);
-                    }
-                }
-
-                //add functions for other daily tasks
-                $this->_sendDailyErrorReport();
-                $this->_heuristVersionCheck();// Check if different local and server code versions are different
-                $this->_getDeeplLanguages();// Get list of allowed target languages from Deepl API
             }
+            
+            file_put_contents($flag_file,'1');
+
+            //remove flag files for previous days
+            for($i=1;$i<10;$i++){
+                $d = $this->getNow();
+                $yesterday = $d->sub(new \DateInterval('P'.sprintf('%02d', $i).'D'));
+                $arc_flagfile = HEURIST_FILESTORE_ROOT.'flag_'.$yesterday->format('Y-m-d');
+                //if yesterday log file exists
+                if(file_exists($arc_flagfile)){
+                    unlink($arc_flagfile);
+                }
+            }
+
+            //add functions for other daily tasks
+            $this->_sendDailyErrorReport();
+            $this->_heuristVersionCheck();// Check if different local and server code versions are different
+            $this->_getDeeplLanguages();// Get list of allowed target languages from Deepl API
+            
     }
 
     public function getNow(){
@@ -2111,7 +2112,9 @@ $allowed = array(HEURIST_MAIN_SERVER, 'https://epigraphia.efeo.fr', 'https://nov
 
             if($server_parts[$i] == $local_parts[$i]){
                 continue;
-            }elseif($server_parts[$i] > $local_parts[$i]){ // main release is newer than installed version, send email
+            }
+            
+            if($server_parts[$i] > $local_parts[$i]){ // main release is newer than installed version, send email
 
                 $title = "Heurist version " . htmlspecialchars($local_ver)
                  . " at " . HEURIST_BASE_URL . " is behind Heurist home server";
@@ -2126,13 +2129,11 @@ $allowed = array(HEURIST_MAIN_SERVER, 'https://epigraphia.efeo.fr', 'https://nov
 
                 //Update notification
                 sendEmail(HEURIST_MAIL_TO_ADMIN, $title, $msg, true);
-
-                return;
-
-            }else{ // main release is less than installed version, maybe missed alpha or developemental version
-                return;
             }
-        }
+            //else main release is less than installed version, maybe missed alpha or developemental version
+            
+            break;
+        }//for
     }
 
     /**

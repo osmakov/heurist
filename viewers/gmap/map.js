@@ -739,7 +739,7 @@ if(_mapdata.limit_warning){
         
         let toolbar = $("#timeline_toolbar").css({'font-size':'0.8em', zIndex:3});
 
-        $("<button>").button({icon"ui-icon-circle-plus",showLabel:false, label:window.hWin.HR("Zoom In")})
+        $("<button>").button({icon:"ui-icon-circle-plus",showLabel:false, label:window.hWin.HR("Zoom In")})
             .on('click', function(){ __timelineZoom(-0.25); })
             .appendTo(toolbar);
         $("<button>").button({icon:"ui-icon-circle-minus",showLabel:false, label:window.hWin.HR("Zoom Out")})

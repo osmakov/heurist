@@ -803,9 +803,8 @@ private static function __get_dt_field($rt, $search_fieldname, $mode, $result_fi
         }else{
             return '';
         }
-    }else
-    //search in record type structure
-    if(@$rdr[$search_fieldname]){  //search by dty_ID, rst_DisplayName, dty_ConceptCode
+    }elseif(@$rdr[$search_fieldname]){  //search by dty_ID, rst_DisplayName, dty_ConceptCode
+        //search in record type structure
         return $rdr[$search_fieldname][$result_fieldname];
     }elseif($mode!=1) { //allow to search among all fields
         //if not found in structure - search among all detail types

@@ -709,7 +709,6 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
 
                             fclose($fd);
                             $res->close();
-                            continue;
                         }
 
                     }
@@ -767,10 +766,8 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
                         $msg = $res == 0 ? "Failed to write to TSV file for record type #$rty_ID" : "An error occurred while handling the record type #$rty_ID, error was placed within TSV file";
 
                         echo_flush2("<span style='color: red;margin-left: 5px;'>$msg</span><br>");
-
-                        continue;
                     }
-                }
+                }//for
 
                 $separate_tsv_zip = $separate_tsv_zip && folderSize2(FOLDER_BACKUP . "/tsv-output") > 0;
                 if($separate_tsv_zip){ // copy tsv dumps to separate directory

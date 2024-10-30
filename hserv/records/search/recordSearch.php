@@ -2301,10 +2301,8 @@ function recordSearch($system, $params, $relation_query=null)
 
                 if(is_array($params3['q'])){
                     $params3['is_json'] = true;
-                }else
-                //t:54 related_to:10 =>   {"t":"54","related":"10"}
-                if(strpos($params3['q'],'related_to')>0){
-
+                }elseif(strpos($params3['q'],'related_to')>0){
+                    //t:54 related_to:10 =>   {"t":"54","related":"10"}
                     $params3['q'] = str_replace('related_to','related',$params3['q']);
 
                 }elseif(strpos($params3['q'],'relatedfrom')>0){

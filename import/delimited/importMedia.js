@@ -28,7 +28,6 @@
  * @function prepareURLs - Process the URL field, which can contain several URLs to handle individually
  * @function prepareDescription - Process the description field, splitting it by the ', Download' separator
  */
-
 class HImportMedia extends HImportBase{
 
     constructor(){

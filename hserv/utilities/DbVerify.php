@@ -2454,14 +2454,12 @@ FIXMSG
                     {
                         $row['new_value'] = '';
                         $autofix = true;
-                    }else
+                    }elseif(strpos($date_val,"|")!==false || strpos($date_val,'estMinDate')!==false){
                     //check if dtl_Value is old plain string temporal object or new json object
-                    if(strpos($date_val,"|")!==false || strpos($date_val,'estMinDate')!==false){
                         continue;
-                    }else
-                    //ignore decade dates
-                    if(  (strlen($date_val)==3 || strlen($date_val)==5)
+                    }elseif(  (strlen($date_val)==3 || strlen($date_val)==5)
                         && preg_match( $decade_regex, $date_val )){
+                    //ignore decade dates
 
                         //this is decades
                         $row['is_ambig'] = 'we suggest using a date range';

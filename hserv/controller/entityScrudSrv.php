@@ -87,8 +87,7 @@
                 $search_criteria = $search_params;
             }
 
-        }else
-        if($entities=='all' || $entities==null){
+        }elseif($entities=='all' || $entities==null){
 
             //set_time_limit(120);
             $entities = array('rty','dty','rst','trm','rtg','dtg','vcg','swf');

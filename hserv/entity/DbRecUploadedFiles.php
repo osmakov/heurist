@@ -662,9 +662,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                         UImage::createScaledImageFile($temp_path, $thumb_name);//create thumbnail for iiif image
                         unlink($temp_path);
                     }
-            }else
-            //if there is file to be copied
-            if(@$this->records[$rec_idx]['ulf_TempFile']){
+            }elseif(@$this->records[$rec_idx]['ulf_TempFile']){ //if there is file to be copied
 
                 $ulf_ID = $this->records[$rec_idx]['ulf_ID'];
                 $ulf_ObfuscatedFileID = $this->records[$rec_idx]['ulf_ObfuscatedFileID'];

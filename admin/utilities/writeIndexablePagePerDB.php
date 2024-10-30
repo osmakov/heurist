@@ -498,11 +498,11 @@ if(is_array($files)){ // iterate through files
 
         if(empty($filename) || $filename === '.' || $filename === 'index' || in_array($filename, $databases)){
             continue;
-        }else{ // delete file
-
-            fileDelete($index_dir/$full_filename);
-            echo $tabs0.' Removed old index for '.$filename.$eol;
         }
+        
+        // delete file
+        fileDelete($index_dir/$full_filename);
+        echo $tabs0.' Removed old index for '.$filename.$eol;
     }
 
 }else{ // failed

@@ -2885,9 +2885,8 @@ class HPredicate {
             }
             //if put negate here is will accept any multivalue enum field
             //see negate for enum on level above $res = (($this->negate)?' not':'').$res;
-        }else
+        }elseif($this->field_id=='tag'){
         // it is better to use kwd keyword instead of f:tag
-        if($this->field_id=='tag'){
 
             if(preg_match('/^\d+$/', trim($this->value)) && intval($this->value)>0){
                 $res = '(SELECT rtl_RecID FROM usrRecTagLinks where rtl_TagID='.$this->value.')';

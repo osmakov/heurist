@@ -152,9 +152,9 @@ if(count($requestUri)==3 && $requestUri[0]=='db' && ($requestUri[1]=='record' ||
 
     //redirectURL2('/h6-alpha/redirects/resolver.php?recID='.$requestUri[2].'&fmt='.$format);
 
-}else                            // dbname/action                               heurist/dbname/action
-if(count($requestUri)>1 && (in_array($requestUri[1],$allowedActions) || in_array(@$requestUri[2],$allowedActions)))
-{
+}elseif(count($requestUri)>1 && (in_array($requestUri[1],$allowedActions) || in_array(@$requestUri[2],$allowedActions))){
+                             // dbname/action                               heurist/dbname/action
+
 /*
 To enable this redirection add to httpd.conf
 

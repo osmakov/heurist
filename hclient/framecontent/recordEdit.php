@@ -53,9 +53,8 @@ if(@$_REQUEST['annotationId'] || @$_REQUEST['a']){
     }
 
 
-}else
+}elseif(@$_REQUEST['u']){
 //this is an addition/bookmark of URL - at the moment from bookmarklet only
-if(@$_REQUEST['u']){
 
     $url = filter_var($_REQUEST['u'],FILTER_SANITIZE_URL);
 

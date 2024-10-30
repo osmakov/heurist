@@ -4303,7 +4303,7 @@ $.widget( "heurist.mapping", {
                 __addDrawItems(l2);
                 this.drawZoomTo();
             }catch(e){
-                
+                /* continue regardless of error */
             }
     },   
     
