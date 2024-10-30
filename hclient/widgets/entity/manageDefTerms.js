@@ -336,8 +336,8 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 let btn_array = [
 
                     {showLabel:true, icon:'ui-icon-plus', text:window.hWin.HR('Add'), //Add Term
-                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnAddButton',
-                        class: 'ui-button-action',click: function() { that._onActionListener(null, 'add'); }},
+                        css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnAddButton ui-button-action',
+                        click: function() { that._onActionListener(null, 'add'); }},
 
                     {showLabel:true, icon:'ui-icon-link', text:window.hWin.HR('Ref'), //Add Term
                         css:{'margin-right':'0.5em','display':'inline-block',padding:'2px'}, class:'btnAddButton2',
