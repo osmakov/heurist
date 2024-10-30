@@ -861,7 +861,7 @@ function do_fix_dupe()
         foreach($add_dt_ids as $key => $detail_ids){
             foreach($detail_ids as $detail_id){
                 // since adds are only for repeatables check if it exist in delete array ?yes - remove from delete list if there
-                if ($key_remove = array_search($detail_id, $master_delete_dt_ids)!== FALSE){      //FIXME need to compare the value not the dtl_ID (they will always be diff)
+                if ($key_remove = array_search($detail_id, $master_delete_dt_ids)!== false){      //FIXME need to compare the value not the dtl_ID (they will always be diff)
                     //remove from array
                     unset($master_delete_dt_ids[$key_remove]);
                 }else{ //no  then lookup data for detail and insert the data as detail under the master rec id

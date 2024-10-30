@@ -1356,7 +1356,7 @@ function recognizeMimeTypeFromURL($mysqli, $url, $use_default_ext = true){
 //
 //
 //
-function getScriptOutput($path, $print = FALSE)
+function getScriptOutput($path, $print = false)
 {
     global $system;
 
@@ -1368,10 +1368,10 @@ function getScriptOutput($path, $print = FALSE)
     }
     else
     {
-        return FALSE;
+        return false;
     }
 
-    if( $print == FALSE ){
+    if( $print == false ){
         return ob_get_clean();
     }else{
         echo ob_get_clean();
@@ -1693,7 +1693,7 @@ function uploadFileToNakala($system, $params) {
         } // other error do not matter here
     }
 
-    $file_list = json_decode($file_list, TRUE);
+    $file_list = json_decode($file_list, true);
     if(JSON_ERROR_NONE == json_last_error() && is_array($file_list)){
 
         if(array_key_exists('message', $file_list)){
@@ -1747,7 +1747,7 @@ function uploadFileToNakala($system, $params) {
             return false;
         }
 
-        $file_details = json_decode($file_details, TRUE);
+        $file_details = json_decode($file_details, true);
 
         if(JSON_ERROR_NONE != json_last_error() || !is_array($file_details)){ // json error occurred | is not array | is missing information
             curl_close($ch);
@@ -1827,7 +1827,7 @@ function uploadFileToNakala($system, $params) {
         return false;
     }
 
-    $result = json_decode($result, TRUE);
+    $result = json_decode($result, true);
 
     if(JSON_ERROR_NONE != json_last_error() || !is_array($result)){ // json error occurred | is not array | is missing information
         curl_close($ch);

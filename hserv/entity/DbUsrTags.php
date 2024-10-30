@@ -282,7 +282,7 @@ class DbUsrTags extends DbEntityBase
             $res = $mysqli->query($query);
             if(!$res){
                 $mysqli->rollback();
-                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                 $this->system->addError(HEURIST_DB_ERROR,"Cannot detach tags from records", $mysqli->error );
                 return false;
@@ -298,7 +298,7 @@ class DbUsrTags extends DbEntityBase
             $res = $mysqli->query($query);
             if(!$res){
                 $mysqli->rollback();
-                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                 $this->system->addError(HEURIST_DB_ERROR,"Cannot detach tags from records", $mysqli->error );
                 return false;
@@ -321,7 +321,7 @@ class DbUsrTags extends DbEntityBase
             $res = $mysqli->query($insert_query);
             if(!$res){
                 $mysqli->rollback();
-                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                 $this->system->addError(HEURIST_DB_ERROR,"Cannot assign tags", $mysqli->error );
                 return false;
@@ -344,7 +344,7 @@ class DbUsrTags extends DbEntityBase
                 $res = $mysqli->query($insert_query);
                 if(!$res){
                     $mysqli->rollback();
-                    if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                     $this->system->addError(HEURIST_DB_ERROR,"Cannot create bookmarks", $mysqli->error );
                     return false;
@@ -355,7 +355,7 @@ class DbUsrTags extends DbEntityBase
 
         //commit
         $mysqli->commit();
-        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
         return array('processed'=>count($assignIDs), //afffected records
                 'added'=>$res_tag_added, //tags assigned

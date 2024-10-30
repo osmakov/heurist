@@ -1141,7 +1141,7 @@
         // Get existing data
         $data_old = file_exists($opentheso_file) && filesize($opentheso_file) > 0 ?
                         file_get_contents($opentheso_file) : [];// retain original collection data
-        $data_old = json_decode($data_old, TRUE);
+        $data_old = json_decode($data_old, true);
         $data_old = json_last_error() !== JSON_ERROR_NONE || !is_array($data_old) ?
                         [] : $data_old;
 
@@ -1215,7 +1215,7 @@
                         $group_dtls = loadRemoteURLContentWithRange("{$base_uri}group/$key/$group_id", null, true, 60);
                         if(!$group_dtls){ continue; }
 
-                        $group_dtls = json_decode($group_dtls, TRUE);
+                        $group_dtls = json_decode($group_dtls, true);
                         if(json_last_error() !== JSON_ERROR_NONE || empty($group_dtls)){ continue; }
 
                         $keys = array_keys($group_dtls);
@@ -1259,7 +1259,7 @@
         $data = file_exists($opentheso_file) && filesize($opentheso_file) > 0 ?
                 file_get_contents($opentheso_file) : null;
 
-        $data = $data !== null ? json_decode($data, TRUE) : null;
+        $data = $data !== null ? json_decode($data, true) : null;
         if(json_last_error() !== JSON_ERROR_NONE || !is_array($data) || empty($data)){
             return $system->addError(HEURIST_ERROR, "Unable to retrieve details from the Opentheso cache");
         }

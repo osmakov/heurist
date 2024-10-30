@@ -485,7 +485,7 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
                     if ($handle_wr){
                         $line = implode(',', $newfields)."\n";
 
-                        if (fwrite($handle_wr, $line) === FALSE) {
+                        if (fwrite($handle_wr, $line) === false) {
                             return "Cannot write to file $prepared_filename";
                         }
 
@@ -670,7 +670,7 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
                     if ($handle_wr){
                         $line = implode(',', $newfields)."\n";
 
-                        if (fwrite($handle_wr, $line) === FALSE) {
+                        if (fwrite($handle_wr, $line) === false) {
                             self::$system->addError(HEURIST_ACTION_BLOCKED, "Cannot write to file $prepared_filename");
                             return false;
                         }

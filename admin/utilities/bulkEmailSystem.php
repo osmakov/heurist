@@ -680,7 +680,7 @@ class SystemEmailExt {
 	 *
 	 * Param: $array => array to convert
 	 *
-	 * Return: Array() => converted array, or empty string
+	 * Return: array() => converted array, or empty string
 	 */
 
 	public function createListFromArray($array) {
@@ -862,7 +862,7 @@ class SystemEmailExt {
 				return $rtn;
 			}
 
-			$this->set_error("An error has occurred with adding the new Notes record for the receipt, Error => " . print_r($system->getError(), TRUE));
+			$this->set_error("An error has occurred with adding the new Notes record for the receipt, Error => " . print_r($system->getError(), true));
             return -1;
 
 		} else {

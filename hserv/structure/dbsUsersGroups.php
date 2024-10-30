@@ -706,7 +706,7 @@
                     }
 
                     foreach($recids as $recid){
-                        if (fwrite($handle_wr, $recid.','.$curr_user_id."\n") === FALSE) {
+                        if (fwrite($handle_wr, $recid.','.$curr_user_id."\n") === false) {
                             $system->addError(HEURIST_ERROR, 'Cannot write workset data to file '.$filename);
                             fclose($handle_wr);
                             if(file_exists($filename)) {unlink($filename);}

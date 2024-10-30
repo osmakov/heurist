@@ -922,7 +922,7 @@ private static function __fill_field($field_name, $rt, $mode, $rec_id=null) {
     }
 
     // Return the rec-detail-type ID for the given field in the given record type
-    if (mb_strpos($field_name, $fullstop) === FALSE && mb_strpos($field_name,'{')!==0) {    // direct field name lookup
+    if (mb_strpos($field_name, $fullstop) === false && mb_strpos($field_name,'{')!==0) {    // direct field name lookup
 
         if($mode==1 && self::$fields_correspondence!=null){
             $field_name = self::__replaceInCaseOfImport($field_name);

@@ -910,7 +910,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             $rec_fields = $this->data['regExternalFiles'];
 
             if(!empty($rec_fields) && is_string($rec_fields)){
-                $rec_fields = json_decode($rec_fields, TRUE);
+                $rec_fields = json_decode($rec_fields, true);
             }
 
             if(!empty($rec_fields)){

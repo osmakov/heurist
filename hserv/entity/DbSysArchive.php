@@ -377,7 +377,7 @@ own"0","viewable",NULL,NULL,NULL,NULL
 
                 case 'date': // replace with simple string
 
-                    $json_value = json_decode($value, TRUE);
+                    $json_value = json_decode($value, true);
 
                     if(json_last_error() === JSON_ERROR_NONE){
                         $value = $json_value;
@@ -651,7 +651,7 @@ own"0","viewable",NULL,NULL,NULL,NULL
             // Validate revisions
             $revisions = $this->data['revisions'];
             if(!empty($revisions) && !is_array($revisions)){
-                $revisions = json_decode($revisions, TRUE);
+                $revisions = json_decode($revisions, true);
             }
 
             if(!$revisions || empty($revisions)){

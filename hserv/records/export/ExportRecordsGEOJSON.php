@@ -685,7 +685,7 @@ private static function _getJsonFromWkt($wkt, $simplify=true)
         if(!$geom->isEmpty()){
 
             /*The GEOS-php extension needs to be installed for these functions to be available
-            if($simplify)$geom->simplify(0.0001, TRUE);
+            if($simplify)$geom->simplify(0.0001, true);
             */
 
             $geojson_adapter = new \GeoJSON();

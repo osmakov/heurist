@@ -665,7 +665,7 @@ public static function assignRecordIds($params){
                     self::$system->addError(HEURIST_ERROR, 'Cannot update import table: set ID field. '
                     .'Too many key values. The size of list of keys oversize key field length');
                     self::$mysqli->rollback();
-                    if($keep_autocommit===true) {self::$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {self::$mysqli->autocommit(true);}
                     return;
                 }
 
@@ -690,11 +690,11 @@ public static function assignRecordIds($params){
             mysql__update_progress(null, $progress_session_id, false, 'REMOVE');
             self::$system->addError(HEURIST_DB_ERROR, 'Cannot update import table: set ID field', $mysqli->error.' QUERY:'.$is_error);
             self::$mysqli->rollback();
-            if($keep_autocommit===true) {self::$mysqli->autocommit(TRUE);}
+            if($keep_autocommit===true) {self::$mysqli->autocommit(true);}
             return;
         }else{
             self::$mysqli->commit();
-            if($keep_autocommit===true) {self::$mysqli->autocommit(TRUE);}
+            if($keep_autocommit===true) {self::$mysqli->autocommit(true);}
         }
 
 
@@ -3202,7 +3202,7 @@ public static function performImport($params, $mode_output){
 
         if($use_transaction){
             self::$mysqli->commit();
-            if($keep_autocommit===true) {self::$mysqli->autocommit(TRUE);}
+            if($keep_autocommit===true) {self::$mysqli->autocommit(true);}
         }
         mysql__update_progress(null, $progress_session_id, false, 'REMOVE');
         mysql__supress_trigger(self::$mysqli, false);
@@ -3210,7 +3210,7 @@ public static function performImport($params, $mode_output){
         /*
                 if($use_transaction){
                     self::$mysqli->rollback();
-                    if($keep_autocommit===true) {self::$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {self::$mysqli->autocommit(true);}
                 }
         */
 

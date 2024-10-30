@@ -1651,7 +1651,7 @@ $typeDict = array("s" => "Simple Date", "c" => "C14 Date", "f" => "Approximate D
 $fieldsDict = array("VER" => "Version Number", "TYP" => "Temporal Type Code", "PRF" => "Probability Profile", "SPF" => "Start Profile", "EPF" => "End Profile", "CAL" => "Calibrated", "COD" => "Laboratory Code", "DET" => "Determination Type", "COM" => "Comment", "EGP" => "Egyptian Date");
 $determinationCodes = array(0 => "Unknown", 1 => "Attested", 2 => "Conjecture", 3 => "Measurement");
 $profileCodes = array(0 => "Flat", 1 => "Central", 2 => "Slow Start", 3 => "Slow Finish");
-$tDateDict = Array("DAT" => "ISO DateTime", "BPD" => "Before Present (1950) Date", "BCE" => "Before Current Era", "TPQ" => "Terminus Post Quem", "TAQ" => "Terminus Ante Quem", "PDB" => "Probable begin", "PDE" => "Probable end", "SRT" => "Sortby Date");
+$tDateDict = array("DAT" => "ISO DateTime", "BPD" => "Before Present (1950) Date", "BCE" => "Before Current Era", "TPQ" => "Terminus Post Quem", "TAQ" => "Terminus Ante Quem", "PDB" => "Probable begin", "PDE" => "Probable end", "SRT" => "Sortby Date");
 $tDurationDict = array("DUR" => "Simple Duration", "RNG" => "Range", "DEV" => "Standard Deviation", "DVP" => "Deviation Positive", "DVN" => "Deviation Negative", "ERR" => "Error Margin");
 
 

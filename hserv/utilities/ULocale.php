@@ -268,7 +268,7 @@
         if(file_exists($language_file)){
             $langs = file_get_contents($language_file);
 
-            $langs = json_decode($langs, TRUE);
+            $langs = json_decode($langs, true);
             $deepl_languages = json_last_error() !== JSON_ERROR_NONE ? array() : $langs;
 
             $deepl_languages = !empty($langs) ? $langs : $def_languages;

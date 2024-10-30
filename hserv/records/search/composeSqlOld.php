@@ -964,7 +964,7 @@ class SortPhrase {
         $text = substr($this->value, $colon_pos+1);
 
         $colon_pos = strpos($text, ':');
-        if ($colon_pos === FALSE) {$subtext = $text;}
+        if ($colon_pos === false) {$subtext = $text;}
         else {$subtext = substr($text, 0, $colon_pos);}
 
         // if sortby: is followed by a -, we sort DESCENDING; if it's a + or nothing, it's ASCENDING
@@ -2004,7 +2004,7 @@ class TagPredicate extends Predicate {
         // Heavy, heavy DWIM here: if the tag for which we're searching contains comma(s),
         // then split it into several tags, and do an OR search on those.
         for ($i=0; $i < count($values);++$i) {
-            if (strpos($values[$i], '\\') === FALSE) {
+            if (strpos($values[$i], '\\') === false) {
                 array_push($this->value, trim($values[$i]));
                 array_push($this->wg_value, '');
             } else {    // A workgroup tag.  How nice.

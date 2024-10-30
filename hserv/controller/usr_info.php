@@ -206,7 +206,7 @@
         $mysqli = $system->get_mysqli();
         $data = $req_params['data'];
         if(!is_array($data)){
-            $data = json_decode($data, TRUE);
+            $data = json_decode($data, true);
         }
 
         if(JSON_ERROR_NONE !== json_last_error() || !is_array($data)){

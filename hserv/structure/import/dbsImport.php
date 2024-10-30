@@ -511,7 +511,7 @@ class DbsImport {
 
         global $mysqli;
         $mysqli = $this->system->get_mysqli();
-        $mysqli->autocommit(FALSE);
+        $mysqli->autocommit(false);
 
         $this->broken_terms = array();
         $this->broken_terms_reason = array();

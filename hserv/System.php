@@ -1596,7 +1596,7 @@ class System {
     * @param mixed $password
     * @param mixed $session_type   - public, shared, remember
     *
-    * @return  TRUE if login is success
+    * @return  true if login is success
     */
     public function doLogin($username, $password, $session_type, $skip_pwd_check=false, $is_guest=false){
         global $passwordForDatabaseAccess;
@@ -2157,7 +2157,7 @@ $allowed = array(HEURIST_MAIN_SERVER, 'https://epigraphia.efeo.fr', 'https://nov
 
         if(!empty($target_res)){
 
-            $target_res = json_decode($target_res, TRUE);
+            $target_res = json_decode($target_res, true);
             $target_res = json_last_error() !== JSON_ERROR_NONE ? array() : $target_res;
 
             // Extra processing needed, some target languages have multiple versions; e.g. ENG-GB and ENG-US
@@ -2240,7 +2240,7 @@ $allowed = array(HEURIST_MAIN_SERVER, 'https://epigraphia.efeo.fr', 'https://nov
             return array();
         }
 
-        $settings = json_decode($settings, TRUE);
+        $settings = json_decode($settings, true);
         if(json_last_error() !== JSON_ERROR_NONE){
             return $this->addError(HEURIST_ERROR, "An error occurred while decoding the existing database settings for $setting_name");
         }

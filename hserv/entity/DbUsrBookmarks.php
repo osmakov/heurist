@@ -184,7 +184,7 @@ class DbUsrBookmarks extends DbEntityBase
                 $res = $mysqli->query($query);
                 if(!$res){
                     $mysqli->rollback();
-                    if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                     $this->system->addError(HEURIST_DB_ERROR,"Cannot detach personal tags from records", $mysqli->error );
                     return false;
@@ -196,7 +196,7 @@ class DbUsrBookmarks extends DbEntityBase
                 $res = $mysqli->query($query);
                 if(!$res){
                     $mysqli->rollback();
-                    if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                     $this->system->addError(HEURIST_DB_ERROR,"Cannot remove bookmarks", $mysqli->error );
                     return false;

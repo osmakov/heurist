@@ -87,7 +87,7 @@
      */
     function isElasticAddressCreated($address) {
         $handle = curl_init($address);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
         curl_exec($handle);
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);

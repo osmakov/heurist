@@ -1019,7 +1019,7 @@ function printMappingReport_dt($arr, $rt_id, $dt_id, $extra_info){
             $label = '';
             $code = $arr;
 
-            if(is_array($arr)){ error_log(print_r($arr, TRUE));}
+            if(is_array($arr)){ error_log(print_r($arr, true));}
         }
 
         if($extra_info == null){

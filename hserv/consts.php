@@ -598,7 +598,7 @@ function includeJQuery(){
    $useVersion3 =  false;
 
    if ($useVersion3) {
-       // integrity has been got with https://www.srihash.org/
+           // integrity has been got with https://www.srihash.org/
 ?>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha384-wsqsSADZR1YRBEZ4/kKHNSmU+aX8ojbnKUMN4RyD3jDkxw5mHtoe2z/T/n4l56U/" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-migrate-3.5.2.js" integrity="sha384-v0gmY8lRWAAaI20hT2ehyGAhsZiQpB+ZMpRHg/ipfVinhY4zxJXPjV8zaVW3kq4W" crossorigin="anonymous"></script>

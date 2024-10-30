@@ -1380,7 +1380,7 @@ $mysqli->kill($thread_id);
                             $system->addError(HEURIST_ACTION_BLOCKED, 'Database Verification has been terminated by user');
                             if($cnt_dates<150000){
                                 $mysqli->rollback();
-                                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                                if($keep_autocommit===true) {$mysqli->autocommit(true);}
                             }
                             return false;
                         }
@@ -1397,7 +1397,7 @@ $mysqli->kill($thread_id);
                         $mysqli->rollback();
                     }
                 }
-                if( $cnt_dates<150000 && $keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if( $cnt_dates<150000 && $keep_autocommit===true) {$mysqli->autocommit(true);}
 
             }
         }
@@ -1710,7 +1710,7 @@ $mysqli->kill($thread_id);
 
         $keep_autocommit = mysql__select_value($mysqli, 'SELECT @@autocommit');
         if($keep_autocommit===true || $keep_autocommit==1){
-                $mysqli->autocommit(FALSE);
+                $mysqli->autocommit(false);
                 $keep_autocommit = true;
         }else{
                 $keep_autocommit = false;

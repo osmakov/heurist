@@ -383,7 +383,7 @@ class RecordsBatch
             if($res<0){
                 $syserror = $mysqli->error;
                 $mysqli->rollback();
-                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if($keep_autocommit===true) {$mysqli->autocommit(true);}
                 return $this->system->addError(HEURIST_DB_ERROR,
                     'Unable to insert reverse pointer for child record ID:'.$child_id.' - ', $syserror);
             }elseif($res==0){
@@ -434,14 +434,14 @@ class RecordsBatch
         if(!$res){
             $syserror = $mysqli->error;
             $mysqli->rollback();
-            if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+            if($keep_autocommit===true) {$mysqli->autocommit(true);}
             return $this->system->addError(HEURIST_DB_ERROR,
                 'Unable to set value in record sructure table', $syserror);
         }
 
 
         $mysqli->commit();
-        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
         return $this->result_data;
     }
@@ -495,9 +495,9 @@ class RecordsBatch
         }
 
         $now = date(DATE_8601);
-        $dtl = Array('dtl_DetailTypeID'  => $dtyID,
+        $dtl = array('dtl_DetailTypeID'  => $dtyID,
                      'dtl_Modified'  => $now);
-        $rec_update = Array('rec_ID'  => 'to-be-filled',
+        $rec_update = array('rec_ID'  => 'to-be-filled',
                      'rec_Modified'  => $now);
 
         $baseTag = "~add field $dtyName $now";//name of tag assigned to modified records
@@ -657,7 +657,7 @@ class RecordsBatch
             $mysqli->commit();
             $res_data = $this->result_data;
         }
-        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
         return $res_data;
 
@@ -809,8 +809,8 @@ class RecordsBatch
         $sqlErrors = array();
 
         $now = date(DATE_8601);
-        $dtl = Array('dtl_Modified'  => $now);
-        $rec_update = Array('rec_ID'  => 'to-be-filled',
+        $dtl = array('dtl_Modified'  => $now);
+        $rec_update = array('rec_ID'  => 'to-be-filled',
                      'rec_Modified'  => $now);
 
         $baseTag = "~replace field $dtyName $now";
@@ -1118,8 +1118,8 @@ class RecordsBatch
         $sqlErrors = array();
 
         $now = date(DATE_8601);
-        $dtl = Array('dtl_Modified'  => $now);
-        $rec_update = Array('rec_ID'  => 'to-be-filled',
+        $dtl = array('dtl_Modified'  => $now);
+        $rec_update = array('rec_ID'  => 'to-be-filled',
                      'rec_Modified'  => $now);
 
         if($partialRemove){
@@ -1330,8 +1330,8 @@ class RecordsBatch
         $sqlErrors = array();
 
         $now = date(DATE_8601);
-        $dtl = Array('dtl_Modified'  => $now);
-        $rec_update = Array('rec_ID'  => 'to-be-filled',
+        $dtl = array('dtl_Modified'  => $now);
+        $rec_update = array('rec_ID'  => 'to-be-filled',
                             'rec_Modified'  => $now,
                             'rec_RecTypeID'  => $rtyID_new);
 
@@ -1348,7 +1348,7 @@ class RecordsBatch
                    array_push($processedRecIDs, $recID);
                    //update title
                    $new_title = TitleMask::fill($recID);
-                   $rec_update2 = Array('rec_ID'  => $recID, 'rec_Title'  => $new_title);
+                   $rec_update2 = array('rec_ID'  => $recID, 'rec_Title'  => $new_title);
                    mysql__insertupdate($mysqli, 'Records', 'rec', $rec_update2);
                }
         }//for recors
@@ -1403,9 +1403,9 @@ class RecordsBatch
 
 
         $now = date(DATE_8601);
-        $dtl = Array('dtl_DetailTypeID'  => $this->data['dtyID'],
+        $dtl = array('dtl_DetailTypeID'  => $this->data['dtyID'],
                      'dtl_Modified'  => $now);
-        $rec_update = Array('rec_ID'  => 'to-be-filled',
+        $rec_update = array('rec_ID'  => 'to-be-filled',
                      'rec_Modified'  => $now);
 
         $baseTag = "~extract pdf $now";
@@ -1521,7 +1521,7 @@ class RecordsBatch
                 /*
                 // 4. remove old 2-652 "Extracted text"
                 $sql = 'delete from recDetails where dtl_RecID='.$recID.' AND dtl_ID = '.$this->data['dtyID'];
-                if ($mysqli->query($sql) !== TRUE) {
+                if ($mysqli->query($sql) !== true) {
                     $sqlErrors[$recID] = 'Cannot remove dt#'.$this->data['dtyID'].' for record # '.$recID.'  '.$mysqli->error;
                 }else{}
                 */
@@ -2139,7 +2139,7 @@ public methods
                 if($result['status'] != HEURIST_OK){
 
                     $mysqli->rollback();
-                    if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                     return false;
                 }
@@ -2155,7 +2155,7 @@ public methods
                     if($result['status'] != HEURIST_OK){
 
                         $mysqli->rollback();
-                        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                        if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                         return false;
                     }
@@ -2181,11 +2181,11 @@ public methods
                 if(!$res || $mysqli->affected_rows == 0){ // affected rows should always be greater than 0
 
                     $msg = "<br><br>Error => " . $mysqli->error . "<br><br>Query => $upd_query";
-                    $msg .= "<br><br>dtl_IDs => " . print_r($dtl_IDs, TRUE);
+                    $msg .= "<br><br>dtl_IDs => " . print_r($dtl_IDs, true);
                     $system->addError(HEURIST_DB_ERROR, "An SQL error occurred while attempting to update the original values from record #$rec_id");
 
                     $mysqli->rollback();
-                    if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                    if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                     return false;
                 }
@@ -2198,7 +2198,7 @@ public methods
             if(!$record){
 
                 $mysqli->rollback();
-                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if($keep_autocommit===true) {$mysqli->autocommit(true);}
                 return false;
             }
 
@@ -2214,7 +2214,7 @@ public methods
             if($result['status'] != HEURIST_OK || $result['data'] != $record['ID']){
 
                 $mysqli->rollback();
-                if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+                if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
                 return false;
             }
@@ -2223,7 +2223,7 @@ public methods
         }
 
         $mysqli->commit();
-        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
         $final_count = count($new_records);// get final count of new records
 
@@ -3014,7 +3014,7 @@ public methods
         if($res){
             $mysqli->commit();
         }
-        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(true);}
 
         return $res?$this->result_data:false;
     }

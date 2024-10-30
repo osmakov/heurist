@@ -1253,7 +1253,7 @@ class DbUtils {
         self::setSessionVal('Permission validation');
 
         $keep_autocommit = mysql__select_value($mysqli, 'SELECT @@autocommit');
-        if($keep_autocommit===true) {$mysqli->autocommit(FALSE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(false);}
 
         if(!$mysqli->query("update recThreadedComments set cmt_ParentCmtID = NULL where cmt_ID>0")){
             //not used
@@ -1297,7 +1297,7 @@ class DbUtils {
             $mysqli->rollback();
         }
 
-        if($keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($keep_autocommit===true) {$mysqli->autocommit(true);}
         //$mysqli->close();
 
         return $res;

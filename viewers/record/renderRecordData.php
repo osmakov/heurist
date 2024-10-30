@@ -2760,7 +2760,7 @@ function orderComments($cmts) {
             if ($cmt["deleted"]) {continue;}
             $ownerIndex = array_search($cmt["owner"],$orderedCmtIds);
             $insertIndex = count($orderedCmtIds);//set insertion to end of array as default
-            if($ownerIndex === FALSE) {  // breaks assumption write code to fix up the ordering here
+            if($ownerIndex === false) {  // breaks assumption write code to fix up the ordering here
                 array_push($orderErrCmts,array( 'id' => $id, 'level' => 1));
             }elseif($ownerIndex +1 < $insertIndex) { //not found at the end of the array  note array index +1 = array offset
                 if (array_key_exists($cmt["owner"],$cmts) && array_key_exists("level",$cmts[$cmt["owner"]])){

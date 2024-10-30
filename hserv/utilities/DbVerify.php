@@ -68,7 +68,7 @@ class DbVerify {
         $this->system->addError(HEURIST_ACTION_BLOCKED, 'Database Verification has been terminated by user');
         if($this->keep_autocommit!=null && $this->mysqli){
             $this->mysqli->rollback();
-            if($this->keep_autocommit===true) {$this->mysqli->autocommit(TRUE);}
+            if($this->keep_autocommit===true) {$this->mysqli->autocommit(true);}
         }
         if($this->out){
             fclose($this->out);
@@ -1434,7 +1434,7 @@ HEADER;
                     .$resMsg.TABLE_E;
         }
 
-        if($this->keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($this->keep_autocommit===true) {$mysqli->autocommit(true);}
 
         return array('status'=>$resStatus,'message'=>$resMsg);
     }
@@ -1908,7 +1908,7 @@ HEADER;
         if($isOK){
             $mysqli->commit();
         }
-        if($this->keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($this->keep_autocommit===true) {$mysqli->autocommit(true);}
 
         $this->_outStreamInit();
         fwrite($this->out, $resMsg);
@@ -2066,7 +2066,7 @@ HEADER;
         }//while limit by 10000
 
         $mysqli->commit();
-        if($this->keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($this->keep_autocommit===true) {$mysqli->autocommit(true);}
 
         $this->_outStreamInit();
 
@@ -2348,7 +2348,7 @@ HEADER;
         if($resStatus){
             $mysqli->commit();
         }
-        if($this->keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($this->keep_autocommit===true) {$mysqli->autocommit(true);}
 
         if($resStatus){
 
@@ -2566,7 +2566,7 @@ FIXMSG
         }//while limit by 10000
 
         $mysqli->commit();
-        if($this->keep_autocommit===true) {$mysqli->autocommit(TRUE);}
+        if($this->keep_autocommit===true) {$mysqli->autocommit(true);}
 
         if($cnt==0){
             fwrite($this->out, '<h3 class="res-valid">OK: All records have recognisable Date values</h3>');
