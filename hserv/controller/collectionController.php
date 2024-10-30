@@ -41,47 +41,46 @@ if(strpos($db, HEURIST_DB_PREFIX)===0){
 
 //since this script is called after system is inited we can be sure that session is available already
 if (@$_COOKIE['heurist-sessionid']) {
-        session_name('heurist-sessionid');
-        /* @todo test
-        session_set_cookie_params ( 0, '/', '', $is_https);
-        session_cache_limiter('none');
-        session_id($_COOKIE['heurist-sessionid']);
-        */
-        @session_start();
+    session_name('heurist-sessionid');
+    /* @todo test
+    session_set_cookie_params ( 0, '/', '', $is_https);
+    session_cache_limiter('none');
+    session_id($_COOKIE['heurist-sessionid']);
+    */
+    @session_start();
 }
 
 // note $collection is a reference - SW also we suppress warnings to let the system create the key
 $collection = &$_SESSION[$dbname_full]['record-collection'];
 
 function digits ($s) {
-	return preg_match('/^\d+$/', $s);
+    return preg_match('/^\d+$/', $s);
 }
 
 if (array_key_exists('add', $_REQUEST)) {
-	$ids = array_filter(explode(',', $_REQUEST['add']), 'digits');
-	foreach ($ids as $id) {
-		$collection[$id] = true;
-	}
+    $ids = array_filter(explode(',', $_REQUEST['add']), 'digits');
+    foreach ($ids as $id) {
+        $collection[$id] = true;
+    }
 }
 
 if (array_key_exists('remove', $_REQUEST)) {
-	$ids = array_filter(explode(',', $_REQUEST['remove']), 'digits');
-	foreach ($ids as $id) {
-		unset($collection[$id]);
-	}
+    $ids = array_filter(explode(',', $_REQUEST['remove']), 'digits');
+    foreach ($ids as $id) {
+        unset($collection[$id]);
+    }
 }
 
 if (array_key_exists('clear', $_REQUEST) || !$collection) {
-	$collection = array();
+    $collection = array();
 }
 
 $rv = array(
-	'count' => count($collection)
+    'count' => count($collection)
 );
 
 if (array_key_exists('fetch', $_REQUEST)) {
-	$rv['ids'] = @$collection ? array_keys($collection): array();
+    $rv['ids'] = @$collection ? array_keys($collection): array();
 }
 
 print json_encode($rv);
-?>

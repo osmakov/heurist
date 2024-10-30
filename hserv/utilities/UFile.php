@@ -1156,7 +1156,7 @@ function loadRemoteURLContentWithRange($url, $range, $bypassProxy = true, $timeo
         }
     }
 
-    if(is_array($additional_headers) && count($additional_headers) > 0){ // Add additional/custom headers
+    if(is_array($additional_headers) && !empty($additional_headers)){ // Add additional/custom headers
         curl_setopt($ch, CURLOPT_HTTPHEADER, $additional_headers);
         //curl_setopt($curl, CURLOPT_HTTPHEADER, array('Expect:'));
     }

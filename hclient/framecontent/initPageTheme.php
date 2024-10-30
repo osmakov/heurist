@@ -41,7 +41,7 @@ global $ut;
 // usage: websiteRecord.php takes color scheme from field of CMS_HOME record
 if(isset($site_colors) && $site_colors!=null){
 
-$ut = json_decode($site_colors, true);
+    $ut = json_decode($site_colors, true);
 
 }else{
 
@@ -90,43 +90,43 @@ if(!isset($ut) || !is_array($ut)){
 }
 
 $def_ut = array(
-//main scheme
-'cd_bg'=>CLR_BG_DARKGRAY,
-'cl_bg'=>CLR_WHITE,
-'cd_input'=>CLR_INPUT,
-'cd_color'=>CLR_DARKGRAY,
-'cd_border'=>CLR_BORDER,
-//alt scheme
-'ca_bg'=>'#364050',
-'ca_color'=>CLR_WHITE,
-'ca_input'=>'#536077',
-//editor
-'ce_bg' =>'#ECF1FB',
-'ce_color'=>'#6A7C99',
-'ce_input'=>CLR_WHITE,
-'ce_helper'=>CLR_LIGHTGRAY,
-'ce_readonly'=>CLR_LIGHTGRAY,
-'ce_mandatory'=>'#CC0000',
-//clickable default
-'cd_corner'=>'0',
+    //main scheme
+    'cd_bg'=>CLR_BG_DARKGRAY,
+    'cl_bg'=>CLR_WHITE,
+    'cd_input'=>CLR_INPUT,
+    'cd_color'=>CLR_DARKGRAY,
+    'cd_border'=>CLR_BORDER,
+    //alt scheme
+    'ca_bg'=>'#364050',
+    'ca_color'=>CLR_WHITE,
+    'ca_input'=>'#536077',
+    //editor
+    'ce_bg' =>'#ECF1FB',
+    'ce_color'=>'#6A7C99',
+    'ce_input'=>CLR_WHITE,
+    'ce_helper'=>CLR_LIGHTGRAY,
+    'ce_readonly'=>CLR_LIGHTGRAY,
+    'ce_mandatory'=>'#CC0000',
+    //clickable default
+    'cd_corner'=>'0',
 
-'sd_color' =>CLR_GRAY,
-'sd_bg'    =>CLR_SD_BG,
+    'sd_color' =>CLR_GRAY,
+    'sd_bg'    =>CLR_SD_BG,
 
-//clickable hover
-'sh_border' =>CLR_LIGHTGRAY,
-'sh_color'  =>CLR_HOVER_COLOR,
-'sh_bg'     =>CLR_BORDER,
+    //clickable hover
+    'sh_border' =>CLR_LIGHTGRAY,
+    'sh_color'  =>CLR_HOVER_COLOR,
+    'sh_bg'     =>CLR_BORDER,
 
-//clickable active
-'sa_border' =>'#aaaaaa',
-'sa_bg'     =>CLR_BORDER,
-'sa_color'  =>CLR_ACTIVE,
+    //clickable active
+    'sa_border' =>'#aaaaaa',
+    'sa_bg'     =>CLR_BORDER,
+    'sa_color'  =>CLR_ACTIVE,
 
-//clickable pressed
-'sp_border' =>CLR_SP_BORDER,
-'sp_color'  =>CLR_WHITE,
-'sp_bg'     =>'#9CC4D9'
+    //clickable pressed
+    'sp_border' =>CLR_SP_BORDER,
+    'sp_color'  =>CLR_WHITE,
+    'sp_bg'     =>'#9CC4D9'
 
 );
 

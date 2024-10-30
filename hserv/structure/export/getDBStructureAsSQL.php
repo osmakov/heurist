@@ -61,9 +61,9 @@ $mysqli = $system->get_mysqli();
 // HTML is a fudge to make it readable in a browser, very useful for debug and cut/paste to coreDefinitions.txt
 // rather inelegant from an IT perspective. Should probably be replaced with a more secure format
 if($isHTML){
-print "<html><head>";
-print '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">';
-print "</head><body>\n";
+    print "<html><head>";
+    print '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">';
+    print "</head><body>\n";
 }
 print "-- Heurist Definitions Exchange File  generated: ".date("d M Y @ H:i").EOL;
 print "-- Installation = " . HEURIST_BASE_URL. EOL;
@@ -267,7 +267,7 @@ function do_print_table($desc, $tname, $where=null)
             if ($_REQUEST['pretty']) {
                 print"<br>";
             }
-                    //print_row($row, $tname);
+            //print_row($row, $tname);
         }//while
         $res->close();
         print "$endToken\n";
@@ -278,4 +278,3 @@ function do_print_table($desc, $tname, $where=null)
 
     if($isHTML) {print "<p>&nbsp;<p>&nbsp;<p>";}
 }
-?>

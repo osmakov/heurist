@@ -27,8 +27,8 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 $log_file = $system->getSysDir().'userInteraction.log';
 
 if(!file_exists($log_file)){
-	print '<h2>There is no interactions log file</h2>';
-	exit;
+    print '<h2>There is no interactions log file</h2>';
+    exit;
 }elseif(!is_readable($log_file)){
     $system->addError(HEURIST_ERROR, 'Unable to read the interaction log file for DB ' . htmlspecialchars($_REQUEST['db']));
     print '<h2>Unable to read User interactions file</h2>';
@@ -72,9 +72,9 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
 
         case 'database': // database actions
             array_push($action_filter, 'dbBrowse', 'dbNew', 'dbClone',
-                        'dbRename', 'dbRestore', 'dbProperties',
-                        'dbRegister', 'dbClear', 'dbArchive', 'dbArchiveRepository',
-                        'stRebuildTitles', 'stRebuildFields', 'profFiles');
+                'dbRename', 'dbRestore', 'dbProperties',
+                'dbRegister', 'dbClear', 'dbArchive', 'dbArchiveRepository',
+                'stRebuildTitles', 'stRebuildFields', 'profFiles');
 
             $fileprefix = "database";
             break;
@@ -162,7 +162,7 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
         }
 
         if(empty($line_chunks[3]) || is_numeric($line_chunks[3]) ||
-            $line_chunks[3] == 'Array' || preg_match("/\d\s\d/", $line_chunks[3])){ // older format
+        $line_chunks[3] == 'Array' || preg_match("/\d\s\d/", $line_chunks[3])){ // older format
 
             array_splice($line_chunks, 3, 0, ['Unknown', 'Unknown', 'Unknown']);
         }
@@ -208,7 +208,7 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
     fclose($csv_fd);
     fclose($log_fd);
 
-	exit;
+    exit;
 }
 //else, display download form, allows for filtering
 ?>
@@ -218,9 +218,9 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
         <title>Heurist Interaction Log</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-<?php
+        <?php
         includeJQuery();
-?>
+        ?>
 
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>
 
@@ -238,37 +238,37 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
                 window.hWin.HEURIST4.util.setDisabled($dateSection, true);
 
                 $('div#wrkGroup')
-                    .css('cursor', 'pointer')
-                    .on('click', function(){
-                        var popup_opts = {
-                            select_mode: 'select_multi',
-                            select_return_mode: 'recordset',
-                            edit_mode: 'popup',
-                            title: 'Filter by Workgroups',
-                            ugl_UserID: window.hWin.HAPI4.user_id,
-                            onselect: function(event, data){
-                                if(data && data.selection){
-                                    var selection = data.selection;
+                .css('cursor', 'pointer')
+                .on('click', function(){
+                    var popup_opts = {
+                        select_mode: 'select_multi',
+                        select_return_mode: 'recordset',
+                        edit_mode: 'popup',
+                        title: 'Filter by Workgroups',
+                        ugl_UserID: window.hWin.HAPI4.user_id,
+                        onselect: function(event, data){
+                            if(data && data.selection){
+                                var selection = data.selection;
 
-                                    var ids = [];
-                                    var names = [];
+                                var ids = [];
+                                var names = [];
 
-                                    selection.each2(function(id, record){
-                                        ids.push(id);
-                                        names.push(record['ugr_Name']);
-                                    });
+                                selection.each2(function(id, record){
+                                    ids.push(id);
+                                    names.push(record['ugr_Name']);
+                                });
 
-                                    $('span#workgroupList').text(names.join(', '));
-                                    $('input#workGroups').val(ids.join(','));
-                                }else{
-                                    $('span#workgroupList').text('All');
-                                    $('input#workGroups').val('');
-                                }
+                                $('span#workgroupList').text(names.join(', '));
+                                $('input#workGroups').val(ids.join(','));
+                            }else{
+                                $('span#workgroupList').text('All');
+                                $('input#workGroups').val('');
                             }
-                        };
+                        }
+                    };
 
-                        window.hWin.HEURIST4.ui.showEntityDialog('sysGroups', popup_opts);
-                    });
+                    window.hWin.HEURIST4.ui.showEntityDialog('sysGroups', popup_opts);
+                });
 
                 $('button#exportForm').on('click', function(event){
                     var formData = $('input, select').serialize();
@@ -287,14 +287,14 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
     </head>
     <body class="popup" style="overflow:auto;">
 
-    	<div style="padding-top: 20px;">
-    		Download the user interactions log as a CSV file, select options below to filter the output as needed.
-    	</div>
+        <div style="padding-top: 20px;">
+            Download the user interactions log as a CSV file, select options below to filter the output as needed.
+        </div>
 
-    	<div id="form">
+        <div id="form">
             <!-- Action types -->
             <h2>Filter Actions:</h2>
-    		<div>
+            <div>
                 <label for="completeLog"><input type="radio" name="actionType" id="completeLog" value="all" checked="true"> Download entire log</label>
             </div>
 
@@ -348,15 +348,15 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
             <!-- <h2>Filter by Records:</h2> -->
             <!-- Record Types (e.g. Persons, Organsiations, etc...) -->
             <!-- <div id="recType">
-                Filter by Record Types:
-                <span id="rectypeList" style="font-weight: bold;">All</span>
-                <input type="hidden" name="recordTypes" id="recordTypes" value="">
+            Filter by Record Types:
+            <span id="rectypeList" style="font-weight: bold;">All</span>
+            <input type="hidden" name="recordTypes" id="recordTypes" value="">
             </div>-->
 
             <!-- Record IDs? Too specific? Too niche (e.g. 100, 13, 201, 511) -->
 
             <button id="exportForm">Download Log</button>
-    	</div>
+        </div>
 
     </body>
 </html>

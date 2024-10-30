@@ -2102,7 +2102,7 @@ function executeSmarty($system, $smarty, $params, $mode=null, $heuristRec=null){
 
   $record_ids = @$params['records'];
 
-  if(!is_array($record_ids) || count($record_ids)<1) {return '';}
+  if(!is_array($record_ids) || empty($record_ids)) {return '';}
 
   $mode = $mode ?$mode:'eval:';//string: - use complied or eval: - compile every time
 
@@ -2869,7 +2869,7 @@ $dtl_Value = preg_replace('#<([A-Z][A-Z0-9]*)(\s*)(?:(?:(?:(?!'.$allowed2.$regex
                 .' in record type "'.htmlspecialchars($rty_Name)
                 .'" to "optional" or specify default value for the field');
 
-        }elseif (!is_array($insertValues) || count($insertValues)<1) {
+        }elseif (!is_array($insertValues) || empty($insertValues)) {
             $system->addError(HEURIST_INVALID_REQUEST, "It is not possible save record. No fields are defined");
         }else{
             $res = $insertValues;

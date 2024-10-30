@@ -143,10 +143,10 @@ function recordSearchDistinctValue($system, $params){
 
             if($search_unique){
                 $query = 'SELECT COUNT(DISTINCT dtl_Value) '
-                    .SQL_RECDETAILS
-                    .predicateId('rec_RecTypeID',$params['rty_ID'])
-                    .SQL_AND
-                    .predicateId('dtl_DetailTypeID',$params['dty_ID']);
+                .SQL_RECDETAILS
+                .predicateId('rec_RecTypeID',$params['rty_ID'])
+                .SQL_AND
+                .predicateId('dtl_DetailTypeID',$params['dty_ID']);
 
                 $res = mysql__select_value($mysqli, $query);
                 if ($res==null){
@@ -156,10 +156,10 @@ function recordSearchDistinctValue($system, $params){
             }
             if($search_all){
                 $query = 'SELECT COUNT(dtl_ID) '
-                    .SQL_RECDETAILS
-                    .predicateId('rec_RecTypeID',$params['rty_ID'])
-                    .SQL_AND
-                    .predicateId('dtl_DetailTypeID',$params['dty_ID']);
+                .SQL_RECDETAILS
+                .predicateId('rec_RecTypeID',$params['rty_ID'])
+                .SQL_AND
+                .predicateId('dtl_DetailTypeID',$params['dty_ID']);
                 $res = mysql__select_value($mysqli, $query);
                 if ($res==null){
                     return $system->addError(HEURIST_DB_ERROR, 'Search query error on details count. Query '.$query, $mysqli->error);
@@ -184,7 +184,7 @@ function recordSearchDistinctValue($system, $params){
 function recordSearchMatchedValues($system, $params){
 
     if(intval(@$params['dty_src'])>0 &&  //intval(@$params['rty_src'])>0 &&
-        intval(@$params['rty_trg'])>0 && intval(@$params['dty_trg'])>0){
+    intval(@$params['rty_trg'])>0 && intval(@$params['dty_trg'])>0){
         $mysqli = $system->get_mysqli();
 
 
@@ -198,8 +198,8 @@ function recordSearchMatchedValues($system, $params){
 
         if($total_cnt>0){
 
-        //'distinct d1.dtl_RecID, d2.dtl_RecID '
-        //d1.dtl_Value, d2.dtl_Value,
+            //'distinct d1.dtl_RecID, d2.dtl_RecID '
+            //d1.dtl_Value, d2.dtl_Value,
             if($need_nonmatches || $need_ids){
                 $result = array();
             }else{
@@ -218,11 +218,11 @@ function recordSearchMatchedValues($system, $params){
                     $query = 'select distinct d1.dtl_RecID, r1.rec_Title, d1.dtl_Value FROM Records r1, recDetails d1 '
                     .' LEFT JOIN recDetails d2 on d1.dtl_Value=d2.dtl_Value and d1.dtl_RecID!=d2.dtl_RecID'
                     .' LEFT JOIN Records r2 on d2.dtl_RecID=r2.rec_ID and r2.rec_RecTypeID='
-                                    .intval($params['rty_trg']).' and d2.dtl_DetailTypeID='.intval($params['dty_trg'])
+                    .intval($params['rty_trg']).' and d2.dtl_DetailTypeID='.intval($params['dty_trg'])
                     .' WHERE r1.rec_ID IN ('
-                                    .implode(',',$rec_IDs_chunk).') and d1.dtl_DetailTypeID='
-                                    .intval($params['dty_src'])
-                                    .' and d1.dtl_RecID=r1.rec_ID and d2.dtl_Value is null';
+                    .implode(',',$rec_IDs_chunk).') and d1.dtl_DetailTypeID='
+                    .intval($params['dty_src'])
+                    .' and d1.dtl_RecID=r1.rec_ID and d2.dtl_Value is null';
 
                 }else {
                     if($need_ids){
@@ -233,9 +233,9 @@ function recordSearchMatchedValues($system, $params){
                     $query = $query
                     .' from recDetails d1, recDetails d2, Records r2'   //Records r1,
                     .' where d1.dtl_RecID IN ('.implode(',',$rec_IDs_chunk).')'      //=r1.rec_ID and r1.rec_RecTypeID='.intval($params['rty_src'])
-                        .' and d1.dtl_DetailTypeID='.intval($params['dty_src'])
+                    .' and d1.dtl_DetailTypeID='.intval($params['dty_src'])
                     .' and d2.dtl_RecID=r2.rec_ID and r2.rec_RecTypeID='.intval($params['rty_trg'])
-                        .' and d2.dtl_DetailTypeID='.intval($params['dty_trg'])
+                    .' and d2.dtl_DetailTypeID='.intval($params['dty_trg'])
                     .' and d1.dtl_RecID!=d2.dtl_RecID and d1.dtl_Value=d2.dtl_Value';
                 }
 
@@ -254,11 +254,11 @@ function recordSearchMatchedValues($system, $params){
                         //error_log('Empty array on interation '.$iteration);
                     }else{
                         $response = $system->addError(HEURIST_DB_ERROR, 'Search query error on matching values. '
-                        .'<br> Records given: '.$total_cnt
-                        .'<br> Iteration: '.$iteration
-                        .'<br> Found so far '.(is_array($result)?count($result):$result)
-                        //.'<br>Res: '.print_r($res,true)
-                        .'<br>Query '.$query, $mysqli->error);
+                            .'<br> Records given: '.$total_cnt
+                            .'<br> Iteration: '.$iteration
+                            .'<br> Found so far '.(is_array($result)?count($result):$result)
+                            //.'<br>Res: '.print_r($res,true)
+                            .'<br>Query '.$query, $mysqli->error);
                         $is_completed_without_error = false;
                         break;
                     }
@@ -281,7 +281,7 @@ function recordSearchMatchedValues($system, $params){
             }
 
         }else{
-           $response = $system->addError(HEURIST_INVALID_REQUEST, 'Source records are not defined as matching query parameter');
+            $response = $system->addError(HEURIST_INVALID_REQUEST, 'Source records are not defined as matching query parameter');
         }
     }else{
         $response = $system->addError(HEURIST_INVALID_REQUEST, 'Matching query parameters are invalid');
@@ -305,12 +305,12 @@ function recordSearchMinMax($system, $params){
         //$currentUser = $system->getCurrentUser();
 
         $query = 'SELECT MIN(CAST(dtl_Value as decimal)) as MIN, MAX(CAST(dtl_Value as decimal)) AS MAX '
-                            .SQL_RECDETAILS;
+        .SQL_RECDETAILS;
 
         $where_clause  = predicateId('rec_RecTypeID',$params['rt'])
-                        .SQL_AND
-                        .predicateId('dtl_DetailTypeID',$params['dt'])
-                        ." AND dtl_Value is not null AND dtl_Value!=''";
+        .SQL_AND
+        .predicateId('dtl_DetailTypeID',$params['dt'])
+        ." AND dtl_Value is not null AND dtl_Value!=''";
 
         $currUserID = $system->get_user_id();
         if( $currUserID > 0 ) {
@@ -393,9 +393,9 @@ function recordSearchFacets($system, $params){
     if(is_numeric(@$params['qname']) && $params['qname'] > 0){ // retrieve extra details
 
         $query = 'SELECT svs_ID AS qID, svs_Name AS qName, svs_UGrpID as uID, ugr_Name as uName '
-            . 'FROM usrSavedSearches '
-            . 'INNER JOIN sysUGrps ON ugr_ID = svs_UGrpID '
-            . 'WHERE svs_ID = ' . intval($params['qname']);
+        . 'FROM usrSavedSearches '
+        . 'INNER JOIN sysUGrps ON ugr_ID = svs_UGrpID '
+        . 'WHERE svs_ID = ' . intval($params['qname']);
 
         $saved_search = mysql__select_row_assoc($mysqli, $query);
 
@@ -503,7 +503,7 @@ function recordSearchFacets($system, $params){
             $select_field  = "dt0.dtl_Value";
             $detail_link   = ", recDetails dt0 ";
             $details_where = " AND (dt0.dtl_RecID=r0.rec_ID and dt0.dtl_DetailTypeID $compare_field) "
-                            ." AND (NULLIF(dt0.dtl_Value, '') is not null)";
+            ." AND (NULLIF(dt0.dtl_Value, '') is not null)";
             //$detail_link   = " LEFT JOIN recDetails dt0 ON (dt0.dtl_RecID=r0.rec_ID and dt0.dtl_DetailTypeID=".$fieldid.")";
             //$details_where = " and (dt0.dtl_Value is not null)";
         }
@@ -714,8 +714,8 @@ function recordSearchFacets($system, $params){
                     $third_element = $row[2];// slider - third parameter is COUNT for range
 
                     if(!$missingIds &&
-                        (is_Array($params['q']) && !array_key_exists('ids', $params['q'])) &&
-                        $row[2] != 0)
+                    (is_Array($params['q']) && !array_key_exists('ids', $params['q'])) &&
+                    $row[2] != 0)
                     { // For range's histogram
                         $missingIds = true;
                     }
@@ -754,8 +754,8 @@ function recordSearchFacets($system, $params){
 
             if($missingIds){
 
-				$recid_query = "SELECT DISTINCT rec_ID " . $qclauses["from"] . $detail_link .
-                        SQL_WHERE . $qclauses["where"] . $details_where . $grouporder_clause;
+                $recid_query = "SELECT DISTINCT rec_ID " . $qclauses["from"] . $detail_link .
+                SQL_WHERE . $qclauses["where"] . $details_where . $grouporder_clause;
 
                 $recid_res = $mysqli->query($recid_query);
                 if($recid_res){
@@ -765,7 +765,7 @@ function recordSearchFacets($system, $params){
                         array_push($recids, $recid_row[0]);
                     }
 
-                    if(count($recids) > 0){
+                    if(!empty($recids)){
                         $params['q']['ids'] = implode(',', $recids);
                     }
 
@@ -1052,9 +1052,9 @@ function getDateHistogramData($system, $range, $interval, $rec_ids, $dty_id, $fo
     }
 
     $sql = 'SELECT rdi_estMinDate, rdi_estMaxDate '
-            .' FROM recDetailsDateIndex'
-            .' WHERE rdi_estMaxDate<2100 AND rdi_RecID IN ('
-                .implode(',', $rec_ids).") AND rdi_DetailTypeID = ".$dty_id;
+    .' FROM recDetailsDateIndex'
+    .' WHERE rdi_estMaxDate<2100 AND rdi_RecID IN ('
+    .implode(',', $rec_ids).") AND rdi_DetailTypeID = ".$dty_id;
 
     $res = mysql__select($mysqli, $sql);
     if(!$res){
@@ -1132,7 +1132,7 @@ function getRecordIds($system, $ptr_record_ids, $search_values){
                     }
                     $rtn->close();
 
-                    if(count($ids) > 0){
+                    if(!empty($ids)){
                         $rec_ids[$key] = $ids;
                         $query_base = "SELECT dtl.dtl_RecID FROM recDetails AS dtl WHERE dtl.dtl_RecID IN (". implode(',', $ids) .") AND ";
                     }else{
@@ -1164,7 +1164,7 @@ function getRecordIds($system, $ptr_record_ids, $search_values){
                 }
                 $rtn->close();
 
-                if(count($ids) > 0){
+                if(!empty($ids)){
                     $rec_ids[$key] = $ids;
                 }else{
                     $rec_ids[$key] = null;
@@ -1197,7 +1197,7 @@ function getRecordIds($system, $ptr_record_ids, $search_values){
 * @param mixed $direction  -  1 direct/ -1 reverse/ 0 both
 */
 function recordSearchRelatedIds($system, &$ids, $direction=0, $no_relationships=false,
-        $depth=0, $max_depth=1, $limit=0, $new_level_ids=null, $temp_ids=null){
+    $depth=0, $max_depth=1, $limit=0, $new_level_ids=null, $temp_ids=null){
 
     if($depth>=$max_depth) {return;}
 
@@ -1485,7 +1485,7 @@ function recordLinkedCount($system, $source_rty_ID, $target_rty_ID, $dty_ID){
         $query = $query.'Records r1 WHERE rl_TargetID in ('.implode(',',$target_rty_ID).')';
     }else{
         $query = $query.'Records r1,  Records r2 '
-            .'WHERE rl_TargetID=r2.rec_ID AND r2.rec_RecTypeID='.$target_rty_ID;
+        .'WHERE rl_TargetID=r2.rec_ID AND r2.rec_RecTypeID='.$target_rty_ID;
 
     }
 
@@ -1495,14 +1495,14 @@ function recordLinkedCount($system, $source_rty_ID, $target_rty_ID, $dty_ID){
     }
     $query = $query.' GROUP BY rl_TargetID ORDER BY cnt DESC';
 
-/*
-use hdb_MPCE_Mapping_Print_Charting_Enlightenment;
-SELECT rl_TargetID, count(rl_SourceID) FROM recLinks, Records r1,  Records r2
+    /*
+    use hdb_MPCE_Mapping_Print_Charting_Enlightenment;
+    SELECT rl_TargetID, count(rl_SourceID) FROM recLinks, Records r1,  Records r2
     WHERE rl_SourceID=r1.rec_ID AND r1.rec_RecTypeID=55
-         AND rl_TargetID=r2.rec_ID AND r2.rec_RecTypeID=56
-         AND rl_DetailTypeID=955
-group by rl_TargetID
-*/
+    AND rl_TargetID=r2.rec_ID AND r2.rec_RecTypeID=56
+    AND rl_DetailTypeID=955
+    group by rl_TargetID
+    */
     $mysqli = $system->get_mysqli();
 
     $list = mysql__select_assoc2($mysqli, $query);
@@ -1786,8 +1786,8 @@ function recordSearchMenuItems($system, $menuitems, &$result, $find_root_menu=fa
 
                     return recordSearch($system, array('q'=>array('ids'=>$root_rec_id),
                         'detail'=>array(DT_NAME,DT_SHORT_SUMMARY,DT_CMS_TARGET,DT_CMS_CSS,
-                                    DT_CMS_PAGETITLE,DT_EXTENDED_DESCRIPTION,DT_CMS_TOP_MENU,DT_CMS_MENU,DT_THUMBNAIL,
-                                    DT_CMS_TOPMENUSELECTABLE), //'detail'
+                            DT_CMS_PAGETITLE,DT_EXTENDED_DESCRIPTION,DT_CMS_TOP_MENU,DT_CMS_MENU,DT_THUMBNAIL,
+                            DT_CMS_TOPMENUSELECTABLE), //'detail'
                         'w'=>'e', 'cms_cut_description'=>1));
                 }else{
                     //find parent home record
@@ -1916,8 +1916,8 @@ function recordSearch($system, $params, $relation_query=null)
                 $params['queryset'] = @$query_json['any']?$query_json['any']:$query_json['all'];
                 $params['intersect'] = @$query_json['all']?1:0;
                 $params['sortby'] = @$query_json['sortby']?$query_json['sortby']
-                                         :(@$query_json['sort']?$query_json['sort']
-                                            :(@$query_json['s']?$query_json['s']:null));
+                :(@$query_json['sort']?$query_json['sort']
+                    :(@$query_json['s']?$query_json['s']:null));
             }
 
         }elseif(@$params['q'] && strpos($params['q'],':')>0){
@@ -1963,9 +1963,9 @@ function recordSearch($system, $params, $relation_query=null)
     if(is_numeric(@$params['qname']) && $params['qname'] > 0){ // retrieve extra details
 
         $query = 'SELECT svs_ID AS qID, svs_Name AS qName, svs_UGrpID as uID, ugr_Name as uName '
-            . 'FROM usrSavedSearches '
-            . 'INNER JOIN sysUGrps ON ugr_ID = svs_UGrpID '
-            . 'WHERE svs_ID = ' . $params['qname'];
+        . 'FROM usrSavedSearches '
+        . 'INNER JOIN sysUGrps ON ugr_ID = svs_UGrpID '
+        . 'WHERE svs_ID = ' . $params['qname'];
 
         $saved_search = mysql__select_row_assoc($mysqli, $query);
 
@@ -2069,51 +2069,51 @@ function recordSearch($system, $params, $relation_query=null)
         }
 
     }elseif(  !in_array($params['detail'], array('count','count_by_rty','ids','header','timemap','detail','structure')) ){ //list of specific detailtypes
-            //specific set of detail fields and header fields
-            if(is_array($params['detail'])){
-                $fieldtypes_ids = $params['detail'];
-            } else {
-                $fieldtypes_ids = explode(',', $params['detail']);
+        //specific set of detail fields and header fields
+        if(is_array($params['detail'])){
+            $fieldtypes_ids = $params['detail'];
+        } else {
+            $fieldtypes_ids = explode(',', $params['detail']);
+        }
+
+        if(!isEmptyArray($fieldtypes_ids))
+        //(count($fieldtypes_ids)>1 || is_numeric($fieldtypes_ids[0])) )
+        {
+            $f_res = array();
+            $header_fields = array();
+
+            foreach ($fieldtypes_ids as $dt_id){
+
+                if(is_numeric($dt_id) && $dt_id>0){
+                    array_push($f_res, $dt_id);
+                }elseif($dt_id=='rec_ThumbnailURL'){
+                    $needThumbField = true;
+                }elseif($dt_id=='rec_ThumbnailBg'){
+                    $needThumbBackground = true;
+                }elseif(strpos($dt_id,'rec_')===0){
+                    array_push($header_fields, $dt_id);
+                }
             }
 
-            if(!isEmptyArray($fieldtypes_ids))
-            //(count($fieldtypes_ids)>1 || is_numeric($fieldtypes_ids[0])) )
-            {
-                $f_res = array();
-                $header_fields = array();
-
-                foreach ($fieldtypes_ids as $dt_id){
-
-                    if(is_numeric($dt_id) && $dt_id>0){
-                        array_push($f_res, $dt_id);
-                    }elseif($dt_id=='rec_ThumbnailURL'){
-                        $needThumbField = true;
-                    }elseif($dt_id=='rec_ThumbnailBg'){
-                        $needThumbBackground = true;
-                    }elseif(strpos($dt_id,'rec_')===0){
-                        array_push($header_fields, $dt_id);
-                    }
-                }
-
-                if(!isEmptyArray($f_res)){
-                    $fieldtypes_ids = implode(',', $f_res);
-                    $params['detail'] = 'detail';
-                    $needThumbField = true;
-                }else{
-                    $fieldtypes_ids = null;
-                }
-                if(empty($header_fields)){
-                    $header_fields = null;
-                }else{
-                    //always include rec_ID and rec_RecTypeID
-                    if(!in_array('rec_RecTypeID',$header_fields)) {array_unshift($header_fields, 'rec_RecTypeID');}
-                    if(!in_array('rec_ID',$header_fields)) {array_unshift($header_fields, 'rec_ID');}
-                }
-
+            if(!isEmptyArray($f_res)){
+                $fieldtypes_ids = implode(',', $f_res);
+                $params['detail'] = 'detail';
+                $needThumbField = true;
             }else{
                 $fieldtypes_ids = null;
-                $params['detail'] = 'ids';
             }
+            if(empty($header_fields)){
+                $header_fields = null;
+            }else{
+                //always include rec_ID and rec_RecTypeID
+                if(!in_array('rec_RecTypeID',$header_fields)) {array_unshift($header_fields, 'rec_RecTypeID');}
+                if(!in_array('rec_ID',$header_fields)) {array_unshift($header_fields, 'rec_ID');}
+            }
+
+        }else{
+            $fieldtypes_ids = null;
+            $params['detail'] = 'ids';
+        }
 
     }else{
         $needThumbField = true;
@@ -2260,8 +2260,8 @@ function recordSearch($system, $params, $relation_query=null)
         $has_results = @$fin_result['data']['records'] && is_array($fin_result['data']['records']);
         if($has_results){
             $flat_rules[0]['results'] = $is_ids_only
-                                ?$fin_result['data']['records']
-                                :array_keys($fin_result['data']['records']);//get ids
+            ?$fin_result['data']['records']
+            :array_keys($fin_result['data']['records']);//get ids
         }else{
             $flat_rules[0]['results'] = array();
         }
@@ -2290,135 +2290,135 @@ function recordSearch($system, $params, $relation_query=null)
             if(is_array($parent_ids)){
                 while ($k < count($parent_ids)) {
 
-                //$need_details2 = $need_details && ($is_get_relation_records || $is_last);
+                    //$need_details2 = $need_details && ($is_get_relation_records || $is_last);
 
-                $params3 = $params;
-                $params3['topids'] = implode(",", array_slice($parent_ids, $k, 3000));
-                if( !$is_last ){  //($is_get_relation_records ||
-                    //$params3['detail'] = 'ids';//no need in details for preliminary results  ???????
-                }
+                    $params3 = $params;
+                    $params3['topids'] = implode(",", array_slice($parent_ids, $k, 3000));
+                    if( !$is_last ){  //($is_get_relation_records ||
+                        //$params3['detail'] = 'ids';//no need in details for preliminary results  ???????
+                    }
 
-                if(is_array($params3['q'])){
-                    $params3['is_json'] = true;
-                }elseif(strpos($params3['q'],'related_to')>0){
-                    //t:54 related_to:10 =>   {"t":"54","related":"10"}
-                    $params3['q'] = str_replace('related_to','related',$params3['q']);
+                    if(is_array($params3['q'])){
+                        $params3['is_json'] = true;
+                    }elseif(strpos($params3['q'],'related_to')>0){
+                        //t:54 related_to:10 =>   {"t":"54","related":"10"}
+                        $params3['q'] = str_replace('related_to','related',$params3['q']);
 
-                }elseif(strpos($params3['q'],'relatedfrom')>0){
+                    }elseif(strpos($params3['q'],'relatedfrom')>0){
 
-                    $params3['q'] = str_replace('relatedfrom','related',$params3['q']);
-                }
+                        $params3['q'] = str_replace('relatedfrom','related',$params3['q']);
+                    }
 
-                if($needCompleteInformation){
-                    $params3['detail'] = 'complete';
-                }
+                    if($needCompleteInformation){
+                        $params3['detail'] = 'complete';
+                    }
 
-                $response = recordSearch($system, $params3);
+                    $response = recordSearch($system, $params3);
 
-                if($response['status'] == HEURIST_OK){
+                    if($response['status'] == HEURIST_OK){
 
-                    if(!$rule['ignore'] && (!$keepLastSetOnly || $is_last)){
-                        //merge with final results
-                        if($is_ids_only){
+                        if(!$rule['ignore'] && (!$keepLastSetOnly || $is_last)){
+                            //merge with final results
+                            if($is_ids_only){
 
-                            $fin_result['data']['records'] = array_merge_unique($fin_result['data']['records'],
-                                $response['data']['records']);
+                                $fin_result['data']['records'] = array_merge_unique($fin_result['data']['records'],
+                                    $response['data']['records']);
 
-                        }else{
-                            $fin_result['data']['records'] = mergeRecordSets($fin_result['data']['records'],
-                                $response['data']['records']);
+                            }else{
+                                $fin_result['data']['records'] = mergeRecordSets($fin_result['data']['records'],
+                                    $response['data']['records']);
 
-                            $fin_result['data']['fields_detail'] = array_merge_unique($fin_result['data']['fields_detail'],
-                                $response['data']['fields_detail']);
+                                $fin_result['data']['fields_detail'] = array_merge_unique($fin_result['data']['fields_detail'],
+                                    $response['data']['fields_detail']);
 
-                            $fin_result['data']['rectypes'] = array_merge_unique($fin_result['data']['rectypes'],
-                                $response['data']['rectypes']);
+                                $fin_result['data']['rectypes'] = array_merge_unique($fin_result['data']['rectypes'],
+                                    $response['data']['rectypes']);
 
-                            $fin_result['data']['order'] = array_merge($fin_result['data']['order'],
-                                array_keys($response['data']['records']));
+                                $fin_result['data']['order'] = array_merge($fin_result['data']['order'],
+                                    array_keys($response['data']['records']));
+                            }
                         }
-                    }
 
-                    if(!$is_last){ //add top ids for next level
-                        $flat_rules[$idx]['results'] = array_merge_unique($flat_rules[$idx]['results'],
-                            $is_ids_only ?$response['data']['records'] :array_keys($response['data']['records']));
-                    }
+                        if(!$is_last){ //add top ids for next level
+                            $flat_rules[$idx]['results'] = array_merge_unique($flat_rules[$idx]['results'],
+                                $is_ids_only ?$response['data']['records'] :array_keys($response['data']['records']));
+                        }
 
-                    if($is_get_relation_records &&
-                        (strpos($params3['q'],"related")>0 ||
-                            strpos($params3['q'],"related_to")>0 || strpos($params3['q'],"relatedfrom")>0) )
-                        { //find relationship records (recType=1)
+                        if($is_get_relation_records &&
+                            (strpos($params3['q'],"related")>0 ||
+                                strpos($params3['q'],"related_to")>0 || strpos($params3['q'],"relatedfrom")>0) )
+                            { //find relationship records (recType=1)
 
-                            //create query to search related records
-                            if (strcasecmp(@$params3['w'],'B') == 0  ||  strcasecmp(@$params3['w'], 'bookmark') == 0) {
-                                $from = 'FROM usrBookmarks TOPBKMK LEFT JOIN Records TOPBIBLIO ON bkm_recID=rec_ID ';
-                            }else{
-                                $from = 'FROM Records TOPBIBLIO LEFT JOIN usrBookmarks TOPBKMK ON bkm_recID=rec_ID and bkm_UGrpID='.$currUserID.' ';
-                            }
-
-                            if(strpos($params3['q'],"related_to")>0){
-                                $fld2 = "rl_SourceID";
-                                $fld1 = "rl_TargetID";
-                            }else{
-                                $fld1 = "rl_SourceID";
-                                $fld2 = "rl_TargetID";
-                            }
-
-                            $ids_party1 = $params3['topids'];//source ids (from top query)
-                            $ids_party2 = $is_ids_only?$response['data']['records'] :array_keys($response['data']['records']);
-
-                            if(!isEmptyArray($ids_party2))
-                            {
-
-
-                                $where = "WHERE (TOPBIBLIO.rec_ID in (select rl_RelationID from recLinks "
-                                ."where (rl_RelationID is not null) and ".
-                                "(($fld1 in (".$ids_party1.") and $fld2 in (".implode(",", $ids_party2).")) OR ".
-                                " ($fld2 in (".$ids_party1.") and $fld1 in (".implode(",", $ids_party2)."))) ".
-                                "))";
-
-                                $params2 = $params3;
-                                unset($params2['topids']);
-                                unset($params2['q']);
-
-                                $relation_query = $select_clause.$from.$where;
-
-                                $response = recordSearch($system, $params2, $relation_query);//search for relationship records
-                                if($response['status'] == HEURIST_OK){
-
-                                    if(!@$fin_result['data']['relationship']){
-                                        $fin_result['data']['relationship'] = array();
-                                    }
-
-                                    if($is_ids_only){
-                                        $fin_result['data']['relationship'] = array_merge_unique(
-                                            $fin_result['data']['relationship'],
-                                            $response['data']['records']);
-                                    }else{
-                                        $fin_result['data']['relationship'] = mergeRecordSets($fin_result['data']['relationship'], $response['data']['records']);
-                                    }
-
-
-                                    /*merge with final results
-                                    if($is_ids_only){
-                                    $fin_result['data']['records'] = array_merge($fin_result['data']['records'], $response['data']['records']);
-                                    }else{
-                                    $fin_result['data']['records'] = mergeRecordSets($fin_result['data']['records'], $response['data']['records']);
-                                    $fin_result['data']['order'] = array_merge($fin_result['data']['order'], array_keys($response['data']['records']));
-                                    $fin_result['data']['rectypes'][1] = 1;
-                                    }
-                                    */
+                                //create query to search related records
+                                if (strcasecmp(@$params3['w'],'B') == 0  ||  strcasecmp(@$params3['w'], 'bookmark') == 0) {
+                                    $from = 'FROM usrBookmarks TOPBKMK LEFT JOIN Records TOPBIBLIO ON bkm_recID=rec_ID ';
+                                }else{
+                                    $from = 'FROM Records TOPBIBLIO LEFT JOIN usrBookmarks TOPBKMK ON bkm_recID=rec_ID and bkm_UGrpID='.$currUserID.' ';
                                 }
-                            }//array of ids is defined
 
-                    }  //$is_get_relation_records
+                                if(strpos($params3['q'],"related_to")>0){
+                                    $fld2 = "rl_SourceID";
+                                    $fld1 = "rl_TargetID";
+                                }else{
+                                    $fld1 = "rl_SourceID";
+                                    $fld2 = "rl_TargetID";
+                                }
 
-                }else{
-                    //@todo terminate execution and return error
-                }
+                                $ids_party1 = $params3['topids'];//source ids (from top query)
+                                $ids_party2 = $is_ids_only?$response['data']['records'] :array_keys($response['data']['records']);
 
-                $k = $k + 3000;
-            }//while chunks
+                                if(!isEmptyArray($ids_party2))
+                                {
+
+
+                                    $where = "WHERE (TOPBIBLIO.rec_ID in (select rl_RelationID from recLinks "
+                                    ."where (rl_RelationID is not null) and ".
+                                    "(($fld1 in (".$ids_party1.") and $fld2 in (".implode(",", $ids_party2).")) OR ".
+                                    " ($fld2 in (".$ids_party1.") and $fld1 in (".implode(",", $ids_party2)."))) ".
+                                    "))";
+
+                                    $params2 = $params3;
+                                    unset($params2['topids']);
+                                    unset($params2['q']);
+
+                                    $relation_query = $select_clause.$from.$where;
+
+                                    $response = recordSearch($system, $params2, $relation_query);//search for relationship records
+                                    if($response['status'] == HEURIST_OK){
+
+                                        if(!@$fin_result['data']['relationship']){
+                                            $fin_result['data']['relationship'] = array();
+                                        }
+
+                                        if($is_ids_only){
+                                            $fin_result['data']['relationship'] = array_merge_unique(
+                                                $fin_result['data']['relationship'],
+                                                $response['data']['records']);
+                                        }else{
+                                            $fin_result['data']['relationship'] = mergeRecordSets($fin_result['data']['relationship'], $response['data']['records']);
+                                        }
+
+
+                                        /*merge with final results
+                                        if($is_ids_only){
+                                        $fin_result['data']['records'] = array_merge($fin_result['data']['records'], $response['data']['records']);
+                                        }else{
+                                        $fin_result['data']['records'] = mergeRecordSets($fin_result['data']['records'], $response['data']['records']);
+                                        $fin_result['data']['order'] = array_merge($fin_result['data']['order'], array_keys($response['data']['records']));
+                                        $fin_result['data']['rectypes'][1] = 1;
+                                        }
+                                        */
+                                    }
+                                }//array of ids is defined
+
+                        }  //$is_get_relation_records
+
+                    }else{
+                        //@todo terminate execution and return error
+                    }
+
+                    $k = $k + 3000;
+                }//while chunks
             }
         } //for rules
 
@@ -2478,13 +2478,13 @@ function recordSearch($system, $params, $relation_query=null)
                 //if OR - merge unique
                 if($is_or_conjunction){
                     $fin_result['data']['records'] = array_merge_unique(
-                                                $fin_result['data']['records'],
-                                                $resSearch['data']['records']);
+                        $fin_result['data']['records'],
+                        $resSearch['data']['records']);
                 }else{
                     //if AND - intersect
                     $fin_result['data']['records'] = array_intersect(
-                                                $fin_result['data']['records'],
-                                                $resSearch['data']['records']);
+                        $fin_result['data']['records'],
+                        $resSearch['data']['records']);
                 }
             }
         }//foreach
@@ -2559,9 +2559,9 @@ function recordSearch($system, $params, $relation_query=null)
 
         if(@$aquery['error']=='create_fulltext'){
             return $system->addError(HEURIST_ACTION_BLOCKED, '<h3 style="margin:4px;">Building full text index</h3>'
-                    .'<p>To process word searches efficiently we are building a full text index.</p>'
-                    .'<p>This is a one-off operation and may take some time for large, text-rich databases '
-                    .'(where it will make the biggest difference to retrieval speeds).</p>', null);
+                .'<p>To process word searches efficiently we are building a full text index.</p>'
+                .'<p>This is a one-off operation and may take some time for large, text-rich databases '
+                .'(where it will make the biggest difference to retrieval speeds).</p>', null);
         }elseif(@$aquery['error']){
             return $system->addError(HEURIST_ERROR, 'Unable to construct valid SQL query. '.@$aquery['error'], null);
         }
@@ -2603,12 +2603,12 @@ function recordSearch($system, $params, $relation_query=null)
         }
 
         $response = $system->addError(HEURIST_ACTION_BLOCKED,
-        '<h4>Uninterpretable Heurist query/filter</h4>'
-        .'There is an error '.$sMsg.' syntax generating invalid SQL. Please check for misspelled keywords or incorrect syntax. See help for assistance.<br><br>'
+            '<h4>Uninterpretable Heurist query/filter</h4>'
+            .'There is an error '.$sMsg.' syntax generating invalid SQL. Please check for misspelled keywords or incorrect syntax. See help for assistance.<br><br>'
 
-        //.$params['q'].'  '.$query.'<br><br>'
+            //.$params['q'].'  '.$query.'<br><br>'
 
-        .'If you think the filter is correct, please make a bug report (link under Help menu at top right) or email the Heurist team, including the text of your filter.');
+            .'If you think the filter is correct, please make a bug report (link under Help menu at top right) or email the Heurist team, including the text of your filter.');
 
         //$response = $system->addError(HEURIST_DB_ERROR, $savedSearchName.
         //    ' Search query error on saved search. Parameters:'.print_r($params, true).' Query '.$query, $mysqli->error);
@@ -2642,495 +2642,495 @@ function recordSearch($system, $params, $relation_query=null)
 
     }else{
 
-            $total_count_rows = mysql__found_rows($mysqli);
+        $total_count_rows = mysql__found_rows($mysqli);
 
-            if($total_count_rows*10>$memory_limit){
-                return $system->addError(HEURIST_ACTION_BLOCKED,
-                    $total_count_rows.MSG_MEMORY_LIMIT);
+        if($total_count_rows*10>$memory_limit){
+            return $system->addError(HEURIST_ACTION_BLOCKED,
+                $total_count_rows.MSG_MEMORY_LIMIT);
+        }
+
+        $rec_RecTypeID_index = false;
+
+        if($is_ids_only)
+        { //------------------------  LOAD and RETURN only IDS
+
+            $records = array();
+
+            while ($row = $res->fetch_row())  {
+                array_push($records, (int)$row[0]);
             }
+            $res->close();
 
-            $rec_RecTypeID_index = false;
+            $response = array('status'=>HEURIST_OK,
+                'data'=> array(
+                    'queryid'=>@$params['id'],  //query unqiue id
+                    'entityName'=>'Records',
+                    'count'=>$total_count_rows,
+                    'offset'=>get_offset($params),
+                    'reccount'=>count($records),
+                    'records'=>$records));
 
-            if($is_ids_only)
-            { //------------------------  LOAD and RETURN only IDS
+            if(@$params['links_count'] && !empty($records)){
 
-                $records = array();
+                $links_counts = recordLinkedCount($system,
+                    $params['links_count']['source'],
+                    count($records)<500?$records:
+                    $params['links_count']['target'],
+                    @$params['links_count']['dty_ID']);
 
-                while ($row = $res->fetch_row())  {
-                    array_push($records, (int)$row[0]);
-                }
-                $res->close();
+                if($links_counts['status']==HEURIST_OK && !isEmptyArray(@$links_counts['data']) ){
 
-                $response = array('status'=>HEURIST_OK,
-                    'data'=> array(
-                        'queryid'=>@$params['id'],  //query unqiue id
-                        'entityName'=>'Records',
-                        'count'=>$total_count_rows,
-                        'offset'=>get_offset($params),
-                        'reccount'=>count($records),
-                        'records'=>$records));
-
-                if(@$params['links_count'] && !empty($records)){
-
-                    $links_counts = recordLinkedCount($system,
-                                $params['links_count']['source'],
-                                count($records)<500?$records:
-                                    $params['links_count']['target'],
-                                @$params['links_count']['dty_ID']);
-
-                    if($links_counts['status']==HEURIST_OK && !isEmptyArray(@$links_counts['data']) ){
-
-                        //order output
-                        $res = array_keys($links_counts['data']);
-                        if(count($res) < count($records)){
-                            foreach ($records as $id){
-                                if(!in_array($id, $res)){
-                                    $res[] = $id;
-                                }
+                    //order output
+                    $res = array_keys($links_counts['data']);
+                    if(count($res) < count($records)){
+                        foreach ($records as $id){
+                            if(!in_array($id, $res)){
+                                $res[] = $id;
                             }
                         }
-                        $response['data']['records'] = $res;
-                        $response['data']['links_count'] = $links_counts['data'];
-                        $response['data']['links_query'] = '{"t":"'
-                                .$params['links_count']['source']
-                                .'","linkedto'
-                                .(@$params['links_count']['dty_ID']>0?(':'.$params['links_count']['dty_ID']):'')
-                                .'":"[ID]"}';
                     }
+                    $response['data']['records'] = $res;
+                    $response['data']['links_count'] = $links_counts['data'];
+                    $response['data']['links_query'] = '{"t":"'
+                    .$params['links_count']['source']
+                    .'","linkedto'
+                    .(@$params['links_count']['dty_ID']>0?(':'.$params['links_count']['dty_ID']):'')
+                    .'":"[ID]"}';
+                }
+            }
+
+
+
+        }else{ //----------------------------------
+
+            $rectype_structures  = array();
+            $rectypes = array();
+            $records = array();
+            $order = array();
+            $all_rec_ids = array();
+            $memory_warning = null;
+            $limit_warning = false;
+
+            // read all field names
+            $_flds =  $res->fetch_fields();
+            $fields = array();
+            foreach($_flds as $fld){
+                array_push($fields, $fld->name);
+            }
+            $rec_ID_index = array_search('rec_ID', $fields);
+            $rec_RecTypeID_index = array_search('rec_RecTypeID', $fields);
+            $date_add_index = array_search('rec_Added', $fields);
+            $date_mod_index = array_search('rec_Modified', $fields);
+
+            if($needThumbField) {array_push($fields, 'rec_ThumbnailURL');}
+            if($needThumbBackground) {array_push($fields, 'rec_ThumbnailBg');}
+
+            //array_push($fields, 'rec_Icon');//last one -icon ID
+            if($needTags>0) {array_push($fields, 'rec_Tags');}
+
+            // load all records
+            while ($row = $res->fetch_row()) {
+
+                if($needThumbField) {
+                    $tres = fileGetThumbnailURL($system, $row[$rec_ID_index], $needThumbBackground);
+                    array_push( $row, $tres['url'] );
+                    if($needThumbBackground) {array_push( $row, $tres['bg_color'] );}
+                }
+                if($needTags>0){ //get record tags for given user/group
+                    /*var dbUsrTags = new DbUsrTags($system, array('details'=>'label',
+                    'tag_UGrpID'=>$needTags,
+                    'rtl_RecID'=>$row[2] ));*/
+
+                    $query = 'SELECT tag_Text FROM usrTags, usrRecTagLinks WHERE tag_ID=rtl_TagID AND tag_UGrpID='
+                    .$needTags.' AND rtl_RecID='.$row[$rec_ID_index];
+                    array_push( $row, mysql__select_list2($mysqli, $query));
                 }
 
-
-
-            }else{ //----------------------------------
-
-                $rectype_structures  = array();
-                $rectypes = array();
-                $records = array();
-                $order = array();
-                $all_rec_ids = array();
-                $memory_warning = null;
-                $limit_warning = false;
-
-                // read all field names
-                $_flds =  $res->fetch_fields();
-                $fields = array();
-                foreach($_flds as $fld){
-                    array_push($fields, $fld->name);
-                }
-                $rec_ID_index = array_search('rec_ID', $fields);
-                $rec_RecTypeID_index = array_search('rec_RecTypeID', $fields);
-                $date_add_index = array_search('rec_Added', $fields);
-                $date_mod_index = array_search('rec_Modified', $fields);
-
-                if($needThumbField) {array_push($fields, 'rec_ThumbnailURL');}
-                if($needThumbBackground) {array_push($fields, 'rec_ThumbnailBg');}
-
-                //array_push($fields, 'rec_Icon');//last one -icon ID
-                if($needTags>0) {array_push($fields, 'rec_Tags');}
-
-                // load all records
-                while ($row = $res->fetch_row()) {
-
-                    if($needThumbField) {
-                        $tres = fileGetThumbnailURL($system, $row[$rec_ID_index], $needThumbBackground);
-                        array_push( $row, $tres['url'] );
-                        if($needThumbBackground) {array_push( $row, $tres['bg_color'] );}
-                    }
-                    if($needTags>0){ //get record tags for given user/group
-                        /*var dbUsrTags = new DbUsrTags($system, array('details'=>'label',
-                        'tag_UGrpID'=>$needTags,
-                        'rtl_RecID'=>$row[2] ));*/
-
-                        $query = 'SELECT tag_Text FROM usrTags, usrRecTagLinks WHERE tag_ID=rtl_TagID AND tag_UGrpID='
-                        .$needTags.' AND rtl_RecID='.$row[$rec_ID_index];
-                        array_push( $row, mysql__select_list2($mysqli, $query));
-                    }
-
-                    //convert add and modified date to UTC
-                    if($date_add_index!==false) {
-                        // zero date not allowed by default since MySQL 5.7, default date changed to 1000
-                        if($row[$date_add_index]=='0000-00-00 00:00:00'
-                        || $row[$date_add_index]=='1000-01-01 00:00:00'){ //not defined
-                            $row[$date_add_index] = '';
-                        }else{
-                            $row[$date_add_index] = DateTime::createFromFormat(DATE_8601, $row[$date_add_index])
-                            ->setTimezone(new DateTimeZone('UTC'))
-                            ->format(DATE_8601);
-                        }
-                    }
-                    if($date_mod_index!==false) {
-                        $row[$date_mod_index] = DateTime::createFromFormat(DATE_8601, $row[$date_mod_index])
+                //convert add and modified date to UTC
+                if($date_add_index!==false) {
+                    // zero date not allowed by default since MySQL 5.7, default date changed to 1000
+                    if($row[$date_add_index]=='0000-00-00 00:00:00'
+                    || $row[$date_add_index]=='1000-01-01 00:00:00'){ //not defined
+                        $row[$date_add_index] = '';
+                    }else{
+                        $row[$date_add_index] = DateTime::createFromFormat(DATE_8601, $row[$date_add_index])
                         ->setTimezone(new DateTimeZone('UTC'))
                         ->format(DATE_8601);
                     }
+                }
+                if($date_mod_index!==false) {
+                    $row[$date_mod_index] = DateTime::createFromFormat(DATE_8601, $row[$date_mod_index])
+                    ->setTimezone(new DateTimeZone('UTC'))
+                    ->format(DATE_8601);
+                }
 
 
-                    //array_push( $row, $row[4] );//by default icon if record type ID
-                    $rec_ID = intval($row[$rec_ID_index]);
-                    $records[$rec_ID] = $row;
-                    array_push($order, $rec_ID);
-                    array_push($all_rec_ids, $rec_ID);
-                    if($rec_RecTypeID_index>=0 && !@$rectypes[$row[$rec_RecTypeID_index]]){  //rectypes is resultset
-                        $rectypes[$row[$rec_RecTypeID_index]]=1;
+                //array_push( $row, $row[4] );//by default icon if record type ID
+                $rec_ID = intval($row[$rec_ID_index]);
+                $records[$rec_ID] = $row;
+                array_push($order, $rec_ID);
+                array_push($all_rec_ids, $rec_ID);
+                if($rec_RecTypeID_index>=0 && !@$rectypes[$row[$rec_RecTypeID_index]]){  //rectypes is resultset
+                    $rectypes[$row[$rec_RecTypeID_index]]=1;
+                }
+
+                if(count($all_rec_ids)>5000){
+                    $mem_used = memory_get_usage();
+                    if($mem_used>$memory_limit-104857600){ //100M
+                        return $system->addError(HEURIST_ACTION_BLOCKED,
+                            $total_count_rows.MSG_MEMORY_LIMIT);
                     }
+                }
 
-                    if(count($all_rec_ids)>5000){
-                        $mem_used = memory_get_usage();
-                        if($mem_used>$memory_limit-104857600){ //100M
-                            return $system->addError(HEURIST_ACTION_BLOCKED,
-                                $total_count_rows.MSG_MEMORY_LIMIT);
-                        }
-                    }
+            }//load headers
+            $res->close();
 
-                }//load headers
-                $res->close();
-
-                //LOAD DETAILS
-                if(($istimemap_request ||
-                $params['detail']=='detail' ||
-                $params['detail']=='structure') && !empty($records)){
+            //LOAD DETAILS
+            if(($istimemap_request ||
+            $params['detail']=='detail' ||
+            $params['detail']=='structure') && !empty($records)){
 
 
-                    //$all_rec_ids = array_keys($records);
-                    $res_count = count($all_rec_ids);
-                    //split to 2500 to use in detail query
-                    $offset = 0;
+                //$all_rec_ids = array_keys($records);
+                $res_count = count($all_rec_ids);
+                //split to 2500 to use in detail query
+                $offset = 0;
 
-                    if($istimemap_request){
-                        $tm_records = array();
-                        $order = array();
-                        $rectypes = array();
-                        $istimemap_counter = 0;
-                    }
+                if($istimemap_request){
+                    $tm_records = array();
+                    $order = array();
+                    $rectypes = array();
+                    $istimemap_counter = 0;
+                }
 
-                    $fieldtypes_in_res = array();//reset
+                $fieldtypes_in_res = array();//reset
 
-                    // FIX on fly: get "file" field types  - @todo  remove on 2022-08-22
-                    $file_field_types = mysql__select_list2($mysqli,'select dty_ID from defDetailTypes where dty_Type="file"');
+                // FIX on fly: get "file" field types  - @todo  remove on 2022-08-22
+                $file_field_types = mysql__select_list2($mysqli,'select dty_ID from defDetailTypes where dty_Type="file"');
 
-                    $datetime_field_types = mysql__select_list2($mysqli,'select dty_ID from defDetailTypes where dty_Type="date"');
+                $datetime_field_types = mysql__select_list2($mysqli,'select dty_ID from defDetailTypes where dty_Type="date"');
 
-                    $loop_cnt=1;
-                    while ($offset<$res_count){
+                $loop_cnt=1;
+                while ($offset<$res_count){
 
-                        //here was a problem, since chunk size for mapping can be 5000 or more we got memory overflow here
-                        //reason the list of ids in SELECT is bigger than mySQL limit
-                        //solution - we perfrom the series of request for details by 1000 records
-                        $chunk_rec_ids = array_slice($all_rec_ids, $offset, 1000);
-                        $offset = $offset + 1000;
+                    //here was a problem, since chunk size for mapping can be 5000 or more we got memory overflow here
+                    //reason the list of ids in SELECT is bigger than mySQL limit
+                    //solution - we perfrom the series of request for details by 1000 records
+                    $chunk_rec_ids = array_slice($all_rec_ids, $offset, 1000);
+                    $offset = $offset + 1000;
 
-                        $ulf_fields = 'f.ulf_ObfuscatedFileID, f.ulf_Parameters';//5,6
+                    $ulf_fields = 'f.ulf_ObfuscatedFileID, f.ulf_Parameters';//5,6
 
-                        //search for specific details
-                        if($fieldtypes_ids!=null && $fieldtypes_ids!=''){
+                    //search for specific details
+                    if($fieldtypes_ids!=null && $fieldtypes_ids!=''){
 
-                            $detail_query = 'select dtl_ID, dtl_RecID,'
-                            .'dtl_DetailTypeID,'     // 0
-                            .'dtl_Value,'            // 1
-                            .'ST_asWKT(dtl_Geo), dtl_UploadedFileID, '  //2,3
-                            .'dtl_HideFromPublic, ' //4
-                            .$ulf_fields
-                            .' FROM recDetails '
-                            . ' left join recUploadedFiles as f on f.ulf_ID = dtl_UploadedFileID '
-                            . SQL_WHERE
-                            .predicateId('dtl_RecID',$chunk_rec_ids)
+                        $detail_query = 'select dtl_ID, dtl_RecID,'
+                        .'dtl_DetailTypeID,'     // 0
+                        .'dtl_Value,'            // 1
+                        .'ST_asWKT(dtl_Geo), dtl_UploadedFileID, '  //2,3
+                        .'dtl_HideFromPublic, ' //4
+                        .$ulf_fields
+                        .' FROM recDetails '
+                        . ' left join recUploadedFiles as f on f.ulf_ID = dtl_UploadedFileID '
+                        . SQL_WHERE
+                        .predicateId('dtl_RecID',$chunk_rec_ids)
+                        .SQL_AND
+                        .predicateId('dtl_DetailTypeID',$fieldtypes_ids);
+
+
+                        if($find_places_for_geo){ //find location in linked Place records
+                            $detail_query = $detail_query . 'UNION  '
+                            .'SELECT dtl_ID, rl_SourceID,dtl_DetailTypeID,dtl_Value, ST_asWKT(dtl_Geo), rl_TargetID, 0, 0, 0 '
+                            .' FROM recDetails, recLinks, Records '
+                            .' WHERE (dtl_Geo IS NOT NULL) ' //'dtl_DetailTypeID='. DT_GEO_OBJECT
+                            .' AND dtl_RecID=rl_TargetID AND rl_TargetID=rec_ID AND '
+                            .predicateId('rec_RecTypeID',$rectypes_as_place)
                             .SQL_AND
-                            .predicateId('dtl_DetailTypeID',$fieldtypes_ids);
+                            .predicateId('rl_SourceID',$chunk_rec_ids);
+                        }
+                    }else{
 
-
-                            if($find_places_for_geo){ //find location in linked Place records
-                                $detail_query = $detail_query . 'UNION  '
-                                .'SELECT dtl_ID, rl_SourceID,dtl_DetailTypeID,dtl_Value, ST_asWKT(dtl_Geo), rl_TargetID, 0, 0, 0 '
-                                .' FROM recDetails, recLinks, Records '
-                                .' WHERE (dtl_Geo IS NOT NULL) ' //'dtl_DetailTypeID='. DT_GEO_OBJECT
-                                .' AND dtl_RecID=rl_TargetID AND rl_TargetID=rec_ID AND '
-                                .predicateId('rec_RecTypeID',$rectypes_as_place)
-                                .SQL_AND
-                                .predicateId('rl_SourceID',$chunk_rec_ids);
-                            }
+                        if($needCompleteInformation){
+                            $ulf_fields = 'f.ulf_OrigFileName,f.ulf_ExternalFileReference,f.ulf_ObfuscatedFileID,'
+                            .'f.ulf_MimeExt';//5,6,7,8
                         }else{
-
-                            if($needCompleteInformation){
-                                $ulf_fields = 'f.ulf_OrigFileName,f.ulf_ExternalFileReference,f.ulf_ObfuscatedFileID,'
-                                .'f.ulf_MimeExt';//5,6,7,8
-                            }else{
-
-                            }
-
-                            $detail_query = 'select dtl_ID, dtl_RecID,'
-                            .'dtl_DetailTypeID,'     // 0
-                            .'dtl_Value,'            // 1
-                            .'ST_asWKT(dtl_Geo),'    // 2
-                            .'dtl_UploadedFileID,'   // 3
-                            .'dtl_HideFromPublic,'   // 4
-                            .$ulf_fields
-                            .' from recDetails
-                            left join recUploadedFiles as f on f.ulf_ID = dtl_UploadedFileID
-                            where dtl_RecID in (' . join(',', $chunk_rec_ids) . ')';
 
                         }
-                        //$detail_query = $detail_query . ' order by dtl_RecID, dtl_ID';
-                        $need_Concatenation = false;
-                        $loop_cnt++;
-                        // @todo - we may use getAllRecordDetails
-                        $res_det = $mysqli->query( $detail_query );
 
-                        if (!$res_det){
-                            $response = $system->addError(HEURIST_DB_ERROR,
-                                $savedSearchName.'Search query error (retrieving details)',
-                                $mysqli->error);
-                            return $response;
-                        }else{
+                        $detail_query = 'select dtl_ID, dtl_RecID,'
+                        .'dtl_DetailTypeID,'     // 0
+                        .'dtl_Value,'            // 1
+                        .'ST_asWKT(dtl_Geo),'    // 2
+                        .'dtl_UploadedFileID,'   // 3
+                        .'dtl_HideFromPublic,'   // 4
+                        .$ulf_fields
+                        .' from recDetails
+                        left join recUploadedFiles as f on f.ulf_ID = dtl_UploadedFileID
+                        where dtl_RecID in (' . join(',', $chunk_rec_ids) . ')';
 
-                            while ($row = $res_det->fetch_row()) {
-                                $dtl_ID = array_shift($row);
-                                $recID = array_shift($row);
-                                if( !array_key_exists('d', $records[$recID]) ){
-                                    $records[$recID]['d'] = array();
-                                    $need_Concatenation = $need_Concatenation ||
-                                    (defined('RT_CMS_MENU') && $records[$recID][4]==RT_CMS_MENU);
+                    }
+                    //$detail_query = $detail_query . ' order by dtl_RecID, dtl_ID';
+                    $need_Concatenation = false;
+                    $loop_cnt++;
+                    // @todo - we may use getAllRecordDetails
+                    $res_det = $mysqli->query( $detail_query );
+
+                    if (!$res_det){
+                        $response = $system->addError(HEURIST_DB_ERROR,
+                            $savedSearchName.'Search query error (retrieving details)',
+                            $mysqli->error);
+                        return $response;
+                    }else{
+
+                        while ($row = $res_det->fetch_row()) {
+                            $dtl_ID = array_shift($row);
+                            $recID = array_shift($row);
+                            if( !array_key_exists('d', $records[$recID]) ){
+                                $records[$recID]['d'] = array();
+                                $need_Concatenation = $need_Concatenation ||
+                                (defined('RT_CMS_MENU') && $records[$recID][4]==RT_CMS_MENU);
+                            }
+                            $dtyID = $row[0];
+
+
+                            // FIX on fly - @todo  remove on 2022-08-22
+                            if( (!($row[3]>0)) && in_array($dtyID,$file_field_types) ){
+                                if($ruf_entity==null){
+                                    $ruf_entity = new DbRecUploadedFiles($system);
                                 }
-                                $dtyID = $row[0];
+                                $fileinfo = $ruf_entity->registerURL($row[1], false, $dtl_ID);
 
-
-                                // FIX on fly - @todo  remove on 2022-08-22
-                                if( (!($row[3]>0)) && in_array($dtyID,$file_field_types) ){
-                                    if($ruf_entity==null){
-                                        $ruf_entity = new DbRecUploadedFiles($system);
-                                    }
-                                    $fileinfo = $ruf_entity->registerURL($row[1], false, $dtl_ID);
-
-                                    if($fileinfo && !isEmptyArray($fileinfo)){
-
-                                        if($needCompleteInformation){
-                                            $row[3] = $fileinfo['ulf_ID'];
-                                            $row[5] = $fileinfo['ulf_OrigFileName'];
-                                            $row[6] = $fileinfo['ulf_ExternalFileReference'];
-                                            $row[7] = $fileinfo['ulf_ObfuscatedFileID'];
-                                            $row[8] = $fileinfo['ulf_MimeExt'];
-                                        }else{
-                                            $row[5] = $fileinfo['ulf_ObfuscatedFileID'];
-                                            $row[6] = '';
-                                        }
-                                    }
-
-                                }
-
-                                $val = null;
-                                $field_error = null;
-
-                                if($row[2]){ //GEO
-                                    //dtl_Geo @todo convert to JSON
-                                    $val = $row[1];//geotype
-
-                                    // see $find_places_for_geo 3d value is record id of linked place
-                                    $linked_Place_ID = $row[3];//linked place record id
-                                    if($linked_Place_ID>0){
-                                        $val = $val.':'.$linked_Place_ID;      //reference to real geo record
-                                    }
-
-                                    $val = $val.' '.$row[2];//WKT
-
-                                }elseif($row[3]){ //uploaded file
+                                if($fileinfo && !isEmptyArray($fileinfo)){
 
                                     if($needCompleteInformation){
-
-                                        $val = array('ulf_ID'=>$row[3],
-                                            'ulf_OrigFileName'=>$row[5],
-                                            'ulf_ExternalFileReference'=>$row[6],
-                                            'ulf_ObfuscatedFileID'=>$row[7],
-                                            'ulf_MimeExt'=>$row[8]);
-
-
+                                        $row[3] = $fileinfo['ulf_ID'];
+                                        $row[5] = $fileinfo['ulf_OrigFileName'];
+                                        $row[6] = $fileinfo['ulf_ExternalFileReference'];
+                                        $row[7] = $fileinfo['ulf_ObfuscatedFileID'];
+                                        $row[8] = $fileinfo['ulf_MimeExt'];
                                     }else{
-                                        $val = array($row[5], $row[6]);//obfuscated value for fileid and parameters
+                                        $row[5] = $fileinfo['ulf_ObfuscatedFileID'];
+                                        $row[6] = '';
                                     }
-
-                                }elseif(in_array($dtyID, $datetime_field_types) && @$row[1]!=null) {
-                                    //!$useNewTemporalFormatInRecDetails &&
-                                    //convert date to old plain string temporal object to return to client side
-                                    $val = Temporal::getValueForRecDetails( $row[1], false );
-
-                                    if($checkFields){ // check if this date has been indexed and interpreted
-
-                                        $check_query = 'SELECT rdi_estMinDate, rdi_estMaxDate FROM recDetailsDateIndex WHERE rdi_DetailID = '.intval($dtl_ID);// AND rdi_estMinDate != 0 AND rdi_estMaxDate != 0
-                                        $check_res = $mysqli->query($check_query);
-
-                                        if($check_res){
-
-                                            $field_error = $check_res->num_rows == 0 ? 'This date has not been indexed' : null;
-
-                                            if(!$field_error){ // has been indexed
-                                                $row = $check_res->fetch_row();
-                                                $field_error = intval($row[0]) === 0 && intval($row[1]) === 0 ? 'This date has been indexed, but it couldn\'t be interpreted' : null;
-                                            }
-
-                                        } // else mysql error
-                                    }
-
-                                }elseif(@$row[1]!=null) {
-                                    $val = $row[1];//dtl_Value
                                 }
 
-                                if($val!=null){
-                                    $fieldtypes_in_res[$dtyID] = 1;
-                                    if( !array_key_exists($dtyID, $records[$recID]['d']) ){
-                                        $records[$recID]['d'][$dtyID] = array();
-                                        $records[$recID]['v'][$dtyID] = array();
+                            }
 
-                                        if($checkFields) { $records[$recID]['errors'][$dtyID] = array();}
-                                    }
-                                    array_push($records[$recID]['d'][$dtyID], $val);
+                            $val = null;
+                            $field_error = null;
 
-                                    //individual field visibility
-                                    array_push($records[$recID]['v'][$dtyID], $row[4]);//dtl_HideFromPublic
+                            if($row[2]){ //GEO
+                                //dtl_Geo @todo convert to JSON
+                                $val = $row[1];//geotype
 
-                                    // if checked, return any errors found with the field
-                                    if($checkFields) { array_push($records[$recID]['errors'][$dtyID], $field_error);}
+                                // see $find_places_for_geo 3d value is record id of linked place
+                                $linked_Place_ID = $row[3];//linked place record id
+                                if($linked_Place_ID>0){
+                                    $val = $val.':'.$linked_Place_ID;      //reference to real geo record
                                 }
-                            }//while
-                            $res_det->close();
+
+                                $val = $val.' '.$row[2];//WKT
+
+                            }elseif($row[3]){ //uploaded file
+
+                                if($needCompleteInformation){
+
+                                    $val = array('ulf_ID'=>$row[3],
+                                        'ulf_OrigFileName'=>$row[5],
+                                        'ulf_ExternalFileReference'=>$row[6],
+                                        'ulf_ObfuscatedFileID'=>$row[7],
+                                        'ulf_MimeExt'=>$row[8]);
 
 
-                            ///@todo optionally return geojson and timeline items
+                                }else{
+                                    $val = array($row[5], $row[6]);//obfuscated value for fileid and parameters
+                                }
 
-                            //additional loop for timemap request
-                            //1. exclude records without timemap data
-                            //2. limit to $search_detail_limit from preferences 'search_detail_limit'
-                            if($istimemap_request){
+                            }elseif(in_array($dtyID, $datetime_field_types) && @$row[1]!=null) {
+                                //!$useNewTemporalFormatInRecDetails &&
+                                //convert date to old plain string temporal object to return to client side
+                                $val = Temporal::getValueForRecDetails( $row[1], false );
 
-                                foreach ($chunk_rec_ids as $recID) {
-                                    $record = $records[$recID];
-                                    if(!isEmptyArray(@$record['d'])){
-                                        //this record is time enabled
-                                        if($istimemap_counter<$search_detail_limit){
-                                            $tm_records[$recID] = $record;
-                                            array_push($order, $recID);
-                                            if($rec_RecTypeID_index>=0) {$rectypes[$record[$rec_RecTypeID_index]] = 1; }
-                                            //$records[$recID] = null; //unset
-                                            //unset($records[$recID]);
-                                        }else{
-                                            $limit_warning = true;
-                                            break;
+                                if($checkFields){ // check if this date has been indexed and interpreted
+
+                                    $check_query = 'SELECT rdi_estMinDate, rdi_estMaxDate FROM recDetailsDateIndex WHERE rdi_DetailID = '.intval($dtl_ID);// AND rdi_estMinDate != 0 AND rdi_estMaxDate != 0
+                                    $check_res = $mysqli->query($check_query);
+
+                                    if($check_res){
+
+                                        $field_error = $check_res->num_rows == 0 ? 'This date has not been indexed' : null;
+
+                                        if(!$field_error){ // has been indexed
+                                            $row = $check_res->fetch_row();
+                                            $field_error = intval($row[0]) === 0 && intval($row[1]) === 0 ? 'This date has been indexed, but it couldn\'t be interpreted' : null;
                                         }
-                                        $istimemap_counter++;
-                                    }
+
+                                    } // else mysql error
                                 }
-                            }//$istimemap_request
-                            //it has RT_CMS_MENU - need concatenate all DT_EXTENDED_DESCRIPTION
 
-                            if($need_Concatenation){
+                            }elseif(@$row[1]!=null) {
+                                $val = $row[1];//dtl_Value
+                            }
 
-                                foreach ($chunk_rec_ids as $recID) {
-                                    $record = $records[$recID];
-                                    if($record[4]==RT_CMS_MENU
-                                    && is_array(@$record['d'][DT_EXTENDED_DESCRIPTION]))
-                                    {
-                                        $records[$recID]['d'][DT_EXTENDED_DESCRIPTION] = array(implode('',$record['d'][DT_EXTENDED_DESCRIPTION]));
+                            if($val!=null){
+                                $fieldtypes_in_res[$dtyID] = 1;
+                                if( !array_key_exists($dtyID, $records[$recID]['d']) ){
+                                    $records[$recID]['d'][$dtyID] = array();
+                                    $records[$recID]['v'][$dtyID] = array();
 
-                                        if(@$params['cms_cut_description']==1 && @$records[$recID]['d'][DT_EXTENDED_DESCRIPTION][0]){
-                                            $records[$recID]['d'][DT_EXTENDED_DESCRIPTION][0] = 'X';
-                                        }
+                                    if($checkFields) { $records[$recID]['errors'][$dtyID] = array();}
+                                }
+                                array_push($records[$recID]['d'][$dtyID], $val);
+
+                                //individual field visibility
+                                array_push($records[$recID]['v'][$dtyID], $row[4]);//dtl_HideFromPublic
+
+                                // if checked, return any errors found with the field
+                                if($checkFields) { array_push($records[$recID]['errors'][$dtyID], $field_error);}
+                            }
+                        }//while
+                        $res_det->close();
+
+
+                        ///@todo optionally return geojson and timeline items
+
+                        //additional loop for timemap request
+                        //1. exclude records without timemap data
+                        //2. limit to $search_detail_limit from preferences 'search_detail_limit'
+                        if($istimemap_request){
+
+                            foreach ($chunk_rec_ids as $recID) {
+                                $record = $records[$recID];
+                                if(!isEmptyArray(@$record['d'])){
+                                    //this record is time enabled
+                                    if($istimemap_counter<$search_detail_limit){
+                                        $tm_records[$recID] = $record;
+                                        array_push($order, $recID);
+                                        if($rec_RecTypeID_index>=0) {$rectypes[$record[$rec_RecTypeID_index]] = 1; }
+                                        //$records[$recID] = null; //unset
+                                        //unset($records[$recID]);
+                                    }else{
+                                        $limit_warning = true;
+                                        break;
+                                    }
+                                    $istimemap_counter++;
+                                }
+                            }
+                        }//$istimemap_request
+                        //it has RT_CMS_MENU - need concatenate all DT_EXTENDED_DESCRIPTION
+
+                        if($need_Concatenation){
+
+                            foreach ($chunk_rec_ids as $recID) {
+                                $record = $records[$recID];
+                                if($record[4]==RT_CMS_MENU
+                                && is_array(@$record['d'][DT_EXTENDED_DESCRIPTION]))
+                                {
+                                    $records[$recID]['d'][DT_EXTENDED_DESCRIPTION] = array(implode('',$record['d'][DT_EXTENDED_DESCRIPTION]));
+
+                                    if(@$params['cms_cut_description']==1 && @$records[$recID]['d'][DT_EXTENDED_DESCRIPTION][0]){
+                                        $records[$recID]['d'][DT_EXTENDED_DESCRIPTION][0] = 'X';
                                     }
                                 }
                             }
-
-
-                            if($res_count>5000){
-                                $mem_used = memory_get_usage();
-                                if($mem_used>$memory_limit-52428800){ //50M
-                                    //cut off exceed records
-                                    $order = array_slice($order, 0, $offset);
-                                    $sliced_records = array();
-                                    if($istimemap_request){
-                                        foreach ($order as $recID) {
-                                            $sliced_records[$recID] = $tm_records[$recID];
-                                        }
-                                        $tm_records = $sliced_records;
-                                        $memory_warning = '';
-                                    }else{
-                                        foreach ($order as $recID) {
-                                            $sliced_records[$recID] = $records[$recID];
-                                        }
-                                        $records = $sliced_records;
-                                        $memory_warning = 'Search query produces '.$res_count.' records. ';
-                                    }
-                                    $memory_warning = $memory_warning.'The result is limited to '.count($sliced_records).' records due to server limitations.'
-                                    .' Please filter to a smaller set of results.';
-                                    break;
-                                }
-                            }
-
                         }
 
-                    }//while offset
 
-                    if($istimemap_request){
-
-                        $records = $tm_records;
-                        $total_count_rows = $istimemap_counter;
-                    }elseif($needCompleteInformation){
-                            $relations = recordSearchRelated($system, $all_rec_ids);
-                            if($relations['status']==HEURIST_OK){
-                                $relations = $relations['data'];
+                        if($res_count>5000){
+                            $mem_used = memory_get_usage();
+                            if($mem_used>$memory_limit-52428800){ //50M
+                                //cut off exceed records
+                                $order = array_slice($order, 0, $offset);
+                                $sliced_records = array();
+                                if($istimemap_request){
+                                    foreach ($order as $recID) {
+                                        $sliced_records[$recID] = $tm_records[$recID];
+                                    }
+                                    $tm_records = $sliced_records;
+                                    $memory_warning = '';
+                                }else{
+                                    foreach ($order as $recID) {
+                                        $sliced_records[$recID] = $records[$recID];
+                                    }
+                                    $records = $sliced_records;
+                                    $memory_warning = 'Search query produces '.$res_count.' records. ';
+                                }
+                                $memory_warning = $memory_warning.'The result is limited to '.count($sliced_records).' records due to server limitations.'
+                                .' Please filter to a smaller set of results.';
+                                break;
                             }
-
-                            $permissions = recordSearchPermissions($system, $all_rec_ids);
-                        if($permissions['status']==HEURIST_OK){
-                            $view_permissions = $permissions['view'];
-
-                            array_push($fields, 'rec_NonOwnerVisibilityGroups');
-                            $group_perm_index = array_search('rec_NonOwnerVisibilityGroups', $fields);
-                            foreach ($view_permissions as $recid=>$groups){
-                                $records[$recid][$group_perm_index] = implode(',', $groups);
-                            }
-
-                            $edit_permissions = $permissions['edit'];
-                            $group_perm_index = array_search('rec_OwnerUGrpID', $fields);
-                            foreach ($edit_permissions as $recid=>$groups){
-                                array_unshift($groups, $records[$recid][$group_perm_index]);
-                                $records[$recid][$group_perm_index] = implode(',', $groups);
-                            }
-
                         }
-                        //array("direct"=>$direct, "reverse"=>$reverse, "headers"=>$headers));
+
                     }
 
+                }//while offset
 
+                if($istimemap_request){
 
-                }//$need_details
+                    $records = $tm_records;
+                    $total_count_rows = $istimemap_counter;
+                }elseif($needCompleteInformation){
+                    $relations = recordSearchRelated($system, $all_rec_ids);
+                    if($relations['status']==HEURIST_OK){
+                        $relations = $relations['data'];
+                    }
 
-                $rectypes = array_keys($rectypes);
-                if( @$params['detail']=='structure' && !empty($rectypes)){ //rarely used in editing.js
-                    //description of recordtype and used detail types
-                    $rectype_structures = dbs_GetRectypeStructures($system, $rectypes, 1);//no groups
+                    $permissions = recordSearchPermissions($system, $all_rec_ids);
+                    if($permissions['status']==HEURIST_OK){
+                        $view_permissions = $permissions['view'];
+
+                        array_push($fields, 'rec_NonOwnerVisibilityGroups');
+                        $group_perm_index = array_search('rec_NonOwnerVisibilityGroups', $fields);
+                        foreach ($view_permissions as $recid=>$groups){
+                            $records[$recid][$group_perm_index] = implode(',', $groups);
+                        }
+
+                        $edit_permissions = $permissions['edit'];
+                        $group_perm_index = array_search('rec_OwnerUGrpID', $fields);
+                        foreach ($edit_permissions as $recid=>$groups){
+                            array_unshift($groups, $records[$recid][$group_perm_index]);
+                            $records[$recid][$group_perm_index] = implode(',', $groups);
+                        }
+
+                    }
+                    //array("direct"=>$direct, "reverse"=>$reverse, "headers"=>$headers));
                 }
 
-                //"query"=>$query,
-                $response = array('status'=>HEURIST_OK,
-                    'data'=> array(
-                        //'query'=>$query,
-                        'queryid'=>@$params['id'],  //query unqiue id
-                        'pageno'=>@$params['pageno'],  //to sync page
-                        'entityName'=>'Records',
-                        'count'=>$total_count_rows,
-                        'offset'=>get_offset($params),
-                        'reccount'=>count($records),
-                        'tmcount'=>$istimemap_counter,
-                        'fields'=>$fields,
-                        'fields_detail'=>array(),
-                        'records'=>$records,
-                        'order'=>$order,
-                        'rectypes'=>$rectypes,
-                        'limit_warning'=>$limit_warning,
-                        'memory_warning'=>$memory_warning));
-                if(is_array($fieldtypes_in_res)){
-                    $response['data']['fields_detail'] =  array_keys($fieldtypes_in_res);
-                }
-                if(is_array($relations)){
-                    $response['data']['relations'] =  $relations;
-                }
-            }//$is_ids_only
+
+
+            }//$need_details
+
+            $rectypes = array_keys($rectypes);
+            if( @$params['detail']=='structure' && !empty($rectypes)){ //rarely used in editing.js
+                //description of recordtype and used detail types
+                $rectype_structures = dbs_GetRectypeStructures($system, $rectypes, 1);//no groups
+            }
+
+            //"query"=>$query,
+            $response = array('status'=>HEURIST_OK,
+                'data'=> array(
+                    //'query'=>$query,
+                    'queryid'=>@$params['id'],  //query unqiue id
+                    'pageno'=>@$params['pageno'],  //to sync page
+                    'entityName'=>'Records',
+                    'count'=>$total_count_rows,
+                    'offset'=>get_offset($params),
+                    'reccount'=>count($records),
+                    'tmcount'=>$istimemap_counter,
+                    'fields'=>$fields,
+                    'fields_detail'=>array(),
+                    'records'=>$records,
+                    'order'=>$order,
+                    'rectypes'=>$rectypes,
+                    'limit_warning'=>$limit_warning,
+                    'memory_warning'=>$memory_warning));
+            if(is_array($fieldtypes_in_res)){
+                $response['data']['fields_detail'] =  array_keys($fieldtypes_in_res);
+            }
+            if(is_array($relations)){
+                $response['data']['relations'] =  $relations;
+            }
+        }//$is_ids_only
 
 
 
@@ -3346,12 +3346,12 @@ function recordSearchByID($system, $id, $need_details = true, $fields = null)
 //
 function recordGetField($record, $field_id){
 
-        $value = @$record['details'][$field_id];
-        if(!isEmptyArray($value)){
-            return array_shift($value);
-        }else{
-            return null;
-        }
+    $value = @$record['details'][$field_id];
+    if(!isEmptyArray($value)){
+        return array_shift($value);
+    }else{
+        return null;
+    }
 }
 
 //
@@ -3437,7 +3437,7 @@ function recordSearchDetails($system, &$record, $detail_types) {
             $detail_visibility_conditions[] = '((rst_NonOwnerVisibility="public" OR rst_NonOwnerVisibility="pending") AND IFNULL(dtl_HideFromPublic, 0)!=1)';
 
             $detail_visibility_conditions = ' AND (IFNULL(rst_RequirementType,"")!="forbidden") AND ('
-                                            .implode(' OR ',$detail_visibility_conditions).')';
+            .implode(' OR ',$detail_visibility_conditions).')';
         }
 
         if($detail_visibility_conditions!=null){
@@ -3481,11 +3481,11 @@ function recordSearchDetails($system, &$record, $detail_types) {
                     $fileinfo = null;
 
                     if(!($rd['dtl_UploadedFileID']>0)){
-                         // FIX on fly - @todo  remove on 2022-08-22
-                         if($ruf_entity==null){
+                        // FIX on fly - @todo  remove on 2022-08-22
+                        if($ruf_entity==null){
                             $ruf_entity = new DbRecUploadedFiles($system);
-                         }
-                         $fileinfo = $ruf_entity->registerURL($rd['dtl_Value'], false, $rd['dtl_ID']);
+                        }
+                        $fileinfo = $ruf_entity->registerURL($rd['dtl_Value'], false, $rd['dtl_ID']);
                     }else{
                         $fileinfo = fileGetFullInfo($system, $rd["dtl_UploadedFileID"]);
                         if(!isEmptyArray($fileinfo)){
@@ -3567,8 +3567,8 @@ function recordSearchDetailsRelations($system, &$record, $detail_types) {
 
             $qr = 'SELECT dty_ID, dty_JsonTermIDTree, dty_PtrTargetRectypeIDs '
             .' FROM defDetailTypes, defRecStructure, Records'
-                 .' WHERE rec_ID='.$recID
-                 .' AND dty_ID=rst_DetailTypeID AND rst_RecTypeID=rec_RecTypeID AND dty_Type = "relmarker"';
+            .' WHERE rec_ID='.$recID
+            .' AND dty_ID=rst_DetailTypeID AND rst_RecTypeID=rec_RecTypeID AND dty_Type = "relmarker"';
         }
 
         $relmarker_fields =  mysql__select_all($mysqli, $qr);
@@ -3597,9 +3597,9 @@ function recordSearchDetailsRelations($system, &$record, $detail_types) {
                     if(!$constr_rty_ids || in_array($rty_ID, $constr_rty_ids) ){
                         if(!@$record["details"][$constraints[0]]) {$record["details"][$constraints[0]] = array();}
                         $record["details"][$constraints[0]][] = array('id'=>$relation->targetID,
-                                    'type'=>$rty_ID,
-                                    'title'=>$related_recs['data']['headers'][$relation->targetID][0],
-                                    'relation_id'=>$relation->relationID);
+                            'type'=>$rty_ID,
+                            'title'=>$related_recs['data']['headers'][$relation->targetID][0],
+                            'relation_id'=>$relation->relationID);
                     }
                 }
             }
@@ -3611,9 +3611,9 @@ function recordSearchDetailsRelations($system, &$record, $detail_types) {
                     if(!$constr_rty_ids || in_array($rty_ID, $constr_rty_ids) ){
                         if(!@$record["details"][$constraints[0]]) {$record["details"][$constraints[0]] = array();}
                         $record["details"][$constraints[0]][] = array('id'=>$relation->sourceID,
-                                    'type'=>$rty_ID,
-                                    'title'=>$related_recs['data']['headers'][$relation->sourceID][0],
-                                    'relation_id'=>$relation->relationID);
+                            'type'=>$rty_ID,
+                            'title'=>$related_recs['data']['headers'][$relation->sourceID][0],
+                            'relation_id'=>$relation->relationID);
                     }
                 }
 
@@ -3664,56 +3664,56 @@ function recordLinksFileContent($system, $record){
 //
 function recordSearchGeoDetails($system, $recID, $find_geo_by_linked_rty, $find_geo_by_linked_dty) {
 
-        $details = array();
+    $details = array();
 
 
-        if ($find_geo_by_linked_rty===true && $system->defineConstant('RT_PLACE')){
-            $find_geo_by_linked_rty = array(RT_PLACE);
+    if ($find_geo_by_linked_rty===true && $system->defineConstant('RT_PLACE')){
+        $find_geo_by_linked_rty = array(RT_PLACE);
+    }
+
+    if(isEmptyArray($find_geo_by_linked_rty)){   //search geo in linked records
+        return $details;
+    }
+
+    $squery = 'SELECT rl_SourceID,dtl_DetailTypeID,dtl_Value,ST_asWKT(dtl_Geo) as dtl_Geo, '
+    .'rl_TargetID,dtl_ID,rl_DetailTypeID,rl_RelationTypeID'
+    .' FROM recDetails, recLinks, Records '
+    .' WHERE (dtl_Geo IS NOT NULL) '
+    .' AND dtl_RecID=rl_TargetID AND rl_TargetID=rec_ID AND '
+    .predicateId('rec_RecTypeID',$find_geo_by_linked_rty)
+    .' AND rl_SourceID = '.$recID;
+
+    if(!isEmptyArray($find_geo_by_linked_dty)){
+        $squery = $squery.' AND '
+        .predicateId('rl_DetailTypeID',$find_geo_by_linked_dty);
+    }
+
+    $squery = $squery.' ORDER BY rl_ID';
+
+    $mysqli = $system->get_mysqli();
+    $res = $mysqli->query($squery);
+    if(!$res){
+        return $details;
+    }
+
+    while ($rd = $res->fetch_assoc()) {
+
+        if ($rd["dtl_Value"]  &&  $rd["dtl_Geo"]) {
+            $detailValue = array(
+                "geo" => array(
+                    "type" => $rd["dtl_Value"],
+                    "wkt" => $rd["dtl_Geo"],
+                    "placeID" => $rd["rl_TargetID"],
+                    "pointerDtyID" => $rd["rl_DetailTypeID"],
+                    "relationID" => $rd['rl_RelationTypeID']
+                )
+            );
+            $details[$rd["dtl_DetailTypeID"]][$rd["dtl_ID"]] = $detailValue;
         }
+    }
+    $res->close();
 
-        if(isEmptyArray($find_geo_by_linked_rty)){   //search geo in linked records
-           return $details;
-        }
-
-            $squery = 'SELECT rl_SourceID,dtl_DetailTypeID,dtl_Value,ST_asWKT(dtl_Geo) as dtl_Geo, '
-            .'rl_TargetID,dtl_ID,rl_DetailTypeID,rl_RelationTypeID'
-            .' FROM recDetails, recLinks, Records '
-            .' WHERE (dtl_Geo IS NOT NULL) '
-            .' AND dtl_RecID=rl_TargetID AND rl_TargetID=rec_ID AND '
-            .predicateId('rec_RecTypeID',$find_geo_by_linked_rty)
-            .' AND rl_SourceID = '.$recID;
-
-            if(!isEmptyArray($find_geo_by_linked_dty)){
-                $squery = $squery.' AND '
-                .predicateId('rl_DetailTypeID',$find_geo_by_linked_dty);
-            }
-
-            $squery = $squery.' ORDER BY rl_ID';
-
-            $mysqli = $system->get_mysqli();
-            $res = $mysqli->query($squery);
-            if(!$res){
-                return $details;
-            }
-
-            while ($rd = $res->fetch_assoc()) {
-
-                if ($rd["dtl_Value"]  &&  $rd["dtl_Geo"]) {
-                    $detailValue = array(
-                        "geo" => array(
-                            "type" => $rd["dtl_Value"],
-                            "wkt" => $rd["dtl_Geo"],
-                            "placeID" => $rd["rl_TargetID"],
-                            "pointerDtyID" => $rd["rl_DetailTypeID"],
-                            "relationID" => $rd['rl_RelationTypeID']
-                        )
-                    );
-                    $details[$rd["dtl_DetailTypeID"]][$rd["dtl_ID"]] = $detailValue;
-                }
-            }
-            $res->close();
-
-            return $details;
+    return $details;
 }
 
 //replace $IDS in $query to $recID
@@ -3723,17 +3723,17 @@ function __fillQuery(&$q, $recID){
 
             foreach ($predicate as $key=>$val)
             {
-                    if( is_array($val)){
-                        __fillQuery($val, $recID);
-                        $q[$idx][$key] = $val;
-                    }elseif( is_string($val) && $val == '$IDS') {
-                        //substitute with array of ids
-                        $q[$idx][$key] = $recID;
-                    }
+                if( is_array($val)){
+                    __fillQuery($val, $recID);
+                    $q[$idx][$key] = $val;
+                }elseif( is_string($val) && $val == '$IDS') {
+                    //substitute with array of ids
+                    $q[$idx][$key] = $recID;
+                }
             }
         }
     }elseif( is_string($q) && $q == '$IDS') {
-            $q = array('ids'=>$recID);
+        $q = array('ids'=>$recID);
     }
 }
 //
@@ -3809,4 +3809,3 @@ function recordSearchPersonalTags($system, $rec_ID) {
         'SELECT tag_Text FROM usrRecTagLinks, usrTags WHERE '
         ."tag_ID = rtl_TagID and tag_UGrpID= ".$system->get_user_id()." and rtl_RecID = $rec_ID order by rtl_Order");
 }
-?>

@@ -128,7 +128,7 @@ public static function getAllowedTerms($defs, $defs_nonsel, $dtyID){
                         $terms = array_diff($terms, $nonTerms);
                     }
                 }
-                if (count($terms)<1) {
+                if (empty($terms)) {
                     $allowed_terms = "all";
                 }else{
                     $allowed_terms = $terms;

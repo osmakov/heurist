@@ -113,67 +113,67 @@ class UImage {
             return array('error'=>'URL to generate snapshot '.$siteURL.' is not valid');
         }
 
-            //$remote_path =  str_replace("[URL]", $sURL, WEBSITE_THUMBNAIL_SERVICE);
-            $heurist_path = tempnam(HEURIST_SCRATCH_DIR, "_temp_");
+        //$remote_path =  str_replace("[URL]", $sURL, WEBSITE_THUMBNAIL_SERVICE);
+        $heurist_path = tempnam(HEURIST_SCRATCH_DIR, "_temp_");
 
 
-            if(defined('WEBSITE_THUMBNAIL_SERVICE') && WEBSITE_THUMBNAIL_SERVICE!=''){
+        if(defined('WEBSITE_THUMBNAIL_SERVICE') && WEBSITE_THUMBNAIL_SERVICE!=''){
 
-                $remote_path =  str_replace("[URL]", $siteURL, WEBSITE_THUMBNAIL_SERVICE);
-                $filesize = saveURLasFile($remote_path, $heurist_path);//save url screenshot in tep file
+            $remote_path =  str_replace("[URL]", $siteURL, WEBSITE_THUMBNAIL_SERVICE);
+            $filesize = saveURLasFile($remote_path, $heurist_path);//save url screenshot in tep file
 
-                //check the dimension of returned thumbanil in case it is less than 50 - consider it as error
-                if(strpos($remote_path, substr(WEBSITE_THUMBNAIL_SERVICE,0,24))==0){
+            //check the dimension of returned thumbanil in case it is less than 50 - consider it as error
+            if(strpos($remote_path, substr(WEBSITE_THUMBNAIL_SERVICE,0,24))==0){
 
-                    $image_info = getimagesize($heurist_path);
-                    if($image_info[1]<50){
-                        //remove temp file
-                        unlink($heurist_path);
-                        return array('error'=>'Thumbnail generator service can\'t create the image for specified URL');
-                    }
+                $image_info = getimagesize($heurist_path);
+                if($image_info[1]<50){
+                    //remove temp file
+                    unlink($heurist_path);
+                    return array('error'=>'Thumbnail generator service can\'t create the image for specified URL');
                 }
+            }
 
-            }else{
+        }else{
 
-                //call Google PageSpeed Insights API
-                $googlePagespeedData = file_get_contents( //loadRemoteURLContent
+            //call Google PageSpeed Insights API
+            $googlePagespeedData = file_get_contents( //loadRemoteURLContent
                 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='.$siteURL.'&screenshot=true');
 
-                //decode json data
-                $googlePagespeedData = json_decode($googlePagespeedData, true);
+            //decode json data
+            $googlePagespeedData = json_decode($googlePagespeedData, true);
 
-                //screenshot data
+            //screenshot data
 
-                //full-page-screenshot details screenshot data
-                //screenshot-thumbnails details items[] data
-                $screenshot = @$googlePagespeedData['lighthouseResult']['audits']['final-screenshot']['details']['data'];
+            //full-page-screenshot details screenshot data
+            //screenshot-thumbnails details items[] data
+            $screenshot = @$googlePagespeedData['lighthouseResult']['audits']['final-screenshot']['details']['data'];
 
-                //$screenshot = str_replace(array('_','-'),array('/','+'),$screenshot);
+            //$screenshot = str_replace(array('_','-'),array('/','+'),$screenshot);
 
-                $fp = fopen($heurist_path, "w+");
-                fwrite($fp, base64_decode($screenshot));
-                fclose($fp);
+            $fp = fopen($heurist_path, "w+");
+            fwrite($fp, base64_decode($screenshot));
+            fclose($fp);
 
-                //display screenshot image
-                //echo "<img src=\"data:image/jpeg;base64,".$screenshot."\" /-->";
-            }
+            //display screenshot image
+            //echo "<img src=\"data:image/jpeg;base64,".$screenshot."\" /-->";
+        }
 
-            if(file_exists($heurist_path)){
+        if(file_exists($heurist_path)){
 
-                $filesize = getFileSize($heurist_path); //UFile
+            $filesize = getFileSize($heurist_path); //UFile
 
-                $file = new \stdClass();
-                $file->original_name = 'snapshot.jpg';
-                $file->name = $heurist_path; //pathinfo($heurist_path, PATHINFO_BASENAME);//name with ext
-                $file->fullpath = $heurist_path;
-                $file->size = $filesize;
-                $file->type = 'jpg';
+            $file = new \stdClass();
+            $file->original_name = 'snapshot.jpg';
+            $file->name = $heurist_path; //pathinfo($heurist_path, PATHINFO_BASENAME);//name with ext
+            $file->fullpath = $heurist_path;
+            $file->size = $filesize;
+            $file->type = 'jpg';
 
-                return $file;
+            return $file;
 
-            }else{
-                return array('error'=>'Cannot download image from thumbnail generator service. '.$siteURL.' to '.$heurist_path);
-            }
+        }else{
+            return array('error'=>'Cannot download image from thumbnail generator service. '.$siteURL.' to '.$heurist_path);
+        }
 
     }
 
@@ -406,7 +406,7 @@ class UImage {
             case 'jpeg':
             case 'jfif':
             case 'jpg':
-			case 'jpe':
+            case 'jpe':
             case 'image/gif':
             case 'gif':
             case 'image/png':
@@ -442,50 +442,50 @@ class UImage {
     */
     public static function safeLoadImage($filename, $mimeExt){
 
-            $img = null;
+        $img = null;
 
-            $errline_prev = 0;
+        $errline_prev = 0;
 
-            set_error_handler(function($errno, $errstr, $errfile, $errline=null, array $errcontext=null) {
-                global $errline_prev, $filename, $file;
+        set_error_handler(function($errno, $errstr, $errfile, $errline=null, array $errcontext=null) {
+            global $errline_prev, $filename, $file;
 
-                //it may report error several times with different messages - send for the first one
-                if($errline_prev!=$errline){
+            //it may report error several times with different messages - send for the first one
+            if($errline_prev!=$errline){
 
-                        $errline_prev=$errline;
-                        //database, record ID and name of bad image
-                        sendEmail(HEURIST_MAIL_TO_ADMIN, 'Cannot load image file. DB:'.HEURIST_DBNAME,
-                        'File :'.$filename.' is corrupted. System message: '.$errstr);
-                        //ID#'.$file['ulf_ID'].'
+                $errline_prev=$errline;
+                //database, record ID and name of bad image
+                sendEmail(HEURIST_MAIL_TO_ADMIN, 'Cannot load image file. DB:'.HEURIST_DBNAME,
+                    'File :'.$filename.' is corrupted. System message: '.$errstr);
+                //ID#'.$file['ulf_ID'].'
 
-                }
-                return false;
-            });//, E_WARNING);
-
-            switch($mimeExt) {
-                case 'image/jpeg':
-                case 'jpeg':
-                case 'jfif':
-                case 'jpg':
-                case 'jpe':
-                    $img = @imagecreatefromjpeg($filename);
-                    break;
-                case 'image/gif':
-                case 'gif':
-                    $img = @imagecreatefromgif($filename);
-                    break;
-                case 'image/png':
-                case 'png':
-                    $img = @imagecreatefrompng($filename);
-                    break;
-                default:
-                    $img = false; //not image
-                    break;
             }
+            return false;
+        });//, E_WARNING);
 
-            restore_error_handler();
+        switch($mimeExt) {
+            case 'image/jpeg':
+            case 'jpeg':
+            case 'jfif':
+            case 'jpg':
+            case 'jpe':
+                $img = @imagecreatefromjpeg($filename);
+                break;
+            case 'image/gif':
+            case 'gif':
+                $img = @imagecreatefromgif($filename);
+                break;
+            case 'image/png':
+            case 'png':
+                $img = @imagecreatefrompng($filename);
+                break;
+            default:
+                $img = false; //not image
+                break;
+        }
 
-            return $img;
+        restore_error_handler();
+
+        return $img;
     }
 
     /**
@@ -689,40 +689,40 @@ class UImage {
     */
     public static function getPdfThumbnail( $filename, $thumbnail_file ){
 
-            if(!extension_loaded('imagick')){
+        if(!extension_loaded('imagick')){
 
-                $cmd = 'convert -thumbnail x200 -flatten ';//-background white -alpha remove
-                $cmd .= ' '.escapeshellarg($filename.'[0]');
-                $cmd .= ' '.escapeshellarg($thumbnail_file);
-                exec($cmd, $output, $error);
+            $cmd = 'convert -thumbnail x200 -flatten ';//-background white -alpha remove
+            $cmd .= ' '.escapeshellarg($filename.'[0]');
+            $cmd .= ' '.escapeshellarg($thumbnail_file);
+            exec($cmd, $output, $error);
 
-                if ($error) {
-                    USanitize::errorLog('ERROR on pdf thumbnail creation: '.$filename.'  '.$cmd.'   '.implode('\n', $output));
-                    return false;
-                }
-
-            }else{
-                //Imagic
-                try {
-
-                    $im =  new \Imagick($filename.'[0]');
-                    $im->setImageFormat('png');
-                    $im->thumbnailImage(200,200);
-
-                    if(file_exists($thumbnail_file)){
-                            unlink($thumbnail_file);
-                    }
-                    $im->writeImage($thumbnail_file);
-
-                } catch(\ImagickException $e) {
-                    USanitize::errorLog($e . ', From Database: ' . HEURIST_DBNAME);
-                    return false;
-                }
-
+            if ($error) {
+                USanitize::errorLog('ERROR on pdf thumbnail creation: '.$filename.'  '.$cmd.'   '.implode('\n', $output));
+                return false;
             }
-            return true;
-            //$resized = file_get_contents($thumbnail_file);
-            //return $resized;
+
+        }else{
+            //Imagic
+            try {
+
+                $im =  new \Imagick($filename.'[0]');
+                $im->setImageFormat('png');
+                $im->thumbnailImage(200,200);
+
+                if(file_exists($thumbnail_file)){
+                    unlink($thumbnail_file);
+                }
+                $im->writeImage($thumbnail_file);
+
+            } catch(\ImagickException $e) {
+                USanitize::errorLog($e . ', From Database: ' . HEURIST_DBNAME);
+                return false;
+            }
+
+        }
+        return true;
+        //$resized = file_get_contents($thumbnail_file);
+        //return $resized;
     }
 
     /**
@@ -842,40 +842,40 @@ class UImage {
     */
     private static function _resizeImageImagic($filename, $scaled_file, $max_width = 200, $max_height = 200, $force_type='png'){
 
-            try{
-                $image = new \Imagick($filename);
-                $dims = array('height' => $image->getImageHeight(), 'width' => $image->getImageWidth());
+        try{
+            $image = new \Imagick($filename);
+            $dims = array('height' => $image->getImageHeight(), 'width' => $image->getImageWidth());
 
-                // rescale if either dimension is greater than 1000 pixels
-                if($dims['height'] > $max_height || $dims['width'] > $max_width){
+            // rescale if either dimension is greater than 1000 pixels
+            if($dims['height'] > $max_height || $dims['width'] > $max_width){
 
-                    // scale by the bigger of height or width
-                    $scaleHeight = $dims['height'] > $dims['width'] ? $max_width : 0;
-                    $scaleWidth = $dims['width'] > $dims['height'] ? $max_height : 0;
+                // scale by the bigger of height or width
+                $scaleHeight = $dims['height'] > $dims['width'] ? $max_width : 0;
+                $scaleWidth = $dims['width'] > $dims['height'] ? $max_height : 0;
 
-                    $image->scaleImage($scaleWidth, $scaleHeight);// scale image
-                }
-
-                // force jpeg output
-                if($force_type=='png'){
-                    $image->setImageType('png');
-                }
-                if($force_type=='jpg'){
-                    $image->setImageType('jpeg');
-
-                    $image->setImageCompression(\imagick::COMPRESSION_JPEG);
-                    $image->setImageCompressionQuality(75);
-                }
-
-                $success = $image->writeImage($scaled_file);
-
-                $image->destroy();
-
-                return $success;
-
-            }catch(\ImagickException $e){
-                return $e->message;
+                $image->scaleImage($scaleWidth, $scaleHeight);// scale image
             }
+
+            // force jpeg output
+            if($force_type=='png'){
+                $image->setImageType('png');
+            }
+            if($force_type=='jpg'){
+                $image->setImageType('jpeg');
+
+                $image->setImageCompression(\imagick::COMPRESSION_JPEG);
+                $image->setImageCompressionQuality(75);
+            }
+
+            $success = $image->writeImage($scaled_file);
+
+            $image->destroy();
+
+            return $success;
+
+        }catch(\ImagickException $e){
+            return $e->message;
+        }
     }
 
 
@@ -897,14 +897,14 @@ class UImage {
         /*
         $image_oriented = false;
         if (!empty($options['auto_orient']) && $this->gd_orient_image(
-                $file_path,
-                $src_img
-            )) {
-            $image_oriented = true;
-            $src_img = $this->gd_get_image_object(
-                $file_path,
-                $src_func
-            );
+        $file_path,
+        $src_img
+        )) {
+        $image_oriented = true;
+        $src_img = $this->gd_get_image_object(
+        $file_path,
+        $src_func
+        );
         }*/
         $img_width = imagesx($src_img);
         $img_height = imagesy($src_img);
@@ -1000,14 +1000,13 @@ class UImage {
     //
     //
     private static function _rgb2hex($rgb) {
-       $hex = "#";
-       $hex .= str_pad(dechex($rgb[0]), 2, '0', STR_PAD_LEFT);
-       $hex .= str_pad(dechex($rgb[1]), 2, '0', STR_PAD_LEFT);
-       $hex .= str_pad(dechex($rgb[2]), 2, '0', STR_PAD_LEFT);
+        $hex = "#";
+        $hex .= str_pad(dechex($rgb[0]), 2, '0', STR_PAD_LEFT);
+        $hex .= str_pad(dechex($rgb[1]), 2, '0', STR_PAD_LEFT);
+        $hex .= str_pad(dechex($rgb[2]), 2, '0', STR_PAD_LEFT);
 
-       return $hex; // returns the hex value including the number sign (#)
+        return $hex; // returns the hex value including the number sign (#)
     }
 
 
 }
-?>

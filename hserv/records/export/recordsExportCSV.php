@@ -618,7 +618,7 @@ public static function output($data, $params){
 
                     $value = implode($csv_mvsep, $vals);
 
-                    if($include_resource_titles && count($vals)<1){ //empty value
+                    if($include_resource_titles && empty($vals)){ //empty value
                         $resource_titles[] = '';
                     }
 
@@ -852,7 +852,7 @@ public static function output($data, $params){
         foreach ($csvData as $recordTypeID => $rows) {
             $streams[$recordTypeID] = fopen(TEMP_MEMORY, 'w');
 
-            if (is_array($rows) && count($rows) > 0) {
+            if (is_array($rows) && !empty($rows)) {
                 if ($csv_header) {
                     $headerRow = array_shift($rows);
                     if (!empty($percentageColIndices[$recordTypeID])) {
@@ -1366,7 +1366,7 @@ private static function writeResults( $streams, $temp_name, $headers, $error_log
  * @return array The grouped CSV rows.
  */
 private static function groupCSVRows(array $rows, array $groupColIndices = [], array $sumColIndices = [], array $countColIndices = []) {
-    if (count($groupColIndices) > 0) {
+    if (!empty($groupColIndices)) {
         $groupedRows = [];
         foreach ($rows as $row) {
             $findRowIndex = -1;
@@ -1407,7 +1407,7 @@ private static function groupCSVRows(array $rows, array $groupColIndices = [], a
 }
 
 private static function usePercentageForCSVHeaders(array $headers, array $usePercentageColIndices = []) {
-    if (count($usePercentageColIndices) > 0) {
+    if (!empty($usePercentageColIndices)) {
         $colIncrease = 0;
         for ($i = 0; $i < count($usePercentageColIndices); $i++) {
             $colIndex = $usePercentageColIndices[$i] + $colIncrease;
@@ -1431,7 +1431,7 @@ private static function usePercentageForCSVHeaders(array $headers, array $usePer
  * @return array The CSV rows with the percentage values calculated.
  */
 private static function usePercentageForCSVRows(array $rows, array $usePercentageColIndices = []) {
-    if (count($usePercentageColIndices) > 0) {
+    if (!empty($usePercentageColIndices)) {
         $colTotal = [];
         for ($i = 0; $i < count($rows); $i++) {
             for ($j = 0; $j < count($usePercentageColIndices); $j++) {
@@ -1475,7 +1475,7 @@ private static function usePercentageForCSVRows(array $rows, array $usePercentag
  * @return array The sorted CSV rows.
  */
 private static function sortCSVRows(array $rows, array $sortByColIndices = [], array $sortOrders = []) {
-    if (count($sortByColIndices) > 0) {
+    if (!empty($sortByColIndices)) {
         usort($rows, function($a, $b) use ($sortByColIndices, $sortOrders) {
             $result = 0;
             for ($i = 0; $i < count($sortByColIndices); $i++) {

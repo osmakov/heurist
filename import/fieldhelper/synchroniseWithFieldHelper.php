@@ -252,7 +252,7 @@ $failed_exts = array();
 
             doHarvestFieldHelper($dirs);
 
-            if(count($failed_exts) > 0) {
+            if(!empty($failed_exts)) {
 
                 $invalid_ext = implode(', ', $failed_exts);
 

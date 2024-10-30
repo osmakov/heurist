@@ -122,12 +122,12 @@ record types and fields exported from the target database, this is
 only useful for synchronising vocabularies and terms.\n\n";
 
 $import_help = "{"
-    . "\n \t\t\"TRM_ID\": \"Specifies any of the following, which are evaluated in order: local ID, concept code, label or standard code. If no match is found, the value will be added as a new term\","
-    . "\n \t\t\"DATE\": \"Specify date field values in ISO format (yyyy or yyyy-mm or yyyy-mm-dd)\","
-    . "\n \t\t\"RECORD_REFERENCE\": \"May be replaced with a numeric or alphanumeric reference to another record. Note that this reference will be replaced with an automatically generated numeric Heurist record ID (H-ID), and the reference supplied will be recorded in a field Original ID.\","
-    . "\n \t\t\"RELATIONSHIP_RECORD\": \"Special fields that contain no data; instead new records of type RELATIONSHIP should be imported. They will appear in the marker fields when the data is viewed.\","
-    . "\n \t\t\"RECORD-IDENTIFIER\": \"Specify the record identifier in the source database (numeric or alphanumeric) if the record could be the target of a record pointer field, including the target record pointer of a relationship record.\""
-    . "\n \t}";
+. "\n \t\t\"TRM_ID\": \"Specifies any of the following, which are evaluated in order: local ID, concept code, label or standard code. If no match is found, the value will be added as a new term\","
+. "\n \t\t\"DATE\": \"Specify date field values in ISO format (yyyy or yyyy-mm or yyyy-mm-dd)\","
+. "\n \t\t\"RECORD_REFERENCE\": \"May be replaced with a numeric or alphanumeric reference to another record. Note that this reference will be replaced with an automatically generated numeric Heurist record ID (H-ID), and the reference supplied will be recorded in a field Original ID.\","
+. "\n \t\t\"RELATIONSHIP_RECORD\": \"Special fields that contain no data; instead new records of type RELATIONSHIP should be imported. They will appear in the marker fields when the data is viewed.\","
+. "\n \t\t\"RECORD-IDENTIFIER\": \"Specify the record identifier in the source database (numeric or alphanumeric) if the record could be the target of a record pointer field, including the target record pointer of a relationship record.\""
+. "\n \t}";
 
 // START OUTPUT
 
@@ -200,11 +200,11 @@ $json .= "\n \t],";
 
 // Add database details
 $db_details = "\n \t\"database\":{"
-    . "\n \t\t\"id\": \"". $system->get_system('sys_dbRegisteredID') ."\","
-    . "\n \t\t\"db\": \"". htmlspecialchars($system->dbname()) ."\","
-    . "\n \t\t\"url\": \"". HEURIST_BASE_URL ."\","
-    . "\n \t\t\"rectypes\": {". $rectypes ."\n \t\t}"
-    . "\n \t}";
+. "\n \t\t\"id\": \"". $system->get_system('sys_dbRegisteredID') ."\","
+. "\n \t\t\"db\": \"". htmlspecialchars($system->dbname()) ."\","
+. "\n \t\t\"url\": \"". HEURIST_BASE_URL ."\","
+. "\n \t\t\"rectypes\": {". $rectypes ."\n \t\t}"
+. "\n \t}";
 $json .= $db_details;
 
 // Close off
@@ -216,6 +216,3 @@ header(CTYPE_JSON);
 header('Content-Disposition: attachment; filename="'.$filename.'";');
 
 echo $json;
-
-exit;
-?>

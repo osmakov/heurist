@@ -1969,7 +1969,7 @@ if($intofile){ // flags HuNI manifest + separate files per record
         // write out all records as separate files
         $resout = outputRecords($result);
 
-        if(count($resout)<1){
+        if(empty($resout)){
             print '<h3>There are no results to export</h3>';
             print '</body></html>';
         }else{

@@ -41,7 +41,7 @@ if( !$system->is_inited() ){  //cannot init system (apparently connection to Dat
 if($system->get_mysqli()!=null) { //server is connected
 
     $list =  mysql__getdatabases4($system->get_mysqli());
-    if(!$is_json && count($list)<1){
+    if(!$is_json && empty($list)){
         //redirect to create database
         redirectURL(HEURIST_BASE_URL . 'startup/index.php');
         exit;

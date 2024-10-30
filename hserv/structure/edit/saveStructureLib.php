@@ -322,11 +322,11 @@ function renameRectype($rty_ID, $def, $def_rts){
     $query= 'SELECT rty_Name from defRecTypes WHERE rty_ID='.$rty_ID;
     $val = mysql__select_value($mysqli, $query);
     if(strcmp(mb_strtoupper($name, 'UTF-8'), mb_strtoupper($val, 'UTF-8'))==0){
-        //this rectype already has such name
-        return;
+    //this rectype already has such name
+    return;
     }
     if($name!=$alt_name){
-        $name=$alt_name;
+    $name=$alt_name;
     }
     */
     //rty_Description
@@ -338,10 +338,10 @@ function renameRectype($rty_ID, $def, $def_rts){
     $idx_ref = $def_rts['rty_ReferenceURL'];
 
     $query= 'UPDATE defRecTypes SET rty_Name="'.$mysqli->real_escape_string($def[$idx_name])
-        .'", rty_Description="'.$mysqli->real_escape_string($def[$idx_desc])
-        .'", rty_ReferenceURL="'.$mysqli->real_escape_string($def[$idx_ref])
-        .'", rty_Plural="'.$mysqli->real_escape_string($def[$idx_plural_name])
-        .'" where  rty_ID='.$rty_ID;
+    .'", rty_Description="'.$mysqli->real_escape_string($def[$idx_desc])
+    .'", rty_ReferenceURL="'.$mysqli->real_escape_string($def[$idx_ref])
+    .'", rty_Plural="'.$mysqli->real_escape_string($def[$idx_plural_name])
+    .'" where  rty_ID='.$rty_ID;
     $mysqli->query($query);
 
 }
@@ -352,11 +352,11 @@ function renameDetailtype($dty_ID, $def, $def_dts){
     $query= 'SELECT dty_Name from defDetailTypes WHERE dty_ID='.$dty_ID;
     $val = mysql__select_value($mysqli, $query);
     if(strcmp(mb_strtoupper($name, 'UTF-8'), mb_strtoupper($val, 'UTF-8'))==0){
-        //this field already has such name
-        return;
+    //this field already has such name
+    return;
     }
     if($name!=$alt_name){
-        $name=$alt_name;
+    $name=$alt_name;
     }
     */
     $idx_name = $def_dts['dty_Name'];
@@ -367,11 +367,11 @@ function renameDetailtype($dty_ID, $def, $def_dts){
 
 
     $query= 'UPDATE defDetailTypes SET dty_Name="'.$mysqli->real_escape_string($def[$idx_name])
-        .'", dty_Documentation="'.$mysqli->real_escape_string($def[$idx_desc])
-        .'", dty_ExtendedDescription="'.$mysqli->real_escape_string($def[$idx_desc2])
-        .'", dty_SemanticReferenceURL="'.$mysqli->real_escape_string($def[$idx_ref])
-        .'", dty_HelpText="'.$mysqli->real_escape_string($def[$idx_help])
-        .'" where dty_ID='.$dty_ID;
+    .'", dty_Documentation="'.$mysqli->real_escape_string($def[$idx_desc])
+    .'", dty_ExtendedDescription="'.$mysqli->real_escape_string($def[$idx_desc2])
+    .'", dty_SemanticReferenceURL="'.$mysqli->real_escape_string($def[$idx_ref])
+    .'", dty_HelpText="'.$mysqli->real_escape_string($def[$idx_help])
+    .'" where dty_ID='.$dty_ID;
     $mysqli->query($query);
 }
 
@@ -383,10 +383,10 @@ function renameTerm($term_id, $def, $columnNames){
     $idx_ref = $columnNames['trm_SemanticReferenceURL'];
 
     $query= 'UPDATE defTerms SET trm_Label="'.$mysqli->real_escape_string($def[$idx_name])
-        .'", trm_Description="'.$mysqli->real_escape_string($def[$idx_desc])
-        .'", trm_Code="'.$mysqli->real_escape_string($def[$idx_code])
-        .'", trm_SemanticReferenceURL="'.$mysqli->real_escape_string($def[$idx_ref])
-        .'" where trm_ID='.$term_id;
+    .'", trm_Description="'.$mysqli->real_escape_string($def[$idx_desc])
+    .'", trm_Code="'.$mysqli->real_escape_string($def[$idx_code])
+    .'", trm_SemanticReferenceURL="'.$mysqli->real_escape_string($def[$idx_ref])
+    .'" where trm_ID='.$term_id;
     $mysqli->query($query);
 }
 
@@ -464,9 +464,9 @@ function createRectypes($commonNames, $rt, $isAddDefaultSetOfFields, $convertTit
             if(!($dbID>0)){ $dbID = 0;}
 
             $query= 'UPDATE defRecTypes SET rty_OriginatingDBID='.intval($dbID)
-                .', rty_NameInOriginatingDB=rty_Name'
-                .', rty_IDInOriginatingDB='.intval($rtyID)
-                .' WHERE (NOT rty_OriginatingDBID>0 OR rty_OriginatingDBID IS NULL) AND rty_ID='.intval($rtyID);
+            .', rty_NameInOriginatingDB=rty_Name'
+            .', rty_IDInOriginatingDB='.intval($rtyID)
+            .' WHERE (NOT rty_OriginatingDBID>0 OR rty_OriginatingDBID IS NULL) AND rty_ID='.intval($rtyID);
             $mysqli->query($query);
 
             $ret = -$rtyID;
@@ -1306,9 +1306,9 @@ function createDetailTypes($commonNames, $dt) {
             if(!($dbID>0)) {$dbID = 0;}
 
             $query= 'UPDATE defDetailTypes SET dty_OriginatingDBID='.$dbID
-                                .', dty_NameInOriginatingDB=dty_Name'
-                                .', dty_IDInOriginatingDB='.$dtyID
-                                .' WHERE (NOT dty_OriginatingDBID>0 OR dty_OriginatingDBID IS NULL) AND dty_ID='.$dtyID;
+            .', dty_NameInOriginatingDB=dty_Name'
+            .', dty_IDInOriginatingDB='.$dtyID
+            .' WHERE (NOT dty_OriginatingDBID>0 OR dty_OriginatingDBID IS NULL) AND dty_ID='.$dtyID;
             $mysqli->query($query);
 
 
@@ -1449,7 +1449,7 @@ function addTermReference( $parentID, $trmID, $ext_db) {
 
     $ret = $ext_db->query(
         'insert into defTermsLinks (trl_ParentID,trl_TermID)'
-            .'values ('.$parentID.','.$trmID.')');
+        .'values ('.$parentID.','.$trmID.')');
     if(!$ret){
         $system->addError(HEURIST_DB_ERROR,
             'Cannot insert to defTermsLinks table', $ext_db->error);
@@ -1614,9 +1614,9 @@ function updateTerms( $colNames, $trmID, $values, $ext_db) {
                     if(!($dbID>0)) {$dbID = 0;}
 
                     $query= 'UPDATE defTerms SET trm_OriginatingDBID='.$dbID
-                                .', trm_NameInOriginatingDB=trm_Label'
-                                .', trm_IDInOriginatingDB='.$trmID
-                                .' WHERE (NOT trm_OriginatingDBID>0 OR trm_OriginatingDBID IS NULL) AND trm_ID='.$trmID;
+                    .', trm_NameInOriginatingDB=trm_Label'
+                    .', trm_IDInOriginatingDB='.$trmID
+                    .' WHERE (NOT trm_OriginatingDBID>0 OR trm_OriginatingDBID IS NULL) AND trm_ID='.$trmID;
                     $ext_db->query($query);
                 }
 
@@ -2162,4 +2162,3 @@ function deleteRelConstraint($srcID, $trgID, $trmID){
     }
     return $ret;
 }
-?>

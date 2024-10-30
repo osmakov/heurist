@@ -44,7 +44,7 @@ $forceEndpoints = true;
 
 for($i = 0; $i < $numLevels; $i++)
 {
-	$zoomLevelBreaks[$i] = $verySmall * pow($zoomFactor, $numLevels-$i-1);
+    $zoomLevelBreaks[$i] = $verySmall * pow($zoomFactor, $numLevels-$i-1);
 }
 
 function computeLevel($dd)
@@ -55,9 +55,9 @@ function computeLevel($dd)
     {
         $lev = 0;
         while($dd < $zoomLevelBreaks[$lev])
-	{
-	    $lev++;
-	}
+        {
+            $lev++;
+        }
     }
     return $lev;
 }
@@ -75,31 +75,31 @@ function dpEncode($points)
         return encodedPoints($points, $dists, $absMaxDist);
     }
 
-	    $stack[] = array(0, count($points)-1);
-	    while(count($stack) > 0)
-	    {
-	        $current = array_pop($stack);
-	        $maxDist = 0;
-	        for($i = $current[0]+1; $i < $current[1]; $i++)
-	        {
-	    	    $temp = distance($points[$i], $points[$current[0]], $points[$current[1]]);
-		        if($temp > $maxDist)
-		        {
-		            $maxDist = $temp;
-		            $maxLoc = $i;
-		            if($maxDist > $absMaxDist)
-		            {
-		                $absMaxDist = $maxDist;
-		            }
-		        }
-	        }
-	        if($maxDist > $verySmall)
-	        {
-	    	    $dists[$maxLoc] = $maxDist;
-		        array_push($stack, array($current[0], $maxLoc));
-		        array_push($stack, array($maxLoc, $current[1]));
-	        }
-	    }
+    $stack[] = array(0, count($points)-1);
+    while(!empty($stack))
+    {
+        $current = array_pop($stack);
+        $maxDist = 0;
+        for($i = $current[0]+1; $i < $current[1]; $i++)
+        {
+            $temp = distance($points[$i], $points[$current[0]], $points[$current[1]]);
+            if($temp > $maxDist)
+            {
+                $maxDist = $temp;
+                $maxLoc = $i;
+                if($maxDist > $absMaxDist)
+                {
+                    $absMaxDist = $maxDist;
+                }
+            }
+        }
+        if($maxDist > $verySmall)
+        {
+            $dists[$maxLoc] = $maxDist;
+            array_push($stack, array($current[0], $maxLoc));
+            array_push($stack, array($maxLoc, $current[1]));
+        }
+    }
 
     return encodedPoints($points, $dists, $absMaxDist);
 }
@@ -126,11 +126,11 @@ function distance($p0, $p1, $p2)
             $out = sqrt(pow($p0[0] - $p1[0],2) + pow($p0[1] - $p1[1],2));
         }
         if($u >= 1)
-	{
+        {
             $out = sqrt(pow($p0[0] - $p2[0],2) + pow($p0[1] - $p2[1],2));
         }
         if(0 < $u && $u < 1)
-	{
+        {
             $out = sqrt(pow($p0[0]-$p1[0]-$u*($p2[0]-$p1[0]),2) + pow($p0[1]-$p1[1]-$u*($p2[1]-$p1[1]),2));
         }
     }
@@ -139,12 +139,12 @@ function distance($p0, $p1, $p2)
 
 function encodeSignedNumber($num)
 {
-   $sgn_num = $num << 1;
-   if ($num < 0)
-   {
-       $sgn_num = ~($sgn_num);
-   }
-   return encodeNumber($sgn_num);
+    $sgn_num = $num << 1;
+    if ($num < 0)
+    {
+        $sgn_num = ~($sgn_num);
+    }
+    return encodeNumber($sgn_num);
 }
 
 function createEncodings($points, $dists)
@@ -155,18 +155,18 @@ function createEncodings($points, $dists)
     for($i=0; $i<count($points); $i++)
     {
         if(isset($dists[$i]) || $i == 0 || $i == count($points)-1)
-	{
-	    $point = $points[$i];
-	    $lat = $point[0];
-	    $lng = $point[1];
-	    $late5 = floor($lat * 1e5);
-	    $lnge5 = floor($lng * 1e5);
-	    $dlat = $late5 - $plat;
-	    $dlng = $lnge5 - $plng;
-	    $plat = $late5;
-	    $plng = $lnge5;
-	    $encoded_points .= encodeSignedNumber($dlat) . encodeSignedNumber($dlng);
-	}
+        {
+            $point = $points[$i];
+            $lat = $point[0];
+            $lng = $point[1];
+            $late5 = floor($lat * 1e5);
+            $lnge5 = floor($lng * 1e5);
+            $dlat = $late5 - $plat;
+            $dlng = $lnge5 - $plng;
+            $plat = $late5;
+            $plng = $lnge5;
+            $encoded_points .= encodeSignedNumber($dlat) . encodeSignedNumber($dlng);
+        }
     }
     return $encoded_points;
 }
@@ -187,9 +187,9 @@ function encodeLevels($points, $dists, $absMaxDist)
     for($i=1; $i<count($points)-1; $i++)
     {
         if(isset($dists[$i]))
-	{
-	    $encoded_levels .= encodeNumber($numLevels-computeLevel($dists[$i])-1);
-	}
+        {
+            $encoded_levels .= encodeNumber($numLevels-computeLevel($dists[$i])-1);
+        }
     }
     if($forceEndpoints)
     {
@@ -209,11 +209,9 @@ function encodeNumber($num)
     {
         $nextValue = (0x20 | ($num & 0x1f)) + 63;
         $encodeString .= chr($nextValue);
-	$num >>= 5;
+        $num >>= 5;
     }
     $finalValue = $num + 63;
     $encodeString .= chr($finalValue);
     return $encodeString;
 }
-
-?>

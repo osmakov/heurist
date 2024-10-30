@@ -48,11 +48,11 @@ if($res){
 ?>
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<title>Check Wysiwyg Texts</title>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>Check Wysiwyg Texts</title>
         <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>h4styles.css" />
-	</head>
+    </head>
 
     <body class="popup">
         <div class="banner"><h2>Check Wysiwyg Texts</h2></div>
@@ -64,12 +64,12 @@ if($res){
                 <?php
 
                 foreach ($woots as $woot) {
-	                $valid = true;
-	                $errs = array();
+                    $valid = true;
+                    $errs = array();
 
 
 
-	                $res = $mysqli->query("select * from woot_Chunks where chunk_WootID = " . intval($woot["woot_ID"]) . " and chunk_IsLatest and not chunk_Deleted");
+                    $res = $mysqli->query("select * from woot_Chunks where chunk_WootID = " . intval($woot["woot_ID"]) . " and chunk_IsLatest and not chunk_Deleted");
                     if($res){
                         while ($row = $res->fetch_assoc()) {
                             $err = check($row["chunk_Text"]);
@@ -81,41 +81,41 @@ if($res){
                         $res->close();
                     }
 
-	                if ($valid) {
+                    if ($valid) {
 
-	                } else {
+                    } else {
                         print "<tr><td><a target=_blank href='".HEURIST_BASE_URL."records/woot/woot.html?db=".HEURIST_DBNAME."w=";
-		                print $woot["woot_Title"] . "'>";
+                        print $woot["woot_Title"] . "'>";
                         print $woot["woot_Title"];
                         print "</a></td>\n";
 
-		                print "<td>" . htmlspecialchars(join("\n", $errs)) . "s</td></tr>\n";
-	                }
+                        print "<td>" . htmlspecialchars(join("\n", $errs)) . "s</td></tr>\n";
+                    }
                 }
 
                 function check($html) {
 
-	                $descriptorspec = array(
-		                0 => array("pipe", "r"),
-		                2 => array("pipe", "w"),
-	                );
-	                $proc = proc_open("xmllint -o /dev/null -", $descriptorspec, $pipes);
+                    $descriptorspec = array(
+                        0 => array("pipe", "r"),
+                        2 => array("pipe", "w"),
+                    );
+                    $proc = proc_open("xmllint -o /dev/null -", $descriptorspec, $pipes);
 
-	                fwrite($pipes[0], "<html>" . $html . "</html>");
-	                fclose($pipes[0]);
+                    fwrite($pipes[0], "<html>" . $html . "</html>");
+                    fclose($pipes[0]);
 
-	                $out = stream_get_contents($pipes[2]);
-	                fclose($pipes[2]);
+                    $out = stream_get_contents($pipes[2]);
+                    fclose($pipes[2]);
 
-	                $rv = proc_close($proc);
+                    $rv = proc_close($proc);
 
 
 
-	                if ($rv != 0) {
-		                return $out;
-	                } else {
-		                return 0;
-	                }
+                    if ($rv != 0) {
+                        return $out;
+                    } else {
+                        return 0;
+                    }
                 }
 
                 ?>
@@ -123,7 +123,7 @@ if($res){
 
             <p>&nbsp;</p>
             <p>
-            [end of check]
+                [end of check]
             </p>
         </div>
     </body>

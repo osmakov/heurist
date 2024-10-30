@@ -910,7 +910,7 @@ public static function validateImport($params) {
                 $mapped_fields[$field_name] = $field_type;
             }
         }
-        if(count($sel_query)<1){
+        if(empty($sel_query)){
             self::$system->addError(HEURIST_INVALID_REQUEST, 'Mapping not defined');
             return false;
         }
@@ -2279,12 +2279,12 @@ private static function doInsertUpdateRecord($recordId, $import_table, $recordTy
 
         $auto_increment = recordGetAllIncremenetedValues(self::$system, $auto_increment_params);
 
-        if(count($auto_increment) > 0){
+        if(!empty($auto_increment)){
             $record['details'] = array_replace($details, $auto_increment);
 
             $cached_increments = array_replace($cached_increments, $auto_increment);
         }
-        if(count($cached_increments) > 0){
+        if(!empty($cached_increments)){
             self::$increment_fields[$recordType] = $cached_increments;
         }
     }
@@ -2545,7 +2545,7 @@ public static function performImport($params, $mode_output){
                 $mapping[$index] = $field_type;
             }
         }
-        if(count($sel_query)<1){
+        if(empty($sel_query)){
             return "mapping not defined";
         }
 

@@ -2113,7 +2113,7 @@ HEADER;
             $this->printList('Multiple consecutive spaces detected', $fixMsg, $bibs2, 'recCB14');
         }
 
-        if(count($fixed2) > 0){
+        if(!empty($fixed2)){
             fwrite($this->out, '<br><h3>'. count($fixed2) .' multi-spaced values changed to single space</h3><br>');
         }
 

@@ -294,7 +294,7 @@ foreach ($fh_data->children() as $f_gen){
                             }
                         }
 
-                        if(count($mapping_dt)<1){
+                        if(empty($mapping_dt)){
                             array_push($mapping_rt_errors2, $zType);
                             $warning_count ++;
                         }else{
@@ -751,7 +751,7 @@ if($step=="1"){  //first step - info about current status
                     print error_Div('Warning: zotero id '.htmlspecialchars($zotero_itemid)
                         .': no data recorded in Zotero for this entry');
 
-                }elseif(count($details)<1){
+                }elseif(empty($details)){
                     //no one zotero key has proper mapping to heurist fields
                     array_push($arr_empty, $zotero_itemid);
                     $cnt_empty++;

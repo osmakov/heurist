@@ -3,25 +3,25 @@ namespace hserv\entity;
 use hserv\System;
 use hserv\entity\DbEntityBase;
 
-    /**
-    * db access to usrUGrps table for users
-    *
-    *
-    * @package     Heurist academic knowledge management system
-    * @link        https://HeuristNetwork.org
-    * @copyright   (C) 2005-2023 University of Sydney
-    * @author      Artem Osmakov   <osmakov@gmail.com>
-    * @license     https://www.gnu.org/licenses/gpl-3.0.txt GNU License 3.0
-    * @version     4.0
-    */
+/**
+* db access to usrUGrps table for users
+*
+*
+* @package     Heurist academic knowledge management system
+* @link        https://HeuristNetwork.org
+* @copyright   (C) 2005-2023 University of Sydney
+* @author      Artem Osmakov   <osmakov@gmail.com>
+* @license     https://www.gnu.org/licenses/gpl-3.0.txt GNU License 3.0
+* @version     4.0
+*/
 
-    /*
-    * Licensed under the GNU License, Version 3.0 (the "License"); you may not use this file except in compliance
-    * with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/gpl-3.0.txt
-    * Unless required by applicable law or agreed to in writing, software distributed under the License is
-    * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
-    * See the License for the specific language governing permissions and limitations under the License.
-    */
+/*
+* Licensed under the GNU License, Version 3.0 (the "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/gpl-3.0.txt
+* Unless required by applicable law or agreed to in writing, software distributed under the License is
+* distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
+* See the License for the specific language governing permissions and limitations under the License.
+*/
 
 require_once dirname(__FILE__).'/../records/search/recordFile.php';
 require_once dirname(__FILE__).'/../records/edit/recordModify.php';//for recordDelete
@@ -33,8 +33,8 @@ class DbSysUsers extends DbEntityBase
     private $transaction = false;
 
     public function __construct( $system, $data=null ) {
-       parent::__construct( $system, $data );
-       $this->requireAdminRights = false;
+        parent::__construct( $system, $data );
+        $this->requireAdminRights = false;
     }
 
     public function search(){
@@ -42,7 +42,7 @@ class DbSysUsers extends DbEntityBase
         $not_in_group = @$this->data['not:ugl_GroupID'];
 
         if(parent::search()===false){
-              return false;
+            return false;
         }
 
         $needCheck = false;
@@ -66,16 +66,16 @@ class DbSysUsers extends DbEntityBase
         $pred = $this->searchMgr->getPredicate('ugl_GroupID');
         if($pred!=null) {
 
+            array_push($where, $pred);
+            $needRole = true;
+
+            $pred = $this->searchMgr->getPredicate('ugl_Role');
+            if($pred!=null) {
                 array_push($where, $pred);
-                $needRole = true;
+            }
 
-                $pred = $this->searchMgr->getPredicate('ugl_Role');
-                if($pred!=null) {
-                    array_push($where, $pred);
-                }
-
-                array_push($where, '(ugl_UserID = ugr_ID)');
-                array_push($from_table, 'sysUsrGrpLinks');
+            array_push($where, '(ugl_UserID = ugr_ID)');
+            array_push($from_table, 'sysUsrGrpLinks');
         }
         elseif (@$this->data['members_only']){ // user's who aren't group admins
             array_push($where, '(ugr_ID NOT IN (SELECT ugr_ID FROM sysUGrps, sysUsrGrpLinks WHERE (ugl_UserID = ugr_ID) AND (ugl_Role = "admin")))');
@@ -159,14 +159,14 @@ class DbSysUsers extends DbEntityBase
         $query = 'SELECT SQL_CALC_FOUND_ROWS  '.implode(',', $this->data['details'])
         .' FROM '.implode(',', $from_table);
 
-         if(!empty($where)){
+        if(!empty($where)){
             $query = $query.SQL_WHERE.implode(SQL_AND,$where);
-         }
-         if($orderby!=null){
+        }
+        if($orderby!=null){
             $query = $query.' ORDER BY '.$orderby;
-         }
+        }
 
-         $query = $query.$this->searchMgr->getLimit().$this->searchMgr->getOffset();
+        $query = $query.$this->searchMgr->getLimit().$this->searchMgr->getOffset();
 
         $calculatedFields = null;
 
@@ -186,14 +186,14 @@ class DbSysUsers extends DbEntityBase
 
         if(!$this->system->is_admin() &&
             ( !isEmptyArray($this->recordIDs)
-            || !isEmptyArray($this->records))){ //there are records to update/delete
+                || !isEmptyArray($this->records))){ //there are records to update/delete
 
-            if($this->recordIDs[0]!=$ugrID || count($this->recordIDs)>1){
+                if($this->recordIDs[0]!=$ugrID || count($this->recordIDs)>1){
 
-                $this->system->addError(HEURIST_REQUEST_DENIED,
-                    'You are not admin and can\'t edit another user. Insufficient rights (logout/in to refresh) for this operation');
-                return false;
-            }
+                    $this->system->addError(HEURIST_REQUEST_DENIED,
+                        'You are not admin and can\'t edit another user. Insufficient rights (logout/in to refresh) for this operation');
+                    return false;
+                }
         }elseif($ugrID != 2 && is_array($this->recordIDs) && in_array(2, $this->recordIDs)){
             $this->system->addError(HEURIST_REQUEST_DENIED,
                 'You do not have permission to alter the database owner\'s account.');
@@ -220,8 +220,8 @@ class DbSysUsers extends DbEntityBase
             if($email_address){
                 $email_address = filter_var($email_address, FILTER_SANITIZE_EMAIL);
                 if(!filter_var($email_address, FILTER_VALIDATE_EMAIL)){
-                        $this->system->addError(HEURIST_ACTION_BLOCKED, 'Email address is not valid');
-                        return false;
+                    $this->system->addError(HEURIST_ACTION_BLOCKED, 'Email address is not valid');
+                    return false;
                 }
                 $fieldvalues['ugr_eMail'] = $email_address;
             }
@@ -274,18 +274,18 @@ class DbSysUsers extends DbEntityBase
             //validate duplication
             //validate duplication
             if(!$this->doDuplicationCheck($idx, 'ugr_Name', 'User cannot be saved. The provided name already exists')){
-                    return false;
+                return false;
             }
             if(!$this->doDuplicationCheck($idx, 'ugr_eMail', 'User cannot be saved. The provided email already exists')){
-                    return false;
+                return false;
             }
 
             //find records to be approved and new ones
             if($this->system->is_admin() && "y"==@$this->records[$idx]['ugr_Enabled'] && @$this->records[$idx]['ugr_ID']>0){
                 $mysqli = $this->system->get_mysqli();
                 $res = mysql__select_value($mysqli,
-                         'SELECT ugr_Enabled FROM sysUGrps WHERE ugr_LoginCount=0 AND ugr_Type="user" AND ugr_ID='
-                                .$this->records[$idx]['ugr_ID']);
+                    'SELECT ugr_Enabled FROM sysUGrps WHERE ugr_LoginCount=0 AND ugr_Type="user" AND ugr_ID='
+                    .$this->records[$idx]['ugr_ID']);
                 if($res=='n'){
                     $this->records[$idx]['is_approvement'] = true;
                 }
@@ -363,10 +363,10 @@ class DbSysUsers extends DbEntityBase
         $this->recordIDs = null; //reset to obtain ids from $data
 
         $this->foreignChecks = array(
-                    array('SELECT FIND_IN_SET(2, "#IDS#")','Cannot remove "Database Owner" user'),
-                    array('SELECT count(rec_ID) FROM Records WHERE rec_FlagTemporary=0 AND rec_OwnerUGrpID IN (#IDS#) LIMIT 1',
-                          'Deleting User with existing Records not allowed')
-                );
+            array('SELECT FIND_IN_SET(2, "#IDS#")','Cannot remove "Database Owner" user'),
+            array('SELECT count(rec_ID) FROM Records WHERE rec_FlagTemporary=0 AND rec_OwnerUGrpID IN (#IDS#) LIMIT 1',
+                'Deleting User with existing Records not allowed')
+        );
 
         if(!$this->deletePrepare()){
             return false;
@@ -378,8 +378,8 @@ class DbSysUsers extends DbEntityBase
         foreach($this->recordIDs as $usrID){
 
             $query = 'SELECT g2.ugl_GroupID, count(g2.ugl_ID) AS adm FROM sysUsrGrpLinks AS g2 LEFT JOIN sysUsrGrpLinks AS g1 '
-                        .'ON g1.ugl_GroupID=g2.ugl_GroupID AND g2.ugl_Role="admin" '                        //is it the only admin
-                        .'WHERE g1.ugl_UserID='.$usrID.' AND g1.ugl_Role="admin" GROUP BY g1.ugl_GroupID  HAVING adm=1';//is this user admin
+            .'ON g1.ugl_GroupID=g2.ugl_GroupID AND g2.ugl_Role="admin" '                        //is it the only admin
+            .'WHERE g1.ugl_UserID='.$usrID.' AND g1.ugl_Role="admin" GROUP BY g1.ugl_GroupID  HAVING adm=1';//is this user admin
 
             //can't remove last admin
             $res = mysql__select_row($mysqli, $query);
@@ -396,7 +396,7 @@ class DbSysUsers extends DbEntityBase
 
         //remove temporary records
         $query = 'SELECT rec_ID FROM Records WHERE rec_OwnerUGrpID in ('
-                        . implode(',', $this->recordIDs) . ') and rec_FlagTemporary=1';
+        . implode(',', $this->recordIDs) . ') and rec_FlagTemporary=1';
         $rec_ids_to_delete = mysql__select_list2($mysqli, $query);
         if(!isEmptyArray($rec_ids_to_delete)){
             $res = recordDelete($this->system, $rec_ids_to_delete, false);
@@ -407,13 +407,13 @@ class DbSysUsers extends DbEntityBase
 
         //remove from roles table
         $query = 'DELETE FROM sysUsrGrpLinks'
-            . ' WHERE ugl_UserID in (' . implode(',', $this->recordIDs) . ')';
+        . ' WHERE ugl_UserID in (' . implode(',', $this->recordIDs) . ')';
 
         $res = $mysqli->query($query);
         if(!$res){
             $this->system->addError(HEURIST_DB_ERROR,
-                            'Cannot remove entries from user/group links (sysUsrGrpLinks)',
-                            $mysqli->error );
+                'Cannot remove entries from user/group links (sysUsrGrpLinks)',
+                $mysqli->error );
             $ret = false;
         }
 
@@ -437,13 +437,13 @@ class DbSysUsers extends DbEntityBase
         return $ret;
     }
 
-	/**
-     * Transfer User ID 2 (DB Owner) to the selected User ID,
-     * and provide the new DB Owner administrator rights to all workgroups.
-     *
-     * @param bool $disable_foreign_checks If true, disables foreign key checks during transfer.
-     * @return bool Returns true if ownership transfer was successful, false on failure.
-     */
+    /**
+    * Transfer User ID 2 (DB Owner) to the selected User ID,
+    * and provide the new DB Owner administrator rights to all workgroups.
+    *
+    * @param bool $disable_foreign_checks If true, disables foreign key checks during transfer.
+    * @return bool Returns true if ownership transfer was successful, false on failure.
+    */
     private function transferOwner($disable_foreign_checks = false)
     {
         $mysqli = $this->system->get_mysqli(); // MySQL connection
@@ -476,7 +476,7 @@ class DbSysUsers extends DbEntityBase
 
         if ($usrEnabled != 'y') {
             $msg = $usrEnabled == 'n' ? 'The selected user is not enabled. Please enable them to transfer database ownership to them.' :
-                'The selected user does not have full create and delete record permissions. Please change this via the enabled field.';
+            'The selected user does not have full create and delete record permissions. Please change this via the enabled field.';
 
             $this->system->addError(HEURIST_INVALID_REQUEST, $msg);
             return false;
@@ -529,12 +529,12 @@ class DbSysUsers extends DbEntityBase
     }
 
     /**
-     * Helper function to execute a query and handle transaction errors.
-     *
-     * @param string $query The SQL query to execute.
-     * @param string $errorMsg The error message to display if the query fails.
-     * @return bool Returns true if the query succeeds, false on failure.
-     */
+    * Helper function to execute a query and handle transaction errors.
+    *
+    * @param string $query The SQL query to execute.
+    * @param string $errorMsg The error message to display if the query fails.
+    * @return bool Returns true if the query succeeds, false on failure.
+    */
     private function _updateDbTable($query, $errorMsg)
     {
         if ($this->transaction) {
@@ -584,9 +584,9 @@ class DbSysUsers extends DbEntityBase
 
         /* @todo
         if(!$sytem_source->is_admin()){
-            $this->system->addError(HEURIST_REQUEST_DENIED,
-                'You are not admin in source database '.$sytem_source->dbname_full().'. Insufficient rights (logout/in to refresh) for this operation');
-            return false;
+        $this->system->addError(HEURIST_REQUEST_DENIED,
+        'You are not admin in source database '.$sytem_source->dbname_full().'. Insufficient rights (logout/in to refresh) for this operation');
+        return false;
         }
         */
 
@@ -614,9 +614,9 @@ class DbSysUsers extends DbEntityBase
 
         //find users that are already in this database
         $query = 'SELECT distinct src.ugr_ID, dest.ugr_ID from '
-            .$sytem_source->dbname_full().'.sysUGrps as src, sysUGrps as dest'
-            .' where src.ugr_ID in ('.implode(',',$userIDs)
-            .') and ((src.ugr_eMail = dest.ugr_eMail) OR (src.ugr_Name=dest.ugr_Name))';
+        .$sytem_source->dbname_full().'.sysUGrps as src, sysUGrps as dest'
+        .' where src.ugr_ID in ('.implode(',',$userIDs)
+        .') and ((src.ugr_eMail = dest.ugr_eMail) OR (src.ugr_Name=dest.ugr_Name))';
 
         $userIDs_already_exists = mysql__select_assoc2($mysqli, $query);
 
@@ -653,14 +653,14 @@ class DbSysUsers extends DbEntityBase
 
         //1. import users from another database
         $fields = "ugr_Type,ugr_Name,ugr_LongName,ugr_Description,ugr_Password,ugr_eMail,".
-                    "ugr_FirstName,ugr_LastName,ugr_Department,ugr_Organisation,ugr_City,".
-                    "ugr_State,ugr_Postcode,ugr_Interests,ugr_Enabled,ugr_LastLoginTime,".
-                    "ugr_MinHyperlinkWords,ugr_LoginCount,ugr_IsModelUser,".
-                    "ugr_IncomingEmailAddresses,ugr_TargetEmailAddresses,ugr_URLs,ugr_FlagJT";
+        "ugr_FirstName,ugr_LastName,ugr_Department,ugr_Organisation,ugr_City,".
+        "ugr_State,ugr_Postcode,ugr_Interests,ugr_Enabled,ugr_LastLoginTime,".
+        "ugr_MinHyperlinkWords,ugr_LoginCount,ugr_IsModelUser,".
+        "ugr_IncomingEmailAddresses,ugr_TargetEmailAddresses,ugr_URLs,ugr_FlagJT";
 
         $query1 = "insert into sysUGrps ($fields) ".
-                    "SELECT $fields ".
-                    "FROM ".$sytem_source->dbname_full().".sysUGrps where ugr_ID=";
+        "SELECT $fields ".
+        "FROM ".$sytem_source->dbname_full().".sysUGrps where ugr_ID=";
 
 
         $newUserIDs = array();
@@ -720,7 +720,7 @@ class DbSysUsers extends DbEntityBase
 
                 if(!isEmptyArray($remove)){
                     $query = 'DELETE FROM sysUsrGrpLinks WHERE ugl_GroupID='.$groupID.' AND ugl_UserID in ('
-                            .implode(',',$remove).')';
+                    .implode(',',$remove).')';
                     $res = $mysqli->query($query);
                     if(!$res){
                         $ret = false;
@@ -736,7 +736,7 @@ class DbSysUsers extends DbEntityBase
                 if(!$res){
                     $ret = false;
                     $this->system->addError(HEURIST_DB_ERROR,
-                    'Can\'t set role in workgroup #'.$groupID, $mysqli->error );
+                        'Can\'t set role in workgroup #'.$groupID, $mysqli->error );
                     break;
                 }
 
@@ -760,4 +760,3 @@ class DbSysUsers extends DbEntityBase
         return $ret;
     }
 }
-?>

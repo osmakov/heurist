@@ -382,7 +382,7 @@
               if($exts){
                     $exts = explode(',',$exts);
               }
-              if(!is_array($exts) || count($exts)<1){
+              if(!is_array($exts) || empty($exts)){
                     $exts = array('png','svg');
               }
 
@@ -405,7 +405,7 @@
               if(@$req_params['exts']){
                     $exts = explode(',',@$req_params['exts']);
               }
-              if(!is_array($exts) || count($exts)<1){
+              if(!is_array($exts) || empty($exts)){
                     $exts = array('png','svg');
               }
 
