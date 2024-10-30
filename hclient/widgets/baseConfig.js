@@ -216,12 +216,11 @@ $.widget("heurist.baseConfig", {
         },
         {
             text:window.hWin.HR('Save'),
-            class:'btnSave',
+            class:'ui-button-action btnSave',
             css:{'float':'right'},
             click: function() {
                 that._closeHandler(true, false, null);
-            },
-            class: "ui-button-action"
+            }
         }];
     },
 
@@ -237,9 +236,9 @@ $.widget("heurist.baseConfig", {
             that = this;
 
         if(!options.beforeClose){
-                options.beforeClose = function(){
-                    return true;
-                };
+            options.beforeClose = function(){
+                return true;
+            };
         }
 
         if(position==null) position = { my: "center", at: "center", of: window };
