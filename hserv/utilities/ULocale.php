@@ -493,6 +493,9 @@
             $match = $is_xml ? "<notranslate>($regex_entities)<\/notranslate>" : "<p translate=\"no\">($regex_entities)<\/p>";
             $res = mb_ereg_replace_callback($match, $remove_tags, $res);
 
+            $match = $is_xml ? "&lt;notranslate&gt;($regex_entities)&lt;\/notranslate&gt;" : "&lt;p translate='no'&gt;($regex_entities)&lt;\/p&gt;";
+            $res = mb_ereg_replace_callback($match, $remove_tags, $res);
+
             $res = $res !== false ? $res : $org_res;
             $org_res = $res; // update backup string
         }

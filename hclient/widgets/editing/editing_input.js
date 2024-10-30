@@ -307,7 +307,7 @@ $.widget( "heurist.editing_input", {
                             if(!window.hWin.HEURIST4.util.isempty(first_val) && window.hWin.HAPI4.sysinfo.api_Translator){ // allow external API translations
 
                                 msg += '<span style="display:inline-block;margin-top:10px;">'
-                                        + 'Translate will translate the first value'
+                                        + 'Translate will translate the first value<br>'
                                         + 'You may block translation of some part of the text by adding an html tag with translate="no",<br>'
                                         + 'for example:  &lt;p translate=”no”&gt;text not to be translated&lt;/p&gt;'
                                     + '</span>';
@@ -333,7 +333,12 @@ $.widget( "heurist.editing_input", {
                                         source: source
                                     };
 
+                                    window.hWin.HEURIST4.msg.bringCoverallToFront(null, null, 'Translating text...');
+                                    window.hWin.HEURIST4.msg.coverall.css('z-index', 60002); // set above popup
+
                                     window.hWin.HAPI4.SystemMgr.translate_string(request, function(response){
+
+                                        window.hWin.HEURIST4.msg.sendCoverallToBack();
 
                                         $dlg.dialog('close');
 
