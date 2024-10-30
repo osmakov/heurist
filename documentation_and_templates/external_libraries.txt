@@ -46,10 +46,10 @@ jquery-ui-themes-1.12.1   - heuist theme added
 
 jquery-ui-iconfont-master - icons compliant with jquery ui-icon-xxx. Works with all jQuery UI themes (original project is discontinued)
 jquery.calendars-2.1.1    - calendar control  (see editTemporalObject)
-jquery.fancybox           - gallery and image viewer - v3.3.5 (5.0, discontinued) - original code was modified
+jquery.fancybox           - gallery and image viewer - v3.3.5 (5.0, discontinued) - original code was modified 
 
 jquery.widgets/
-	jquery.fancytree    - treeview component (saved searches, terms, rt structure). css was modified (version for offlie/localhost)
+	jquery.fancytree    - treeview component (saved searches, terms, rt structure). css was modified (version for offlie/localhost) https://github.com/mar10/fancytree
 	evol.colorpicker.js - color picker (3.2.4 (3.4.3)) - original code was modified
 	jquery.layout       - cardinal layout control - original code was modified ( 1.3.0 (1.4.3, original project is discontinued 2014)
 	jquery.ui-contextmenu.js - context menu plugin - original code was modified ( 1.8.0 (1.8.1, original project is discontinued 2016)
