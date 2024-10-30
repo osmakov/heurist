@@ -5238,8 +5238,6 @@ $.widget( "heurist.editing_input", {
         let repeatable = (Number(this.f('rst_MaxValues')) != 1);
         if(values.length>1 && !repeatable && this.f('rst_MultiLang')!=1){
             this.showErrorMsg('Repeated value for a single value field - please correct');
-        }else{
-           
         }
         
         this._setAutoWidth();            
@@ -5618,7 +5616,7 @@ $.widget( "heurist.editing_input", {
                     }
 
                 }else if((data_type=='freetext' || data_type=='url' || data_type=='blocktext') && ress[0].length<4){
-                   
+                     /* empty */   
                 }
             }
         }
@@ -6156,7 +6154,9 @@ $.widget( "heurist.editing_input", {
                                 new_temporal.addObjForString('CL2', org_value);
 
                                 value = new_temporal.toString();
-                            } catch(e) {}
+                            } catch(e) {
+                                /* continue regardless of error */
+                            }
                         }
                     }
 
@@ -6171,7 +6171,9 @@ $.widget( "heurist.editing_input", {
                         let date = true;
                         try{
                             date = new Temporal(that.newvalues[$input.attr('id')]).getTDate('DAT').toString('y-M-d');
-                        }catch(error){}
+                        }catch(error){
+                            /* continue regardless of error */
+                        }
                         setMinMaxDatesJPN(cur_cal, value_era, date);
                     }
                 },

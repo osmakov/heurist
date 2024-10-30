@@ -68,12 +68,8 @@ function HEditing(_options) {
         
         onChangeCallBack = _options.onchange;
         
-        if(!_options.className) {
-            if($container.parents('.editor').length==0){
-               
-            }else {
+        if(!_options.className && $container.parents('.editor').length>0) {
                 _options.className = '';
-            }
         }
         
         options = _options;

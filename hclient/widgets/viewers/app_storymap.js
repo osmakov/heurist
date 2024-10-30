@@ -898,6 +898,7 @@ $.widget( "heurist.app_storymap", {
                     try{
                         div_content.tabs('pagingResize');
                     }catch(ex){
+                        /* continue regardless of error */
                     }
                 }
         }

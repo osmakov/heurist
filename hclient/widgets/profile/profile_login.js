@@ -205,15 +205,9 @@ function showLoginDialog(isforsed, callback, parentwin, dialog_id){
                     
                     //hide standard login
                     if(window.hWin.HAPI4.sysinfo.hideStandardLogin==1){
-                       
-                       
-                        
                         $dlg.find('#login_guest').hide();
                         $dlg.find('.login_heurist').hide();
                         show_guest_login = false;
-                    }else{
-                       
-                        
                     }
                     
                     for(let id of sp_keys){

@@ -712,10 +712,6 @@ Whole value = EQUAL
         let codes = this.options.code.split(':');
         codes[codes.length-1] = this.options.dty_ID
         
-        if(this.options.enum_field!=null){
-           
-        }
-        
         return codes.join(':');
     },
     

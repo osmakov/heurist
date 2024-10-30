@@ -197,6 +197,7 @@ let TemporalPopup = (function () {
                     try{
 		                _updateTemporalFromUI(that.curTemporal);
                     }catch(e) {
+						/* continue regardless of error */
                     }
 		            that.curTemporal.setType(newType);
 	            }else{
@@ -721,6 +722,7 @@ let TemporalPopup = (function () {
                         changed_options['defaultDate'] = convertCLD($(this).val(), old_calendar, new_calendar);
                         $(this).val(changed_options['defaultDate']);
                     }catch(e){
+						/* continue regardless of error */
                     }
                 }
 
@@ -803,6 +805,7 @@ let TemporalPopup = (function () {
                     cal_value = null;
                    
                 }catch($e3){
+					/* continue regardless of error */
                 }
                 //}
                 fromcal = 'gregorian';

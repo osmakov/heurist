@@ -212,7 +212,9 @@ $.widget( "heurist.searchInput", {
         if(this.input_search.is(':visible')) {
                 try{
                     this.input_search.trigger('focus');
-                }catch(e){}
+                }catch(e){
+                    /* continue regardless of error */
+                }
         }
 
    },

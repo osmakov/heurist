@@ -284,7 +284,7 @@ $.widget( "heurist.editTranslations", {
                     .addClass('text ui-widget-content ui-corner-all')
                     .css({width:'680px'})
                     .val(value)
-                    .on('keyup', (function(){
+                    .on('keyup', function(){
                         that._was_changed=true;
                         if(!window.hWin.HEURIST4.util.isempty($(this).val()) && window.hWin.HAPI4.sysinfo.api_Translator){
                             that._btn_translate.show();

@@ -548,9 +548,6 @@ $.widget( "heurist.svs_list", {
             return;
         }
         
-        if(this.accordeon){
-           
-        }
         if(this.helper_btm){
             this.helper_btm.remove()   
             this.helper_btm = null;
@@ -663,8 +660,6 @@ $.widget( "heurist.svs_list", {
                                 if(success){
                                     that.element.find('div[grpid='+response.data['ugr_ID']+']').attr('title',
                                         that.options.edit_data = response.data['ugr_Description']);
-                                }else{
-                                    
                                 }
                             }
                         );                            

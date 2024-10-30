@@ -287,11 +287,6 @@ $.widget( "heurist.searchBuilder", {
         this._dialog.dialog('open');                           
         
         if(this.options.is_modal || !this.is_edit_continuing){
-            
-            if(!(this.options.is_modal && this.options.svsID>0) || !this.is_edit_continuing){
-               
-            }
-            
             this.is_edit_continuing = !this.options.is_modal;
         }
         
@@ -551,9 +546,6 @@ $.widget( "heurist.searchBuilder", {
                         }else{
                             
                             //reset flag - facet was changed - need to proceed all steps of wizard
-                            if(this.select_additional_rectypes.editing_input('getValues')[0]){
-                               
-                            }
                             this.select_additional_rectypes.editing_input('setValue', '');
                             this.select_additional_rectypes.hide();
                         }

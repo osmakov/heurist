@@ -3957,16 +3957,11 @@ $.widget( "heurist.search_faceted", {
                     this._addFacetToExpandedCount(facet_index, cterm.value, f_link_content, dcount);
                 }
 
-                if(display_mode=='inline-block'){
-                    
-                }else{
-                    
-                     if(cterm.level > 1){
+                if(display_mode!=='inline-block' && cterm.level > 1){
                          let label_width = this.facets_list_container.width();
                          if(label_width<10) label_width = content_max_width - 80;
                          label_width = label_width - 30;
                          f_link_content.css('width', label_width);
-                    }
                 }
             }
         }

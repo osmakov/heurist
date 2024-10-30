@@ -2963,9 +2963,6 @@ $.widget( "heurist.resultList", {
                             let page = Number(this.id.substring(4));
                             that._renderPage(page);
                         } );
-                        if(i-1==currentPage){
-                           
-                        }
                     }
                 }
                 if (finish != pageCount) { //force last page
@@ -3066,7 +3063,7 @@ $.widget( "heurist.resultList", {
         let keep_selection = this.getSelected(true);
         this._renderPage(this.current_page);
         if(keep_selection && keep_selection.length>0){
-           
+            /* implement later */
         }
     }
     
@@ -4504,8 +4501,6 @@ $.widget( "heurist.resultList", {
                         rec_div.addClass('c' + record.d[dty_id].join(' c'));  
                     }
                 });
-            }else{
-                
             }
         });
     },

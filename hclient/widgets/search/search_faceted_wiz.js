@@ -640,8 +640,6 @@ $.widget( "heurist.search_faceted_wiz", {
             }else if(this.step==2 && newstep==1){
                 //skip step
                 newstep = 0;
-            }else if(this.step==4 && newstep==3){
-               
             }
 
             this._showStep(newstep);
@@ -1727,10 +1725,6 @@ $.widget( "heurist.search_faceted_wiz", {
             facets.sort(function(a,b){
                 return a.order<b.order?-1:1;
             });
-
-            if(len>0){
-               
-            }
 
             //-----------------------------------------------------------
             $(this.step3).find("#cbShowHierarchy").attr('checked', this.options.params.title_hierarchy==true);
