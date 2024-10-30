@@ -171,7 +171,7 @@ class ElasticSearch {
 
 
     // ****************************************************************************************************************
-    // Note: Reported bug in PHP @ 18/11/13: must reset to NULL to obtain internal default.
+    // Note: Reported bug in PHP @ 18/11/13: must reset to null to obtain internal default.
     //       Resetting directly to eg. PUT or GET will not reset, it will remain set as DELETE
     // ****************************************************************************************************************
 
@@ -339,7 +339,7 @@ class ElasticSearch {
         $elasticTimestamp = self::getHighestElasticTimestamp($dbName);
 
         // 3. Compare timestamps
-        if($mysqlTimestamp != NULL && $elasticTimestamp != NULL) {
+        if($mysqlTimestamp != null && $elasticTimestamp != null) {
             if(strcmp($mysqlTimestamp, $elasticTimestamp) !== 0) {
                 // The timestamps are not equal. Note that ElasticSearch indexing takes ~100ms.
                 //error_log("[elasticSearchHelper.php] mysqlTimestamp: $mysqlTimestamp & elasticTimestamp: $elasticTimestamp are not equal.");
@@ -361,7 +361,7 @@ class ElasticSearch {
         } else {
             error_log("[elasticSearchHelper.php] getHighestMySqlTimestamp failed - query: $query");
         }
-        return NULL;
+        return null;
     }
 
     /**
@@ -382,14 +382,14 @@ class ElasticSearch {
                   }';
         $json = postElastic($address, json_decode($query));
 
-        if ($json != NULL) {
+        if ($json != null) {
             $response = json_decode($json);
             return $response->hits->hits[0]->_source->Modified; // Gets the Modified value from the first hit.
         }else{
             error_log("[elasticSearchHelper.php] getHighestElasticTimestamp failed - query: $query");
         }
 
-        return NULL;
+        return null;
     }
 
 }

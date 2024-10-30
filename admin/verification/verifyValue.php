@@ -124,7 +124,7 @@ public static function getAllowedTerms($defs, $defs_nonsel, $dtyID){
 
                 }else{
                     $nonTerms = getTermsFromFormat($defs_nonsel);//see dbsData.php
-                    if (count($nonTerms) > 0) {
+                    if (!empty($nonTerms)) {
                         $terms = array_diff($terms, $nonTerms);
                     }
                 }

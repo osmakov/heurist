@@ -1234,10 +1234,9 @@ class RecordsBatch
 
                         if (!is_numeric($ret)) {
                             $sqlErrors[$recID] = $ret;
-                            continue;
                         }
                     }
-                }
+                }//for
 
                 $sql = true;
 
@@ -2092,7 +2091,7 @@ public methods
 
                 $details = mysql__select_list2($mysqli, "SELECT dtl_ID FROM recDetails WHERE dtl_RecID = $rec_id AND dtl_DetailTypeID = $dty_id");
 
-                if(count($details) == 0){ // skip
+                if(empty($details)){ // skip
                     continue;
                 }
 
@@ -2422,10 +2421,8 @@ public methods
                 $ret = mysql__insertupdate($mysqli, 'Records', 'rec', array('rec_ID' => $recID, 'rec_Modified' => $date_mode));
                 if(!is_numeric($ret)){
                     $sql_errors[$recID][] = $ret;
-                    continue;
                 }
-
-            }
+            }//for
 
             array_push($completed_recs, $recID);
             if(!empty($sql_errors[$recID])){
@@ -2854,7 +2851,7 @@ public methods
             }
         }
 
-        if(count($completed_ulf_IDs) > 0){
+        if(!empty($completed_ulf_IDs)){
             $ulf_to_delete = array();
             foreach ($completed_ulf_IDs as $org_ID => $new_ID) {
                 $query = 'SELECT dtl_ID FROM recDetails WHERE dtl_UploadedFileID = ' . $org_ID;
@@ -2864,7 +2861,7 @@ public methods
                     continue;
                 }
 
-                if(count($dtl_IDs) == 0){ // delete file reference + local file
+                if(empty($dtl_IDs)){ // delete file reference + local file
                     $ulf_to_delete[] = $org_ID;
                 }elseif(array_key_exists('delete_file', $this->data) && $this->data['delete_file'] == 1){
                     // update references
@@ -2876,7 +2873,7 @@ public methods
                 }
             }
 
-            if(count($ulf_to_delete) > 0){
+            if(!empty($ulf_to_delete)){
                 $cur_data = $file_entity->getData();
                 $cur_date['ulf_ID'] = array_unique($ulf_to_delete);
                 $file_entity->setData($cur_data);

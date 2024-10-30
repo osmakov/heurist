@@ -991,7 +991,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
                         );
 
                         $usr = $system->getCurrentUser();
-                        if(is_array($usr) && count($usr) > 0){
+                        if(is_array($usr) && !empty($usr)){
                             $params['meta']['creator'] = array(
                                 'value' => $usr['ugr_FullName'],
                                 'lang' => null,

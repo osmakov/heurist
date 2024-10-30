@@ -409,42 +409,41 @@ public static function findDupes( $params ){
 
                 if($row[1]==''){
                     continue;
-                }else{
+                }
+                
 
-                    if($cache_cnt>=$in_memory_limit){
+                if($cache_cnt>=$in_memory_limit){
 
-                       $is_reset = true;
-                       $cache_cnt = 0;
+                   $is_reset = true;
+                   $cache_cnt = 0;
 
-                    }elseif($startgroup>0){
-                        //strcasecmp()
-                        $str1 = mb_strtolower(mb_substr($row[1], 0, $startgroup));
-                        if($str1!=$curr_c1){
-                            $curr_c1 = $str1;
-                            $is_reset = true;
+                }elseif($startgroup>0){
+                    //strcasecmp()
+                    $str1 = mb_strtolower(mb_substr($row[1], 0, $startgroup));
+                    if($str1!=$curr_c1){
+                        $curr_c1 = $str1;
+                        $is_reset = true;
+                    }
+                }
+                if($is_reset){
+                        $is_reset = false;
+                        //start search
+                        $rep = self::_searchInCache();
+                        if($rep>0){
+                            $msg_termination = ($rep==2);
+                            break;
                         }
-                    }
-                    if($is_reset){
-                            $is_reset = false;
-                            //start search
-                            $rep = self::_searchInCache();
-                            if($rep>0){
-                                $msg_termination = ($rep==2);
-                                break;
-                            }
 
-                            //reset
-                            self::$cache_id = array();
-                            self::$cache_str = array();
-                            self::$cache_str_exact = array();
-                    }
-
-                    self::$cache_id[] = $row[0];//array($row[0]=>$row[1]); rec_ID
-                    self::$cache_str[] = $row[1];//array($row[0]=>$row[1]); C1
-                    if($compare_mode==2) {self::$cache_str_exact[] = $row[2];}
-                    $cache_cnt++;
+                        //reset
+                        self::$cache_id = array();
+                        self::$cache_str = array();
+                        self::$cache_str_exact = array();
                 }
 
+                self::$cache_id[] = $row[0];//array($row[0]=>$row[1]); rec_ID
+                self::$cache_str[] = $row[1];//array($row[0]=>$row[1]); C1
+                if($compare_mode==2) {self::$cache_str_exact[] = $row[2];}
+                $cache_cnt++;
             }//while
 
             if(count(self::$cache_id)>0){

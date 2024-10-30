@@ -1461,7 +1461,7 @@
                                     $escaped_code = str_replace("'", "&apos;", $escaped_code);
 
                                     $nodes = $datatypes_xml->xpath("//node[@id='$escaped_code']");
-                                    if(is_array($nodes) && count($nodes) > 0){
+                                    if(is_array($nodes) && !empty($nodes)){
                                         $label = $nodes[0]->attributes()->label;
                                         $label = ucfirst($label);
                                     }else{

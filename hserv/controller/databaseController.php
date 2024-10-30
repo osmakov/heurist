@@ -467,7 +467,9 @@ function __composeDbName($system, $req_params){
     $uName = '';
     if(@$req_params['uname']){
         $uName = trim(preg_replace(REGEX_ALPHANUM, '', @$req_params['uname'])).'_';//for snyk
-        if ($uName == '_') {$uName='';};// don't double up underscore if no user prefix
+        if ($uName == '_') {
+                $uName='';  // don't double up underscore if no user prefix
+        }
     }
     $dbName = trim(preg_replace(REGEX_ALPHANUM, '', @$req_params['dbname']));
 

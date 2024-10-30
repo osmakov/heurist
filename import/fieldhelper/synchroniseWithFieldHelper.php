@@ -221,7 +221,7 @@ $failed_exts = array();
                 </p>
 <?php
 
-                if (!($mediaFolders=="" || count($dirs) == 0)) {
+                if (!($mediaFolders=="" || empty($dirs))) {
                     print "<form name='selectdb' action='synchroniseWithFieldHelper.php' method='get'>";
                     print "<input name='mode' value='2' type='hidden'>";// calls the form to select mappings, step 2
                     print "<input name='db' value='".HEURIST_DBNAME."' type='hidden'>";

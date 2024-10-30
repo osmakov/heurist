@@ -444,13 +444,13 @@ class DbDefRecStructure extends DbEntityBase
                     . 'INNER JOIN defDetailTypes ON rst_DetailTypeID=dty_ID '
                     . 'WHERE dty_Type="relmarker" AND rst_RecTypeID=' . $rty_ID;
                 $relmarker_filters = mysql__select_assoc($mysqli, $query);// [ relmarker_fld_ID1 => [rty_id_list1, trm_id1], ... ]
-                if($relmarker_filters && count($relmarker_filters) > 0){
+                if($relmarker_filters && !empty($relmarker_filters)){
 
                     // Retrieve record ids that are relevant
                     $query = 'SELECT DISTINCT rec_ID FROM Records, recLinks WHERE rec_RecTypeID=' . $rty_ID
                         . ' AND rl_RelationID > 0 AND (rl_SourceID=rec_ID OR rl_TargetID=rec_ID)';
                     $ids = mysql__select_list2($mysqli, $query);// returns array of rec ids
-                    if(is_array($ids) && count($ids) > 0){
+                    if(is_array($ids) && !empty($ids)){
 
                         $rec_ids = implode(',', $ids);
                         foreach ($relmarker_filters as $dty_id => $fld_details) {
@@ -465,7 +465,7 @@ class DbDefRecStructure extends DbEntityBase
                             $rectypes = explode(',', $fld_details['dty_PtrTargetRectypeIDs']);
                             $allow_all = empty($rectypes);
 
-                            if(is_array($terms) && count($terms) > 0){
+                            if(is_array($terms) && !empty($terms)){
                                 // Retrieve relmarker count - from
                                 $query = 'SELECT rl_TargetID '
                                     . 'FROM recLinks '
@@ -549,7 +549,7 @@ class DbDefRecStructure extends DbEntityBase
                     $res['rec_Tags'] = !$tag_count ? 0 : $tag_count;
                 }
 
-                if(!$res || count($res) == 0){
+                if(!$res || empty($res)){
                     $res = [0];
                 }
             }else{

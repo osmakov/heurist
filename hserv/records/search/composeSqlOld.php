@@ -2609,7 +2609,7 @@ class LinkToPredicate extends Predicate {
             }
         }
         else {
-            return SQL_LINKED_EXISTS;;
+            return SQL_LINKED_EXISTS;
         }
     }
 }

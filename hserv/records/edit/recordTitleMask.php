@@ -301,7 +301,7 @@ public static function execute($mask, $rt, $mode, $rec_id=null, $rep_mode=ERROR_
                     }else{
                         $cond_replace = $cond_parts[1];
                     }
-                }elseif(count($cond_parts) == 0 && $str_maxlen > 0){
+                }elseif(empty($cond_parts) && $str_maxlen > 0){
 
                     // retrieve proceeding field
                     preg_match("/\[[^\[\]]+?\]/", $cond_str, $cond_field);

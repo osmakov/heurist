@@ -1300,7 +1300,6 @@ function recordSearchRelatedIds($system, &$ids, $direction=0, $no_relationships=
         }
 
     }
-    return;
 }
 
 /**

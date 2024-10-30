@@ -1040,13 +1040,7 @@ $query3 = 'select rec_ID from Records, recDetails where dtl_RecID=rec_ID  AND dt
 
                         if($termID>0){
                             $new_values[] = $termID;
-                        }else{
-                            //either not allowed or not found
-                            if(ctype_digit($value) || strpos($value,'-')>0){
-                                //not allowed
-                                //@todo - add to report
-                                continue;
-                            }else{
+                        }elseif(!ctype_digit($value) || strpos($value,'-')<=0){
 
                                //keep label value
                                if(!@$enum_fields_values[$recTypeID]){
@@ -1073,8 +1067,10 @@ $query3 = 'select rec_ID from Records, recDetails where dtl_RecID=rec_ID  AND dt
                                $enum_fields[$record_src['rec_ID']][$ftId][] = $uid;
 
                                $new_values[] = $uid;
-                            }
                         }
+                        //else: either not allowed or not found
+                        //@future - add to report
+                        
                         //replaceTermIds( $value, $def_field[$idx_type] );
                     }
                 }elseif($def_field[$idx_type] == "geo"){

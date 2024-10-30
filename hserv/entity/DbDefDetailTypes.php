@@ -80,7 +80,7 @@ class DbDefDetailTypes extends DbEntityBase
         $query = 'select dtl_RecID from recDetails where dtl_DetailTypeID='.$dtyID;
         $rec_IDs = mysql__select_list2($this->system->get_mysqli(), $query);
 
-        if(is_array($rec_IDs) && count($rec_IDs) > 0){
+        if(is_array($rec_IDs) && !empty($rec_IDs)){
 
             $query = 'select dty_Name from defDetailTypes where dty_ID='.$dtyID;
             $fld_name = mysql__select_value($this->system->get_mysqli(), $query);
@@ -450,7 +450,7 @@ class DbDefDetailTypes extends DbEntityBase
 
                 if(!$result){
                     $ret = false;
-                }elseif(count($idx_to_do) > 0){ // check if success messages need to be added
+                }elseif(!empty($idx_to_do)){ // check if success messages need to be added
 
                     $i = 0;
                     foreach ($idx_to_do as $idx){

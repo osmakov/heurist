@@ -537,7 +537,7 @@ class DbDefRecTypes extends DbEntityBase
 
                 if(!$result){
                     $ret = false;
-                }elseif(count($idx_to_do) > 0){ // check if success messages need to be added
+                }elseif(!empty($idx_to_do)){ // check if success messages need to be added
 
                     $i = 0;
                     foreach ($idx_to_do as $idx){

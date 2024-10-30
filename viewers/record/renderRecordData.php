@@ -1358,7 +1358,7 @@ function print_private_details($bib) {
                 'select grp.ugr_Name,grp.ugr_Type,concat(grp.ugr_FirstName," ",grp.ugr_LastName) from Records, '
                     .'sysUGrps grp where grp.ugr_ID=rec_OwnerUGrpID and rec_ID='.$bib['rec_ID']);
 
-            $workgroup_name = NULL;
+            $workgroup_name = null;
             // check to see if this record is owned by a workgroup
             if ($row!=null) {
                 $workgroup_name = $row[1] == 'user'? $row[2] : $row[0];
@@ -2282,9 +2282,9 @@ function print_public_details($bib) {
 }
 
 
-//@todo implement popup that lists all record's tags
+//@future: implement popup that lists all record's tags
 function print_other_tags($bib) {
-    return;
+    /* to implement */
 }
 
 //

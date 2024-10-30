@@ -5,7 +5,7 @@ set_time_limit(0);
 
 $fix = false;
 
-if (!is_array($argv) || count($argv) == 0){
+if (!is_array($argv) || empty($argv)){
     $fix = (@$_GET['fix']==1);
     //print 'fix='.@$_GET['fix'];
     $iscmd = false;

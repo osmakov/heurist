@@ -128,14 +128,14 @@ function recordAddDefaultValues($system, $record=null){
         $rectype = $userDefaultRectype;
     }
     // OWNERSHIP
-    if(($ownerid == -1 || count($ownerid) == 0) && isset($userDefaultOwnerGroupID)){ // from user preferences
+    if(($ownerid == -1 || empty($ownerid)) && isset($userDefaultOwnerGroupID)){ // from user preferences
         $ownerid = is_array($userDefaultOwnerGroupID)?$userDefaultOwnerGroupID:array($userDefaultOwnerGroupID);
     }
     if(!is_array($ownerid) || !($ownerid[0]>=0)){
         if(!$sysvals) {$sysvals = $system->get_system();}
         $ownerid = @$sysvals['sys_NewRecOwnerGrpID'];//from database properties
     }
-    if(!(is_array($ownerid) && count($ownerid) > 0) || !($ownerid[0]>=0)){
+    if(!(is_array($ownerid) && !empty($ownerid)) || !($ownerid[0]>=0)){
         $ownerid = $system->get_user_id();//by default current user
     }
     if(is_array($ownerid)){
@@ -3264,7 +3264,7 @@ function isValidTerm($system, $term_tocheck, $domain, $dtyID, $rectype)
         array_push($terms, $vocabId);
         }else{
         $nonTerms = getTermsFromFormat2($terms_none, $domain);
-        if (count($nonTerms) > 0) {
+        if (!empty($nonTerms)) {
         $terms = array_diff($terms, $nonTerms);
         }
         }

@@ -1202,11 +1202,8 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                             if(!empty($ulf_row[$field])){
 
                                 if($import_type == 1){ // retain existing value
-
                                     unset($file_details[$field]);
-                                    continue;
                                 }else{ // 2 - append value
-
                                     $file_details[$field] = $field == 'ulf_WhoCanSee' ? $value : $ulf_row[$field] . " ;" . $value;
                                 }
                             }
@@ -2359,7 +2356,7 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
 
             $to_check = mysql__select_assoc2($mysqli, $query);
 
-            if(count($to_check) > 0){
+            if(!empty($to_check)){
 
                 if($return_mode=='rec_cnt'){
                     $fieldName = 'count(DISTINCT dtl_RecID)';

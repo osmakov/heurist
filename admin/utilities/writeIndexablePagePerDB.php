@@ -378,7 +378,7 @@ foreach ($databases as $idx=>$db_name){
     if($cms_home_id !== null){
 
         $cms_homes = mysql__select_list2($mysqli, 'SELECT rec_ID FROM Records WHERE rec_RecTypeID = ' . $cms_home_id . ' AND rec_NonOwnerVisibility = "public"');
-        if(is_array($cms_homes) && count($cms_homes) > 0){
+        if(is_array($cms_homes) && !empty($cms_homes)){
 
             foreach ($cms_homes as $idx => $rec_ID) {
                 $prime_url = $prime_url_base.$rec_ID;

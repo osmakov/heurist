@@ -229,7 +229,7 @@ if ((@$_REQUEST['mode'] == 'Bookmark checked links'  ||  @$_REQUEST['adding_tags
 		if (! @$checked) {continue;}
 
 		$rec_id = records_check( @$_REQUEST['link'][$linkno], @$_REQUEST['title'][$linkno],
-                                (@$_REQUEST['use_notes'][$linkno]? @$_REQUEST['notes'][$linkno] . @$notes_src_str : NULL),
+                                (@$_REQUEST['use_notes'][$linkno]? @$_REQUEST['notes'][$linkno] . @$notes_src_str : null),
                                  @$_REQUEST['rec_ID'][$linkno]);
 
 		if ($rec_id && is_array($rec_id)) {

@@ -1454,7 +1454,7 @@ class UploadHandler
         //check max allowed file name - 255 bytes
         if(strlen($file->name)>255){
             $file->error = $this->get_error_message('file_name_too_big');
-            return $file;;
+            return $file;
         }
 
         if(!$this->options['unique_filename']){

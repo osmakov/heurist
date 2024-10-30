@@ -125,7 +125,7 @@ class DbSysImportFiles extends DbEntityBase
             $this->data['details'] = explode(',', $this->data['details']);
         }
 
-        if(count($where) == 0 && in_array('sif_ID', $this->data['details'])){
+        if(empty($where) && in_array('sif_ID', $this->data['details'])){
             $orderBy = ' ORDER BY sif_ID DESC';// newest to oldest
         }
 

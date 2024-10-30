@@ -348,7 +348,7 @@ if(!empty($email_list) || !empty($report_list) || !empty($url_list)){
         }
         $text = $text . "\n" . $dbname . "\n rec_URL => " . $rec_URL . "\n Fields => " . $fld_URL;
     }
-    if(count($url_list) == 0){
+    if(empty($url_list)){
         $text = $text . "None";
     }
     $text = $text . "\n";

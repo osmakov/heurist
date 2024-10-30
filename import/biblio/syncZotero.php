@@ -986,11 +986,9 @@ function printMappingReport_rt($arr, $rt_id){
 
         if($rt_id==null){ // NOT FOUND
 
-            $rt_id = strval($code);
-
-            if($zType == '->'){
-                return; // will get covered during resource (record type) field handling
-            }else{
+            if($zType != '->'){
+                //-> will be covered during resource (record type) field handling
+                $rt_id = strval($code);
                 $mapping_errors[$zType] = "<tr class='".$table_class."'><td colspan='3'><strong>".$zType." (".$rt_id."):</strong></td><td colspan='4'>no field mappings available</td></tr>";
                 $warning_count ++;
             }

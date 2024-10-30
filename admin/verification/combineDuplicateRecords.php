@@ -496,7 +496,7 @@ EXP;
                                     foreach ($removeIndices as $i){
                                         unset($detail[$i]);
                                     }
-                                    if (count($detail) == 0) {continue;}
+                                    if (empty($detail)) {continue;}
                                     if(!@$rec_requirements[$master_rec_type][$rd_type]) {continue;}
                                     $reqmnt = $rec_requirements[$master_rec_type][$rd_type]['rst_RequirementType'];
                                     $color = ($reqmnt == 'required' ? 'red': ($reqmnt == 'recommended'? 'black':'grey'));

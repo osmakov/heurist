@@ -99,7 +99,7 @@ global $is_api;
     }
 
 
-    if( count($fields) == 0 ){
+    if( empty($fields) ){
         $system->error_exit_api('Database '.$params['db']
                     .' does not have field definitions for shp, zip or simple resource file'
                     , HEURIST_SYSTEM_CONFIG, $is_api);//exit from script

@@ -1300,7 +1300,7 @@
                     if($service=='delete'){
                         unset($services[$service_id]);
                     }
-                    continue; //do not take password from the existing one - it was removed
+                    //do not take password from the existing one - it was removed
                 }
                 /*
                 if(!isEmptyArray($curr_services)){

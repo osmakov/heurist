@@ -961,7 +961,7 @@ HEADER;
         }
 
 
-        if (count($bibs2) == 0) {
+        if (empty($bibs2)) {
             $resMsg .= '<br><h3 class="res-valid">OK: All parent records correctly reference records which believe they are their children</h3><br>';
 
             if($wasdeleted2>1){
@@ -1914,7 +1914,7 @@ HEADER;
         fwrite($this->out, $resMsg);
 
         // Invalid wkt values
-        if(count($bibs3) == 0){
+        if(empty($bibs3)){
             fwrite($this->out, '<h3 class="res-valid">OK: No invalid geospatial values</h3><br>');
         }else{
             $resStatus = false;
@@ -1923,7 +1923,7 @@ HEADER;
 
 
         // Missing wkt or general invalid value
-        if(count($bibs1) == 0){
+        if(empty($bibs1)){
             fwrite($this->out, '<h3 class="res-valid">OK: No missing geospatial values</h3><br>');
         }else{
             $resStatus = false;
@@ -1931,7 +1931,7 @@ HEADER;
         }
 
         // Value that is out of bounds, i.e. -90 > lat || lat > 90 || -180 > long || long > 180
-        if(count($bibs2) == 0){
+        if(empty($bibs2)){
             fwrite($this->out, '<h3 class="res-valid">OK: All geospatial data is within bounds</h3>');
         }else{
             $resStatus = false;
@@ -2071,7 +2071,7 @@ HEADER;
         $this->_outStreamInit();
 
         // Value has double, leading, and/or trailing spaces; [0] => Double, [1] => Leading/Trailing
-        if(count($ids1) == 0){
+        if(empty($ids1)){
             fwrite($this->out, '<h3 class="res-valid">OK: No double, leading, or trailing spaces found in field values</h3><br>');
         }else{
             $resStatus = false;
@@ -2094,7 +2094,7 @@ HEADER;
         }
 
         // Value that has multi-spaces, except double spacing
-        if(count($bibs2) == 0){
+        if(empty($bibs2)){
             fwrite($this->out, '<h3 class="res-valid">OK: No multiple spaces found in field values</h3>');
         }else{
             $resStatus = false;

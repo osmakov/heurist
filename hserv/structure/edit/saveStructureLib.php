@@ -2088,7 +2088,7 @@ function updateRelConstraint($srcID, $trgID, $terms){
         $terms[0] = "null";
         $where = $where." and rcs_TermID is null";
     }else{
-        $where = $where." and rcs_TermID=".$terms[0];;
+        $where = $where." and rcs_TermID=".$terms[0];
     }
 
     $query = "select rcs_ID from defRelationshipConstraints ".$where;

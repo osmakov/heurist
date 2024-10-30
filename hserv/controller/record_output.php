@@ -387,7 +387,7 @@ function downloadFileReferences($system, $ids){
 
         $usage_query = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID = ' . $id;
         $recs = mysql__select_list2($mysqli, $usage_query);
-        if(!$recs || count($recs) == 0){
+        if(!$recs || empty($recs)){
             $recs = array(0);
         }
         fputcsv($fd, array($id, implode('|', $recs), "", $name, $path, $obf_url, $details[4], $details[11], $details[12], $details[13], $details[5], $file_size, $checksum, $details[7], $details[8], $details[9], $details[10]), $sep);

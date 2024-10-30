@@ -296,7 +296,7 @@ exit;
                         if($isInsert){
                             $ret = -$mysqli->insert_id;
                         }else{
-                            $ret = $recID;;
+                            $ret = $recID;
                         }
                     }
                 }

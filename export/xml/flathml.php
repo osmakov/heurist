@@ -435,7 +435,7 @@ if (array_key_exists('q', $_REQUEST)) {
     if (preg_match('/_COLLECTED_/', $_REQUEST['q'])) {
 
         $collection =  &$_SESSION[HEURIST_DBNAME_FULL]['record-collection'];
-        if (count($collection) > 0) {
+        if (!empty($collection)) {
             $_REQUEST['q'] = 'ids:' . join(',', prepareIds(array_keys($collection)));
         } else {
             $_REQUEST['q'] = '';
@@ -476,7 +476,7 @@ function predicateRecordVisibility($dst='trg'){
     global $system, $ACCESSABLE_OWNER_IDS, $PUBONLY;
 
 
-    return  (count($ACCESSABLE_OWNER_IDS) > 0 && !$PUBONLY
+    return  (!empty($ACCESSABLE_OWNER_IDS) && !$PUBONLY
             ? '('.$dst.'.rec_OwnerUGrpID in (' .join(',', prepareIds($ACCESSABLE_OWNER_IDS, true)) . ') OR '
             : '(') .
     (($system->has_access() && !$PUBONLY) ? 'NOT '.$dst.'.rec_NonOwnerVisibility = "hidden")' : $dst.'.rec_NonOwnerVisibility = "public")');
@@ -682,11 +682,11 @@ function findRelatedRecords($qrec_ids, &$recSet, $depth, $rtyIDs, $relTermIDs) {
         . 'AND (f.dtl_Value IN (' . join(',', prepareIds($qrec_ids)) . ') '
     .predicateRtyDtyFilters($rtyIDs, null)
     .($REVERSE ? 'OR t.dtl_Value IN (' . join(',', prepareIds($qrec_ids)) . ') ' .
-        (is_array($rtyIDs) && count($rtyIDs) > 0 ? 'AND src.rec_RecTypeID in (' .
+        (is_array($rtyIDs) && !empty($rtyIDs) ? 'AND src.rec_RecTypeID in (' .
             join(',', prepareIds($rtyIDs)) . ') ' : '') : '') . ')'
     .predicateRecordVisibility('src')
     .predicateRecordVisibility()
-    (is_array($relTermIDs) && count($relTermIDs) > 0 ? 'AND (trm.trm_ID in (' .
+    (is_array($relTermIDs) && !empty($relTermIDs) ? 'AND (trm.trm_ID in (' .
         join(',', prepareIds($relTermIDs)) . ') OR trm.trm_InverseTermID in (' . join(',', prepareIds($relTermIDs)) . ')) ' : '');
 
     $res = $mysqli->query($query);
@@ -792,10 +792,10 @@ function buildGraphStructure($rec_ids, &$recSet) {
         $rec_ids = array_keys($filteredIDs);
     }
 
-    if ($MAX_DEPTH == 0 && $OUTPUT_STUBS && count($rec_ids) > 0) {
+    if ($MAX_DEPTH == 0 && $OUTPUT_STUBS && !empty($rec_ids)) {
         findPointers($rec_ids, $recSet, 1, null, null);
     } else {
-        while ($depth++ < $MAX_DEPTH && count($rec_ids) > 0) {
+        while ($depth++ < $MAX_DEPTH && !empty($rec_ids)) {
             $rtfilter = (@$RECTYPE_FILTERS && array_key_exists($depth, $RECTYPE_FILTERS) ? $RECTYPE_FILTERS[$depth] : null);
             $relfilter = (@$RELTYPE_FILTERS && array_key_exists($depth, $RELTYPE_FILTERS) ? $RELTYPE_FILTERS[$depth] : null);
             $ptrfilter = (@$PTRTYPE_FILTERS && array_key_exists($depth, $PTRTYPE_FILTERS) ? $PTRTYPE_FILTERS[$depth] : null);
@@ -2113,7 +2113,7 @@ else{ // single output stream
 
     if(!$rectype_templates){
         makeTag('query', $query_attrs);
-        if (count($selectedIDs) > 0) {
+        if (!empty($selectedIDs)) {
             makeTag('selectedIDs', null, join(",", $selectedIDs));
         }
         makeTag('dateStamp', null, date('c'));
