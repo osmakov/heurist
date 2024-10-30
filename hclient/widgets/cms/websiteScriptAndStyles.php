@@ -55,15 +55,15 @@ if (isLocalHost() && !@$_REQUEST['embed'])  {
 <?php
 }else{
 ?>
+<!-- old version
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css"/>
+-->    
+    <link href="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.1.6/b-3.1.2/b-html5-3.1.2/datatables.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.1.6/b-3.1.2/b-html5-3.1.2/datatables.min.js" integrity="sha384-naBmfwninIkPENReA9wreX7eukcSAc9xLJ8Kov28yBxFr8U5dzgoed1DHwFAef4y" crossorigin="anonymous"></script>
 <?php
-
-//<link href="https://cdn.datatables.net/v/ju/jszip-3.10.1/dt-1.13.8/b-2.4.2/b-html5-2.4.2/datatables.min.css" rel="stylesheet">
-//<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-//<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-//<script src="https://cdn.datatables.net/v/ju/jszip-3.10.1/dt-1.13.8/b-2.4.2/b-html5-2.4.2/datatables.min.js"></script>
-
 }
 ?>
 <script type="text/javascript" src="<?php echo PDIR;?>external/jquery.widgets/jquery.layout.js"></script>
@@ -686,7 +686,7 @@ function loadRecordContent(url_or_record_id, target){
         var width = is_smarty?(window.hWin?window.hWin.innerWidth:window.innerWidth)*0.8:600;
         var height = is_smarty?(window.hWin?window.hWin.innerHeight:window.innerHeight)*0.8:500;
         window.hWin.HEURIST4.msg.showDialog(url, { title:'.', width: width, height: height, modal:false });
-
+                      
     }else {
 
         if(is_smarty && record_view_target!=''){
@@ -1114,7 +1114,7 @@ function initLinksAndImages($container, search_data){
             ||
             (href?.indexOf('template=')>0 || href?.indexOf('showReps.php')>0))
             &&
-            ($(link).attr('target')!='_blank' || record_view_target!='')
+            ( !($(link).attr('target')=='_blank' || $(link).attr('target')=='_self')  || record_view_target!='')
           )
         {
                 $(link).on('click', function(event){
