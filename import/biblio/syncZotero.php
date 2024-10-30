@@ -103,7 +103,7 @@ if($fh_data==null || is_string($fh_data)){
 
         <?php
             includeJQuery();
-        ?>        
+        ?>
 
         <!-- Heurist -->
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>
@@ -311,8 +311,8 @@ foreach ($fh_data->children() as $f_gen){
 
 if($step=="1"){  // info about current status
     // show mapping and transfer issues report, also show the success mappings+transfers
-    if(!empty($mapping_rt_errors2) 
-    || !empty($mapping_errors) 
+    if(!empty($mapping_rt_errors2)
+    || !empty($mapping_errors)
     || !empty($transfer_errors)){
 
         if(!empty($mapping_errors)){

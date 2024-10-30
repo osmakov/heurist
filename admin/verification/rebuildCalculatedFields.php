@@ -82,9 +82,9 @@ if(!$init_client || @$_REQUEST['session']>0){ //2a. init operation on client sid
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>h4styles.css" />
 
-<?php if($init_client){ 
+<?php if($init_client){
         includeJQuery();
-?>        
+?>
 
         <script type="text/javascript">
 

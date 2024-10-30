@@ -380,7 +380,7 @@ private function _getGeoJsonFeature($record, $extended=false, $simplify=false, $
                     if($this->find_by_geofields==null || in_array($dty_ID, $this->find_by_geofields)){
 
                         $wkt = $value['geo']['wkt'];
-                        
+
                         try{
                             $json = self::_getJsonFromWkt($wkt, $simplify);
                             if($json){
@@ -549,8 +549,8 @@ private function _getGeoJsonFeature($record, $extended=false, $simplify=false, $
 
         //special case
         //create link path from begin to end place
-        if ((!empty($point1) 
-            && !empty($point0)) 
+        if ((!empty($point1)
+            && !empty($point0))
             || !empty($points)){
             //$geovalues = array();
 

@@ -157,11 +157,11 @@ foreach ($arg_database as $idx=>$db_name){
 
     $folder_esc =  htmlentities($folder);
     $db_name_esc = htmlentities($db_name);
-    
+
     if(file_exists($folder)){
         $res = folderDelete2($folder, true);//remove previous backup
         if(!$res){
-            
+
             if(file_exists($progress_flag)) {unlink($progress_flag);}
             exit("Cannot clear existing backup folder $folder_esc \n");
         }

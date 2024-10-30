@@ -20,6 +20,6 @@
 */
 use hserv\controller\FrontController;
 require_once dirname(__FILE__).'/../../autoload.php';
-$_REQUEST['controller'] = 'ReportController';                                      
+$_REQUEST['controller'] = 'ReportController';
 $frontController = new FrontController();
 $frontController->run();

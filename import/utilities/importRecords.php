@@ -48,7 +48,7 @@ $s_max_size = round($max_size/1024/1024).' MBytes';
 
         <?php
             includeJQuery();
-        ?>        
+        ?>
 
         <script src="<?php echo PDIR;?>external/jquery-file-upload/js/jquery.iframe-transport.js"></script>
         <script src="<?php echo PDIR;?>external/jquery-file-upload/js/jquery.fileupload.js"></script>

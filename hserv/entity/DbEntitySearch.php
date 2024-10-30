@@ -176,7 +176,7 @@ class DbEntitySearch
     }
 
     private function validateParam($fieldname, $field_config){
-        
+
             $data_type = $field_config['dty_Type'];
             $methodName = $data_type;
 
@@ -195,7 +195,7 @@ class DbEntitySearch
                 $this->data[$fieldname] = $res;
                 return true;
             }
-                
+
             return $res;
     }
 

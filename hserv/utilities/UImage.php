@@ -166,7 +166,7 @@ class UImage {
                 $file->original_name = 'snapshot.jpg';
                 $file->name = $heurist_path; //pathinfo($heurist_path, PATHINFO_BASENAME);//name with ext
                 $file->fullpath = $heurist_path;
-                $file->size = $filesize; 
+                $file->size = $filesize;
                 $file->type = 'jpg';
 
                 return $file;

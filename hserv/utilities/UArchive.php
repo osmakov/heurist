@@ -498,7 +498,7 @@ class UArchive {
         }
 
         if (  (!file_exists($out) && !is_writeable(dirname($out)))
-            || 
+            ||
               (file_exists($out) && !is_writable($out)) ){
             return 'Destination folder is not writeable';
         }

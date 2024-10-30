@@ -49,9 +49,9 @@ if(!defined('PDIR')){
 
         <link rel=icon href="<?php echo PDIR?>favicon.ico" type="image/x-icon">
 
-<?php 
+<?php
         includeJQuery();
-?>        
+?>
 
         <!-- CSS -->
         <?php include_once dirname(__FILE__).'/../../../hclient/framecontent/initPageCss.php';?>

@@ -129,9 +129,9 @@ if(!$has_emails || empty($emails)) {
         <!--<link rel="stylesheet" type="text/css" href="../../external/jquery-ui-iconfont-master/jquery-ui.icon-font.css" />-->
         <link rel=icon href="<?php echo PDIR;?>favicon.ico" type="image/x-icon">
 
-<?php 
+<?php
         includeJQuery();
-?>        
+?>
 
         <link rel="stylesheet" type="text/css" href="../../h4styles.css">
         <link rel="stylesheet" type="text/css" href="../../h6styles.css">

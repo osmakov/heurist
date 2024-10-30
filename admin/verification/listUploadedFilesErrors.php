@@ -39,9 +39,9 @@ $mysqli = $system->get_mysqli();
         <title>Missing and orphaned files</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-<?php 
+<?php
         includeJQuery();
-?>        
+?>
 
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>
 

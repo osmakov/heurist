@@ -164,7 +164,7 @@ if(@$_REQUEST['url']) { //direct url to manifest
         $url = str_replace($_SERVER['QUERY_STRING'],
             'db='.$_REQUEST['db']
             .'&iiif_image='.$_REQUEST['iiif_image'], $url);
-        
+
     }elseif(!@$_REQUEST['q']){ //query not defined
         if($rec_ID>0){
              $url = $url.'&format=iiif&q=ids:'.$rec_ID;

@@ -31,7 +31,7 @@ require_once dirname(__FILE__).'/../../structure/dbsTerms.php';
 
 /**
  * Abstract class ExportRecords
- * 
+ *
  * Handles the export of records from the system in multiple formats such as JSON, GeoJSON, XML, etc.
  * It supports fetching related records, applying various filters, and exporting to file or direct output.
  */
@@ -60,17 +60,17 @@ abstract class ExportRecords {
     /**
      * @var array $rt_counts Counts of records grouped by record type ID (rty_ID => count)
      */
-    protected $rt_counts; 
+    protected $rt_counts;
 
     /**
      * @var string $tmp_destination Path to the temporary file for storing export data
      */
-    private $tmp_destination; 
+    private $tmp_destination;
 
     /**
      * @var resource $fd File handler for writing to the export file
      */
-    protected $fd; 
+    protected $fd;
 
     /**
      * @var string $comma Separator used for JSON formatting
@@ -113,7 +113,7 @@ abstract class ExportRecords {
 
     /**
      * Constructor for ExportRecords
-     * 
+     *
      * @param mixed $system System instance to be used by the class
      */
     public function __construct($system) {
@@ -135,7 +135,7 @@ abstract class ExportRecords {
 
     /**
      * Sets the session system instance and initializes the database connection.
-     * 
+     *
      * @param mixed $system System instance
      */
     public function setSession($system) {
@@ -146,10 +146,10 @@ abstract class ExportRecords {
 
     /**
      * Prepares the output by initializing, fetching records, and applying depth for linked records.
-     * 
+     *
      * @param array $data Record search response data
      * @param array $params Parameters controlling the export (format, depth, etc.)
-     * 
+     *
      * @return bool True if successful, false otherwise
      */
     protected function _outputPrepare($data, $params) {
@@ -217,7 +217,7 @@ abstract class ExportRecords {
 
     /**
      * Detects which header and detail fields should be retrieved for export based on the given parameters.
-     * 
+     *
      * @param array $params Parameters controlling the retrieval of fields (columns, details, etc.)
      */
     protected function _outputPrepareFields($params) {
@@ -266,7 +266,7 @@ abstract class ExportRecords {
 
     /**
      * Outputs a single record for the export (must be implemented by subclasses).
-     * 
+     *
      * @param array $record The record data to be output
      */
     abstract protected function _outputRecord($record);
@@ -279,10 +279,10 @@ abstract class ExportRecords {
     /**
     * Manages the entire export process by preparing data, outputting headers, records, and footers.
     * Also handles file compression and download, if specified.
-    * 
+    *
     * @param array $data Record search response data
     * @param array $params Parameters controlling the export
-    * 
+    *
     *    format - json|geojson|xml|gephi|iiif
     *    linkmode = direct, direct_links, none, all
     *    defs  0|1  include database definitions
@@ -315,8 +315,8 @@ abstract class ExportRecords {
     *
     *    limit for leaflet and gephi only
     *
-    * 
-    * 
+    *
+    *
     * @return bool True if successful, false otherwise
     */
     public function output($data, $params) {
@@ -346,12 +346,12 @@ abstract class ExportRecords {
 
         //CLOSE brackets ----------------------------------------
         $this->_outputFooter();
-        
+
         $this->_outputResult($params);
-        
+
         return true;
     }
-    
+
     private function _outputResult($params){
 
         $format = @$params['format'];
@@ -453,7 +453,7 @@ abstract class ExportRecords {
             fileDelete($this->tmp_destination);
             return;
         }
-            
+
         if(@$params['restapi']){
 
             // Allow from any origin

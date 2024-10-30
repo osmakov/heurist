@@ -70,11 +70,11 @@ if(isset($_POST['data'])) {
     <title>Bulk email sender</title>
 
     <!-- CSS -->
-    <?php 
-    
+    <?php
+
     include_once dirname(__FILE__).'/initPageCss.php';
     includeJQuery();
-    
+
     ?>
 
     <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>

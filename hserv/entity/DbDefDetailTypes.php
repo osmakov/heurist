@@ -144,7 +144,7 @@ class DbDefDetailTypes extends DbEntityBase
                         $new_children = getTermChildrenAll($mysqli, $this->records[$idx]['dty_JsonTermIDTree'], true);
 
                         $children = array_filter($children, function($id) use ($new_children) { return !in_array($id, $new_children);});
-                        
+
                         $s = predicateId('dtl_Value', $children, SQL_AND);
 
                         if($s!=''){
@@ -152,7 +152,7 @@ class DbDefDetailTypes extends DbEntityBase
                             $query = 'SELECT COUNT(DISTINCT dtl_RecID) FROM recDetails '
                                 .'WHERE (dtl_DetailTypeID='.$this->records[$idx]['dty_ID'].') AND '
                                 .'(dtl_Value '.$s.')';
-                                
+
                             $total_count_rows = mysql__select_value($mysqli, $query);
                             if($mysqli->error){
                                 $this->system->addError(HEURIST_DB_ERROR,

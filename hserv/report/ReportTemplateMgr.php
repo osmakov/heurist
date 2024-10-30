@@ -468,7 +468,7 @@ class ReportTemplateMgr
 
         return [$match_idx, $match_offset];
     }
-    
+
     //
     // in php v8 use str_ends_with
     //

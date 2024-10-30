@@ -726,8 +726,8 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
                 'fields'=>$header, 'values'=>$parsed_values );
     }else{
 
-        if( !empty($err_colnums) 
-            || !empty($err_encoding) 
+        if( !empty($err_colnums)
+            || !empty($err_encoding)
             || !empty($err_keyfields)){
             //we have errors - delete temporary prepared file
             if(file_exists($prepared_filename)) {unlink($prepared_filename);}

@@ -1890,8 +1890,8 @@ function recordUpdateCalcFields($system, $recID, $rty_ID=null, $progress_session
             $rectypes[$id] = '*';
         }
     }
-    
-    try{   
+
+    try{
         $smarty = smartyInit($system->getSysDir('smarty-templates'));
     } catch (Exception $e) {
         return array('message'=>'Smarty init error: '.$e->getMessage());
@@ -2116,7 +2116,7 @@ function executeSmarty($system, $smarty, $params, $mode=null, $heuristRec=null){
   fwrite($file, $content);
   fclose ($file);
   */
-  
+
   //@todo use ReportExecute class
   if($heuristRec==null) {$heuristRec = new ReportRecord($system);}
 
@@ -2926,7 +2926,7 @@ function prepareGeoValue($mysqli, $dtl_Value){
 
 }
 //
-// 
+//
 //
 function recordDuplicate($system, $id){
 

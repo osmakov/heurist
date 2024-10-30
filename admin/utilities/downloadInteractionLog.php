@@ -218,9 +218,9 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
         <title>Heurist Interaction Log</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-<?php 
+<?php
         includeJQuery();
-?>        
+?>
 
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>
 

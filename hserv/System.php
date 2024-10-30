@@ -1158,7 +1158,7 @@ class System {
                     "services_list"=>$this->getWebServiceConfigs(), //get list of all implemented lookup services
                     "dbrecent"=>$dbrecent,  //!!!!!!! need to store in preferences
                     "cms_allowed"=> $allowCMSCreation??1,
-                    
+
                     'max_post_size'=>USystem::getConfigBytes('post_max_size'),
                     'max_file_size'=>USystem::getConfigBytes('upload_max_filesize'),
                     'is_file_multipart_upload'=>($this->getDiskQuota()>0)?1:0,
@@ -1937,9 +1937,9 @@ class System {
                 if (!empty($current_version))
                 {
                     $curver = explode(".", $current_version[0]);
-                    if( count($curver)>=2 
-                        && intval($curver[0]) > 0 
-                        && is_numeric($curver[1]) 
+                    if( count($curver)>=2
+                        && intval($curver[0]) > 0
+                        && is_numeric($curver[1])
                         && intval($curver[1])>=0 )
                     {
                         $version_last_check = $current_version[0];

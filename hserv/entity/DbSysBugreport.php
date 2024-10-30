@@ -131,7 +131,7 @@ class DbSysBugreport extends DbEntityBase
         }
 
         $sMessage = '';
-        
+
         $new_record = [
             'ID' => 0,// New record
             'RecTypeID' => 56,// Task (Feature, Bug, Issue) rectype on Heurist_Job_Tracker
@@ -184,27 +184,27 @@ class DbSysBugreport extends DbEntityBase
                 case 'Suggestion / feature request':
                     $type_term[] = 6983;
                     break;
-    
+
                 case 'Minor annoyance':
                     $type_term[] = 6987;
                     break;
-    
+
                 case 'Major annoyance':
                     $type_term[] = 6980;
                     break;
-    
+
                 case 'Minor bug':
                     $type_term[] = 6978;
                     break;
-    
+
                 case 'Significant bug':
                     $type_term[] = 6977;
                     break;
-    
+
                 case 'Urgent bug':
                     $type_term[] = 6976;
                     break;
-    
+
                 default:
                     $type_term[] = 6986;
                     break;
@@ -236,11 +236,11 @@ class DbSysBugreport extends DbEntityBase
 
         //$new_record['details']['2-51'] = $ext_info;
         $ext_info = '<p>'.implode('<br>',$ext_info).'</p>';
-        
+
         $filename = null;
         $attachment_temp_name = @$record['2-38'];
         if(!empty($attachment_temp_name)){
-            
+
             if(!is_array($attachment_temp_name)){
                 $attachment_temp_name = [$attachment_temp_name];
             }
@@ -310,7 +310,7 @@ class DbSysBugreport extends DbEntityBase
 
         if($res && $email_already_sent){
             return [$res];
-        }elseif(!$email_already_sent && sendPHPMailer(null, 'Bug reporter', $toEmailAddress, 
+        }elseif(!$email_already_sent && sendPHPMailer(null, 'Bug reporter', $toEmailAddress,
                 $bug_title,
                 $sMessage, //since 02 Dec 2021 we sent human readable message
                 $filename, true)){

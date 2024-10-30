@@ -1234,9 +1234,9 @@ private static function writeResults( $streams, $temp_name, $headers, $error_log
                                     ? $csv_filename
                                     : $csv_filename.'.csv';//'_'.date("YmdHis").
 
-                                    
+
             $csv_filename = basename($csv_filename);
-                                    
+
             $fd = $streams[$rty_ID];
 
             if($fd==null){

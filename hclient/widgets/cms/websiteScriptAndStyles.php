@@ -45,7 +45,7 @@
     */
 
  define('APOSTROPHE','&#039;');
- 
+
  includeJQuery();
 
 if (isLocalHost() && !@$_REQUEST['embed'])  {
@@ -761,7 +761,7 @@ function assignPageTitle(pageid){
 
     // if page title is visible - increase height of header
     if($('#main-header').length>0 && $('#main-content-container').length>0){
-        
+
         const h = $('#main-header').height();
         if(h==144 || h==180){ //default values
             $('#main-header').height(is_show_pagetitle?180:144);
@@ -769,7 +769,7 @@ function assignPageTitle(pageid){
         }else if(h == 137 && navigator.userAgent.indexOf('Firefox') > 0){ //default value on Firefox
             $('#main-content-container').css({top:144});
         }
-       
+
         $('#main-menu').css('bottom',is_show_pagetitle?40:0);
 
     }
@@ -916,7 +916,7 @@ function afterPageLoad(document, pageid, eventdata){
             let remaining_path = org_spath.replace(surl, '');
             remaining_path = remaining_path.length > 0 ? remaining_path.split('/') : [];
 
-            const handle_query = eventdata?.event_type == window.hWin.HAPI4.Event.ON_REC_SEARCHSTART 
+            const handle_query = eventdata?.event_type == window.hWin.HAPI4.Event.ON_REC_SEARCHSTART
                               && eventdata?.q;
             const handle_recids = remaining_path.length > 0;
 

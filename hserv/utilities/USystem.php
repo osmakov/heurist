@@ -244,7 +244,7 @@ class USystem {
         }
         return self::fixIntegerOverflow($val);
     }
-    
+
 
     // Fix for overflowing signed 32 bit integers,
     // works for sizes up to 2^32-1 bytes (4 GiB - 1):

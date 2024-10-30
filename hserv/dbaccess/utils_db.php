@@ -948,12 +948,12 @@ $mysqli->kill($thread_id);
                 if(strpos(HEURIST_DB_MYSQLPATH,' ')>0){
                     $cmd = '"'.$cmd.'"';
                 }
-                
+
                 $port = '';
                 if(HEURIST_DB_PORT){
                     $port = " -P ".HEURIST_DB_PORT;
                 }
-                
+
                 /* remarked temporary to avoid security warnings */
                 $cmd = $cmd         //." --login-path=local "
                 ." -h ".HEURIST_DBSERVER_NAME." ".$port
@@ -1186,7 +1186,7 @@ $mysqli->kill($thread_id);
             $fld_dates = mysql__select_list2($mysqli, $query);
 
             $whereDateFields = predicateId('dtl_DetailTypeID',$fld_dates);
-            
+
             $query = 'SELECT count(dtl_ID) FROM recDetails '.SQL_WHERE.$whereDateFields;
             $cnt_dates = mysql__select_value($mysqli, $query);
             if($offset>0){

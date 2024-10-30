@@ -44,7 +44,7 @@ class HeuristSecurityPolicy extends Security {
                     'lower','nl2br',
                     'preg_match_all','print_r', 'printf','replace',
                     'range', 'regex_replace', 'round',
-                    'sort', 
+                    'sort',
                     'setlocale','spacify', 'strcmp',
                     'strip', 'strstr', 'substr', 'strpos', 'string_format', 'strlen', 'strip_tags',
                     'arraysortby',
@@ -57,7 +57,7 @@ class HeuristSecurityPolicy extends Security {
   public $allowed_tags = false;
 
   public $allow_constants = true;
-  
+
 }
 
 function smartyInit($smarty_templates_dir=null){
@@ -93,17 +93,17 @@ function smartyInit($smarty_templates_dir=null){
         $smarty->setConfigDir($smarty_templates_dir.'configs');
 
         // enable security
-        
+
         $smarty->enableSecurity('HeuristSecurityPolicy');
-        
+
         //allowed php functions
-        $php_functions = array( 'count', //'constant', 
+        $php_functions = array( 'count', //'constant',
                     'sizeof', 'in_array', 'is_array', 'intval', 'implode', 'explode',
                     //'array_key_exists', 'array_column',
                     'array_count_values', 'array_keys', //'array_multisort',
                     'array_diff', 'array_merge', 'array_slice', 'array_unique',
-                    'asort', 'ksort', //'sort', 
-                    'array_values', 
+                    'asort', 'ksort', //'sort',
+                    'array_values',
                     'floatval', 'is_numeric', 'json_encode',
                     'nl2br',
                     'preg_match_all','print_r','printf', 'range', 'round',
@@ -123,8 +123,8 @@ function smartyInit($smarty_templates_dir=null){
 
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'sort', 'heuristModifierArraySort');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_multisort', 'heuristModifierArrayMultiSort');
-        
-        
+
+
         return $smarty;
 }
 
@@ -154,34 +154,34 @@ function heuristModifierTranslate($input, $lang, $field=null)
 {
     return getTranslation($input, $lang, $field);//see ULocale
 }
-/** 
+/**
 * Smarty Plugin - Array Sort
 * Sorts an array by supplied fields
-* 
+*
 * $sortby - comma separated string or array of columns/keys
 *           prefix '-' sort desc, prefix '#' - sort numeric
-* 
-* for example 
-*       foreach $arr|arraysortby:"-auteur,#auteurid" 
-* or 
+*
+* for example
+*       foreach $arr|arraysortby:"-auteur,#auteurid"
+* or
 *       $arr=arraysortby($arr,"auteur")
-* 
+*
 * if $sortby is not defined it sorts
 *   a) by first column for multidimensional array
 *   b) use "sort" function for flat array
-* 
+*
 */
-function heuristModifierArraySortByFields($arr, $sortby=null) 
+function heuristModifierArraySortByFields($arr, $sortby=null)
 {
-    
+
     if(!isset($sortby)){
         if(is_array($arr[0])){
-            //sort by first column    
+            //sort by first column
             $sortby = array_keys($arr[0])[0];
         }else{
             //flat array
-            sort($arr);    
-            return $arr;    
+            sort($arr);
+            return $arr;
         }
     }
     if(!is_array($sortby)){
@@ -190,7 +190,7 @@ function heuristModifierArraySortByFields($arr, $sortby=null)
 
     uasort($arr, function ($a, $b) use (&$arr, $sortby) {
          for ($i = 0; $i < count($sortby); $i++) {
-            
+
             $key = $sortby[$i];
 
             $d = 1;
@@ -204,7 +204,7 @@ function heuristModifierArraySortByFields($arr, $sortby=null)
                 $is_numeric = true;
                 $key = substr($key,1);
             }
-            
+
             if ($a[$key] == $b[$key]) {
                 if (isset($sortby[$i + 1])) { //next sort
                     $arr = heuristModifierArraySortByFields($arr, array_slice($sortby, 1));
@@ -224,7 +224,7 @@ function heuristModifierArraySortByFields($arr, $sortby=null)
 
     return $arr;
 }
-    
+
 //do not remove - for backward capability
 function smarty_function_progress(){
     return false;

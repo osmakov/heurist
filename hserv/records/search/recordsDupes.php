@@ -784,7 +784,7 @@ public static function exportList($params){
     fclose($fd);
 
     $filename = HEURIST_DBNAME . '_Duplicate_Records.tsv';
-    
+
     dataOutput($output, $filename, 'text/tab-separated-values');
 }
 
