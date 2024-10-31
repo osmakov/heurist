@@ -44,8 +44,8 @@ require_once dirname(__FILE__).'/../../hserv/structure/import/dbsImport.php';
 $system->defineConstants();
 
 global $rep_counter, $rep_issues, $system_folders,
-       $fieldhelper_to_heurist_map, $mediaExts, $progress_divid,
-       $geoDT, $fileDT, $titleDT, $startdateDT, $enddateDT, $descriptionDT, $failed_exts;
+$fieldhelper_to_heurist_map, $mediaExts, $progress_divid,
+$geoDT, $fileDT, $titleDT, $startdateDT, $enddateDT, $descriptionDT, $failed_exts;
 
 
 if(!defined('RT_MEDIA_RECORD')){
@@ -54,15 +54,15 @@ if(!defined('RT_MEDIA_RECORD')){
 
     $importDef = new DbsImport( $system );
     if($importDef->doPrepare(  array('defType'=>'rectype',
-                'conceptCode'=>$rtDefines['RT_MEDIA_RECORD'] ) ))
+    'conceptCode'=>$rtDefines['RT_MEDIA_RECORD'] ) ))
     {
         $isOK = $importDef->doImport();
     }
 
     if(!$isOK){
-            $system->addErrorMsg('Cannot download record type "Digital Media item" required by the function you have requested. ');
-            include_once ERROR_REDIR;
-            exit;
+        $system->addErrorMsg('Cannot download record type "Digital Media item" required by the function you have requested. ');
+        include_once ERROR_REDIR;
+        exit;
     }
     if(!$system->defineConstant('RT_MEDIA_RECORD', true)){
         $system->addError(HEURIST_ERROR, 'Record type "Digital Media item"" id not defined');
@@ -149,19 +149,19 @@ $failed_exts = array();
         <p>Note: Use with caution, this function can create a lot of extra records if there are many images</p>
 
         <p>This function creates, updates and reads XML manifest files in the folders (and their descendants)
-        listed in Design > Properties (Paths which contain files to be indexed as multimedia records)
-        and creates Digital Media records for all files uploaded to the database, with pointers back to the files.
-        New files are added to existing manifests. </p>
+            listed in Design > Properties (Paths which contain files to be indexed as multimedia records)
+            and creates Digital Media records for all files uploaded to the database, with pointers back to the files.
+            New files are added to existing manifests. </p>
 
-         <p>
+        <p>
             Digital Media records are only added for files without such a record, existing Digital Media records are unaffected.
-         </p><p>
+        </p><p>
             <i>Note (in case of need): If you get the message that your folders are not writeable, ask your system adminstrator to adjust the permissions on the HEURIST_FILESTORE directory and its descendants. The folders in the filestore must be writeable by the PHP system - normally they should belong to and be writable by the group heurist (which should be set up to include apache and any administrators who have access to the backend), or be owned and writable by apache or www-data (as appropriate).</i>
-         </p>
-         <p>
+        </p>
+        <p>
             Files should be uploaded through Populate > Upload media files/images (limited normally to 30M) or by direct sftp access to the file_uploads directory, or sub-directories, on the server for larger files or very large bulk uploads (available to system administrators only).
-         </p>
-         <?php
+        </p>
+        <?php
 
         $notfound = array();
         foreach ($fieldhelper_to_heurist_map as $key=>$id){
@@ -214,12 +214,12 @@ $failed_exts = array();
 
                 print "<p><b>Folders to scan :</b> $mediaFolders<p>";
                 print "<p><b>Extensions to scan:</b> $mediaExts<p>";
-?>
+        ?>
                 <p><a href='#' onclick="sysIdentificationPopup();"
                     title='Open form to edit properties which determine the handling of files and directories in the database upload folders'>
                     Click here to set media folders (database file directory descendants scanned by default)</a>
                 </p>
-<?php
+        <?php
 
                 if (!($mediaFolders=="" || empty($dirs))) {
                     print "<form name='selectdb' action='synchroniseWithFieldHelper.php' method='get'>";
@@ -257,10 +257,10 @@ $failed_exts = array();
                 $invalid_ext = implode(', ', $failed_exts);
 
                 print "<br><div style='color: red;'>The following file types, which were encountered during media indexing,
-                        are not currently being indexed as media files: $invalid_ext</div><br><br><div>You may wish to add some
-                        of these types in the
-                        <span onclick='sysIdentificationPopup();' style='text-decoration:underline;cursor:pointer;color:blue;'>Design > Properties</span>
-                        function and run indexing again.</div><br>";
+                are not currently being indexed as media files: $invalid_ext</div><br><br><div>You may wish to add some
+                of these types in the
+                <span onclick='sysIdentificationPopup();' style='text-decoration:underline;cursor:pointer;color:blue;'>Design > Properties</span>
+                function and run indexing again.</div><br>";
             }
 
             print "<div>Synchronisation completed</div>";
@@ -288,39 +288,39 @@ $failed_exts = array();
                     $dir = USanitize::sanitizePath($dir);
                     $real_path = isPathInHeuristUploadFolder($dir, true);
                     if($real_path==null){
-                            //does not exist - ignore
-                            print error_Div(htmlspecialchars($dir).' is ignored. Folder does not exist.');
-                            continue;
+                        //does not exist - ignore
+                        print error_Div(htmlspecialchars($dir).' is ignored. Folder does not exist.');
+                        continue;
                     }elseif(!$real_path){
-                            print error_Div(htmlspecialchars($dir).' is ignored. Folder must be in Heurist filestore directory.');
-                            continue;
+                        print error_Div(htmlspecialchars($dir).' is ignored. Folder must be in Heurist filestore directory.');
+                        continue;
                     }
 
-/*
+                    /*
                     $dir = str_replace('\\','/',$dir);
                     if(!( substr($dir, 0, strlen(HEURIST_FILESTORE_DIR)) === HEURIST_FILESTORE_DIR )){
-                        $orig = $dir;
-                        chdir(HEURIST_FILESTORE_DIR);
-                        $dir = realpath($dir);
-                        if($dir!==false){
-                            //realpath gives real path on remote file server
-                            if(strpos($dir, '/srv/HEURIST_FILESTORE/')===0){  //heurx-fs-pro
-                                $dir = str_replace('/srv/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $dir);
-                            }elseif(strpos($dir, '/data/HEURIST_FILESTORE/')===0){  //huma-num
-                                $dir = str_replace('/data/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $dir);
-                            }elseif(strpos($dir, '/misc/heur-filestore/')===0){
-                                $dir = str_replace('/misc/heur-filestore/', HEURIST_FILESTORE_ROOT, $dir);
-                            }
-
-                            $dir = str_replace('\\','/',$dir);
-                        }
-
-                        if(!$dir || !( substr($dir, 0, strlen(HEURIST_FILESTORE_DIR)) === HEURIST_FILESTORE_DIR )){
-                            print error_Div(htmlspecialchars($orig).' is ignored. Folder must be in Heurist filestore directory');
-                            continue;
-                        }
+                    $orig = $dir;
+                    chdir(HEURIST_FILESTORE_DIR);
+                    $dir = realpath($dir);
+                    if($dir!==false){
+                    //realpath gives real path on remote file server
+                    if(strpos($dir, '/srv/HEURIST_FILESTORE/')===0){  //heurx-fs-pro
+                    $dir = str_replace('/srv/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $dir);
+                    }elseif(strpos($dir, '/data/HEURIST_FILESTORE/')===0){  //huma-num
+                    $dir = str_replace('/data/HEURIST_FILESTORE/', HEURIST_FILESTORE_ROOT, $dir);
+                    }elseif(strpos($dir, '/misc/heur-filestore/')===0){
+                    $dir = str_replace('/misc/heur-filestore/', HEURIST_FILESTORE_ROOT, $dir);
                     }
-*/
+
+                    $dir = str_replace('\\','/',$dir);
+                    }
+
+                    if(!$dir || !( substr($dir, 0, strlen(HEURIST_FILESTORE_DIR)) === HEURIST_FILESTORE_DIR )){
+                    print error_Div(htmlspecialchars($orig).' is ignored. Folder must be in Heurist filestore directory');
+                    continue;
+                    }
+                    }
+                    */
 
                     if(substr($dir, -1) != '/'){
                         $dir .= "/";
@@ -461,7 +461,7 @@ $failed_exts = array();
                     return 0;
                 }
 
-                //MAIN 	LOOP in manifest
+                //MAIN LOOP in manifest
                 $not_found = true;  //true if manifest is empty
 
                 foreach ($fh_data->children() as $f_gen){
@@ -475,7 +475,7 @@ $failed_exts = array();
 
                         foreach ($f_gen->children() as $f_item){
 
-                            $recordIds	 = array();
+                            $recordIds = array();
                             $recordType  = RT_MEDIA_RECORD; //media by default
                             $recordURL   = null;
                             $recordNotes = null;
@@ -554,7 +554,7 @@ $failed_exts = array();
                                     $res = mysql__select_value($system->get_mysqli(),$query2);
                                     if (!($res>0)) {
                                         $notFoundMessage = "<div>File: <i>$filename_base</i> was indexed as rec# $recId. ".
-                                            "This record was not found. File will be reindexed</div>";
+                                        "This record was not found. File will be reindexed</div>";
                                     }else{
                                         $notFoundMessage = null;
                                         $recordId = $res;
@@ -622,9 +622,9 @@ $failed_exts = array();
                                 $query2 = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID='.$file_id;
                                 $new_recordID = mysql__select_value($system->get_mysqli(),$query2);
                                 if ($new_recordID>0) {
-                                     //int "<div>File: <i>$filename_base</i> <span>".
-                                     //ile is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
-                                     $rep_updated++;
+                                    //int "<div>File: <i>$filename_base</i> <span>".
+                                    //ile is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
+                                    $rep_updated++;
                                 }else{
                                     $record = array();
                                     $record['ID'] = 0; //add new
@@ -640,7 +640,7 @@ $failed_exts = array();
 
                                     if ( @$out['status'] != HEURIST_OK ) {
                                         print error_Div('File: <i>'.htmlspecialchars($filename_base).'</i> Error: '.
-                                        htmlspecialchars($out["message"]));
+                                            htmlspecialchars($out["message"]));
 
                                     }else{
                                         $new_recordID = intval($out['data']);
@@ -674,7 +674,7 @@ $failed_exts = array();
 
                             }else{
                                 $rep_ignored++;
-//								$failed_exts[] = @$flleinfo['extension'];
+                                //$failed_exts[] = @$flleinfo['extension'];
                             }
 
                             $cnt_files++;
@@ -736,136 +736,136 @@ XML;
             //for files in folder that are not specified in the manifest file
             foreach ($all_files as $filename){
                 if($filename=="." || $filename==".." || is_dir($dir.$filename)
-                        || $filename=="fieldhelper.xml" || $filename=="index.html"){
-                        continue;
+                || $filename=="fieldhelper.xml" || $filename=="index.html"){
+                    continue;
                 }
 
-                    $filename_base = $filename;
-                    $filename = $dir.$filename;
-                    $currfile = $filename;
-                    $flleinfo = pathinfo($filename);
-                    $recordNotes = null;
+                $filename_base = $filename;
+                $filename = $dir.$filename;
+                $currfile = $filename;
+                $flleinfo = pathinfo($filename);
+                $recordNotes = null;
 
-                    //checks for allowed extensions
-                    if(in_array(strtolower(@$flleinfo['extension']),$mediaExts))
-                    {
+                //checks for allowed extensions
+                if(in_array(strtolower(@$flleinfo['extension']),$mediaExts))
+                {
 
-                        $details = array();
+                    $details = array();
 
-                        $file_id = fileRegister($system, $filename);//see recordFile.php
+                    $file_id = fileRegister($system, $filename);//see recordFile.php
 
-                        if($file_id>0){
-                            $details["t:".$fileDT] = array("1"=>$file_id);
-                            $recordNotes = readEXIF($filename);
-                        }else{
-                            print '<div>File: <i>'.htmlspecialchars($filename_base).'</i> <span  style="color:#ff8844">'.
-                            "Warning: failed to register. No record created for this file</span></div>";
-                            //$rep_issues = $rep_issues."<br>Can't register file:".$filename.". ".$file_id;
-                            $file_id = null;
-                            continue;
-                        }
-
-                        $details["t:".$titleDT] = array("1"=>$flleinfo['basename']);
-                        /* TODO - extract these data from exif
-                        $details["t:".$descriptionDT] = array("1"=>$file_id);
-                        $details["t:".$startdateDT] = array("1"=>$file_id);
-                        $details["t:".$enddateDT] = array("1"=>$file_id);
-                        $details["t:".$geoDT] = array("1"=>$file_id);
-                        */
-
-                        $new_md5 = md5_file($filename);
-                        $key = $fieldhelper_to_heurist_map['md5'];
-                        if($key>0){
-                            $details["t:".$key] = array("1"=>$new_md5);
-                        }
-                        $key = $fieldhelper_to_heurist_map['file_name'];
-                        if($key>0){
-                            $details["t:".$key] = array("1"=>$flleinfo['basename']);
-                        }
-                        $key = $fieldhelper_to_heurist_map['file_path'];
-                        if($key>0){
-
-                            $targetPath = $flleinfo['dirname'];
-
-                            $rel_path = getRelativePath(HEURIST_FILESTORE_DIR, $targetPath);//getRelativePath2($targetPath);
-                            $details["t:".$key] = array("1"=>  $rel_path);
-
-                            /*print "<div>".HEURIST_FILESTORE_DIR.DIV_E;
-                            print "<div>file path :".$targetPath.DIV_E;
-                            print "<div>relative path :".strpos($targetPath, HEURIST_FILESTORE_DIR)."--".$rel_path.DIV_E;
-                            print "<div>relative path old :".getRelativePath(HEURIST_FILESTORE_DIR, $targetPath)."<br><br></div>";*/
-
-
-                        }
-                        $key = $fieldhelper_to_heurist_map['extension'];
-                        if($key>0){
-                            $details["t:".$key] = array("1"=>$flleinfo['extension']);
-                        }
-                        $key = $fieldhelper_to_heurist_map['filesize'];
-                        if($key>0){
-                            $details["t:".$key] = array("1"=>filesize($filename));
-                        }
-
-
-
-                        $f_item = $f_items->addChild("item");
-                        $f_item->addChild("filename", htmlspecialchars($flleinfo['basename']));
-                        $f_item->addChild("nativePath", htmlspecialchars($filename));
-                        $f_item->addChild("folder", htmlspecialchars($flleinfo['dirname']));
-                        $f_item->addChild("extension", $flleinfo['extension']);
-                        //$f_item->addChild("DateTime", );
-                        //$f_item->addChild("DateTimeOriginal", );
-                        $f_item->addChild("filedate", date("Y/m/d H:i:s.", filemtime($filename)));
-                        $f_item->addChild("typeContent", "image");
-                        $f_item->addChild("device", "image");
-                        $f_item->addChild("duration", "2000");
-                        $f_item->addChild("original_metadata", "chk");
-                        $f_item->addChild("Name0", htmlspecialchars($flleinfo['basename']));
-                        $f_item->addChild("md5", $new_md5);
-                        $f_item->addChild("filesize", filesize($filename));
-
-                        $query2 = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID='.$file_id;
-                        $new_recordID = mysql__select_value($system->get_mysqli(),$query2);
-                        if ($new_recordID>0) {
-                            //print "<div>File: <i>$filename_base</i> <span>".
-                            //"File is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
-                            $rep_updated++;
-
-                        }else{
-                            //add-update Heurist record
-                            $record = array();
-                            $record['ID'] = 0; //add new
-                            $record['RecTypeID'] = RT_MEDIA_RECORD;
-                            $record['AddedByImport'] = 2;
-                            $record['no_validation'] = true;
-                            $record['URL'] = null;
-                            $record['ScratchPad'] = $recordNotes;
-                            $record['details'] = $details;
-                            $out = recordSave($system, $record);//see recordModify.php
-
-                            if ( @$out['status'] != HEURIST_OK ) {
-                                print error_Div('File: <i>'.htmlspecialchars($filename_base).' Error: '.htmlspecialchars($out["message"]));
-                            }else{
-                                $new_recordID = intval($out['data']);
-                                $cnt_added++;
-                            }
-                        }
-
-                        if($new_recordID>0){
-                            $f_item->addChild("heurist_id", $new_recordID);
-                        }
-
-                        $rep_processed_dir++;
-                    }//check ext
-
-                    $cnt_files++;
-
-                    if ($cnt_files % 5 == 0) {
-                        ob_start();
-                        print "<script type=\"text/javascript\">update_counts($progress_divid,$cnt_files,$cnt_added,$tot_files)</script>\n";
-                        ob_flush();
-                        flush();
+                    if($file_id>0){
+                        $details["t:".$fileDT] = array("1"=>$file_id);
+                        $recordNotes = readEXIF($filename);
+                    }else{
+                        print '<div>File: <i>'.htmlspecialchars($filename_base).'</i> <span  style="color:#ff8844">'.
+                        "Warning: failed to register. No record created for this file</span></div>";
+                        //$rep_issues = $rep_issues."<br>Can't register file:".$filename.". ".$file_id;
+                        $file_id = null;
+                        continue;
                     }
+
+                    $details["t:".$titleDT] = array("1"=>$flleinfo['basename']);
+                    /* TODO - extract these data from exif
+                    $details["t:".$descriptionDT] = array("1"=>$file_id);
+                    $details["t:".$startdateDT] = array("1"=>$file_id);
+                    $details["t:".$enddateDT] = array("1"=>$file_id);
+                    $details["t:".$geoDT] = array("1"=>$file_id);
+                    */
+
+                    $new_md5 = md5_file($filename);
+                    $key = $fieldhelper_to_heurist_map['md5'];
+                    if($key>0){
+                        $details["t:".$key] = array("1"=>$new_md5);
+                    }
+                    $key = $fieldhelper_to_heurist_map['file_name'];
+                    if($key>0){
+                        $details["t:".$key] = array("1"=>$flleinfo['basename']);
+                    }
+                    $key = $fieldhelper_to_heurist_map['file_path'];
+                    if($key>0){
+
+                        $targetPath = $flleinfo['dirname'];
+
+                        $rel_path = getRelativePath(HEURIST_FILESTORE_DIR, $targetPath);//getRelativePath2($targetPath);
+                        $details["t:".$key] = array("1"=>  $rel_path);
+
+                        /*print "<div>".HEURIST_FILESTORE_DIR.DIV_E;
+                        print "<div>file path :".$targetPath.DIV_E;
+                        print "<div>relative path :".strpos($targetPath, HEURIST_FILESTORE_DIR)."--".$rel_path.DIV_E;
+                        print "<div>relative path old :".getRelativePath(HEURIST_FILESTORE_DIR, $targetPath)."<br><br></div>";*/
+
+
+                    }
+                    $key = $fieldhelper_to_heurist_map['extension'];
+                    if($key>0){
+                        $details["t:".$key] = array("1"=>$flleinfo['extension']);
+                    }
+                    $key = $fieldhelper_to_heurist_map['filesize'];
+                    if($key>0){
+                        $details["t:".$key] = array("1"=>filesize($filename));
+                    }
+
+
+
+                    $f_item = $f_items->addChild("item");
+                    $f_item->addChild("filename", htmlspecialchars($flleinfo['basename']));
+                    $f_item->addChild("nativePath", htmlspecialchars($filename));
+                    $f_item->addChild("folder", htmlspecialchars($flleinfo['dirname']));
+                    $f_item->addChild("extension", $flleinfo['extension']);
+                    //$f_item->addChild("DateTime", );
+                    //$f_item->addChild("DateTimeOriginal", );
+                    $f_item->addChild("filedate", date("Y/m/d H:i:s.", filemtime($filename)));
+                    $f_item->addChild("typeContent", "image");
+                    $f_item->addChild("device", "image");
+                    $f_item->addChild("duration", "2000");
+                    $f_item->addChild("original_metadata", "chk");
+                    $f_item->addChild("Name0", htmlspecialchars($flleinfo['basename']));
+                    $f_item->addChild("md5", $new_md5);
+                    $f_item->addChild("filesize", filesize($filename));
+
+                    $query2 = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID='.$file_id;
+                    $new_recordID = mysql__select_value($system->get_mysqli(),$query2);
+                    if ($new_recordID>0) {
+                        //print "<div>File: <i>$filename_base</i> <span>".
+                        //"File is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
+                        $rep_updated++;
+
+                    }else{
+                        //add-update Heurist record
+                        $record = array();
+                        $record['ID'] = 0; //add new
+                        $record['RecTypeID'] = RT_MEDIA_RECORD;
+                        $record['AddedByImport'] = 2;
+                        $record['no_validation'] = true;
+                        $record['URL'] = null;
+                        $record['ScratchPad'] = $recordNotes;
+                        $record['details'] = $details;
+                        $out = recordSave($system, $record);//see recordModify.php
+
+                        if ( @$out['status'] != HEURIST_OK ) {
+                            print error_Div('File: <i>'.htmlspecialchars($filename_base).' Error: '.htmlspecialchars($out["message"]));
+                        }else{
+                            $new_recordID = intval($out['data']);
+                            $cnt_added++;
+                        }
+                    }
+
+                    if($new_recordID>0){
+                        $f_item->addChild("heurist_id", $new_recordID);
+                    }
+
+                    $rep_processed_dir++;
+                }//check ext
+
+                $cnt_files++;
+
+                if ($cnt_files % 5 == 0) {
+                    ob_start();
+                    print "<script type=\"text/javascript\">update_counts($progress_divid,$cnt_files,$cnt_added,$tot_files)</script>\n";
+                    ob_flush();
+                    flush();
+                }
             }//for files in folder that are not specified in the directory
 
 

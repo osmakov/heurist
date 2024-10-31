@@ -1288,7 +1288,7 @@
             if($prefs!=null && $prefs!=''){
                 $prefs = json_decode($prefs, true);
             }
-            if($prefs==null || count($prefs)===0){
+            if($prefs==null || empty($prefs)){
                 $prefs = array();
             }
 

@@ -67,7 +67,7 @@ function dirsize($dir)
     $size = 0;
     while ($file = @readdir($dh))
     {
-        if ($file != "." and $file != "..")
+        if ($file != "." && $file != "..")
         {
             $path = $dir."/".$file;
             if (is_dir($path))

@@ -514,8 +514,8 @@ function updateRectype($commonNames, $rtyID, $rt) {
 
 
 
-    //		$row = $res->fetch_object();
-    //		$query = "rty_LocallyModified=".(($row->rty_OriginatingDBID>0)?"1":"0").",";
+    //$row = $res->fetch_object();
+    //$query = "rty_LocallyModified=".(($row->rty_OriginatingDBID>0)?"1":"0").",";
 
     $query="";
 
@@ -560,7 +560,7 @@ function updateRectype($commonNames, $rtyID, $rt) {
                 handleError($ret, $query, $res);
 
                 //}elseif($rows==0) {
-                //	$ret = "error updating $rtyID in updateRectype - ".$mysqli->error;
+                //$ret = "error updating $rtyID in updateRectype - ".$mysqli->error;
             } else {
                 $ret = $rtyID;
 

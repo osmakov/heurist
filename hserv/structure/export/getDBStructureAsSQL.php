@@ -29,9 +29,9 @@ require_once dirname(__FILE__).'/../../../hclient/framecontent/initPageMin.php';
 global $mysqli, $isHTML, $startToken, $endToken;
 
 // Normally jsut outputs definitions, this will include users/groups
-$includeUgrps=@$_REQUEST["includeUgrps"];	// returns null if not set
+$includeUgrps=@$_REQUEST["includeUgrps"];// returns null if not set
 
-$approvedDefsOnly=@$_REQUEST["approvedDefsOnly"];	// returns null if not set
+$approvedDefsOnly=@$_REQUEST["approvedDefsOnly"];// returns null if not set
 
 $isHTML = (@$_REQUEST["plain"]!=1);//no html
 // TO DO: filter for reserved and approved definitions only if this is set

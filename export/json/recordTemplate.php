@@ -1,7 +1,7 @@
 <?php
 /**
 * recordTemplate.php: Exports record structure templates in JSON format,
-*	or calls record_output.php to export actual records (if rectype_ids is not provided)
+* or calls record_output.php to export actual records (if rectype_ids is not provided)
 *
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org

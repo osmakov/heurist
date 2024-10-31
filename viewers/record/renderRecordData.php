@@ -167,7 +167,7 @@ if ($rec_id>0 && !@$_REQUEST['bkmk_id'])
 }
 $sel_ids = array();
 if(@$_REQUEST['ids']){
-	$sel_ids = prepareIds($_REQUEST['ids']);
+    $sel_ids = prepareIds($_REQUEST['ids']);
     $sel_ids = array_unique($sel_ids);
 }
 if(!($is_map_popup || $without_header)){
@@ -1154,7 +1154,7 @@ if ($bkm_ID>0 || $rec_id>0) {
 
             print '<div data-recid="'.intval($bibInfo['rec_ID']).'">';// style="font-size:0.8em"
             print_details($bibInfo);
-	        print DIV_E;
+            print DIV_E;
 
             $opts = '';
             $list = '';
@@ -1767,7 +1767,7 @@ function print_public_details($bib) {
                     }
 
 
-					array_push($already_linked_ids, $rec_id);
+                    array_push($already_linked_ids, $rec_id);
                 }
 
             }
@@ -2299,22 +2299,22 @@ function print_relation_details($bib) {
     $mysqli = $system->get_mysqli();
 
     $from_res = $mysqli->query('select recDetails.*
-		from recDetails
-		left join Records on rec_ID = dtl_RecID
-		where dtl_DetailTypeID = '.$relSrcDT.
-		' and rec_RecTypeID = '.$relRT.
-		' and dtl_Value = ' . intval($bib['rec_ID']));//primary resource
+        from recDetails
+        left join Records on rec_ID = dtl_RecID
+        where dtl_DetailTypeID = '.$relSrcDT.
+        ' and rec_RecTypeID = '.$relRT.
+        ' and dtl_Value = ' . intval($bib['rec_ID']));//primary resource
 
     $to_res = $mysqli->query('select recDetails.*
-		from recDetails
-		left join Records on rec_ID = dtl_RecID
-		where dtl_DetailTypeID = '.$relTrgDT.
-		' and rec_RecTypeID = '.$relRT.
-		' and dtl_Value = ' . intval($bib['rec_ID']));//linked resource
+        from recDetails
+        left join Records on rec_ID = dtl_RecID
+        where dtl_DetailTypeID = '.$relTrgDT.
+        ' and rec_RecTypeID = '.$relRT.
+        ' and dtl_Value = ' . intval($bib['rec_ID']));//linked resource
 
     if (($from_res==false || $from_res->num_rows <= 0)  &&
-		 ($to_res==false || $to_res->num_rows<=0)){
-		   return 0;
+         ($to_res==false || $to_res->num_rows<=0)){
+           return 0;
     }
 
     $link_cnt = 0;
@@ -2346,54 +2346,54 @@ function print_relation_details($bib) {
     }
 
     if($from_res){
-		while ($reln = $from_res->fetch_assoc()) {
+        while ($reln = $from_res->fetch_assoc()) {
 
-			$bd = fetch_relation_details($system, $reln['dtl_RecID'], true);
+            $bd = fetch_relation_details($system, $reln['dtl_RecID'], true);
 
-			// check related record
-			if (!@$bd['RelatedRecID'] || !array_key_exists('rec_ID',$bd['RelatedRecID'])) {
-				continue;
-			}
-			$relatedRecID = $bd['RelatedRecID']['rec_ID'];
+            // check related record
+            if (!@$bd['RelatedRecID'] || !array_key_exists('rec_ID',$bd['RelatedRecID'])) {
+                continue;
+            }
+            $relatedRecID = $bd['RelatedRecID']['rec_ID'];
 
-			if(mysql__select_value($mysqli,
-				"select count(rec_ID) from Records where rec_ID=$relatedRecID and $ACCESS_CONDITION")==0){
-				//related is not accessable
-				continue;
-			}
+            if(mysql__select_value($mysqli,
+                "select count(rec_ID) from Records where rec_ID=$relatedRecID and $ACCESS_CONDITION")==0){
+                //related is not accessable
+                continue;
+            }
 
-			$field_name = false;
+            $field_name = false;
 
-			if($relfields_details && !empty($relfields_details)){
+            if($relfields_details && !empty($relfields_details)){
 
-				for($i = 0; $i < count($relfields_details); $i++){
+                for($i = 0; $i < count($relfields_details); $i++){
 
-					$ptrtarget_ids = explode(',', $relfields_details[$i][2]);
-					$fld_name = $relfields_details[$i][0];
-					$vocab_id = $relfields_details[$i][3];
+                    $ptrtarget_ids = explode(',', $relfields_details[$i][2]);
+                    $fld_name = $relfields_details[$i][0];
+                    $vocab_id = $relfields_details[$i][3];
 
-					$is_in_vocab = in_array($bd['RelTermID'], $defTerms->treeData($vocab_id, 3));
+                    $is_in_vocab = in_array($bd['RelTermID'], $defTerms->treeData($vocab_id, 3));
 
                     // check if current relation is valid for field's rectype targets and reltype vocab
-					if(in_array($bd['RelatedRecID']['rec_RecTypeID'], $ptrtarget_ids) && $is_in_vocab){
+                    if(in_array($bd['RelatedRecID']['rec_RecTypeID'], $ptrtarget_ids) && $is_in_vocab){
 
-						if(array_key_exists($fld_name, $move_details)){
+                        if(array_key_exists($fld_name, $move_details)){
 
-							array_push($move_details[$fld_name], $bd['recID']);
+                            array_push($move_details[$fld_name], $bd['recID']);
 
-							$field_name = '';
-						}else{
+                            $field_name = '';
+                        }else{
 
-							$move_details[$fld_name] = array();
-							array_push($move_details[$fld_name], $relfields_details[$i][1], $bd['recID']);//name of field, order, related recid
+                            $move_details[$fld_name] = array();
+                            array_push($move_details[$fld_name], $relfields_details[$i][1], $bd['recID']);//name of field, order, related recid
 
-							$field_name = $fld_name;
-						}
+                            $field_name = $fld_name;
+                        }
 
-						break;
-					}
-				}
-			}
+                        break;
+                    }
+                }
+            }
 
             // get title mask for display
             if(array_key_exists('rec_Title',$bd['RelatedRecID'])){
@@ -2406,81 +2406,81 @@ function print_relation_details($bib) {
                 $recTitle = 'record id ' . $relatedRecID;
             }
 
-			print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
-			$link_cnt++;
-			//		print '<span class=label>' . htmlspecialchars($bd['RelationType']) . '</span>';	//saw Enum change
+            print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
+            $link_cnt++;
+            //        print '<span class=label>' . htmlspecialchars($bd['RelationType']) . '</span>';    //saw Enum change
 
-			if($field_name === false && array_key_exists('RelTerm',$bd)){
-				print '<div class=detailType>' . htmlspecialchars($bd['RelTerm']) . DIV_E;
-			}elseif($field_name !== false){
-				print "<div class=detailType>$field_name</div>";
-			}
+            if($field_name === false && array_key_exists('RelTerm',$bd)){
+                print '<div class=detailType>' . htmlspecialchars($bd['RelTerm']) . DIV_E;
+            }elseif($field_name !== false){
+                print "<div class=detailType>$field_name</div>";
+            }
 
-			print '<div class="detail" '. $extra_styling .'>';
-				if (@$bd['RelatedRecID']) {
+            print '<div class="detail" '. $extra_styling .'>';
+                if (@$bd['RelatedRecID']) {
 
-					print composeRecTypeIcon($bd['RelatedRecID']['rec_RecTypeID']);
+                    print composeRecTypeIcon($bd['RelatedRecID']['rec_RecTypeID']);
 
-					print composeRecLink($bd['RelatedRecID']['rec_ID'], $recTitle);
-				} else {
-					print USanitize::sanitizeString($bd['Title'],ALLOWED_TAGS);
-				}
-				print '&nbsp;&nbsp;';
-				if (@$bd['StartDate']) {print Temporal::toHumanReadable($bd['StartDate'], true, 1);}//compact
-				if (@$bd['EndDate']) {print ' until ' . Temporal::toHumanReadable($bd['EndDate'], true, 1);}
-			print DIV_E.DIV_E;
-		}
-		$from_res->close();
+                    print composeRecLink($bd['RelatedRecID']['rec_ID'], $recTitle);
+                } else {
+                    print USanitize::sanitizeString($bd['Title'],ALLOWED_TAGS);
+                }
+                print '&nbsp;&nbsp;';
+                if (@$bd['StartDate']) {print Temporal::toHumanReadable($bd['StartDate'], true, 1);}//compact
+                if (@$bd['EndDate']) {print ' until ' . Temporal::toHumanReadable($bd['EndDate'], true, 1);}
+            print DIV_E.DIV_E;
+        }
+        $from_res->close();
     }
     if($to_res){
         while ($reln = $to_res->fetch_assoc()) {
 
-			$bd = fetch_relation_details($system, $reln['dtl_RecID'], false);
-			// check related record
-			if (!@$bd['RelatedRecID'] || !array_key_exists('rec_ID',$bd['RelatedRecID'])) {
-				continue;
-			}
-			$relatedRecID = $bd['RelatedRecID']['rec_ID'];
+            $bd = fetch_relation_details($system, $reln['dtl_RecID'], false);
+            // check related record
+            if (!@$bd['RelatedRecID'] || !array_key_exists('rec_ID',$bd['RelatedRecID'])) {
+                continue;
+            }
+            $relatedRecID = $bd['RelatedRecID']['rec_ID'];
 
 
-			if(mysql__select_value($mysqli,
-				"select count(rec_ID) from Records where rec_ID =$relatedRecID and $ACCESS_CONDITION")==0){
-				//related is not accessable
-				continue;
-			}
+            if(mysql__select_value($mysqli,
+                "select count(rec_ID) from Records where rec_ID =$relatedRecID and $ACCESS_CONDITION")==0){
+                //related is not accessable
+                continue;
+            }
 
-			$field_name = false;
+            $field_name = false;
 
-			if($relfields_details && !empty($relfields_details)){
+            if($relfields_details && !empty($relfields_details)){
 
-				for($i = 0; $i < count($relfields_details); $i++){
+                for($i = 0; $i < count($relfields_details); $i++){
 
-					$ptrtarget_ids = explode(',', $relfields_details[$i][2]);
-					$fld_name = $relfields_details[$i][0];
-					$vocab_id = $relfields_details[$i][3];
+                    $ptrtarget_ids = explode(',', $relfields_details[$i][2]);
+                    $fld_name = $relfields_details[$i][0];
+                    $vocab_id = $relfields_details[$i][3];
 
-					$is_in_vocab = in_array($bd['RelTermID'], $defTerms->treeData($vocab_id, 3));
+                    $is_in_vocab = in_array($bd['RelTermID'], $defTerms->treeData($vocab_id, 3));
 
                     // check if current relation is valid for field's rectype targets and reltype vocab
-					if(in_array($bd['RelatedRecID']['rec_RecTypeID'], $ptrtarget_ids) && $is_in_vocab){
+                    if(in_array($bd['RelatedRecID']['rec_RecTypeID'], $ptrtarget_ids) && $is_in_vocab){
 
-						if(array_key_exists($fld_name, $move_details)){
+                        if(array_key_exists($fld_name, $move_details)){
 
-							array_push($move_details[$fld_name], $bd['recID']);
+                            array_push($move_details[$fld_name], $bd['recID']);
 
-							$field_name = '';
-						}else{
+                            $field_name = '';
+                        }else{
 
-							$move_details[$fld_name] = array();
-							array_push($move_details[$fld_name], $relfields_details[$i][1], $bd['recID']);//name of field, order, related recid
+                            $move_details[$fld_name] = array();
+                            array_push($move_details[$fld_name], $relfields_details[$i][1], $bd['recID']);//name of field, order, related recid
 
-							$field_name = $fld_name;
-						}
+                            $field_name = $fld_name;
+                        }
 
-						break;
-					}
-				}
-			}
+                        break;
+                    }
+                }
+            }
 
             // get title mask for display
             if(array_key_exists('rec_Title',$bd['RelatedRecID'])){
@@ -2493,28 +2493,28 @@ function print_relation_details($bib) {
                 $recTitle = 'record id ' . $relatedRecID;
             }
 
-			print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
-			$link_cnt++;
+            print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
+            $link_cnt++;
 
-			if($field_name === false && array_key_exists('RelTerm',$bd)){
-				print '<div class=detailType>' . htmlspecialchars($bd['RelTerm']) . DIV_E;
-			}elseif($field_name !== false){
-				print "<div class=detailType>$field_name</div>";
-			}
+            if($field_name === false && array_key_exists('RelTerm',$bd)){
+                print '<div class=detailType>' . htmlspecialchars($bd['RelTerm']) . DIV_E;
+            }elseif($field_name !== false){
+                print "<div class=detailType>$field_name</div>";
+            }
 
-			print '<div class="detail" '. $extra_styling .'>';
-				if (@$bd['RelatedRecID']) {
+            print '<div class="detail" '. $extra_styling .'>';
+                if (@$bd['RelatedRecID']) {
 
-					print composeRecTypeIcon($bd['RelatedRecID']['rec_RecTypeID']);
+                    print composeRecTypeIcon($bd['RelatedRecID']['rec_RecTypeID']);
 
-					print composeRecLink($bd['RelatedRecID']['rec_ID'], $recTitle);
-				} else {
-					print USanitize::sanitizeString($bd['Title'],ALLOWED_TAGS);
-				}
-				print '&nbsp;&nbsp;';
-				if (@$bd['StartDate']) {print htmlspecialchars($bd['StartDate']);}
-				if (@$bd['EndDate']) {print ' until ' . htmlspecialchars($bd['EndDate']);}
-			print DIV_E.DIV_E;
+                    print composeRecLink($bd['RelatedRecID']['rec_ID'], $recTitle);
+                } else {
+                    print USanitize::sanitizeString($bd['Title'],ALLOWED_TAGS);
+                }
+                print '&nbsp;&nbsp;';
+                if (@$bd['StartDate']) {print htmlspecialchars($bd['StartDate']);}
+                if (@$bd['EndDate']) {print ' until ' . htmlspecialchars($bd['EndDate']);}
+            print DIV_E.DIV_E;
         }
         $to_res->close();
     }
@@ -2647,24 +2647,24 @@ function output_chunker($val, $return_lang = false) {
 /*
     loadWoot returns:
 
-    {	success
+    {    success
     errorType?
-    woot? : {	id
+    woot? : {    id
     title
     version
     creator
-    permissions : {	type
+    permissions : {    type
     userId
     userName
     groupId
     groupName
     } +
-    chunks : {	number
+    chunks : {    number
     text
     modified
     editorId
     ownerId
-    permissions : {	type
+    permissions : {    type
     userId
     userName
     groupId
@@ -2754,7 +2754,7 @@ function orderComments($cmts) {
             if ($cmt['deleted']) {continue;}
             $level = $cmts[$id]["level"] = 0;
             array_push($orderedCmtIds,$id);
-        }else {	//note this algrithm assumes comments are ordered by date and that a child comment always has a more recent date
+        }else {    //note this algrithm assumes comments are ordered by date and that a child comment always has a more recent date
             // handle deleted or children of deleted
             if ($cmts[$cmt["owner"]]["deleted"]) {$cmt["deleted"] = true;}
             if ($cmt["deleted"]) {continue;}

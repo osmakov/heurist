@@ -665,7 +665,10 @@ class OrLimb {
 
 class AndLimb {
     public $negate;
-    public $exact, $lessthan, $greaterthan, $fulltext;
+    public $exact;
+    public $lessthan;
+    public $greaterthan;
+    public $fulltext;
     public $pred;
 
     public $parent;

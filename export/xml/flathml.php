@@ -1336,7 +1336,8 @@ function outputRecord($recID, $depth, $outputStub = false, $parentID = null){
                 $attrs['termConceptID'] = ConceptCode::getTermConceptID($trmID);
                 if ($TL[$trmID]['trm_Code']) {
                     $attrs['code'] = $TL[$trmID]['trm_Code'];
-                };
+                }
+                
                 if (array_key_exists($trmID, $INV) && $INV[$trmID]) {
                     $attrs['inverse'] = $TL[$INV[$trmID]]['trm_Label'];
                     $attrs['invTermID'] = $INV[$trmID];

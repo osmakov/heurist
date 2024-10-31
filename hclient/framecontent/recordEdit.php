@@ -141,7 +141,7 @@ if(@$_REQUEST['annotationId'] || @$_REQUEST['a']){
             }
 
             $isbns = array();
-            if (preg_match_all('!ISBN(?:-?1[03])?[^a-z]*?(97[89][-0-9]{9,13}[0-9]|[0-9][-0-9]{7,10}[0-9X])\\b!i', $description, $matches, PREG_PATTERN_ORDER)) {
+            if (preg_match_all('!ISBN(?:-?1[03])?[^a-z]*?(97[89][-0-9]{9,13}\d|\d[-0-9]{7,10}[0-9X])\\b!i', $description, $matches, PREG_PATTERN_ORDER)) {
                 $isbns = array_unique($matches[1]);
                 if (!($rec_rectype>0) && defined('RT_BOOK')) {
                     $params['rec_rectype'] = RT_BOOK;
@@ -149,7 +149,7 @@ if(@$_REQUEST['annotationId'] || @$_REQUEST['a']){
             }
 
             $issns = array();
-            if (preg_match_all('!ISSN(?:-?1[03])?[^a-z]*?([0-9]{4}-?[0-9]{3}[0-9X])!i', $description, $matches, PREG_PATTERN_ORDER)) {
+            if (preg_match_all('!ISSN(?:-?1[03])?[^a-z]*?(\d{4}-?\d{3}[0-9X])!i', $description, $matches, PREG_PATTERN_ORDER)) {
                 $issns = array_unique($matches[1]);
                 if (!($rec_rectype>0) && defined('RT_JOURNAL_ARTICLE')){
                     $params['rec_rectype'] = RT_JOURNAL_ARTICLE;

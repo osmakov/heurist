@@ -308,7 +308,7 @@ class ImportHeurist {
         }
 
         if($hasValidIdCount == 0){
-            $extra_details = "<br><br>If this occurs when Heurist says it is doing an automatic update,<br>please advise the Heurist team (Bug Report in the Help menu at the top right) so that we can fix this problem.<br>" 
+            $extra_details = "<br><br>If this occurs when Heurist says it is doing an automatic update,<br>please advise the Heurist team (Bug Report in the Help menu at the top right) so that we can fix this problem.<br>"
             . (!empty($invalidIds)) ? "The list of invalid ids: " . implode(',', $invalidIds) : "";
             self::$system->addError(HEURIST_ACTION_BLOCKED, 'There are no valid record IDs within the provided xml file.<br>You may be trying to upload an xml data template rather than actual data.' . $extra_details, null, ERR_XML_IMPORT);
             return null;

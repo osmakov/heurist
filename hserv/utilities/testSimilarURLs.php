@@ -32,16 +32,16 @@
 
 
 function exist_similar($mysqli, $url) {
-	/* are there similar URLs to this one already? */
+    /* are there similar URLs to this one already? */
 
     // URL minus the protocol + possibly www.  and minus slash onwards
-	$noproto_url = preg_replace('!^http://(?:www[.])?([^/]*).*!', '\1', $url);
+    $noproto_url = preg_replace('!^http://(?:www[.])?([^/]*).*!', '\1', $url);
 
-	$res = mysql__select_value($mysqli, 'select count(rec_ID) from Records '
+    $res = mysql__select_value($mysqli, 'select count(rec_ID) from Records '
         .' where rec_URL like "%'.$mysqli->real_escape_string($noproto_url).'%" '
         .' or rec_URL like "%'.$mysqli->real_escape_string($noproto_url).'%"');//http://www.
 
-	return $res>0;
+    return $res>0;
 }
 
 //
@@ -49,92 +49,91 @@ function exist_similar($mysqli, $url) {
 //
 function get_matches($mysqli, $url){
     return mysql__select_list($mysqli, 'Records', 'rec_ID',
-                'rec_URL like "http://'.$mysqli->real_escape_string($url).'%" '
-                .' or rec_URL like "http://www.'.$mysqli->real_escape_string($url).'%"');
+        'rec_URL like "http://'.$mysqli->real_escape_string($url).'%" '
+        .' or rec_URL like "http://www.'.$mysqli->real_escape_string($url).'%"');
 }
 
 //
 //
 //
 function similar_urls($mysqli, $url) {
-	/* return an array of (rec_ID)s ranked in order of similarity to the URL; up to "about ten" are returned */
+    /* return an array of (rec_ID)s ranked in order of similarity to the URL; up to "about ten" are returned */
 
-	/* split the input URL at the directory components, and at the query if it has one */
+    /* split the input URL at the directory components, and at the query if it has one */
 
-	$noproto_url = preg_replace('!^http://(?:www[.])?!', '', $url);	// URL minus the protocol + possibly www.
+    $noproto_url = preg_replace('!^http://(?:www[.])?!', '', $url);	// URL minus the protocol + possibly www.
 
-	$new_matches = get_matches($mysqli, $noproto_url);
-	if (count($new_matches) >= 10) {return $new_matches;}
+    $new_matches = get_matches($mysqli, $noproto_url);
+    if (count($new_matches) >= 10) {return $new_matches;}
 
-	$matches = array();
-	foreach ($new_matches as $match) {$matches[$match] = $match;}
+    $matches = array();
+    foreach ($new_matches as $match) {$matches[$match] = $match;}
 
-	$qpos = strpos($noproto_url, '?');
-	if ($qpos) {
-		$noproto_url = substr($noproto_url, 0, $qpos);
+    $qpos = strpos($noproto_url, '?');
+    if ($qpos) {
+        $noproto_url = substr($noproto_url, 0, $qpos);
         $new_matches = get_matches($mysqli, $noproto_url);
-		if (count($new_matches) >= 20) {return $matches;}
+        if (count($new_matches) >= 20) {return $matches;}
 
-		foreach ($new_matches as $match){
-			$matches[$match] = $match;
+        foreach ($new_matches as $match){
+            $matches[$match] = $match;
         }
-		if (count($matches) >= 10) {return $matches;}
-	}
-	while ($spos = strrpos($noproto_url, '/')) {
-		$noproto_url = substr($noproto_url, 0, $spos);
+        if (count($matches) >= 10) {return $matches;}
+    }
+    while ($spos = strrpos($noproto_url, '/')) {
+        $noproto_url = substr($noproto_url, 0, $spos);
         $new_matches = get_matches($mysqli, $noproto_url);
-		if (count($new_matches) >= 20) {
-			if ($matches) {return $matches;}
+        if (count($new_matches) >= 20) {
+            if ($matches) {return $matches;}
 
-			foreach ($new_matches as $match) {
-				$matches[$match] = $match;
-			}
-			return $matches;
-		}
+            foreach ($new_matches as $match) {
+                $matches[$match] = $match;
+            }
+            return $matches;
+        }
 
-		foreach ($new_matches as $match){
+        foreach ($new_matches as $match){
             $matches[$match] = $match;
         }
 
-		if (count($matches) >= 10) {return $matches;}
-	}
-
-	/* try it without the trailing slash */
-    $new_matches = get_matches($mysqli, $noproto_url);
-	if (count($new_matches) >= 20) {return $matches;}
-
-	foreach ($new_matches as $match){
-		$matches[$match] = $match;
+        if (count($matches) >= 10) {return $matches;}
     }
 
-	return $matches;
+    /* try it without the trailing slash */
+    $new_matches = get_matches($mysqli, $noproto_url);
+    if (count($new_matches) >= 20) {return $matches;}
+
+    foreach ($new_matches as $match){
+        $matches[$match] = $match;
+    }
+
+    return $matches;
 }
 
 //
 //
 //
 function site_urls($mysqli, $url) {
-	/* find all the records URLs on the same site as the provided URL; return them as an ordered url=>(id,title) array */
+    /* find all the records URLs on the same site as the provided URL; return them as an ordered url=>(id,title) array */
 
-	$sitename = preg_replace('!^http://(?:www[.])?([^/]+)(?:.*)!', '$1', $url);
-		// just the host name
+    $sitename = preg_replace('!^http://(?:www[.])?([^/]+)(?:.*)!', '$1', $url);
+    // just the host name
 
     $sitename = $mysqli->real_escape_string($sitename);
 
-	$res = $mysqli->query('select rec_URL, rec_ID, rec_Title from Records where
-	                           rec_URL like "http://'.$sitename.'/%"
-	                        or rec_URL like "http://www.'.$sitename.'/%"
-	                        or rec_URL = "http://'.$sitename.'"
-	                        or rec_URL = "http://www.'.$sitename.'"
-	                           order by rec_URL');
-	$matches = array();
+    $res = $mysqli->query('select rec_URL, rec_ID, rec_Title from Records where
+        rec_URL like "http://'.$sitename.'/%"
+        or rec_URL like "http://www.'.$sitename.'/%"
+        or rec_URL = "http://'.$sitename.'"
+        or rec_URL = "http://www.'.$sitename.'"
+    order by rec_URL');
+    $matches = array();
     if($res){
-	    while ($row = $res->fetch_row()){
+        while ($row = $res->fetch_row()){
             $matches[$row[0]] = array($row[1], $row[2]);
         }
 
         $res->close();
     }
-	return $matches;
+    return $matches;
 }
-?>

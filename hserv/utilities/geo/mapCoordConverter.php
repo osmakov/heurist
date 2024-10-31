@@ -78,11 +78,17 @@ class GpointConverter
     protected $a;                                    // Equatorial Radius
     protected $e2;                                    // Square of eccentricity
     protected $datum;                                // Selected datum
-    protected $Xp, $Yp;                                // X,Y pixel location
-    protected $lat, $long;                            // Latitude & Longitude of the point
-    protected $utmNorthing, $utmEasting, $utmZone;    // UTM Coordinates of the point
-    protected $lccNorthing, $lccEasting;            // Lambert coordinates of the point
-    protected $falseNorthing, $falseEasting;        // Origin coordinates for Lambert Projection
+    protected $Xp;
+    protected $Yp;                                // X,Y pixel location
+    protected $lat;
+    protected $long;                            // Latitude & Longitude of the point
+    protected $utmNorthing;
+    protected $utmEasting;
+    protected $utmZone;    // UTM Coordinates of the point
+    protected $lccNorthing;
+    protected $lccEasting;            // Lambert coordinates of the point
+    protected $falseNorthing;
+    protected $falseEasting;        // Origin coordinates for Lambert Projection
     protected $latOfOrigin;                            // For Lambert Projection
     protected $longOfOrigin;                        // For Lambert Projection
     protected $firstStdParallel;                    // For lambert Projection

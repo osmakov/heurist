@@ -438,7 +438,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
 
             function onVisualizeResize(){
 
-				/*
+                /*
                 var width = $(window).width();
 
                 var is_advanced = getSetting('setting_advanced');
@@ -447,7 +447,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                 if(width<645 || (is_advanced && width <= 1440)){
                      supw = 2;
                 }
-				*/
+                */
 
                 var dbkey = 'db'+window.hWin.HAPI4.database;
                 putSetting(dbkey, '1');

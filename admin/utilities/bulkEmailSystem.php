@@ -720,7 +720,7 @@ class SystemEmailExt {
     * Receipt functions:
     *
     * save_receipt() => prepare receipt value
-    * 	Param:
+    * Param:
     * $status => (int) 0 || < 0, whether the emails were all sent
     * $email_subject => (string) email subject used
     * $email_body => (string) email body used

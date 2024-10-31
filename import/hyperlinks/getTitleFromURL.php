@@ -49,34 +49,33 @@ if(!$system->init(@$_REQUEST['db'])){
     print json_encode( $system->addError(HEURIST_INVALID_REQUEST), 'URL is not defined' );
 }else{
 
-	$url = str_replace(' ', '+', $url);
+    $url = str_replace(' ', '+', $url);
 
-	$data = loadRemoteURLContentWithRange($url, "0-10000");//get title of webpage
+    $data = loadRemoteURLContentWithRange($url, "0-10000");//get title of webpage
 
-	if ($data){
+    if ($data){
 
-		preg_match('!<\s*title[^>]*>\s*([^<]+?)\s*</title>!is', $data, $matches);
-		if ($matches) {
+        preg_match('!<\s*title[^>]*>\s*([^<]+?)\s*</title>!is', $data, $matches);
+        if ($matches) {
             $title = preg_replace('/\s+/', ' ', $matches[1]);
         }
 
-		if ($title) {
+        if ($title) {
             $rv['title']=$title;
-			//type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-			//if (preg_match('!^image/!i', $type)) {
-			//	preg_match('!.*/(.*)!', $_REQUEST['url'], $matches);
-			//	$title = 'Image - ' . $matches[1];
-			//}
-		}else{
+            //type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            //if (preg_match('!^image/!i', $type)) {
+            //preg_match('!.*/(.*)!', $_REQUEST['url'], $matches);
+            //$title = 'Image - ' . $matches[1];
+            //}
+        }else{
             $rv['error']='Title is not defined';
         }
 
 
-	}else{
-		$rv['error']='URL could not be retrieved';
-	}
+    }else{
+        $rv['error']='URL could not be retrieved';
+    }
 
 
     print json_encode(array('status'=>HEURIST_OK, 'data'=>$rv));
 }
-?>

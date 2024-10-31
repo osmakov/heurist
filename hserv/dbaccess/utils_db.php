@@ -1950,11 +1950,7 @@ $mysqli->kill($thread_id);
 
             if($row_cnt>0 && $given_type!=null){
                 $row = $res->fetch_assoc();
-                if($row['Type']==$given_type){
-                    return true;
-                }else{
-                    return false;
-                }
+                return ($row['Type']==$given_type);
             }
 
 

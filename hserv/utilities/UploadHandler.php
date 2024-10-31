@@ -586,7 +586,7 @@ class UploadHandler
         }
 
         //Artem Osmakov - limited set of file types
-        if (preg_match('/\.(bat|exe|cmd|sh|php([0-9])?|pl|cgi|386|dll|com|torrent|js|app|jar|pif|vb|vbscript|asp|cer|csr|jsp|drv|sys|ade|adp|bas|chm|cpl|crt|csh|fxp|hlp|hta|inf|ins|isp|jse|htaccess|htpasswd|ksh|lnk|mdb|mde|mdt|mdw|msc|msi|msp|mst|ops|pcd|prg|reg|scr|sct|shb|shs|url|vbe|vbs|wsc|wsf|wsh)$/i'
+        if (preg_match('/\.(bat|exe|cmd|sh|php(\d)?|pl|cgi|386|dll|com|torrent|js|app|jar|pif|vb|vbscript|asp|cer|csr|jsp|drv|sys|ade|adp|bas|chm|cpl|crt|csh|fxp|hlp|hta|inf|ins|isp|jse|htaccess|htpasswd|ksh|lnk|mdb|mde|mdt|mdw|msc|msi|msp|mst|ops|pcd|prg|reg|scr|sct|shb|shs|url|vbe|vbs|wsc|wsf|wsh)$/i'
                     , $file->original_name)) {
             $file->error = $this->get_error_message('except_file_types');
             return false;
@@ -1816,7 +1816,7 @@ class UploadHandler
         // Content-Range: bytes 0-524287/2000000
         $content_range_header = $this->get_server_var('HTTP_CONTENT_RANGE');
         $content_range = $content_range_header ?
-            preg_split('/[^0-9]+/', $content_range_header) : null;
+            preg_split('/\D+/', $content_range_header) : null;
         $size =  $content_range ? $content_range[3] : null;
         $files = array();
 

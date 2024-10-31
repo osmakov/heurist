@@ -165,10 +165,10 @@ if (@$_REQUEST['mode'] == 'Analyse') {
                     }
 				}
 			}
-			if (! @$forbidden  and  substr($matches[3][$i], 0, 5) != 'http:') {
+			if (! @$forbidden  &&  substr($matches[3][$i], 0, 5) != 'http:') {
 
-				if (($word_limit and ! $matches[3][$i])
-				 or (substr_count($matches[3][$i], ' ')+1 < $word_limit)) {
+				if (($word_limit && ! $matches[3][$i])
+				|| (substr_count($matches[3][$i], ' ')+1 < $word_limit)) {
                     $forbidden = 1;    // ignore short links
                  }
 			}
@@ -180,7 +180,7 @@ if (@$_REQUEST['mode'] == 'Analyse') {
 			}
 
 			/* matches[2] contains the URLs, matches[3] contains the text of the link */
-			if (! @$urls[$matches[2][$i]]  or  @$matches[2][$i] == @$urls[$matches[2][$i]]) {
+			if (! @$urls[$matches[2][$i]] || @$matches[2][$i] == @$urls[$matches[2][$i]]) {
 				$url = html_entity_decode($matches[2][$i]);
 
 				// if ($matches[2][$i] != $matches[3][$i])
