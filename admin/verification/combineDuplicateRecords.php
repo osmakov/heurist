@@ -326,7 +326,7 @@ EXP;
 EXP;
                                 }
                                 print '<span style="font-size: 120%;">'
-                                    .edit_link($rec_ID,$rec_ID.' <b>'.htmlspecialchars($record['rec_Title']).'</b>',false)
+                                    .edit_link($rec_ID,$rec_ID.' <b>'.htmlspecialchars(strip_tags($record['rec_Title'])).'</b>', false, false)
                                     .' - <span style="background-color: #EEE;">'. htmlspecialchars($rtyNameLookup[$record['rec_RecTypeID']]).'</span></span>';
                                 print TABLE_S;
                                 foreach ($record['details'] as $rd_type => $detail) {
@@ -334,7 +334,7 @@ EXP;
                                     if(!@$rec_requirements[$record['rec_RecTypeID']][$rd_type]) {continue;}
                                     $reqmnt = $rec_requirements[$record['rec_RecTypeID']][$rd_type]['rst_RequirementType'];
                                     $color = ($reqmnt == 'required' ? 'red': ($reqmnt == 'recommended'? 'black':'grey'));
-                                    print '<tr><td style="color: '.$color .';">'.$bdts[$rd_type].TD_E;
+                                    print '<tr><td style="color: '.$color .';">'.$rec_requirements[$record['rec_RecTypeID']][$rd_type]['rst_DisplayName'].TD_E; //was $bdts[$rd_type]
                                     print '<td style="padding-left:10px;">';
                                     foreach($detail as $i => $rg){
 
@@ -400,7 +400,7 @@ EXP;
                                     print '<tr><td>References</td></tr><tr><td>';
                                     $i = 1;
                                     foreach ($record["refs"] as $rec_ID=>$rec_Title) {
-                                        print edit_link($rec_ID, htmlspecialchars($rec_Title), true);
+                                        print edit_link($rec_ID, $rec_Title, true);
                                     }
                                     print TR_E;
                                 }
@@ -460,7 +460,7 @@ EXP;
                                 else {print '<td><div><b>Duplicate</b></div></td>';}
                                 print '<td style="width: 500px;">';
                                 print '<div style="font-size: 120%;">'
-                                        .edit_link($rec_ID,$rec_ID.' <b>'.htmlspecialchars($record['rec_Title']).'</b>', false)
+                                        .edit_link($rec_ID,$rec_ID.' <b>'.htmlspecialchars(strip_tags($record['rec_Title'])).'</b>', false, false)
                                 .' - <span style="background-color: #EEE;">'. htmlspecialchars($rtyNameLookup[$record['rec_RecTypeID']]).'</span></div>';
                                 print TABLE_S;
                                 if ($is_master) {
@@ -500,7 +500,7 @@ EXP;
                                     if(!@$rec_requirements[$master_rec_type][$rd_type]) {continue;}
                                     $reqmnt = $rec_requirements[$master_rec_type][$rd_type]['rst_RequirementType'];
                                     $color = ($reqmnt == 'required' ? 'red': ($reqmnt == 'recommended'? 'black':'grey'));
-                                    print '<tr><td style=" color: '.$color .';">'.$bdts[$rd_type].TD_E;
+                                    print '<tr><td style=" color: '.$color .';">'.$rec_requirements[$master_rec_type][$rd_type]['rst_DisplayName'].TD_E; //$bdts[$rd_type]
                                     //FIXME place a keep checkbox on values for repeatable fields , place a radio button for non-repeatable fields with
                                     //keep_dt_### where ### is detail Type id and mark both "checked" for master record
                                     print '<td style="padding-left:10px;">';
@@ -550,7 +550,7 @@ EXP;
                                     print '<tr><td>References</td></tr><tr><td>';
                                     $i = 1;
                                     foreach ($record["refs"] as $rec_ID=>$rec_Title) {
-                                        print edit_link($rec_ID, htmlspecialchars($rec_Title), true);
+                                        print edit_link($rec_ID, $rec_Title, true);
                                     }
                                     print TR_E;
                                 }
@@ -656,18 +656,22 @@ function detail_get_html_input_str( $detail, $repeatCount, $is_master, $use_chec
         ' value="'.($is_type_repeatable?  $detail_id :($is_master? "master":$detail_id)).
         '" id="'.($is_type_repeatable? ($is_master?"keep_detail_id":"add_detail_id"):"update").$detail_id.
         ($use_checkbox ? '" class="not_in_master"' : '').
-        '">'.htmlspecialchars( detail_str($detail_type, $detail_val) ).'';
+        '">'. detail_str($detail_type, $detail_val) .'';
 
         $rv[]= $input;
     }
     return $rv;
 }
 
-function edit_link($rec_id, $label, $id_only=false){
+function edit_link($rec_id, $label, $id_only=false, $strip_tags=true){
 
     $link = '<a target="edit" href="'
             .HEURIST_BASE_URL.'?fmt=edit&db='.HEURIST_DBNAME.'&recID='.$rec_id.'">';
 
+    if($strip_tags){
+        $label = htmlspecialchars(strip_tags($label));
+    }
+            
     if($id_only){
         $link .= "<span title=\"$label\">$rec_id</span></a> ";
     }else{
@@ -691,15 +695,16 @@ function detail_str($rd_type, $rd_val)
             $titles = mysql__select_assoc2($mysqli, 'select rec_ID, rec_Title from Records where rec_ID in ('
                     .implode(',',$rd_val).')');
 
+            $show_id_only = (count($rd_val)>1);
             $rv = array();
             foreach ($rd_val as $val){
-                $rv[] = edit_link($val, $titles[$val], true);
+                $rv[] = edit_link($val, $titles[$val], $show_id_only);
             }
             return $rv;
         }
         elseif($rd_val>0) {
             $title =  mysql__select_value($mysqli, 'select rec_Title from Records where rec_ID ='.$rd_val);
-            return edit_link($rd_val, $title, true);
+            return edit_link($rd_val, $title, false);
         }
     }
     /*
