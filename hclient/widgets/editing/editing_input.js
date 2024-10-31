@@ -5984,6 +5984,31 @@ $.widget( "heurist.editing_input", {
         let $tinpt = $('<input type="hidden" data-picker="'+$input.attr('id')+'">')
                         .val(defDate).insertAfter( $input );
 
+        let current_era = 0;
+        let value_era = current_era; // to reset current era
+
+        function setMinMaxDatesJPN(calendar, era, resetDefDate = false){
+
+            let limits = calendar.getEraLimits(era);
+
+            let new_options = {
+                minDate: calendar.newDate(...limits[0]),
+                maxDate: limits[1].length > 0 ? calendar.newDate(...limits[1]) : ''
+            };
+
+            let defDate = null;
+            if(resetDefDate === true){
+                defDate = '';
+            }else if(resetDefDate !== false){
+                defDate = resetDefDate;
+            }
+            if(resetDefDate !== null) { new_options['defaultDate'] = defDate; }
+
+            current_era = era;
+
+            $tinpt.calendarsPicker('option', new_options);
+        }
+
         if(window.hWin.HEURIST4.util.isFunction($('body').calendarsPicker)){ // third party extension for jQuery date picker, used for Record editing
 
             let temporal = null;
@@ -6028,30 +6053,6 @@ $.widget( "heurist.editing_input", {
 
             let minDate = '';
             let maxDate = '';
-            let current_era = 0;
-            let value_era = current_era; // to reset current era
-
-            function setMinMaxDatesJPN(calendar, era, resetDefDate = false){
-
-                let limits = calendar.getEraLimits(era);
-
-                let new_options = {
-                    minDate: calendar.newDate(...limits[0]),
-                    maxDate: limits[1].length > 0 ? calendar.newDate(...limits[1]) : ''
-                };
-
-                let defDate = null;
-                if(resetDefDate === true){
-                    defDate = '';
-                }else if(resetDefDate !== false){
-                    defDate = resetDefDate;
-                }
-                if(resetDefDate !== null) { new_options['defaultDate'] = defDate; }
-
-                current_era = era;
-
-                $tinpt.calendarsPicker('option', new_options);
-            }
 
             let $japanese_era = $('<select>', {class: 'calendars-eras'});
             let eras = $.calendars.instance('japanese').getEras();
@@ -6102,6 +6103,9 @@ $.widget( "heurist.editing_input", {
 
                         $year_dropdown.find('option').each((idx, option) => {
                             let year = $(option).text();
+                            if(!window.hWin.HEURIST4.util.isNumber(year)){
+                                return;
+                            }
                             $(option).text(`${idx+1} (${year})`);
                         });
 
@@ -6320,7 +6324,7 @@ $.widget( "heurist.editing_input", {
                             $input.trigger('change');
                         }
 
-                        if(window.hWin.HEURIST4.util.isFunction($('body').calendarsPicker) && $tinpt.hasClass('hasCalendarsPicker')){
+                        if(window.hWin.HEURIST4.util.isFunction($('body').calendarsPicker) && $tinpt.hasClass('is-calendarsPicker')){
 
                             let new_temporal = null;
                             let new_cal = null;
@@ -6357,7 +6361,7 @@ $.widget( "heurist.editing_input", {
                                 }
 
                                 if(typeof new_date == 'string'){
-                                    $tinpt.val(new_date);
+                                    $tinpt.val(new_date).trigger('change');
                                 }
                             }
                         }
