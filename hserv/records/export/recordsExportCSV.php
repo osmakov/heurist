@@ -1227,13 +1227,14 @@ private static function writeResults( $streams, $temp_name, $headers, $error_log
                 $csv_filename = basename($temp_name);
                 if($rty_ID>0){
                     $rty_Name = mb_ereg_replace('\s', '_', self::$defRecTypes['names'][$rty_ID]);
-                    $csv_filename = basename($csv_filename.'_t'.$rty_ID.'_'.$rty_Name);
+                    $csv_filename = basename(USanitize::sanitizeFileName($csv_filename.'_t'.$rty_ID.'_'.$rty_Name));
                 }
             }
-            $csv_filename = strpos($csv_filename, '.') !== false
-                                    ? $csv_filename
-                                    : $csv_filename.'.csv';//'_'.date("YmdHis").
-
+            
+            $ext = pathinfo($csv_filename, PATHINFO_EXTENSION);
+            if(!(strlen($ext)>0 && preg_match('/^[a-zA-Z0-9]+$/', $ext))){
+                $csv_filename .= '.csv';    
+            }
 
             $csv_filename = basename($csv_filename);
 
