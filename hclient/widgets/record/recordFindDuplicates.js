@@ -323,7 +323,7 @@ $.widget( "heurist.recordFindDuplicates", $.heurist.recordAction, {
             let treedata = window.hWin.HEURIST4.dbs.createRectypeStructureTree( null, 6, rtyID, allowed_fieldtypes );
             
             treedata = treedata[0].children;
-            treedata[0].selected = true;
+            //treedata[0].selected = true;  - select first field by default - disabled 2024-10-31
             //treedata[0].expanded = true; //first expanded
             
             //load treeview
