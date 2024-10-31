@@ -620,7 +620,7 @@ let TemporalPopup = (function () {
             pickerClass: 'calendars-jumps',
 			onShow: function($calendar, calendar_locale, config){
 
-				let $ele = $(config.target);
+				let $ele = $(config.elem);
 				if($ele.length > 0 && calendar_locale.local.name.toLowerCase() === 'japanese'){ // Add eras dropdown to calendar
 
 					let $year_dropdown = $($calendar.find('.calendars-month-year')[1]);
@@ -650,6 +650,9 @@ let TemporalPopup = (function () {
 
 					$year_dropdown.find('option').each((idx, option) => {
 						let year = $(option).text();
+						if(!window.hWin.HEURIST4.util.isNumber(year)){
+							return;
+						}
 						$(option).text(`${idx+1} (${year})`);
 					});
 
