@@ -231,8 +231,7 @@ private static function convertEncodingIfNeeded($upload_file_name, $original_fil
     return $upload_file_name; // No encoding change needed
 }
 
-
-///--------------------------------------
+//--------------------------------------
 // STEP 2
 //
 // $encoded_filename - csv data in UTF8 - full path
@@ -522,8 +521,14 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
         }elseif($csv_delimiter==null) {
             $csv_delimiter = ",";
         }
-
+        
+        //always autodetect
         $lb = null;
+        ini_set('auto_detect_line_endings', 'true');
+        $csv_linebreak = 'auto';
+        $check_encoding = false;  //since $encoded_filename already utf-8
+        
+        /* 2024-10-31 - always autodetect
         if($csv_linebreak=='auto'){
             ini_set('auto_detect_line_endings', 'true');
             $lb = null;
@@ -534,6 +539,7 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
         }elseif($csv_linebreak=='mac'){
             $lb = "\r";
         }
+        */
 
         if($is_csv_data){
             $limitMBs = 10 * 1024 * 1024;
@@ -553,23 +559,32 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
 
         $line_no = 0;
         while (!feof($handle)) {
-
-            if($csv_linebreak=="auto" || $lb==null){
-                $line = fgets($handle, 1000000);//read line and auto detect line break
-            }else{
-                $line = stream_get_line($handle, 1000000, $lb);
-            }
-
-            if(!mb_detect_encoding($line, 'UTF-8', true)){
-                $err_encoding_count++;
-                if(count($err_encoding)<100){
-                    $line = mb_convert_encoding( substr($line,0,2000), 'UTF-8');//to send back to client
-                    array_push($err_encoding, array("no"=>($line_no+2), "line"=>htmlspecialchars($line)));
+            
+            if($check_encoding){
+                
+                if($lb==null){
+                    $line = fgets($handle, 1000000);//read line and auto detect line break
+                }else{
+                    $line = stream_get_line($handle, 1000000, $lb);
                 }
+
+                if(!mb_detect_encoding($line, 'UTF-8', true)){
+                    $err_encoding_count++;
+                    if(count($err_encoding)<100){
+                        $line = mb_convert_encoding( substr($line,0,2000), 'UTF-8');//to send back to client
+                        array_push($err_encoding, array("no"=>($line_no+2), "line"=>htmlspecialchars($line)));
+                    }
+                }
+
+                $fields = str_getcsv ( $line, $csv_delimiter, $csv_enclosure );// $escape = "\\"
+            }else{
+                $fields = fgetcsv($handle, 1000000, $csv_delimiter, $csv_enclosure);  
+                if(!$fields){
+                    break; //end of file
+                }
+                $line = implode($csv_delimiter, $fields);
             }
-
-            $fields = str_getcsv ( $line, $csv_delimiter, $csv_enclosure );// $escape = "\\"
-
+            
             if($len==0){ //first line is header with field names
                 $header = $fields;
 
@@ -684,7 +699,7 @@ public static function parseAndValidate($encoded_filename, $original_filename, $
                 }
             }
 
-        }
+        } //while
         fclose($handle);
 
     }

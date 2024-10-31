@@ -252,12 +252,12 @@ if(!$format){ $format='csv';}
                         </select>
                     </div>
                 </div>
-                <div>
+                <div display="none">
                     <div class="header" style="min-width: 50px;">Line separator:</div>
                     <div class="input-cell">
                         <select id="csv_linebreak" class="text ui-widget-content ui-corner-all" style="width:120px;">
-                            <option value="auto">auto detect</option>
-                            <option selected value="win">Windows</option>
+                            <option selected value="auto">auto detect</option>
+                            <option value="win">Windows</option>
                             <option value="nix">Unix</option>
                             <option value="mac">Mac</option>
                         </select>
