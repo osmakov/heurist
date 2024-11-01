@@ -459,7 +459,7 @@ public static function output($data, $params){
 
     $csv_delimiter =  $params['prefs']['csv_delimiter']?$params['prefs']['csv_delimiter']:',';
     $csv_enclosure =  (@$params['prefs']['csv_enclosure']==null || $params['prefs']['csv_enclosure']=='0')
-                                        ?chr(0):$params['prefs']['csv_enclosure'];
+                                        ?null:$params['prefs']['csv_enclosure'];
     $csv_mvsep =  $params['prefs']['csv_mvsep']?$params['prefs']['csv_mvsep']:'|';
     $csv_linebreak =  $params['prefs']['csv_linebreak']?$params['prefs']['csv_linebreak']:'nix';//not used
     $csv_header =  $params['prefs']['csv_header']?$params['prefs']['csv_header']:true;
@@ -512,7 +512,11 @@ public static function output($data, $params){
 
                 //write header
                 if($csv_header){
-                    fputcsv($fd, $headers[$rty_ID], $csv_delimiter, $csv_enclosure);
+                    if($csv_enclosure){
+                        fputcsv($fd, $headers[$rty_ID], $csv_delimiter, $csv_enclosure);
+                    }else{
+                        fputs($fd, implode($csv_delimiter, $headers[$rty_ID])."\n");    
+                    }
                 }
 
                 $rt_counts[$rty_ID] = 1;
@@ -823,8 +827,10 @@ public static function output($data, $params){
                 }
 
 
-            }else{
+            }elseif($csv_enclosure){
                 fputcsv($fd, $record_row, $csv_delimiter, $csv_enclosure);
+            }else{
+                fputs($fd, implode($csv_delimiter, $record_row)."\n");    
             }
         }
 
@@ -859,7 +865,11 @@ public static function output($data, $params){
                     if (!empty($percentageColIndices[$recordTypeID])) {
                         $headerRow = self::usePercentageForCSVHeaders($headerRow, $percentageColIndices[$recordTypeID]);
                     }
-                    fputcsv($streams[$recordTypeID], $headerRow, $csv_delimiter, $csv_enclosure);
+                    if($csv_enclosure){
+                        fputcsv($streams[$recordTypeID], $headerRow, $csv_delimiter, $csv_enclosure);
+                    }else{
+                        fputs($streams[$recordTypeID], implode($csv_delimiter, $headerRow)."\n");    
+                    }
                 }
                 // Apply advanced options.
                 if (!empty($groupColIndices[$recordTypeID])) {
@@ -883,9 +893,17 @@ public static function output($data, $params){
                     $rows = self::sortCSVRows($rows, $sortColIndices[$recordTypeID], $sortOrders[$recordTypeID]);
                 }
 
-                foreach ($rows as $row) {
-                    fputcsv($streams[$recordTypeID], $row, $csv_delimiter, $csv_enclosure);
+                
+                if($csv_enclosure){
+                    foreach ($rows as $row) {
+                        fputcsv($streams[$recordTypeID], $row, $csv_delimiter, $csv_enclosure);
+                    }
+                }else{
+                    foreach ($rows as $row) {
+                        fputs($streams[$recordTypeID], implode($csv_delimiter, $row)."\n");
+                    }
                 }
+                
             }
         }
     }//$has_advanced
