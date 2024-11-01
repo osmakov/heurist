@@ -3858,64 +3858,108 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
             if(dlged) window.hWin.HEURIST4.msg.bringCoverallToFront(dlged);
     
             window.hWin.HAPI4.RecordMgr.saveRecord(request, 
-                    function(response){
+                function(response){
+                    
+                    window.hWin.HEURIST4.msg.sendCoverallToBack();
+                    
+                    if(response.status == window.hWin.ResponseStatus.OK){
                         
-                        window.hWin.HEURIST4.msg.sendCoverallToBack();
+                        that._editing.setModified(false); //reset modified flag after save
                         
-                        if(response.status == window.hWin.ResponseStatus.OK){
-                            
-                            that._editing.setModified(false); //reset modified flag after save
-                            
-                            const rec_Title = response.rec_Title;
-                            
-                            let saved_record = that._currentEditRecordset.getFirstRecord();
-                            that._currentEditRecordset.setFld(saved_record, 'rec_Title', rec_Title);
-                            const DT_NAME = window.hWin.HAPI4.sysinfo['dbconst']['DT_NAME'];
-                            if(DT_NAME>0 && fields && fields[DT_NAME]){
-                                that._currentEditRecordset.setFld(saved_record, DT_NAME, fields[DT_NAME]);    
-                            }
-                            
-
-                           
-                            //
-                            if(that.options.selectOnSave==true){
-                                that._additionWasPerformed = true;
-                            }
-                            
-                            if(window.hWin.HEURIST4.util.isFunction(afterAction)){
-                               
-                               afterAction.call(); 
-                                
-                            }else if(afterAction=='close'){
-
-                                that._currentEditID = null;
-                                /*A123  remarked since 
-                                 triggered in onClose event */
-                                if(that.options.selectOnSave==true){
-                                    that.options.select_mode = 'select_single'
-                                    that.selectedRecords(that._currentEditRecordset);
-                                }else{
-                                    that.closeEditDialog();               
-                                }
-                                    
-                                
-                            }else if(afterAction=='newrecord'){
-                                that._initEditForm_step3(-1);
-                            }else if(afterAction=='close_rst'){
-                                that._switchToDataMode(true);
-                            }else{
-                                //reload after save
-                                that._initEditForm_step3(that._currentEditID)
-                            }
-                            
-                            window.hWin.HEURIST4.msg.showMsgFlash(window.hWin.HR('Record has been saved'));
-                            
-                        }else{
-                            that.onEditFormChange(); //restore save buttons visibility
-                            window.hWin.HEURIST4.msg.showMsgErr(response);
+                        const rec_Title = response.rec_Title;
+                        
+                        let saved_record = that._currentEditRecordset.getFirstRecord();
+                        that._currentEditRecordset.setFld(saved_record, 'rec_Title', rec_Title);
+                        const DT_NAME = window.hWin.HAPI4.sysinfo['dbconst']['DT_NAME'];
+                        if(DT_NAME>0 && fields && fields[DT_NAME]){
+                            that._currentEditRecordset.setFld(saved_record, DT_NAME, fields[DT_NAME]);    
                         }
-                    });
-    },   
+
+                        //
+                        if(that.options.selectOnSave==true){
+                            that._additionWasPerformed = true;
+                        }
+
+                        window.hWin.HEURIST4.msg.showMsgFlash(window.hWin.HR('Record has been saved'));
+
+                        that._afterSaveHandler(response, afterAction);
+                        
+                    }else{
+                        that.onEditFormChange(); //restore save buttons visibility
+                        window.hWin.HEURIST4.msg.showMsgErr(response);
+                    }
+                }
+            );
+    },
+
+    _afterSaveHandler: function(response, afterAction){
+
+        if(!Object.hasOwn(response, 'issues')){
+
+            if(window.hWin.HEURIST4.util.isFunction(afterAction)){
+
+                afterAction.call();
+
+            }else if(afterAction=='close'){
+
+                this._currentEditID = null;
+                /*A123  remarked since
+                triggered in onClose event */
+                if(this.options.selectOnSave==true){
+                    this.options.select_mode = 'select_single';
+                    this.selectedRecords(this._currentEditRecordset);
+                }else{
+                    this.closeEditDialog();
+                }
+
+            }else if(afterAction=='newrecord'){
+                this._initEditForm_step3(-1);
+            }else if(afterAction=='close_rst'){
+                this._switchToDataMode(true);
+            }else{
+                //reload after save
+                this._initEditForm_step3(this._currentEditID);
+            }
+
+            return;
+        }
+
+        // <div> The following issues were found when saving the record, please note that the record has been saved and that these issues are more minor problems that Heurist deals with as possible </div>
+        // Message not needed right now as only one issue is handled, probably separate issues into tabs within the message dialog
+
+        /*
+        FOR type IN response.issues:
+            issues = response.issues[type]
+            IF issue IS EMPTY:
+                CONTINUE
+            END IF
+            ...
+        END FOR
+        */
+
+        let parent_issues = response.issues['parents'] ?? {};
+        if(Object.keys(parent_issues).length > 0){
+
+            let parent = Object.keys(parent_issues)[0];
+            parent_issues[parent]['restored'] = [{
+                field: parent_issues[parent]['field'],
+                type: this._currentEditRecTypeID,
+                id: this._currentEditID,
+                title: response.rec_Title
+            }];
+
+            let readded_parents = window.hWin.HEURIST4.msg.prepareParentRecordMsg(response.issues['parents']);
+            if(typeof readded_parents === 'object'){
+                let $dlg = window.hWin.HEURIST4.msg.showMsgDlg(readded_parents.message, null, {title: readded_parents.title}, {default_palette_class: 'ui-heurist-populate'});
+                for(const selector in readded_parents.handlers){
+                    $dlg.find(selector).on('click', readded_parents.handlers[selector]);
+                }
+            }
+        }
+
+        delete response.issues;
+        return this._afterSaveHandler(response, afterAction);
+    },
     
     //
     //
@@ -5073,7 +5117,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
 
         // check for child record field, move to new fieldset if any
         let $childrec_field = this.editForm.find('div[data-dtid="'+parententity+'"]');
-        if($childrec_field.length == 1){
+        if($childrec_field.length == 1 && !$Db.rst(this._currentEditRecTypeID, parententity)){
 
             // Header changes
             $childrec_field.find('div.header').css({'font-size': '12px'}).addClass('recommended');

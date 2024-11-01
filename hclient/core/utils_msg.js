@@ -1702,6 +1702,86 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
         
     },
     
-    
-  
+    prepareParentRecordMsg: function(details, create_popup = false){
+
+        let link_styling = "text-decoration: underline; cursor: pointer; color: black;";
+
+        let title = 'Parent record pointers which could not be removed';
+        let msg = 'Not all parent record pointers could be deleted, because some have a child record pointer in the reverse direction.<br><br>'
+                + 'To delete these parent record pointers you will need to delete the child record pointers in the affected parent records, or<br>'
+                + 'change the Child Record Pointer field(s) in the parent record types to a standard Record pointer field (by editing the field in Structure Modification mode and unchecking the Child checkbox)<br><br>'
+                + `Click <span style="${link_styling}" id="parent_list">here</span> for a list of two-way pointers which were not deleted.<br><br>`
+                + `Click <span style="${link_styling}" id="parent_search">here</span> for a search result of all parent records containing such pointers.<br><br>`
+                + 'Note: we do not delete the existing parent-child relations because of the risk that this unintentionally deletes data<br>'
+                + 'that is still required (as simple record pointer connections). A manual process as above is much safer.'
+
+        let icon_bg = `${window.hWin.HAPI4.baseURL}hclient/assets/16x16.gif`;
+
+        let list = '<div>';
+        for(const parent_ID in details){
+
+            const parent_title = details[parent_ID].title;
+            const parent_type = details[parent_ID].type;
+            let restored_children = details[parent_ID].restored;
+
+            if(window.hWin.HEURIST4.util.isempty(restored_children)){
+                continue;
+            }
+
+            list += '<div>'
+                 +  `<img src="${icon_bg}" class="rt-icon" style="background-image:url('${window.hWin.HAPI4.iconBaseURL}${parent_type}');">`
+                 + `<span style="${link_styling} vertical-align: 4px;" class="record_search_link" data-recid=="${parent_ID}">${parent_title}</span>`
+                 + '<div style="margin: 5px 15px 10px;">';
+
+            for(const idx in restored_children){
+
+                let child = restored_children[idx];
+
+                list += `<em style="vertical-align: 4px;">${$Db.rst(parent_type, child.field, 'rst_DisplayName')}</em> <span style="vertical-align: 4px;">&rArr;</span> `
+                     + `<img src="${icon_bg}" class="rt-icon" style="background-image:url('${window.hWin.HAPI4.iconBaseURL}${child.type}');">`
+                     + `<span style="${link_styling} vertical-align: 4px;" class="record_search_link" data-recid=="${child.id}">${child.title}</span><br>`;
+            }
+
+            list += '</div></div>';
+        }
+        if(list.length === 5){
+            return '';
+        }
+        list += '</div>';
+
+        let handlers = {
+            '#parent_list': () => {
+
+                let $dlg = window.hWin.HEURIST4.msg.showMsgDlg(list, null, {title: 'List of pointers not deleted'}, {default_palette_class: 'ui-heurist-explore', dialogId: 'retained-parents'});
+
+                $dlg.on('click', (event) => {
+                    let recID = $(event.target).attr('data-recid');
+                    let url = `${window.hWin.HAPI4.baseURL}viewers/record/renderRecordData.php?db=${window.hWin.HAPI4.database}&recID=${recID}`;
+                    window.open(url, '_blank');
+                })
+            },
+            '#parent_search': () => {
+                let query = `ids:${Object.keys(details).join(',')}`;
+                let url = `${window.hWin.HAPI4.baseURL}?db=${window.hWin.HAPI4.database}&q=${encodeURIComponent(query)}`;
+                window.open(url, '_blank');
+            }
+        };
+
+        if(!create_popup){
+            return {
+                message: msg,
+                title: title,
+                handlers: handlers
+            };
+        }
+
+        let $dlg = window.hWin.HEURIST4.msg.showMsgDlg(msg, null, {title: title}, {default_palette_class: 'ui-heurist-populate', dialogId: 'restore-parent-records'});
+
+        $dlg.find('#parent_list').on('click', handlers['#parent_list']);
+        $dlg.find('#parent_search').on('click', handlers['#parent_search']);
+
+        $dlg.find('.record_search_link').on('click', handlers['#parent_list.record_search_link']);
+
+        return $dlg;
+    }
 };

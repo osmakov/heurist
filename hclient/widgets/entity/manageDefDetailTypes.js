@@ -1185,7 +1185,6 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                     && (!aUsage || !aUsage.getById(dty_ID))
                     && (field_name.toLowerCase().indexOf( entered )>=0)
                     && (field_name.toLowerCase().indexOf( entered )>=0)
-                    && $Db.getConceptID('dty', dty_ID) != '2-247'
                     && sub_rec_check )
                 {
 
