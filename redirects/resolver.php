@@ -339,7 +339,7 @@ $requestUri:
 
     if($error_msg){
        $redirect .= ('/hclient/framecontent/infoPage.php?error='.rawurlencode($error_msg));
-    }elseif($rewrite_path){
+    }elseif(isset($rewrite_path)){
         $_REQUEST = $params;
         include_once $rewrite_path;
         exit;
