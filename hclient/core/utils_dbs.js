@@ -334,7 +334,7 @@ window.hWin.HEURIST4.dbs = {
      */    
         
 
-    function __getRecordTypeTree($recTypeId, $recursion_depth, $mode, $fieldtypes, $pointer_fields, $is_parent_relmarker, is_multi_contrained){
+    function __getRecordTypeTree($recTypeId, $recursion_depth, $mode, $fieldtypes, $pointer_fields, $is_parent_relmarker, is_multi_constrained){
             
             let $res = {};
             let $children = [];
@@ -464,14 +464,14 @@ window.hWin.HEURIST4.dbs = {
                         $grouped.push(
                             {title:'<span style="font-style:italic">Relationship Fields</span>', folder:true, is_generic_fields:true, children:$rl_children});
                             
-                    }else if($mode==5 && $recTypeId>0 && is_multi_contrained>0){ //for search builder
+                    }else if($mode==5 && $recTypeId>0 && is_multi_constrained>0){ //for search builder
                         
                         const rty_Name = $Db.rty($recTypeId, 'rty_Name');
 
                         $grouped.push( {code:`${$recTypeId}:exists`,
                             key: 'exists', 
                             name: rty_Name, 
-                            title: `${rty_Name} records ${is_multi_contrained}`, 
+                            title: `${rty_Name} records ${is_multi_constrained}`, 
                             type: 'freetext'} );
                     }
 
@@ -1029,7 +1029,7 @@ window.hWin.HEURIST4.dbs = {
 
         rectypeids = (!Array.isArray(rectypeids)?rectypeids.split(','):rectypeids);    
 
-        let is_multi_contrained = parentcode?rectypeids?.length:0;
+        let is_multi_constrained = parentcode?rectypeids?.length:0;
         let pointer_field_id = null;
             
         let is_parent_relmarker = false;
@@ -1039,10 +1039,10 @@ window.hWin.HEURIST4.dbs = {
                 let lastcode = codes[codes.length-1];
                 is_parent_relmarker = (lastcode.indexOf('rt')==0 || lastcode.indexOf('rf')==0);
                 
-                if(lastcode.indexOf('lt')==0 && is_multi_contrained==1){
+                if(lastcode.indexOf('lt')==0 && is_multi_constrained==1){
                    pointer_field_id =  lastcode.substr(2); 
                 }else{
-                   is_multi_contrained = 0;
+                   is_multi_constrained = 0;
                 }
             }
         }
@@ -1051,7 +1051,7 @@ window.hWin.HEURIST4.dbs = {
         for (let k=0; k<rectypeids.length; k++) {
             let rectypeID = rectypeids[k];
             
-            let def = __getRecordTypeTree(rectypeID, 0, $mode, fieldtypes, null, is_parent_relmarker, is_multi_contrained);
+            let def = __getRecordTypeTree(rectypeID, 0, $mode, fieldtypes, null, is_parent_relmarker, is_multi_constrained);
             
                 if(def!==null) {
                     if(parentcode!=null){
