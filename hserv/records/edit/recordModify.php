@@ -401,6 +401,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
 
     $is_insert = ($recID<1);
     $is_save_new_record = false;
+    $missingParents = [];
 
     // recDetails data
     if ( @$record['details'] ) {
@@ -439,6 +440,11 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
                 }
             }
         }
+
+        if(!$is_insert){
+            $missingParents = validateParentRecords($system, $record, $detailValues);
+        }
+
     }  else {
         return $system->addError(HEURIST_INVALID_REQUEST, "Details not defined");
     }
@@ -821,8 +827,19 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         }
     }
 
+    $rtn = [
+        'status' => HEURIST_OK,
+        'data' => intval($recID),
+        'rec_Title' => $newTitle,
+        'affectedRty' =>$rectype,
+        'issues' => []
+    ];
 
-    return array("status"=>HEURIST_OK, "data"=> intval($recID), 'rec_Title'=>$newTitle, 'affectedRty'=>$rectype);
+    if(!empty($missingParents)){
+        $rtn['issues']['parents'] = $missingParents;
+    }
+
+    return $rtn;
     //, 'counts'=>$rty_counts
     /*
     $response = array("status"=>HEURIST_OK,
@@ -3370,5 +3387,67 @@ function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
 
 
     return $res;
+}
+
+//
+// Re-add missing parent values if the parent has a child record pointer field that could point validly to the current record
+//
+function validateParentRecords($system, $child_record, &$new_child_details){
+
+    $mysqli = $system->get_mysqli();
+    $rec_ID = $child_record['ID'];
+    $rectype_ID = $child_record['RecTypeID'];
+
+    $system->defineConstant('DT_PARENT_ENTITY');
+    $parent_entity = defined('DT_PARENT_ENTITY') ? DT_PARENT_ENTITY : 0;
+
+    if($parent_entity <= 0){
+        return [];
+    }
+
+    $has_parent_entity_fld = mysql__select_value($mysqli, "SELECT rst_ID FROM defRecStructure WHERE rst_RecTypeID = ? AND rst_DetailTypeID = ?", ['ii', $rectype_ID, $parent_entity]);
+    $is_child_of = mysql__select_assoc2($mysqli, "SELECT dtl_RecID, dtl_DetailTypeID FROM recDetails WHERE dtl_Value = {$rec_ID} AND dtl_RecID != {$rec_ID}");
+
+    if(!$has_parent_entity_fld || empty($is_child_of)){
+        return [];
+    }
+
+    $new_parents = array_filter($new_child_details, function($detail) use ($parent_entity){
+        return $detail['dtl_DetailTypeID'] == $parent_entity;
+    });
+    $missing_parents = [];
+
+    foreach($is_child_of as $parent_rec_ID => $parent_dty_ID){
+
+        if(in_array($parent_rec_ID, array_column($new_parents, 'dtl_Value'))){
+            // Still a parent
+            continue;
+        }
+
+        [$parent_title, $parent_type] = mysql__select_row($mysqli, "SELECT rec_Title, rec_RecTypeID FROM Records WHERE rec_ID = ?", ['i', $parent_rec_ID]);
+        $parent_type = intval($parent_type);
+
+        $rectype_list_query = "SELECT dty_PtrTargetRectypeIDs, rst_ID FROM defDetailTypes INNER JOIN defRecStructure ON rst_DetailTypeID = dty_ID WHERE dty_ID = {$parent_dty_ID} AND dty_Type = 'resource' AND rst_RecTypeID = {$parent_type} AND rst_CreateChildIfRecPtr = 1";
+        [$rectype_list, $rst_ID] = mysql__select_row($mysqli, $rectype_list_query);
+        $rst_ID ??= 0;
+        $rectype_list ??= '';
+        $rectype_list = explode(',', $rectype_list);
+
+        if($rst_ID <= 0 || !empty($rectype_list) && !in_array($rectype_ID, $rectype_list)){
+            continue;
+        }
+
+        $new_child_details[] = [
+            'dtl_DetailTypeID' => intval($parent_entity),
+            'dtl_Value' => intval($parent_rec_ID)
+        ];
+        $missing_parents[$parent_rec_ID] = [
+            'title' => $parent_title,
+            'type' => $parent_type,
+            'field' => intval($parent_dty_ID)
+        ];
+    }
+
+    return $missing_parents;
 }
 ?>

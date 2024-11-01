@@ -220,7 +220,7 @@ function HMultiSelect(){
 			// Get all Base Fields belonging to this group
 			$Db.dty().each2(function(dID, field){
 
-			    if(field['dty_DetailTypeGroupID'] == gID && $Db.getConceptID('dty', dID) != '2-247'){
+			    if(field['dty_DetailTypeGroupID'] == gID){
 			    	let type = getTypeName(field['dty_Type']);
 
 			    	arr.push([dID, field['dty_Name'], type, field['dty_HelpText']]);
@@ -345,7 +345,7 @@ function HMultiSelect(){
 					// Check if there is a customised instance with the search string
 					const in_other_array = isInArray(searched, dty_field[2], true);
 
-					if(!isInArray(id, assigned_fields, false) && (name.toLowerCase().indexOf(searched) >= 0 || in_other_array) && $Db.getConceptID('dty', id) != '2-247') {
+					if(!isInArray(id, assigned_fields, false) && (name.toLowerCase().indexOf(searched) >= 0 || in_other_array)){
 
 						let main_ele;
 
