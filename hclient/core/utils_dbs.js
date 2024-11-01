@@ -334,7 +334,7 @@ window.hWin.HEURIST4.dbs = {
      */    
         
 
-    function __getRecordTypeTree($recTypeId, $recursion_depth, $mode, $fieldtypes, $pointer_fields, $is_parent_relmarker){
+    function __getRecordTypeTree($recTypeId, $recursion_depth, $mode, $fieldtypes, $pointer_fields, $is_parent_relmarker, is_multi_contrained){
             
             let $res = {};
             let $children = [];
@@ -356,7 +356,8 @@ window.hWin.HEURIST4.dbs = {
                 }
             }else
             if($recursion_depth==0 && $fieldtypes.length>0){    
-                 //include record header fields
+                
+                //include record header fields
                 let all_header_fields = $fieldtypes.indexOf('header_ext')>=0;
                 if($fieldtypes.indexOf('header')>=0){
                     $fieldtypes.push('title');
@@ -462,6 +463,16 @@ window.hWin.HEURIST4.dbs = {
                         
                         $grouped.push(
                             {title:'<span style="font-style:italic">Relationship Fields</span>', folder:true, is_generic_fields:true, children:$rl_children});
+                            
+                    }else if($mode==5 && $recTypeId>0 && is_multi_contrained>0){ //for search builder
+                        
+                        const rty_Name = $Db.rty($recTypeId, 'rty_Name');
+
+                        $grouped.push( {code:`${$recTypeId}:exists`,
+                            key: 'exists', 
+                            name: rty_Name, 
+                            title: `${rty_Name} records ${is_multi_contrained}`, 
+                            type: 'freetext'} );
                     }
 
                     if(recTitle_item){
@@ -477,14 +488,15 @@ window.hWin.HEURIST4.dbs = {
 
             if($recTypeId>0 && $Db.rty($recTypeId,'rty_Name')){//---------------
 
+                const rty_Name = $Db.rty($recTypeId,'rty_Name');
+            
                 $res['key'] = $recTypeId;
-                $res['title'] = $Db.rty($recTypeId,'rty_Name');
+                $res['title'] = rty_Name;
                 $res['type'] = 'rectype';
                 
                 $res['conceptCode'] = $Db.getConceptID('rty', $recTypeId);
                 $res['rtyID_local'] = $recTypeId; //$Db.getLocalID('rty', $rt_conceptcode); //for import structure
-                                
-                                                                                                                  
+                
                 if(($mode<5 || $recursion_depth==0)){
 
 
@@ -859,7 +871,8 @@ window.hWin.HEURIST4.dbs = {
 
                                 $res['isreverse'] = 1;
                             }
-                    }else{
+                    }
+                    else{
 
                             $pref = ($detailType=="resource")?"lt":"rt";
 
@@ -1016,23 +1029,39 @@ window.hWin.HEURIST4.dbs = {
 
         rectypeids = (!Array.isArray(rectypeids)?rectypeids.split(','):rectypeids);    
 
+        let is_multi_contrained = parentcode?rectypeids?.length:0;
+        let pointer_field_id = null;
+            
+        let is_parent_relmarker = false;
+        if(parentcode!=null){
+            let codes = parentcode.split(_separator);
+            if(codes.length>0){
+                let lastcode = codes[codes.length-1];
+                is_parent_relmarker = (lastcode.indexOf('rt')==0 || lastcode.indexOf('rf')==0);
+                
+                if(lastcode.indexOf('lt')==0 && is_multi_contrained==1){
+                   pointer_field_id =  lastcode.substr(2); 
+                }else{
+                   is_multi_contrained = 0;
+                }
+            }
+        }
+        
         //create hierarchy tree 
         for (let k=0; k<rectypeids.length; k++) {
             let rectypeID = rectypeids[k];
             
-            let $is_parent_relmarker = false;
-            if(parentcode!=null){
-                let codes = parentcode.split(_separator);
-                if(codes.length>0){
-                    let lastcode = codes[codes.length-1];
-                    $is_parent_relmarker = (lastcode.indexOf('rt')==0 || lastcode.indexOf('rf')==0);
-                }
-            }
-            
-            let def = __getRecordTypeTree(rectypeID, 0, $mode, fieldtypes, null, $is_parent_relmarker);
+            let def = __getRecordTypeTree(rectypeID, 0, $mode, fieldtypes, null, is_parent_relmarker, is_multi_contrained);
             
                 if(def!==null) {
                     if(parentcode!=null){
+                        
+                        /*if(pointer_field_id && def['code']==''){
+                            //special case: search existance or count for single constrained pointer
+                            let codes = parentcode.split(_separator);
+                            codes[codes.length-1] = pointer_field_id; 
+                            def['code'] = codes.join(_separator);
+                        }else   */
                         if(def['code']){
                             def['code'] = parentcode+_separator+def['code'];
                         }else{

@@ -458,7 +458,8 @@ public static function output($data, $params){
     }
 
     $csv_delimiter =  $params['prefs']['csv_delimiter']?$params['prefs']['csv_delimiter']:',';
-    $csv_enclosure =  $params['prefs']['csv_enclosure']==null || $params['prefs']['csv_enclosure']==0?chr(0):$params['prefs']['csv_enclosure'];
+    $csv_enclosure =  (@$params['prefs']['csv_enclosure']==null || $params['prefs']['csv_enclosure']=='0')
+                                        ?chr(0):$params['prefs']['csv_enclosure'];
     $csv_mvsep =  $params['prefs']['csv_mvsep']?$params['prefs']['csv_mvsep']:'|';
     $csv_linebreak =  $params['prefs']['csv_linebreak']?$params['prefs']['csv_linebreak']:'nix';//not used
     $csv_header =  $params['prefs']['csv_header']?$params['prefs']['csv_header']:true;

@@ -252,7 +252,7 @@ if(!$format){ $format='csv';}
                         </select>
                     </div>
                 </div>
-                <div display="none">
+                <div style="display:none">
                     <div class="header" style="min-width: 50px;">Line separator:</div>
                     <div class="input-cell">
                         <select id="csv_linebreak" class="text ui-widget-content ui-corner-all" style="width:120px;">
