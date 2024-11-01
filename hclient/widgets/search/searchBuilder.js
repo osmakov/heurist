@@ -785,8 +785,6 @@ $.widget( "heurist.searchBuilder", {
             }
             this.element.find('[name="tree_order"]').filter('[value="'+ node_order +'"]').prop('checked', true);
 
-            
-
             //'title','modified',
             let allowed_fieldtypes = ['header_ext','anyfield','enum','freetext','blocktext',
                             'geo','year','date','integer','float','resource','relmarker','relationtype','file','separator'];
@@ -802,9 +800,14 @@ $.widget( "heurist.searchBuilder", {
                             treediv.fancytree('destroy');
                         }
 
-            if(rectypeIds.length == 1){
-                treedata[0]['children'].unshift({code: `${rectype}:exists`, key: 'exists', name: `${$Db.rty(rectype, 'rty_Name')}`, title: `${$Db.rty(rectype, 'rty_Name')} records`, type: 'freetext'});
+            /* wrong place -> moved to utils_dbs
+            if(rectypeIds.length == 1){ //add first item for resource pointer
+                treedata[0]['children'].unshift({code: `${rectype}:exists`, key: 'exists', 
+                        name: `${$Db.rty(rectype, 'rty_Name')}`, 
+                        title: `${$Db.rty(rectype, 'rty_Name')} records`, 
+                        type: 'freetext'});
             }
+            */
 
             //setTimeout(function(){
             treediv.addClass('tree-filter hidden_checkboxes').fancytree({
@@ -828,7 +831,8 @@ $.widget( "heurist.searchBuilder", {
                         $(data.node.span.childNodes[1]).hide();
                         $(data.node.span.childNodes[3]).css('font-weight', 'normal');
 
-                        if(data.node.parent && data.node.parent.type == 'resource' || data.node.parent.type == 'relmarker'){ // add left border+margin
+                        if(data.node.parent && data.node.parent.type == 'resource' || data.node.parent.type == 'relmarker'){ 
+                            // add left border+margin
                             $(data.node.li).attr('style', 'border-left: black solid 1px !important;margin-left: 9px;');
                         }
                     }
@@ -840,87 +844,93 @@ $.widget( "heurist.searchBuilder", {
                             $(data.node.li).addClass('fancytree-hidden');
                         }
                     }else if(data.node.type == 'enum'){ // add options dropdown menu
+                    
+                        let container_node = $(data.node.span.childNodes[3]);
+                        
+                        if(container_node.find('.fancytree-submenu').length==0){
 
-                        const key = data.node.key;
+                            const key = data.node.key;
 
-                        let $ele = $('<ul>', {class: 'horizontalmenu fancytree-submenu'})
-                            .attr('data-type', 'enum').attr('data-code', data.node.data.code)
-                            .html('<li data-id="internalid"><span>option</span><ul>' //default is internalid = trm_ID
-                                        + '<li data-id="internalid">Internal ID</li>'
-                                        + '<li data-id="term">Term</li>'
-                                        + '<li data-id="code">Code</li>'
-                                        + '<li data-id="conceptid">Concept ID</li>'
-                                        + '<li data-id="desc">Description</li>'
-                                + '</ul></li>')
-                            .appendTo($(data.node.span.childNodes[3]));
+                            let $ele = $('<ul>', {class: 'horizontalmenu fancytree-submenu'})
+                                .attr('data-type', 'enum').attr('data-code', data.node.data.code)
+                                .html('<li data-id="internalid"><span>option</span><ul>' //default is internalid = trm_ID
+                                            + '<li data-id="internalid">Internal ID</li>'
+                                            + '<li data-id="term">Term</li>'
+                                            + '<li data-id="code">Code</li>'
+                                            + '<li data-id="conceptid">Concept ID</li>'
+                                            + '<li data-id="desc">Description</li>'
+                                    + '</ul></li>')
+                                .appendTo($(data.node.span.childNodes[3]));
 
-                        $ele.menu({
-                            icons: { submenu: "ui-icon-triangle-1-s" },
-                            select: function(e, ui){
+                            $ele.menu({
+                                icons: { submenu: "ui-icon-triangle-1-s" },
+                                select: function(e, ui){
 
-                                window.hWin.HEURIST4.util.stopEvent(e);
+                                    window.hWin.HEURIST4.util.stopEvent(e);
 
-                                let code = $ele.attr('data-code');
-                                code += ':' + ui.item.attr('data-id');
-                                let codes = code.split(':');
-                                let codes2 = code.split(':');
+                                    let code = $ele.attr('data-code');
+                                    code += ':' + ui.item.attr('data-id');
+                                    let codes = code.split(':');
+                                    let codes2 = code.split(':');
 
-                                codes2[0] = 'any';
-                                code = codes2.join(':');
+                                    codes2[0] = 'any';
+                                    code = codes2.join(':');
 
-                                //add or replace field in builderItem
-                                that.addFieldItem( code, codes, that.select_field_for_id);
-                                that.select_field_for_id = null;
-                                that.pnl_Tree.hide();
+                                    //add or replace field in builderItem
+                                    that.addFieldItem( code, codes, that.select_field_for_id);
+                                    that.select_field_for_id = null;
+                                    that.pnl_Tree.hide();
 
-                                if(treediv.fancytree('instance') !== undefined){
-                                    const tree = $.ui.fancytree.getTree( treediv );
-                                    const node = tree.getNodeByKey(key);
+                                    if(treediv.fancytree('instance') !== undefined){
+                                        const tree = $.ui.fancytree.getTree( treediv );
+                                        const node = tree.getNodeByKey(key);
 
-                                    node.setActive(true);
+                                        node.setActive(true);
 
-                                    $ele.menu('collapseAll');
-                                }
-                            },
-                            focus: function(e, ui){
+                                        $ele.menu('collapseAll');
+                                    }
+                                },
+                                focus: function(e, ui){
 
-                                if(!ui.item.parent().is('ul.horizontalmenu')){
-                                    return;
-                                }
-
-                                let code = $ele.attr('data-code');
-                                $.each(that.pnl_Tree.find('.fancytree-submenu'), function(idx, ele){
-                                    ele = $(ele);
-
-                                    if(ele.attr('data-code') == code){
+                                    if(!ui.item.parent().is('ul.horizontalmenu')){
                                         return;
                                     }
 
-                                    if(ele.menu('instance') !== undefined){
-                                        ele.menu('collapseAll');
+                                    let code = $ele.attr('data-code');
+                                    $.each(that.pnl_Tree.find('.fancytree-submenu'), function(idx, ele){
+                                        ele = $(ele);
+
+                                        if(ele.attr('data-code') == code){
+                                            return;
+                                        }
+
+                                        if(ele.menu('instance') !== undefined){
+                                            ele.menu('collapseAll');
+                                        }
+                                    });
+
+                                    let $parent = that.element.find('#field_treeview').children();
+
+                                    // getComputedStyle(ele) | getBoundingClientRect()
+                                    let cont_rect = $parent[0].getBoundingClientRect();
+                                    let ele_rect = $ele[0].getBoundingClientRect();
+
+                                    let bottom_val = ele_rect.bottom + 110;
+
+                                    if(bottom_val > cont_rect.bottom){
+                                        $ele.menu('option', 'position', {my: 'left bottom-5', at: 'left top'});
+                                    }else{
+                                        $ele.menu('option', 'position', {my: 'left top+5', at: 'left bottom'});
                                     }
-                                });
 
-                                let $parent = that.element.find('#field_treeview').children();
-
-                                // getComputedStyle(ele) | getBoundingClientRect()
-                                let cont_rect = $parent[0].getBoundingClientRect();
-                                let ele_rect = $ele[0].getBoundingClientRect();
-
-                                let bottom_val = ele_rect.bottom + 110;
-
-                                if(bottom_val > cont_rect.bottom){
-                                    $ele.menu('option', 'position', {my: 'left bottom-5', at: 'left top'});
-                                }else{
-                                    $ele.menu('option', 'position', {my: 'left top+5', at: 'left bottom'});
+                                },
+                                position: {
+                                    my: 'left top+5',
+                                    at: 'left bottom'
                                 }
-
-                            },
-                            position: {
-                                my: 'left top+5',
-                                at: 'left bottom'
-                            }
-                        });
+                            });
+                            
+                        }
                     }
                 },
                 lazyLoad: function(event, data){
@@ -956,7 +966,6 @@ $.widget( "heurist.searchBuilder", {
                         ptr_fld.lazy = false;
                         data.result.unshift(ptr_fld);
                     }
-                                                                            
 
                     return data;                                                   
                 },

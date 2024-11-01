@@ -490,6 +490,8 @@ $.widget( "heurist.searchBuilderItem", {
             
         }else if(dty_ID == 'exists'){
             eqopts = [{key: 'any', title: 'exists'}];
+                      //{key:'NULL', title:'no data (missing)'},
+                      //{key:'count', title:'count of values'}];
         }else{
 
 /*        
