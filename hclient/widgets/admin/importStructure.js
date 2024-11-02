@@ -68,6 +68,7 @@ $.widget( "heurist.importStructure", {
     _cachedRecordset_dbs:null,
 
     _is_rename_target: false,
+    _is_conservative: false,
     _selectedDB:null, //regid of currently selected database
 
     _init_local_defs_once:true,
@@ -991,7 +992,8 @@ $.widget( "heurist.importStructure", {
              _is_rename_target - should rectype/concept labels be overwritten with labels imported from the source database
              type - entity - what is being imported? {rectype|detailtype|term}
         */
-        window.hWin.HAPI4.SystemMgr.import_definitions(this._selectedDB, id, this._is_rename_target, type,
+        window.hWin.HAPI4.SystemMgr.import_definitions(this._selectedDB, id, type,
+            this._is_rename_target, this._is_conservative,
             function(response){    
 
                 window.hWin.HEURIST4.msg.sendCoverallToBack(); 
@@ -1431,6 +1433,10 @@ $.widget( "heurist.importStructure", {
                 +'customisation with names which may be quite different and out-of-context with existing data. '
                 +'If this is not a new database, we suggest cancelling and making a clone first (please' 
                 +' delete the clone once you are happy with the result of the import).'
+            +'</p>'
+            +'<p style="font-size:smaller">'
+                +'<label><input type="checkbox" id="import_new_rectypes_only"/>&nbsp;Check this box</label> '
+                +' if you wish to import dependent record types not existing in this database.'
             +'</p>';
         }else if(type == 'detailtype'){
 
@@ -1462,6 +1468,7 @@ $.widget( "heurist.importStructure", {
         btns['Proceed'] = () => {
 
             that._is_rename_target = $dlg.find('#rename_target_entities').is(':checked');
+            that._is_conservative = $dlg.find('#import_new_rectypes_only').is(':checked');
 
             if(that._is_rename_target){
 

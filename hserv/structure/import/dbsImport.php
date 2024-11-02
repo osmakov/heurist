@@ -74,6 +74,7 @@ class DbsImport {
     private $broken_terms_reason;
 
     private $rename_target_entities = false;
+    private $conservative = false; //import new linked rectord types ONLY
 
     private $def_translations;
     private $translations_report;
@@ -149,6 +150,7 @@ class DbsImport {
     public function doPrepare( $data ){
 
         $this->rename_target_entities = (@$data['is_rename_target'] == 1);
+        $this->conservative = (@$data['conservative'] == 1);
 
         $this->prime_defType = $data['defType'];//'rectype','detailtype','term'
         $this->cloning_template = $this->prime_defType == 'all' && @$data['definitionID'] == 'all';
@@ -198,8 +200,6 @@ class DbsImport {
             }
 
             if (!($db_reg_id>0)) {
-                //@todo - check missed definitions
-                //return true;
                 $this->system->addError(HEURIST_ERROR, "Not possible to determine an origin database id (source of import)");
                 return false;
             }
@@ -1492,7 +1492,7 @@ $mysqli->commit();
         }
     }
 
-    // @todo move to dbsRectypes
+    // @to_review move to dbsRectypes
     //
     //
     private function _findDependentRecordTypesByFieldId($field_id){
@@ -1546,18 +1546,17 @@ $mysqli->commit();
         return $res;
     }
 
-    // @todo move to dbsRectypes
+    // @to_review move to dbsRectypes
     //
     // search source defintions
     // find all dependend record types in pointer constraints
     // 1) returns rt tree 2) fills $this->imp_recordtypes, $this->rectypes_correspondence
     //
+    // if $this->conservative is true and dependednt record type already exists in target database, it will not be imported
+    //
     private function _findDependentRecordTypes($rectype_id, $depth){
 
-        $excludeDuplication = false;
-
         $trg_rectypes = $this->target_defs['rectypes'];
-
 
         if(!($rectype_id>0) || in_array($rectype_id, $this->imp_recordtypes) || $depth>9){
             //already in array
@@ -1582,15 +1581,14 @@ $mysqli->commit();
 
         if($local_recid>0){  //already exist in destination
             $this->rectypes_correspondence[$rectype_id] = $local_recid;
-            if($excludeDuplication){
-                    return false; //rectype with the same concept code is already in database
+            if($this->conservative && $depth>0){
+                return false; //rectype with the same concept code is already in database
             }
-            //$correspondence = array($local_recid);
         }
         array_push($this->imp_recordtypes, $rectype_id);
 
         $res = array('correspondence'=>$local_recid, 'dependence'=>array());
-
+        
         $fields = $def_rts[$rectype_id]['dtFields'];
 
         if(is_array($fields)){
@@ -1616,7 +1614,6 @@ $mysqli->commit();
             }
         }
         return $res;
-
     }
 
     /*
@@ -1725,7 +1722,7 @@ $mysqli->commit();
 
                 //change trm_InverseTermID, trm_ParentTermID  to new id from target
                 $term_import[$idx_parentid] = $parent_id;//@$this->terms_correspondence[$term_import[$idx_parentid]];
-                $term_import[$idx_inverseid] = @$this->terms_correspondence[$term_import[$idx_inverseid]];//@todo - after all terms addition?
+                $term_import[$idx_inverseid] = @$this->terms_correspondence[$term_import[$idx_inverseid]];
 
                 //get level - all terms of the same level - to search same name and codes
                 //1317-3790 Org type selection
@@ -1912,7 +1909,7 @@ $mysqli->commit();
     }
 
 
-    // @todo
+    // 
     // Copy record type icon and thumbnail from source to destination database
     //
     private function copyRectypeIcon($source_RtyID, $target_RtyID, $is_thumb=false){

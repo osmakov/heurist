@@ -6936,7 +6936,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
         window.hWin.HEURIST4.msg.bringCoverallToFront(this.element, null, "<span>Updating record structure...</span>");
 
         // Update structure
-        window.hWin.HAPI4.SystemMgr.import_definitions(this._source_db.id, rty_ConceptCode, false, 'rectype',
+        window.hWin.HAPI4.SystemMgr.import_definitions(this._source_db.id, rty_ConceptCode, 'rectype', false, true,
             (response) => {
 
                 window.hWin.HEURIST4.msg.sendCoverallToBack();

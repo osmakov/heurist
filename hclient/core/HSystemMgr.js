@@ -815,7 +815,7 @@ class HSystemMgr {
 
       if (message == false) {
           //downlaod unconditionally
-          window.hWin.HAPI4.SystemMgr.import_definitions(databaseID, missed, false, 'rectype', callback);
+          window.hWin.HAPI4.SystemMgr.import_definitions(databaseID, missed, 'rectype', false, true, callback);
           return 0;
       }
 
@@ -831,7 +831,7 @@ class HSystemMgr {
                   window.hWin.HEURIST4.msg.showMsgFlash(window.hWin.HR('Import definitions'), 10000);
 
                   //import missed record types
-                  window.hWin.HAPI4.SystemMgr.import_definitions(databaseID, missed, false, 'rectype', 
+                  window.hWin.HAPI4.SystemMgr.import_definitions(databaseID, missed, 'rectype', false, true,
                       function (response) {
                           window.hWin.HEURIST4.msg.sendCoverallToBack();
                           let $dlg2 = window.hWin.HEURIST4.msg.getMsgFlashDlg();
@@ -864,12 +864,13 @@ class HSystemMgr {
   * @param {string} entity - what is being imported? {rectype|detailtype|term}
   * @param {callserverCallback} callback - applied to response after entity definitions are updated
   */
-  import_definitions(databaseID, definitionID, is_rename_target, entity, callback) {
+  import_definitions(databaseID, definitionID, entity, is_rename_target, is_conservative, callback) {
 
       /** @type {Request} */
       let request = {
           databaseID: databaseID,
           definitionID: definitionID,
+          conservative: is_conservative ?1 :0,
           is_rename_target: is_rename_target ? 1 : 0,
           db: window.hWin.HAPI4.database, import: entity
       };
