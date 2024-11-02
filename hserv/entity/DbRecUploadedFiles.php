@@ -342,7 +342,7 @@ class DbRecUploadedFiles extends DbEntityBase
                     || strpos($record['ulf_ExternalFileReference'], 'manifest.json')!==false
                     || strpos($record['ulf_ExternalFileReference'], 'info.json')!==false) */
                     //check iiif - either manifest of image
-                    if($mimeType=='json' || $mimeType=='application/json'|| $mimeType=='application/ld+json'){
+                    if($mimeType=='json' || $mimeType==MIMETYPE_JSON|| $mimeType=='application/ld+json'){
 /*
 We can register either info.json (reference to local or remote IIIF server that describes particular IIIF image) or manifest.json (that describes set of media and their appearance).
 

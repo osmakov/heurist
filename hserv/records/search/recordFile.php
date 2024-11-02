@@ -521,7 +521,7 @@ function downloadFile($mimeType, $filename, $originalFileName=null){
 
         header('Content-Description: File Transfer');
         $is_zip = false;
-        if(!$mimeType || $mimeType == 'application/octet-stream' || $mimeType == 'application/json'){
+        if(!$mimeType || $mimeType == 'application/octet-stream' || $mimeType == MIMETYPE_JSON){
             $is_zip = true;
             header('Content-Encoding: gzip');
         }

@@ -145,7 +145,7 @@ if (@$argv) {
                         redirectURL($url);
 
                     }else{
-                        downloadFile('application/json', $dbdef_cache);
+                        downloadFile(MIMETYPE_JSON, $dbdef_cache);
                     }
                     exit;
                 }

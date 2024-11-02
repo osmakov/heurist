@@ -456,7 +456,7 @@ class DbSysBugreport extends DbEntityBase
             }
             $email_from_name = 'Website contact';
         }else{
-            $email_from_name = 'Bug reporter';
+            $email_from_name = 'Bug Reporter';
         }
         if(!$email_to){
             $email_to = user_getDbOwner($this->system->get_mysqli(), 'ugr_eMail');

@@ -310,7 +310,7 @@ elseif($need_compress){ //importDefintions returns complete set of new defintion
     unset($output);
 }else{
 
-    header('Content-type: application/json');
+    header(CTYPE_JSON);
     print json_encode($response);
 }
 ?>

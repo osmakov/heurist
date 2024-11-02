@@ -198,6 +198,7 @@ define('CTYPE_HTML', 'Content-type: text/html;charset=UTF-8');
 define('CTYPE_JS', 'Content-type: text/javascript');
 define('CONTENT_LENGTH', 'Content-Length: ');
 define('HEADER_CORS_POLICY', 'Access-Control-Allow-Origin: *');
+define('MIMETYPE_JSON', 'application/json');
 
 //common separators
 define('TABLE_S','<table>');
@@ -567,9 +568,9 @@ function isLocalHost(){
 function dataOutput($data, $filename=null, $mimeType=null)
 {
     if($mimeType==null){
-        $mimeType = 'application/json';
+        $mimeType = MIMETYPE_JSON;
     }
-    if($mimeType=='application/json' && is_array($data)){
+    if($mimeType==MIMETYPE_JSON && is_array($data)){
         $data = json_encode($data);
     }
 
@@ -584,7 +585,7 @@ function dataOutput($data, $filename=null, $mimeType=null)
     $len = strlen($data);
     if($len>0){header('Content-Length: '. $len);}
 
-    if($mimeType=='application/json'){
+    if($mimeType==MIMETYPE_JSON){
         header('X-Content-Type-Options: nosniff');
         header('X-XSS-Protection: 1; mode=block');
         header('Content-Security-Policy: default-src \'self\'; script-src \'self\'; frame-ancestors \'self\'');
