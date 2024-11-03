@@ -88,23 +88,15 @@ if(mysql__check_dbname($db)==null){
         $fileid = @$req_params['file']? $req_params['file'] :intval(@$req_params['ulf_ID']);
         $size = @$req_params['size'];
 
-        if(is_numeric($fileid)){
-            //Obfuscated id is allowed only
-            exit;
-        }
-
-        if(!preg_match('/^[a-z0-9]+$/', $fileid)){ //validatate obfuscation id
-            //Obfuscated id is allowed only
-            exit;
-        }
-
         $need_session = (@$req_params['mode']==null && @$req_params['metadata']==null);
 
-        if(!$system->init($db, true, $need_session)){
+        if( is_numeric($fileid)         
+            || !preg_match('/^[a-z0-9]+$/', $fileid)  //Obfuscated id is allowed only
+            || !$system->init($db, true, $need_session) //database not inited
+            || !$system->initPathConstants($db) )  //folder not found
+        {
             exit;
         }
-
-        $system->initPathConstants($db);
 
         //find
         $listpaths = fileGetFullInfo($system, $fileid);
@@ -205,7 +197,7 @@ if(mysql__check_dbname($db)==null){
                     { //&& strpos($fileinfo['fullPath'],'file_uploads/')===0
 
                         //show in viewer directly
-                        $direct_url = HEURIST_FILESTORE_URL.$fileinfo['fullPath'];
+                        $direct_url = $system->getSysUrl().$fileinfo['fullPath'];
 
                         if($get_blurred_image){ //!$all_can_view
 
@@ -227,7 +219,7 @@ if(mysql__check_dbname($db)==null){
                     {
 
                         //for 3D viewer - direct url to file
-                        redirectURL(HEURIST_FILESTORE_URL.$fileinfo['fullPath']);
+                        redirectURL($system->getSysUrl().$fileinfo['fullPath']);
 
                     }else {
                         if($get_blurred_image){

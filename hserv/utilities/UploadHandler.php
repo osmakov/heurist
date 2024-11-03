@@ -73,7 +73,8 @@ class UploadHandler
 
         if($options==null) {$options=array();}
 
-        if(!$this->checkSystem( @$options['database'] )){
+        $system = $this->checkSystem( @$options['database'] );
+        if(!$system){
             return;
         }
 
@@ -84,10 +85,9 @@ class UploadHandler
         $upload_url = null;
         $upload_dir = $this->checkUploadFolder($options);
         if($upload_dir!=null){
-            $upload_url = HEURIST_FILESTORE_URL.$upload_dir;
-            $upload_dir = HEURIST_FILESTORE_DIR.$upload_dir;
+            $upload_url = $system->getSysUrl($upload_dir);
+            $upload_dir = $system->getSysDir($upload_dir);
         }
-
 
         $this->response = array();
         $this->options = array(
@@ -267,7 +267,7 @@ class UploadHandler
             $this->header(HEADER_403);
             return false;
         }
-        return true;
+        return $system;
     }
 
     private function checkUploadFolder(&$options){

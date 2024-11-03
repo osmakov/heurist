@@ -47,9 +47,10 @@ $font_styles = '';
 if(isset($system) && $system->is_inited()){
 
     $webfonts = $system->getDatabaseSetting('Webfonts');
+    $settingsURL = $system->getSysUrl('settings');
     if(!isEmptyArray($webfonts)){
         foreach($webfonts as $font_family => $src){
-            $src = str_replace("url('settings/", "url('".HEURIST_FILESTORE_URL.'settings/',$src);
+            $src = str_replace("url('settings/", "url('".$settingsURL,$src);
             if(strpos($src,'@import')===0){
                 $font_styles = $font_styles . $src;
             }else{

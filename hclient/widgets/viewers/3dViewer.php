@@ -44,7 +44,7 @@ $system = new hserv\System();
 
 define('EDIR','../../../external/3D/');
 
-if($system->init($db, true, false)){
+if($system->init($db, true, false) && $system->initPathConstants($db)){ //without session
 
     if(@$req_params['file'] || @$req_params['ulf_ID']) { //ulf_ID is obfuscation id here
 
@@ -59,15 +59,12 @@ if($system->init($db, true, false)){
 
             if(in_array($fileExt, $allowed_exts)){
 
-                $system->initPathConstants($db);
-
-
-                $url = HEURIST_FILESTORE_URL.$fileinfo['fullPath'];//need extension
+                $url = $system->getSysUrl().$fileinfo['fullPath']; //need extension
                 $textures = array();
 
                 //find related mtl and texture files by original file name
                 if($fileExt=='obj'){
-                    $filename = USanitize::sanitizePath(HEURIST_FILESTORE_DIR.$fileinfo['fullPath']);
+                    $filename = USanitize::sanitizePath($system->getSysDir().$fileinfo['fullPath']);
 
                     $file_obj = realpath($filename);
                     $file_mtl = null;
@@ -128,7 +125,7 @@ if($system->init($db, true, false)){
                     }
 
                     foreach($textures as $idx=>$fname) {
-                        $textures[$idx] = HEURIST_FILESTORE_URL.'file_uploads/'.$fname;
+                        $textures[$idx] = $system->getSysUrl(DIR_FILEUPLOADS).$fname;
 
                     }
                 }
@@ -137,12 +134,6 @@ if($system->init($db, true, false)){
                 }else{
                     $textures = '';
                 }
-
-
-
-
-
-
 
                 $is_not_inited = false;
 

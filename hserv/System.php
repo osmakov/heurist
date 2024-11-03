@@ -607,34 +607,64 @@ class System {
         return $system_folders;
     }
 
-    //
-    //
-    //
+    /**
+    * Returns root upload folder of specified ($folder_name) subfolder
+    * 
+    * @param mixed $folder_name - subfolder in database root upload dir
+    * @param mixed $database_name
+    */
     public function getSysDir($folder_name=null, $database_name=null){
-
-        $upload_root = defined('HEURIST_FILESTORE_ROOT')
-        ?HEURIST_FILESTORE_ROOT
-        :$this->getFileStoreRootFolder();
-
+        return $this->getSysFolderRes('path', $folder_name, $database_name);
+    }
+    
+    /**
+    * Returns root upload URL of specified ($folder_name) suburl
+    * 
+    * @param mixed $folder_name - subfolder in database root upload dir
+    * @param mixed $database_name
+    */
+    public function getSysUrl($folder_name=null, $database_name=null){
+        return $this->getSysFolderRes('url', $folder_name, $database_name);
+    }
+    
+    private function getSysFolderRes($type, $folder_name=null, $database_name=null){
+        global $defaultRootFileUploadURL;
+        
+        if($type=='url'){
+            $db_root = $defaultRootFileUploadURL;
+        }else{
+            $db_root = defined('HEURIST_FILESTORE_ROOT')
+                            ?HEURIST_FILESTORE_ROOT
+                            :$this->getFileStoreRootFolder();
+        }
+        
         $database_name = $database_name==null?$this->dbname:$database_name;
 
         if(preg_match('/[^A-Za-z0-9_\$]/', $database_name)){
             return null; //invalid database name
         }
 
-        $dbfolder = $upload_root.$database_name.'/';
+        $dbres = $db_root.$database_name.'/';
 
         if($folder_name!=null){
-            $dbfolder = $dbfolder . $folder_name . '/';
+            
+            $dir = USanitize::sanitizePath($folder_name);
+            if( substr($dir, -1, 1) != '/' )  {
+                $dir .= '/';
+            }
+            
+            $dbres .= $dir;
         }
 
-        return $dbfolder;
+        return $dbres;
     }
 
-
-    //
-    // $dbname - shortname (without prefix)
-    //
+    /**
+    * Validates system config setting $defaultRootFileUploadPath
+    * Check/creates system subfolders
+    * 
+    * @param mixed $dbname - database shortname (without prefix)
+    */
     public function initPathConstants($dbname=null){
 
         global $defaultRootFileUploadPath, $defaultRootFileUploadURL;

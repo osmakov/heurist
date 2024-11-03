@@ -593,7 +593,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
         $files_dir = HEURIST_FILES_DIR;
         $current_db = $this->system->dbname();
 
-        if(strpos(HEURIST_FILESTORE_DIR, $current_db) === false){
+        if(strpos($this->system->getSysDir(), $current_db) === false){
 
             $parts = explode("/", $thumb_dir);
             $idx = array_search("HEURIST_FILESTORE", $parts);
@@ -843,11 +843,11 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                     }else{
 
                         $k = strpos($url,'uploaded_files/');
-                        if($k===false) {$k = strpos($url,'file_uploads/');}
+                        if($k===false) {$k = strpos($url, DIR_FILEUPLOADS);}
 
                         if($k===0 || $k===1){
                             //relative path in database folder
-                            $filename = HEURIST_FILESTORE_DIR.$url;
+                            $filename = $this->system->getSysDir().$url;
                             if(file_exists($url)){
                                 //this methods checks if file is already registered
                                 $fres = fileRegister($this->system, $filename, $description);//see recordFile.php
@@ -1028,11 +1028,15 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                 doHarvest($this->system, $dirs_and_exts, false, 1, ['file_uploads']);
                 $files = getRegInfoResult()['nonreg'];
             }
+            
+            
+            $filestoreDir = $this->system->getSysDir();
+            $filestoreUrl = $this->system->getSysUrl();
 
             // Add filestore path
             $dirs_and_exts['dirs'] = array_map(function($dir){
-                if(strpos($dir, HEURIST_FILESTORE_DIR) === false){
-                    $dir = HEURIST_FILESTORE_DIR . ltrim($dir, '/');
+                if(strpos($dir, $filestoreDir) === false){
+                    $dir = $filestoreDir . ltrim($dir, '/');
                 }
                 return rtrim($dir, '/');
             }, $dirs_and_exts['dirs']);
@@ -1052,10 +1056,10 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
 
                 $file = urldecode($file);
                 $provided_file = $file;
-                if(strpos($file, HEURIST_FILESTORE_URL) === 0){
-                    $file = str_replace(HEURIST_FILESTORE_URL, HEURIST_FILESTORE_DIR, $file);
-                }elseif(strpos($file, HEURIST_FILESTORE_DIR) === false){
-                    $file = HEURIST_FILESTORE_DIR . $file;
+                if(strpos($file, $filestoreUrl) === 0){
+                    $file = str_replace($filestoreUrl, $filestoreDir, $file);
+                }elseif(strpos($file, $filestoreDir) === false){
+                    $file = $filestoreDir . $file;
                 }
 
                 if(!file_exists($file)){ // not found, or not in file store
@@ -1175,7 +1179,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                             continue;
                         }
 
-                        $id = ltrim(str_replace(HEURIST_FILESTORE_DIR, '', $id), '\\');
+                        $id = ltrim(str_replace($this->system->getSysDir(), '', $id), '\\');
 
                         $id = $mysqli->real_escape_string($id);
                         $where_clause = "CONCAT(ulf_FilePath, ulf_FileName) = $id";
@@ -1340,18 +1344,18 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                     unlink($file['path']);
                 }
                 //remove thumbnail
-                $thumbnail_file = HEURIST_THUMB_DIR."ulf_".$file_id.".png";
+                $thumbnail_file = HEURIST_THUMB_DIR."ulf_".$file_id.'.png';
                 fileDelete($thumbnail_file);
 
                 // remove web cached image
                 $webimage_name = pathinfo($file['name']);
-                $webcache_file = HEURIST_FILESTORE_DIR . 'webimagecache/'.$webimage_name['filename'];
+                $webcache_file = $this->system->getSysDir(DIR_WEBIMAGECACHE).$webimage_name['filename'];
                 fileDelete($webcache_file.'.jpg');
                 fileDelete($webcache_file.'.png');
 
                 // remove blurred cached image
                 $blurimage_name = pathinfo($file['name']);
-                $blurcache_file = HEURIST_FILESTORE_DIR . "blurredimagescache/{$blurimage_name['filename']}.png";
+                $blurcache_file = $this->system->getSysDir(DIR_BLURREDIMAGECACHE).$blurimage_name['filename'].'.png';
                 fileDelete($blurcache_file);
             }
         }
@@ -1429,7 +1433,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                 'ulf_OrigFileName' => $name,
                 'ulf_MimeExt' => $extension?$extension:$file->type, //extension or mimetype allowed
                 'ulf_FileSizeKB' => ($file->size<1024?1:intval($file->size/1024)),
-                'ulf_FilePath' => 'file_uploads/',   //relative path to HEURIST_FILESTORE_DIR - db root
+                'ulf_FilePath' => DIR_FILEUPLOADS,   //relative path to $this->system->getSysDir() - db root
                 'ulf_TempFile' => $tmp_name);//file in scratch to be copied
 
                 if(isset($file->thumbnailName)){

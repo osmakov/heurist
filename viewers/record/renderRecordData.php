@@ -144,8 +144,9 @@ $import_webfonts = null;
 $webfonts = $system->getDatabaseSetting('Webfonts');
 if(is_array($webfonts) && !empty($webfonts)){
     $import_webfonts = '';
+    $settingsURL = $system->getSysUrl('settings');
     foreach($webfonts as $font_family => $src){
-        $src = str_replace("url('settings/", "url('".HEURIST_FILESTORE_URL.'settings/',$src);
+        $src = str_replace("url('settings/", "url('".$settingsURL,$src);
         if(strpos($src,'@import')===0){
             $import_webfonts = $import_webfonts . $src;
         }else{

@@ -46,7 +46,7 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
 
     $params = USanitize::sanitizeInputArray();
 
-    //define upload folder   HEURIST_FILESTORE_DIR/ $params['entity'] /
+    //define upload folder
     $entity_name = null;
     $is_autodect_csv = (@$params['autodect']==1);
     $recID = @$params['recID'];
@@ -62,7 +62,7 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
     if(@$params['entity']){
         $entity_name = entityResolveName($params['entity']);
         if(!$entity_name){
-            $response = $system->addError(HEURIST_INVALID_REQUEST,'Wrong entity parameter');
+            $response = $system->addError(HEURIST_INVALID_REQUEST, 'Wrong entity parameter');
         }
     }
     if($response==null){
@@ -125,62 +125,17 @@ if($response!=null){
     exit;
 }
 
+    $scratchDir = $system->getSysDir(DIR_SCRATCH);
+    $scratchUrl = $system->getSysUrl(DIR_SCRATCH);
 
-/*
-        'thumbnail' => array(
-                    'upload_dir' => dirname($this->get_server_var('SCRIPT_FILENAME')).'/icons/',
-                    'upload_url' => $this->get_full_url().'/icons/',
-                    'crop' => true,
-                    'max_width' => 18,
-                    'max_height' => 18
-*/
-    //error_reporting(E_ALL | E_STRICT);
-
-//define options for upload handler
-
-    if($entity_name==null){
-        //NOT USED
-        /*
-        //direct upload from manageFileUpload
-        $options = array(
-                'upload_dir' => HEURIST_FILESTORE_DIR.'insitu/',
-                'upload_url' => HEURIST_FILESTORE_URL.'insitu/',
-                'unique_filename' => false,
-                'correct_image_extensions' => true,
-                'image_versions' => array(
-                    ''=>array(
-                        'auto_orient' => true,
-                        ),
-                    'thumbnail'=>array(
-                        'auto_orient' => true,
-                        'upload_dir' => HEURIST_THUMB_DIR,
-                        'upload_url' => HEURIST_THUMB_URL,
-                        'max_width' => 400,
-                        'max_height' => 400,
-                        'scale_to_png' => true
-                    )
-                )
-        );
-       */
-/*
-  it was form parameters in manageFilesUpload
-            <input type="hidden" name="upload_thumb_dir" value="<?php echo HEURIST_THUMB_DIR; ?>"/>
-            <input type="hidden" name="upload_thumb_url" value="<?php echo defined('HEURIST_THUMB_URL')?HEURIST_THUMB_URL:'';?>"/>
-*/
-
-    }elseif($entity_name=="temp"){//redirect uploaded content back to client side after some processing
+    if($entity_name=="temp"){//redirect uploaded content back to client side after some processing
                                    // for example in term list import
 
         $max_file_size = intval(@$params['max_file_size']);
-        if($max_file_size>0){
-// it does not work
-//            file_put_contents(HEURIST_FILESTORE_DIR.DIR_SCRATCH.'.htaccess',
-//                "php_value post_max_size $max_file_size\nphp_value upload_max_filesize $max_file_size")
-        }
 
         $options = array(
-                'upload_dir' => HEURIST_FILESTORE_DIR.DIR_SCRATCH,
-                'upload_url' => HEURIST_FILESTORE_URL.DIR_SCRATCH,
+                'upload_dir' => $scratchDir,
+                'upload_url' => $scratchUrl,
                 'max_file_size' => $max_file_size,
                 // 'unique_filename' => false,  force unique file name
                 //'image_versions' => array()
@@ -190,10 +145,10 @@ if($response!=null){
 
     }
     elseif($entity_name=="recUploadedFiles"){
-
+        
         $options = array(
-                'upload_dir' => HEURIST_SCRATCH_DIR,
-                'upload_url' => HEURIST_FILESTORE_URL.DIR_SCRATCH, //file_uploads/
+                'upload_dir' => $scratchDir,
+                'upload_url' => $scratchUrl,
                 'unique_filename' => false,
                 'newfilename' => $new_file_name,
                 'correct_image_extensions' => true,
@@ -203,8 +158,8 @@ if($response!=null){
                         ),
                     'thumbnail'=>array(
                         'auto_orient' => true,
-                        'upload_dir' => HEURIST_SCRATCH_DIR.DIR_THUMBS,
-                        'upload_url' => HEURIST_FILESTORE_URL.DIR_SCRATCH.DIR_THUMBS,
+                        'upload_dir' => $scratchDir.DIR_THUMBS,
+                        'upload_url' => $scratchUrl.DIR_THUMBS,
                         'max_width' => 200,
                         'max_height' => 200,
                         'scale_to_png' => true
@@ -214,18 +169,19 @@ if($response!=null){
                 //'print_response ' => false
         );
 
-        allowWebAccessForForlder(HEURIST_SCRATCH_DIR.DIR_THUMBS);
+        allowWebAccessForForlder($scratchDir.DIR_THUMBS);
 
-    }else{
+    }
+    else{
 
-        $entityDir = HEURIST_FILESTORE_DIR.'entity/'.$entity_name.'/';
+        $entityDir = $system->getSysDir(DIR_ENTITY.$entity_name);
 
         $version = @$params['version']!='icon'?'thumbnail':'icon';
         $maxsize = intval(@$params['maxsize'])>0?intval($params['maxsize']):120; //dimension
 
         $options = array(
                 'upload_dir' => $entityDir,
-                'upload_url' => HEURIST_FILESTORE_URL.'entity/'.$entity_name.'/',
+                'upload_url' => $system->getSysUrl(DIR_ENTITY.$entity_name),
                 'unique_filename' => false,
                 'newfilename' => $new_file_name,
                 'correct_image_extensions' => true,
@@ -325,13 +281,13 @@ if($response!=null){
                     $img = UImage::createFromString($file->type?$file->type:'XXX!');
                     imagepng($img, $thumb_file);//save into file
                     imagedestroy($img);
-                    $res['files'][$idx] ->thumbnailUrl = HEURIST_FILESTORE_URL.DIR_SCRATCH.DIR_THUMBS.$new_file_name;
+                    $res['files'][$idx] ->thumbnailUrl = $scratchUrl.DIR_THUMBS.$new_file_name;
                 }
 
             }
             elseif($entity_name=="temp" && $is_autodect_csv) {
 
-                $filename = HEURIST_FILESTORE_DIR.DIR_SCRATCH.basename($file->original_name);
+                $filename = $scratchDir.basename($file->original_name);
 
                 $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
                 $isKML = ($extension=='kml' || $extension=='kmz');

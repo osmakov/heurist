@@ -161,9 +161,9 @@ if(@$_REQUEST['filename']==1 && file_exists(HEURIST_FILESTORE_DIR.DIR_BACKUP.HEU
 
 if(!defined('HEURIST_HML_DIR')){
 
-    define('HEURIST_HML_DIR', HEURIST_FILESTORE_DIR . 'hml-output/');
+    define('HEURIST_HML_DIR', $system->getSysDir('hml-output'));
     folderCreate2(HEURIST_HML_DIR, '', true);
-    define('HEURIST_HML_URL', HEURIST_FILESTORE_URL . 'hml-output/');
+    define('HEURIST_HML_URL', $system->getSysUrl('hml-output'));
 }
 
 // why is this left to be set later as a success on file access??

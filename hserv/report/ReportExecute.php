@@ -760,8 +760,9 @@ class ReportExecute
             if(!isEmptyArray($webfonts)){
                 $font_families = array();
 
+                $settingsURL = $this->system->getSysUrl('settings');
                 foreach($webfonts as $font_family => $src){
-                    $src = str_replace("url('settings/", "url('".HEURIST_FILESTORE_URL.'settings/',$src);
+                    $src = str_replace("url('settings/", "url('".$settingsURL,$src);
                     if(strpos($src,'@import')===0){
                         $import_webfonts = $import_webfonts . $src;
                     }else{
@@ -1135,7 +1136,7 @@ class ReportExecute
 
         try{
             //output to generated-reports only
-            $dirname = $this->system->getSysDir('generated-reports');
+            $dirname = $this->system->getSysDir(DIR_GENERATED_REPORTS);
             if(!folderCreate($dirname, true)){
                 return 'Failed to create folder for generated reports';
             }
@@ -1274,7 +1275,7 @@ class ReportExecute
 
         $gparams = $this->params;
 
-        $url = htmlspecialchars(HEURIST_FILESTORE_URL . 'generated-reports/' . $file_name);
+        $url = htmlspecialchars($this->system->getSysUrl(DIR_GENERATED_REPORTS) . $file_name);
 ?>
 <!DOCTYPE>
 <html lang="en">
@@ -1676,7 +1677,7 @@ Javascript wrap:<br>
     //
     public function outputGeneratedReport($update_interval){
 
-        $dir = $this->system->getSysDir('generated-reports');
+        $dir = $this->system->getSysDir(DIR_GENERATED_REPORTS);
 
         $this->outputfile = $this->prepareOutputFile();
 

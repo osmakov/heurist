@@ -269,8 +269,9 @@
             */
             if(@$settings['webfonts']){
                 $res['webfonts'] = array();
+                $settingsURL = $system->getSysUrl('settings');
                 foreach($settings['webfonts'] as $key => $font){
-                    $font = str_replace("url('settings/", "url('".HEURIST_FILESTORE_URL.'settings/', $font);
+                    $font = str_replace("url('settings/", "url('".$settingsURL, $font);
                     $res['webfonts'][$key] = $font;
                 }
             }

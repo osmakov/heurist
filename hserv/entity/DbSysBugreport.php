@@ -257,7 +257,7 @@ class DbSysBugreport extends DbEntityBase
 
                 $filename[] = $info->getPathname();
 
-                $new_record['details']['38'][] = HEURIST_FILESTORE_URL . DIR_ENTITY . "{$this->config['entityName']}/{$info->getFilename()}";
+                $new_record['details']['38'][] = $this->system->getSysUrl(DIR_ENTITY) . "{$this->config['entityName']}/{$info->getFilename()}";
             }
         }
 

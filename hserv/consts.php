@@ -259,6 +259,10 @@ define('DIR_SCRATCH','scratch/');
 define('DIR_BACKUP','backup/');
 define('DIR_THUMBS','thumbs/');
 define('DIR_ENTITY','entity/');
+define('DIR_FILEUPLOADS','file_uploads/');
+define('DIR_WEBIMAGECACHE','webimagecache/');
+define('DIR_BLURREDIMAGECACHE','blurredimagescache/');
+define('DIR_GENERATED_REPORTS','generated-reports/');
 
 
 define('ICON_PLACEHOLDER', HEURIST_BASE_URL.'hclient/assets/16x16.gif');

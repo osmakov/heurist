@@ -75,7 +75,7 @@ function fileRegister($system, $fullname, $description=null){
         $dir = $fileinfo['dirname'];
 
         // get relative path to db root folder
-        $relative_path = getRelativePath(HEURIST_FILESTORE_DIR, $dir);
+        $relative_path = getRelativePath($system->getSysDir(), $dir);
 
         $fileinfo = array(
             'entity'=>'recUploadedFiles',
@@ -83,7 +83,7 @@ function fileRegister($system, $fullname, $description=null){
                 'ulf_OrigFileName' => $filename_base,
                 'ulf_MimeExt' => $mimetypeExt, //extension or mimetype allowed
                 'ulf_FileSizeKB' => ($filesize<1024?1:intval($filesize/1024)),
-                'ulf_FilePath' => $relative_path, //relative path to HEURIST_FILESTORE_DIR - db root
+                'ulf_FilePath' => $relative_path, //relative path to $system->getSysDir() - db root
                 'ulf_FileName' => $filename_base
             )
         );
@@ -175,7 +175,7 @@ function fileGetByOriginalFileName($system, $orig_name){
 function fileRenameToOriginal($system, $orig_name, $new_name=null){
 
     if($new_name==null) {$new_name = $orig_name;}
-    $file_fullpath = HEURIST_FILESTORE_DIR.'file_uploads/'.$new_name;
+    $file_fullpath = $system->getSysDir(DIR_FILEUPLOADS).$new_name;
 
     if(!file_exists($file_fullpath)){
         //find by original file name
@@ -936,7 +936,7 @@ function getWebImageCache($system, $fileinfo, $return_url=true){
         return false;
     }
 
-    $web_cache_dir = HEURIST_FILESTORE_DIR . 'webimagecache';
+    $web_cache_dir = $system->getSysDir(DIR_WEBIMAGECACHE);
 
     $swarn = folderCreate2($web_cache_dir,'(for cached web images)', true);
 
@@ -949,14 +949,14 @@ function getWebImageCache($system, $fileinfo, $return_url=true){
     $error_reported = false;
 
     //direct url to filestore folder
-    $file_url = HEURIST_FILESTORE_URL.$fileinfo['fullPath'];
+    $file_url = $system->getSysUrl().$fileinfo['fullPath'];
 
     $file_path_info = pathinfo($file_path);
 
     //return basename with extension
     $file_name_cached = $file_path_info['filename'].'.jpg';
 
-    $file_url_cached = HEURIST_FILESTORE_URL.'webimagecache/'.$file_name_cached;
+    $file_url_cached = $system->getSysUrl('DIR_WEBIMAGECACHE').$file_name_cached;
     $file_path_cached =  $web_cache_dir.'/'.$file_name_cached;
       //fileWithGivenExt( $web_cache_dir , $file_path_info['basename'] );
 
@@ -1001,7 +1001,7 @@ function getBlurredImage($system, $file_info, $return_url = true){
 
     $file_path_info = pathinfo($file_path);
 
-    $blur_file_dir = HEURIST_FILESTORE_DIR . 'blurredimagescache';
+    $blur_file_dir = $system->getSysDir(DIR_BLURREDIMAGECACHE);
     $res = folderCreate2($blur_file_dir, '(for blurred due to visibility settings)', true);
     if(!empty($res)){
         $system->addError(HEURIST_ERROR, $res);
@@ -1010,7 +1010,7 @@ function getBlurredImage($system, $file_info, $return_url = true){
 
     $blur_file_name = "{$file_path_info['filename']}.png";
     $blur_file_path = "{$blur_file_dir}/{$blur_file_name}";
-    $blur_file_url = HEURIST_FILESTORE_URL . "blurredimagescache/{$blur_file_name}";
+    $blur_file_url = $system->getSysUrl(DIR_BLURREDIMAGECACHE). $blur_file_name;
     $scaled_message = "{$blur_file_dir}/scaled_msg.png";
 
     $_cleanup_files = function() use ($blur_file_path, $scaled_message){
