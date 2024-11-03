@@ -2337,4 +2337,41 @@ class System {
 
         return true;
     }
+    
+    //
+    //
+    //
+    public function getWebFontsLinks($default_family=null){
+        
+        $webfonts = $this->getDatabaseSetting('Webfonts');
+        $settingsURL = $this->getSysUrl('settings');
+
+        $font_styles = '';
+        
+        if(!isEmptyArray($webfonts)){
+            $font_families = array();
+            
+            foreach($webfonts as $font_family => $src){
+                $src = str_replace("url('settings/", "url('".$settingsURL,$src);
+                if(strpos($src,'@import')===0){
+                    $font_styles = $font_styles . $src;
+                }else{
+                    $font_styles = $font_styles . ' @font-face {font-family:"'.$font_family.'";src:'.$src.';} ';
+                }
+                $font_families[] = $font_family;
+            }
+            
+            if(!empty($font_families)){
+                //add default family
+                if($default_family){
+                    $font_families[] = $default_family;    
+                }
+                $font_styles = 'body,.ui-widget,.ui-widget input,.ui-widget textarea,.ui-widget select{font-family: '
+                                .implode(',',$font_families).'} '.$font_styles;
+            }
+        }
+
+        return $font_styles;
+    }
+    
 }

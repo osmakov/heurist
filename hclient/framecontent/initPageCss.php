@@ -43,31 +43,10 @@ Scrollbar tracks and thumbs  rgba(0,0,0,0.3)/#bac4cb
     if($lt!='H5Default'){
 
 //special webfont for database
-$font_styles = '';
 if(isset($system) && $system->is_inited()){
-
-    $webfonts = $system->getDatabaseSetting('Webfonts');
-    $settingsURL = $system->getSysUrl('settings');
-    if(!isEmptyArray($webfonts)){
-        foreach($webfonts as $font_family => $src){
-            $src = str_replace("url('settings/", "url('".$settingsURL,$src);
-            if(strpos($src,'@import')===0){
-                $font_styles = $font_styles . $src;
-            }else{
-                $font_styles = $font_styles . ' @font-face {font-family:"'.$font_family.'";src:'.$src.';} ';
-            }
-            $font_families[] = $font_family;
-        }
-    }
-
-}
-if(!empty($font_styles)){ // add extra font-faces
-    echo "<style> $font_styles </style>";
-
-    if(!empty($font_families)){
-        $font_families[] = 'sans-serif';
-        echo '<style>body,.ui-widget,.ui-widget input,.ui-widget textarea,.ui-widget select{font-family: '
-            .implode(',',$font_families).'}</style>';
+    $font_styles = $system->getWebFontsLinks('ui-sans-serif');
+    if(!isEmptyStr($font_styles)){
+         echo "<style> $font_styles </style>";
     }
 }
 ?>

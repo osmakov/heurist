@@ -140,22 +140,7 @@ if(is_array($formats) && array_key_exists('formats', $formats)){
     }
 }
 
-$import_webfonts = null;
-$webfonts = $system->getDatabaseSetting('Webfonts');
-if(is_array($webfonts) && !empty($webfonts)){
-    $import_webfonts = '';
-    $settingsURL = $system->getSysUrl('settings');
-    foreach($webfonts as $font_family => $src){
-        $src = str_replace("url('settings/", "url('".$settingsURL,$src);
-        if(strpos($src,'@import')===0){
-            $import_webfonts = $import_webfonts . $src;
-        }else{
-            $import_webfonts = $import_webfonts . ' @font-face {font-family:"'.$font_family.'";src:'.$src.';} ';
-        }
-        $font_families[] = $font_family;
-    }
-}
-
+$import_webfonts = $system->getWebFontsLinks();
 
 // if we get a record id then see if there is a personal bookmark for it.
 if ($rec_id>0 && !@$_REQUEST['bkmk_id'])

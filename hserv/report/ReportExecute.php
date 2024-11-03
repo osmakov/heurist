@@ -720,7 +720,7 @@ class ReportExecute
     }
 
     //
-    //
+    // Get TinyMCE formats
     //
     private function getFontStyles(){
 
@@ -747,36 +747,6 @@ class ReportExecute
             }
 
         return $font_styles;
-    }
-
-    //
-    //
-    //
-    private function getWebFonts(){
-
-            $webfonts = $this->system->getDatabaseSetting('Webfonts');
-
-            $import_webfonts = '';
-            if(!isEmptyArray($webfonts)){
-                $font_families = array();
-
-                $settingsURL = $this->system->getSysUrl('settings');
-                foreach($webfonts as $font_family => $src){
-                    $src = str_replace("url('settings/", "url('".$settingsURL,$src);
-                    if(strpos($src,'@import')===0){
-                        $import_webfonts = $import_webfonts . $src;
-                    }else{
-                        $import_webfonts = $import_webfonts . ' @font-face {font-family:"'.$font_family.'";src:'.$src.';} ';
-                    }
-                    $font_families[] = $font_family;
-                }
-                if(!empty($font_families)){
-                    $font_families[] = 'sans-serif';
-                    $font_styles = 'body{font-family: '.implode(',',$font_families).'} '.$font_styles;
-                }
-            }
-
-            return $import_webfonts;
     }
 
 
@@ -1063,18 +1033,16 @@ class ReportExecute
                 return $this->removeHeadAndBodyTags($tpl_source);
             }
 
-
-            $font_styles = $this->getFontStyles();
-            $import_webfonts = $this->getWebFonts();
-
-
-            if(!empty($font_styles)){
+            $font_styles = $this->system->getWebFontsLinks('ui-sans-serif');
+            if(isEmptyStr($font_styles)){
+                $font_styles = '';
+            }else{
                 $font_styles = "<style> $font_styles </style>";
             }
-            if(!empty($import_webfonts)){
-                $font_styles = "<style>$import_webfonts</style>".$font_styles;
+            $tinymce_styles = $this->getFontStyles(); //tinyMCE formats
+            if(!empty($tinymce_styles)){
+                $font_styles = "<style> $tinymce_styles </style>".$font_styles;
             }
-
 
             // Allow JavaScript or sanitize HTML
             if ($this->isJsAllowed) {
