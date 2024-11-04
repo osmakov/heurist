@@ -1032,14 +1032,14 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             
             $filestoreDir = $this->system->getSysDir();
             $filestoreUrl = $this->system->getSysUrl();
-
+            
             // Add filestore path
-            $dirs_and_exts['dirs'] = array_map(function($dir){
+            foreach ($dirs_and_exts['dirs'] as $idx => $dir){
                 if(strpos($dir, $filestoreDir) === false){
                     $dir = $filestoreDir . ltrim($dir, '/');
                 }
-                return rtrim($dir, '/');
-            }, $dirs_and_exts['dirs']);
+                $dirs_and_exts['dirs'][$idx] = rtrim($dir, '/');
+            }
 
             $system_folders = $this->system->getSystemFolders();
             foreach ($files as $file_details) {
