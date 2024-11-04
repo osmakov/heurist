@@ -1233,10 +1233,6 @@ function fileCreateThumbnail( $system, $fileid, $is_download ){
             if($mimeExt=='application/pdf' || $mimeExt=='pdf'){
                 UImage::getPdfThumbnail($filename, $thumbnail_file);
                 
-            }else if($mimeExt=='json' &&  strpos($file['ulf_OrigFileName'],ULF_IIIF)===0){
-                
-                UImage::getIiifThumbnail($file['ulf_ExternalFileReference'], null. $thumbnail_file);
-                
             }else{
 
                 //get real image type from exif
@@ -1271,10 +1267,28 @@ function fileCreateThumbnail( $system, $fileid, $is_download ){
         }
         elseif(@$file['ulf_ExternalFileReference']){  //remote
 
+            // image placeholder
+            $placeholder = '../../hclient/assets/200x200-warn.gif';
+        
             if(@$file['ulf_OrigFileName'] &&
                 (strpos($file['ulf_OrigFileName'],ULF_TILED_IMAGE)===0 || @$file['ulf_PreferredSource']=='tiled') )  {
 
                 $img = UImage::createFromString('tiled images stack');//from string
+                
+            }else if($file['ulf_MimeExt']=='json' &&  strpos($file['ulf_OrigFileName'],ULF_IIIF)===0){
+                
+                $thumbUrl = UImage::getIiifThumbnail($file['ulf_ExternalFileReference'], null, $thumbnail_file);
+                
+                if($is_download){
+                    if(file_exists($thumbnail_file)){
+                        header('Content-type: image/png');
+                        echo file_get_contents($thumbnail_file);
+                    }else{
+                        redirectURL($placeholder);
+                    }
+                }
+                
+                return;
 
             }elseif(@$file['fxm_MimeType'] && strpos($file['fxm_MimeType'], 'image/')===0){
                 //@todo for image services (flikr...) take thumbnails directly
@@ -1326,11 +1340,6 @@ function fileCreateThumbnail( $system, $fileid, $is_download ){
                 }else{
                     $img = '../../hclient/assets/branding/logo_soundcloud.png';
                 }
-
-
-            }else{
-                // image placeholder
-                $placeholder = '../../hclient/assets/200x200-warn.gif';
             }
 
 
