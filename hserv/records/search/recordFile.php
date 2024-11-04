@@ -1232,6 +1232,11 @@ function fileCreateThumbnail( $system, $fileid, $is_download ){
             //special case for pdf
             if($mimeExt=='application/pdf' || $mimeExt=='pdf'){
                 UImage::getPdfThumbnail($filename, $thumbnail_file);
+                
+            }else if($mimeExt=='json' &&  strpos($file['ulf_OrigFileName'],ULF_IIIF)===0){
+                
+                UImage::getIiifThumbnail($file['ulf_ExternalFileReference'], null. $thumbnail_file);
+                
             }else{
 
                 //get real image type from exif

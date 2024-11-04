@@ -680,6 +680,128 @@ class UImage {
         return $new_img;
     }
 
+    
+    //
+    //
+    //
+    private static function composeThumbnailIIIF($image_url, $width, $height)
+    {
+        $x = intval($width);
+        $y = intval($height);
+        if(!($x>0)){
+            $x = 200;
+        }
+        if(!($y>0)){
+            $y = 200;
+        }
+
+        $rx = 200 / $x;
+        $ry = 200 / $y;
+
+        $scale = $rx ? ($ry ? min($rx, $ry) : $rx) : $ry;
+
+        if ($scale > 1) { //no enlarge
+            $scale = 1;
+        }
+
+        $new_x = ceil($x * $scale);
+        $new_y = ceil($y * $scale);
+
+        //https://gallica.bnf.fr/iiif/ark:/12148/bpt6k9604118j/f25/full/90,120/0/default.jpg
+        //https://fragmentarium.ms/metadata/iiif/F-hsd6/manifest.json  or info.json
+        //https://purl.stanford.edu/sn904cj3429/iiif/manifest
+        //https://fragmentarium.ms:443/loris/F-hsd6/fol_2r.jp2/full/full/0/default.jpg
+
+        if(strpos($image_url,'/full/full/')>0){
+            $thumb_url = str_replace('/full/full/', '/full/'.$new_x.','.$new_y.'/', $image_url);
+        }else{
+            $thumb_url = $image_url.'/full/'.$new_x.','.$new_y.'/0/default.jpg';
+        }
+
+        return $thumb_url;
+    }
+    
+    
+    /**
+    * Downloads thumbnail for iiif manifest of image
+    *
+    * @param mixed $file
+    * @param mixed $thumbnail_file
+    */
+    public static function getIiifThumbnail( $iiif_url, $iiif_manifest, $thumbnail_file ){
+
+        $thumbUrl = null;
+        
+        if($iiif_manifest==null){
+            $iiif_manifest = loadRemoteURLContent($iiif_url);//check that json is iiif manifest
+            $iiif_manifest = json_decode($iiif_manifest, true);
+        }
+
+        //verify that this is valid iiif manifest
+        if($iiif_manifest!==false && is_array($iiif_manifest))
+        {
+            if(@$iiif_manifest['@type']=='sc:Manifest' ||   //v2
+            @$iiif_manifest['type']=='Manifest')        //v3
+            {
+                if(@$iiif_manifest['thumbnail']){
+
+                    if(@$iiif_manifest['thumbnail']['@id']){  //v2
+                        $thumbUrl = @$iiif_manifest['thumbnail']['@id'];
+                    }elseif(@$iiif_manifest['thumbnail']['id']){  //v3
+                        $thumbUrl = @$iiif_manifest['thumbnail']['id'];
+                    }
+                }else{
+                    //sequences -> canvases[0] -> images[0] -> resource -> @id or service -> @id
+
+                    $thumb_url = @$iiif_manifest['sequences'][0]['canvases'][0];
+                    if($thumb_url){
+
+                        if(@$thumb_url['thumbnail']['@id']){
+                            $thumbUrl = @$thumb_url['thumbnail']['@id'];
+                        }else{
+                            if(@$thumb_url['images'][0]['resource']['service']['@id']){
+                                $image_url = $thumb_url['images'][0]['resource']['service']['@id'];
+                            }else{
+                                $image_url = @$thumb_url['images'][0]['resource']['@id'];
+                            }
+
+                            if($image_url!=null){
+                                $thumbUrl = UImage::composeThumbnailIIIF(
+                                    $image_url,
+                                    @$thumb_url['images'][0]['resource']['width'],
+                                    @$thumb_url['images'][0]['resource']['height']
+                                );
+                            }
+                        }
+                    }
+                }
+
+            }elseif(@$iiif_manifest['@context'] && (@$iiif_manifest['@id'] || @$iiif_manifest['id'])
+            && substr($iiif_url, 0, -9) == 'info.json' )
+            {   //IIIF image
+
+                //create url for thumbnail
+                //remove info.json
+                $thumb_url = substr($iiif_url, 0, -9).'full/full/0/default.jpg';
+                $thumbUrl = UImage::composeThumbnailIIIF($thumb_url,
+                    @$iiif_manifest['width'],
+                    @$iiif_manifest['height']);
+            }
+
+        }
+        
+        //download
+        if($thumbUrl && $thumbnail_file){
+            $temp_path = tempnam($scratch_dir, "_temp_");
+            if(saveURLasFile($thumbUrl, $temp_path)){ //save to temp in scratch folder
+                UImage::createScaledImageFile($temp_path, $thumbnail_file);//create thumbnail for iiif image
+                unlink($temp_path);
+            }
+        }
+
+        return $thumbUrl;
+        
+    }
 
     /**
     * Creates thumbnail from pdf file
