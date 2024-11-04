@@ -285,23 +285,21 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                     // Data loaded successfully!
                     /** RECORD FILTERING */
                     // Set filtering settings in UI
-                    var isfirst_time = false;
-                    var at_least_one_marked = false;
+                    let isfirst_time = false;
+                    let at_least_one_marked = false;
 
                     <?php
                         if($count==0){ //reset setting for empty db (only once)
-                    ?>
-                            isfirst_time = !(getSetting('hdb_'+window.hWin.HAPI4.database)>0);
-                            putSetting('hdb_'+window.hWin.HAPI4.database, 1);
-                    <?php
+                            print 'isfirst_time = !(getSetting("'.HEURIST_DB_PREFIX.'"+window.hWin.HAPI4.database)>0); ';
+                            print 'putSetting("'.HEURIST_DB_PREFIX.'"+window.hWin.HAPI4.database, 1); ';
                         }
                     ?>
 
                     if(!isfirst_time){
                         //restore setting for non empty db
                         $(".show-record").each(function() {
-                            var name = $(this).attr("name");
-                            var record = getSetting(name);//@todo - change to recordtype ID
+                            const name = $(this).attr("name");
+                            const record = getSetting(name);//@todo - change to recordtype ID
                             if(record>0) {
                                 at_least_one_marked = true;
                                 $(this).prop("checked", true);
@@ -326,9 +324,9 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                     // Listen to 'show-record' checkbox changes
                     $(".show-record").on('change', function(e) {
                         // Update record field 'checked' value in localstorage
-                        var name = $(e.target).attr("name");
+                        const name = $(e.target).attr("name");
 
-                        var value = $(e.target).is(':checked') ? 1 : 0;
+                        const value = $(e.target).is(':checked') ? 1 : 0;
                         // Set 'checked' attribute and store it
                         putSetting(name, value);
 
@@ -339,12 +337,12 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                     // Listen to the 'show-all' checkbox
                     $("#show-all").on('change', function() {
                         // Change all check boxes
-                        var checked = $(this).prop('checked');
+                        const checked = $(this).prop('checked');
                         $(".show-record").prop("checked", checked);
 
                         // Update localstorage
                         $(".show-record").each(function(e) {
-                            var name = $(this).attr("name");
+                            const name = $(this).attr("name");
                             // Set 'checked' attribute and store it
                             putSetting(name, checked?1:0);
                         });
@@ -355,15 +353,15 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                     // Listen to the 'group_chkbox' checkboxes, toggles all checkboxes within a record type group
                     $('.group_chkbox').on('change', function(){
 
-                        var group_id = $(this).attr('data-id');
-                        var checked = $(this).prop('checked');
+                        const group_id = $(this).attr('data-id');
+                        const checked = $(this).prop('checked');
 
                         if(group_id){
                             $('input.rectype_grp_'+group_id).prop('checked', checked);
 
                             // Update localstorage
                             $(".show-record").each(function(e) {
-                                var name = $(this).attr("name");
+                                const name = $(this).attr("name");
                                 // Set 'checked' attribute and store it
                                 putSetting(name, checked?1:0);
                             });
@@ -376,19 +374,19 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                     // Parses the data
                     function getData(data) {
                         // Build name filter
-                        var names = [];
+                        let names = [];
                         $(".show-record").each(function() {
                             var checked = $(this).prop('checked');
                             if(checked == false) {
-                                var name = $(this).attr("name");
+                                const name = $(this).attr("name");
                                 names.push(name);
                             }
                         });
 
                         // Filter nodes
-                        var map = {};
-                        var size = 0;
-                        var nodes = data.nodes.filter(function(d, i) {
+                        let map = {};
+                        let size = 0;
+                        let nodes = data.nodes.filter(function(d, i) {
                             if($.inArray(d.name, names) == -1) {
                                 map[i] = d;
                                 return true;
@@ -397,10 +395,10 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                         });
 
                         // Filter links
-                        var links = [];
+                        let links = [];
                         data.links.filter(function(d) {
                             if(map.hasOwnProperty(d.source) && map.hasOwnProperty(d.target)) {
-                                var link = {source: map[d.source], target: map[d.target], relation: d.relation, targetcount: d.targetcount};
+                                const link = {source: map[d.source], target: map[d.target], relation: d.relation, targetcount: d.targetcount};
                                 links.push(link);
                             }
                         })
@@ -412,7 +410,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                     // Visualizes the data
                     function initVisualizeData() {
                         // Call plugin
-                        var data_to_vis = getData(json_data);
+                        const data_to_vis = getData(json_data);
 
                         $("#visualisation").visualize({
                             data: json_data,
@@ -449,7 +447,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                 }
                 */
 
-                var dbkey = 'db'+window.hWin.HAPI4.database;
+                const dbkey = 'db'+window.hWin.HAPI4.database;
                 putSetting(dbkey, '1');
 
                 //$('#divSvg').css('top', 8+supw+'em');

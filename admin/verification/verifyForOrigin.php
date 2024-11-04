@@ -82,16 +82,11 @@
 
 
         //1. find all database
-        $query = 'show databases';
-
-        $res = $mysqli->query($query);
-        if (!$res) {  print htmlspecialchars($query.'  '.$mysqli->error); return; }
-        $databases = array();
-        while ($row = $res->fetch_assoc()) {
-            if( strpos($row[0], 'hdb_')===0 && ($filter=="all" || strpos($row[0], $filter)===0)){
-                    $databases[] = $row[0];
-            }
+        if($filter=='all'){
+            $filter = null;
         }
+        $databases = mysql__getdatabases4($mysqli, true, $filter);
+
     }else{
         $databases = array($filter);
     }

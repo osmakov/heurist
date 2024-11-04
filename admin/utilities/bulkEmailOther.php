@@ -319,7 +319,7 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {	/* Get the Titl
 
 	$data = array();
 	foreach($dbs as $db){
-        if(strpos($db,'hdb_')===0){
+        if(strpos($db, HEURIST_DB_PREFIX)===0){
             $db = preg_replace(REGEX_ALPHANUM, "", $db);//for snyk
 		    $query = 'SELECT count(*) FROM `' . $db . '`.`Records` WHERE rec_FlagTemporary != 1';
 		    $res = $mysqli->query($query);

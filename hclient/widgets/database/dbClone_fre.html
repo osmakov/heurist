@@ -43,7 +43,8 @@ Pour cela, il faut enregistrer la base de données. Veuillez utiliser Conception
         <h3>Entrez un nom pour la base de données clonée :</h3>
         
         <div>
-            hdb_<input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
+            <span class="dbprefix">hdb_</span>
+            <input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
                     maxlength="64" size="40" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>
 
             <button class="ui-button-action" id="btnCreateDb">Cloner <span class="dbname"></span></button>

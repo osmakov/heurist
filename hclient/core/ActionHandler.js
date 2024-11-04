@@ -469,7 +469,9 @@ class ActionHandler {
                 popup_dialog_options['onselect'] = function(event, data) {
                         if (data?.selection && data.selection.length === 1) {
                             let db = data.selection[0];
-                            if (db.indexOf('hdb_') === 0) db = db.substr(4);
+                            if(db.indexOf(window.hWin.HAPI4.sysinfo.database_prefix)==0){
+                                db = db.substring(window.hWin.HAPI4.sysinfo.database_prefix.length);
+                            }
                             window.open(window.hWin.HAPI4.baseURL + '?db=' + db, '_blank');
                         }
                     };

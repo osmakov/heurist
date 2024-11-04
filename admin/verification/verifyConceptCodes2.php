@@ -51,7 +51,7 @@ $mysqli = $system->get_mysqli();
     while ($row = $res->fetch_row()) {
         if( strpos($row[0], 'hdb_DEF19')===0 || strpos($row[0], 'hdb_def19')===0) {continue;}
 
-        if( strpos($row[0], 'hdb_')===0 ){
+        if( strpos($row[0], HEURIST_DB_PREFIX)===0 ){
                 $databases[] = $row[0];
         }
     }

@@ -35,16 +35,7 @@ $mysqli = $system->get_mysqli();
 $is_csv = (@$_REQUEST['html']!=1);
 
     //1. find all database
-    $query = 'show databases';
-
-    $res = $mysqli->query($query);
-    if (!$res) {  print $query.'  '.$mysqli->error;  return; }
-    $databases = array();
-    while ($row = $res->fetch_row()) {
-        if( strpos($row[0], 'hdb_')===0 ){
-                $databases[] = htmlspecialchars($row[0]);
-        }
-    }
+    $databases = mysql__getdatabases4($mysqli, true);
 
     if(!$is_csv){
 

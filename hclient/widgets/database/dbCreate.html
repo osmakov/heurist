@@ -24,7 +24,8 @@
         <h3>Enter a name for the new database</h3>
         
         <div>
-            hdb_<input type="text" id="uname"  name="uname" class="text ui-widget-content ui-corner-all" 
+            <span class="dbprefix">hdb_</span>
+            <input type="text" id="uname"  name="uname" class="text ui-widget-content ui-corner-all" 
                     maxlength="30" size="6" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>
             _<input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
                     maxlength="64" size="30" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>

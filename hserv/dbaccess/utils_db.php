@@ -294,7 +294,7 @@ use hserv\structure\ConceptCode;
             }
             $filtered_db = mysql__checkUserRole($mysqli, $database, $email, $role);
             if ($filtered_db) {
-                $databases[] = $with_prefix ? $database : substr($database, strlen($prefix));
+                $databases[] = htmlspecialchars($with_prefix ? $database : substr($database, strlen($prefix)));
             }
         }
         $res->close();

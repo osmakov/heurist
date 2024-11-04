@@ -59,7 +59,8 @@
         <b>Enter a name for the restored database: </b> <i>(concise but informative)</i>
         
         <div style="margin-top: 10px;">
-            hdb_<input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
+            <span class="dbprefix">hdb_</span>
+            <input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
                     maxlength="40" size="25" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button class="ui-button-action" id="btnCreateDb">Restore database</button>

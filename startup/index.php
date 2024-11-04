@@ -789,7 +789,8 @@ a{
                     <h3>Enter a name for the database</h3>
 
                     <div>
-                        hdb_<input type="text" id="uname"  name="uname" class="text ui-widget-content ui-corner-all"
+                        <?php echo HEURIST_DB_PREFIX;?>
+                        <input type="text" id="uname"  name="uname" class="text ui-widget-content ui-corner-all"
                                 maxlength="30" size="6" onkeypress="{onKeyPress(event)}"/>
                         _<input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
                                 maxlength="64" size="30" onkeypress="{onKeyPress(event)}"/>

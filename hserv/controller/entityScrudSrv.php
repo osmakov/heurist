@@ -164,8 +164,8 @@
         if($entity_name=='sysDatabases' && $rec_id){
 
             $db_name = $rec_id;
-            if(strpos($rec_id, 'hdb_')===0){
-                $db_name = substr($rec_id,4);
+            if(strpos($rec_id, HEURIST_DB_PREFIX)===0){
+                $db_name = substr($rec_id,strlen(HEURIST_DB_PREFIX));
             }
             $rec_id = 1;
             $path = '/entity/sysIdentification/';

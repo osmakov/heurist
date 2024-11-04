@@ -152,7 +152,12 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
         let dbName = fld('sys_dbName');
         if(dbName=='Please enter a DB name ...') dbName = '';
         
-        let recTitle = frm(recID.substr(4),'40em'); //remove prefix hdb_
+        let recTitle = recID; //remove prefix hdb_
+        if(recTitle.indexOf(window.hWin.HAPI4.sysinfo.database_prefix)==0){
+            recTitle = recTitle.substring(window.hWin.HAPI4.sysinfo.database_prefix.length);
+        }
+        recTitle= frm(recTitle, '40em');
+        
        
         let rtIcon = window.hWin.HAPI4.getImageUrl(this._entityName, 0, 'icon');
         let recThumb = window.hWin.HAPI4.getImageUrl(this._entityName, recID, 'thumb');
@@ -191,7 +196,8 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
         if(this.options.except_current==true){
             let subset = this._cachedRecordset.getSubSetByRequest(request, this.options.entity.fields);
             //except current
-            subset = subset.getSubSetByRequest({'sys_Database':'!=hdb_'+window.hWin.HAPI4.database}, this.options.entity.fields);
+            subset = subset.getSubSetByRequest({'sys_Database':'!='+window.hWin.HAPI4.sysinfo.database_prefix+window.hWin.HAPI4.database}, 
+                            this.options.entity.fields);
             //update
             this.recordList.resultList('updateResultSet', subset, request);   
         }else{

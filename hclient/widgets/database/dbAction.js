@@ -88,6 +88,8 @@ $.widget( "heurist.dbAction", $.heurist.baseAction, {
         this._$('button').button();
         this._on(this._$('button.ui-button-action'),{click:this.doAction});
         
+        this._$('span.dbprefix').text(window.hWin.HAPI4.sysinfo.database_prefix);
+        
         if(this.options.actionName=='create' &&
             window.hWin.HAPI4.sysinfo['pwd_DatabaseCreation'])
         {
@@ -172,7 +174,7 @@ $.widget( "heurist.dbAction", $.heurist.baseAction, {
         this._on(this._$('#newdblink'),{click:this.closeDialog});
         this._$('span.dbname').text(window.hWin.HAPI4.database);
 
-        this._$('#dbname').focus();
+        this._$('#dbname').trigger('focus');
 
         //find and activate event listeners for elements
         this._on(this._$('input[type=text]'),{keypress:window.hWin.HEURIST4.ui.preventNonAlphaNumeric});
@@ -430,8 +432,8 @@ $.widget( "heurist.dbAction", $.heurist.baseAction, {
                         //suggest database name
                         if(that._$('#dbname').val().trim()==''){
                             let sname = res.filename; 
-                            if(sname.indexOf('hdb_')==0){
-                                sname = sname.substring(4);
+                            if(sname.indexOf(window.hWin.HAPI4.sysinfo.database_prefix)==0){
+                                sname = sname.substring(window.hWin.HAPI4.sysinfo.database_prefix.length);
                             }
                             if(sname.indexOf('.')>0){
                                 sname = sname.substring(0,sname.indexOf('.'));

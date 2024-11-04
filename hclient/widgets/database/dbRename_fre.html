@@ -12,7 +12,8 @@
         <h3>Entrez un nouveau nom pour votre base de données</h3>
         
         <div>
-            hdb_<input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
+            <span class="dbprefix">hdb_</span>
+            <input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
                     maxlength="64" size="40" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>
 
             <button class="ui-button-action" id="btnCreateDb">Renommer <span class="dbname"></span></button>

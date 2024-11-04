@@ -43,10 +43,6 @@ $mysqli = $system->get_mysqli();
 //find all database
 $databases = mysql__getdatabases4($mysqli, false);
 
-foreach ($databases as $idx=>$db_name){
-    $databases[$idx] = htmlspecialchars( $db_name );
-}
-
 __checkVersionDatabase();
 
 print '<br>[end]';
@@ -678,9 +674,9 @@ function __recreateProceduresTriggers(){
         mysql__usedatabase($mysqli, $db_name);
 
         $res = false;
-        if(db_script('hdb_'.$db_name, dirname(__FILE__).'/../setup/dbcreate/addProceduresTriggers.sql', false)){
+        if(db_script(HEURIST_DB_PREFIX.$db_name, dirname(__FILE__).'/../setup/dbcreate/addProceduresTriggers.sql', false)){
             $res = true;
-            if(db_script('hdb_'.$db_name, dirname(__FILE__).'/../setup/dbcreate/addFunctions.sql', false)){
+            if(db_script(HEURIST_DB_PREFIX.$db_name, dirname(__FILE__).'/../setup/dbcreate/addFunctions.sql', false)){
                 $res = true;
             }else{
                 exit;
@@ -975,7 +971,7 @@ CREATE DEFINER=CURRENT_USER FUNCTION `getEstDate`(sTemporal varchar(4095), typeD
 DELIMITER ;
 */
             // recreate getEstDate function
-            if(db_script('hdb_'.$db_name, dirname(__FILE__).'/../setup/dbcreate/getEstDate.sql', false)){
+            if(db_script(HEURIST_DB_PREFIX.$db_name, dirname(__FILE__).'/../setup/dbcreate/getEstDate.sql', false)){
 
                 $cnt = 0;
                 //converts back to plain

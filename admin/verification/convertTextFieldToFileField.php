@@ -88,17 +88,8 @@ if( $system->verifyActionPassword($sysadmin_pwd, $passwordForServerFunctions) ){
     $mysqli = $system->get_mysqli();
 
     //1. find all database
-    $query = 'show databases';
-
-    $res = $mysqli->query($query);
-    if (!$res) {  print $query.'  '.$mysqli->error;  return; }
-    $databases = array();
-    while ($row = $res->fetch_row()) {
-        if( strpos($row[0], 'hdb_')===0 ){
-                $databases[] = $row[0];
-        }
-    }
-
+    $databases = mysql__getdatabases4($mysqli, true);
+    
     print DIV_S;
     $k = 1;
 

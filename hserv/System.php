@@ -1135,7 +1135,8 @@ class System {
                         "sysadmin_email"=>HEURIST_MAIL_TO_ADMIN,
                         "baseURL"=>HEURIST_BASE_URL,
                         'baseURL_pro'=>HEURIST_BASE_URL_PRO,
-                        "referenceServerURL"=>HEURIST_INDEX_BASE_URL),
+                        "referenceServerURL"=>HEURIST_INDEX_BASE_URL,
+                        'database_prefix'=>HEURIST_DB_PREFIX),
                     'host_logo'=>$host_logo,
                     'host_url'=>$host_url,
                     'saml_service_provides'=>$saml_service_provides,
@@ -1181,6 +1182,7 @@ class System {
                     "db_usergroups"=> user_getAllWorkgroups($this->mysqli), //all groups- to fast retrieve group name
                     "baseURL"=>HEURIST_BASE_URL,
                     'baseURL_pro'=>HEURIST_BASE_URL_PRO,
+                    'database_prefix'=>HEURIST_DB_PREFIX,
                     //"serverURL"=>HEURIST_SERVER_URL,
                     "referenceServerURL"=>HEURIST_INDEX_BASE_URL,
                     "dbconst"=>$this->getLocalConstants( $include_reccount_and_dashboard_count ), //some record and detail types constants with local values specific for current db

@@ -42,16 +42,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 $mysqli = $system->get_mysqli();
 
     //1. find all database
-    $query = 'show databases';
-
-    $res = $mysqli->query($query);
-    if (!$res) {  print htmlspecialchars($query.'  '.$mysqli->error); return; }
-    $databases = array();
-    while ($row = $res->fetch_row()) {
-        if( strpos($row[0], 'hdb_')===0 ){
-                $databases[] = $row[0];
-        }
-    }
+    $databases = mysql__getdatabases4($mysqli, true);
 
     foreach ($databases as $idx=>$db_name){
 

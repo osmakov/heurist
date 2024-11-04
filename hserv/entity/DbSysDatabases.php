@@ -60,7 +60,7 @@ class DbSysDatabases extends DbEntityBase
         $order   = array();
         $records = array();
 
-        $query = "show databases where `database` like 'hdb_%'";
+        $query = "show databases where `database` like '".HEURIST_DB_PREFIX."%'";
         $res = $this->system->get_mysqli()->query($query);
 
         $query = array();
