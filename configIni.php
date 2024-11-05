@@ -134,8 +134,28 @@ $passwordForDatabaseDeletion ='';// if blank = no one can delete db except db ow
 $passwordForReservedChanges  ='';// if blank = no-one can modify reserved fields, otherwise password challenge
 $passwordForServerFunctions  ='';// if blank = no-one can run server analysis functions - risk of overload - otherwise password challenge
 
+// The default root pathname of a directory where Heurist can store uploaded files eg. images, pdfs, as well as record type icons, templates,
+// output files, scratch space and so forth.
 $defaultRootFileUploadPath ='';
 $defaultRootFileUploadURL = '';
+
+// [server]                 
+// enter the server name or IP address of your Web server, null will pull SERVER_NAME from the request header
+// you may set this value if several domains point to your server. It will unify urls across links, web pages, reports
+// for example $serverName = "heuristscholar.org";  Be sure to include the port if not port 80
+$serverName = null; // if not 'null', overrides default taken from request header SERVER_NAME
+$mailDomain = null; // set mail domain if it does not use server domain
+
+// if base $heuristBaseURL is null, heurist detects it automatically 
+// Although it may differ from desired url you wish to see (because web server settings: aliases, rewrite rules etc)
+// Set this value explicitely to avoid possible issues
+$heuristBaseURL = null;     // base url ( ie server url+optional folder https://heuristscholar.org/h6-alpha )  
+// if you have several heurist instances of heurist, set this value to production instance
+//
+// if $heuristBaseURL is set and $heuristBaseURL_pro is null, then production version is the same as $heuristBaseURL
+// if both $heuristBaseURL and $heuristBaseURL_pro are null, heurist detects it automatically, default folder for pro version is /heurist
+$heuristBaseURL_pro = null;  //url for production version  
+
 $sysAdminEmail = '';
 $infoEmail = '';
 $bugEmail = '';

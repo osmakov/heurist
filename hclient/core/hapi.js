@@ -93,10 +93,8 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
             _database = window.hWin.HEURIST4.util.getUrlParameter('db');
         }
 
-        detectBaseURL();
+        //not used anymore detectBaseURL();
 
-        // @TODO: rename to rtyIconURL 
-        that.iconBaseURL = that.baseURL + '?db=' + _database + '&icon=';
         that.database = _database;
 
         if (!window.hWin.HR) {
@@ -136,7 +134,9 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
             that.SystemMgr.sys_info(function (success) {
                 if (success) {
                     that.baseURL = window.hWin.HAPI4.sysinfo['baseURL'];
-                    //that.baseURL_pro = window.hWin.HAPI4.sysinfo['baseURL_pro'];
+                    that.baseURL_pro = window.hWin.HAPI4.sysinfo['baseURL_pro'];
+                    // @TODO: rename to rtyIconURL 
+                    that.iconBaseURL = that.baseURL + '?db=' + _database + '&icon=';
                     
                     //loads list of actions                 window.hWin.document
                     if(typeof ActionHandler !== 'undefined'){
@@ -167,6 +167,8 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
         }
     }
     
+    // not used anymore - we obtain correct values from server side 
+    // see window.hWin.HAPI4.sysinfo['baseURL']; and window.hWin.HAPI4.sysinfo['baseURL_pro'];
     //
     // finds and assign  installDir   baseURL    baseURL_pro
     // 

@@ -97,7 +97,6 @@ if(!defined('HEURIST_SERVER_NAME') || empty(HEURIST_SERVER_NAME)){ // filter_var
 }
 
 // Setup Base URL
-$host = USystem::getHostParams();
 $base_url = '';
 if(defined('HEURIST_BASE_URL_PRO')){
     $base_url = HEURIST_BASE_URL_PRO;

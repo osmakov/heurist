@@ -204,11 +204,14 @@ $requestUri:
 
         $params['db'] = $database;
 
+        require_once '../configIni.php';
         require_once '../hserv/utilities/USystem.php';
         $host_params = hserv\utilities\USystem::getHostParams();
 
         if($action=='web' || $action=='website'){
 
+            define('PDIR', $host_params['baseURL']);
+            
             $redirect .= '?db='.$database.'&website';
                         //substr($_SERVER['SCRIPT_URI'],0,strpos($_SERVER['SCRIPT_URI'],$requestUri[0]))
                         //.$requestUri[0].'/?website&db='.$requestUri[2];
@@ -222,16 +225,13 @@ $requestUri:
                 $redirect .= '&pageid='.intval($requestUri[4]);
                 $params['pageid'] = intval($requestUri[4]);
             }
-            $_SERVER["REQUEST_URI"] = $host_params['install_dir'];//'/heurist/';
-
-            define('PDIR', $host_params['server_url'] . $host_params['install_dir']);
-
+            //$_SERVER["REQUEST_URI"] = $host_params['install_dir'];
             $rewrite_path = dirname(__FILE__).'/../index.php';
 
         }else {
             require_once dirname(__FILE__).'/../hserv/dbaccess/utils_db.php';
 
-            $redirect = $host_params['server_url'] . $host_params['install_dir'];
+            $redirect = $host_params['baseURL'];
 
             if($action=='view' || $action=='edit'){
 
@@ -248,7 +248,7 @@ $requestUri:
                     if($action=='view'){
                         $rewrite_path = dirname(__FILE__).'/../viewers/record/viewRecord.php';
                     }else{
-                        define('PDIR', $host_params['server_url'] . $host_params['install_dir']);
+                        define('PDIR', $host_params['baseURL']);
                         $rewrite_path = dirname(__FILE__).'/../hclient/framecontent/recordEdit.php';
                     }
 
@@ -298,12 +298,8 @@ $requestUri:
 
                     $redirect = $redirect.'&q='.$query;
                 }
-                //define('PDIR', $host_params['server_url'] . $host_params['install_dir']);
-                //$rewrite_path = dirname(__FILE__).'/../index.php';
-
+                
             }elseif($action=='tpl'){
-
-        //http://127.0.0.1/heurist/osmak_9c/tpl/Basic%20(initial%20record%20types)/t:10
                 $query = null;
 
                 if(@$requestUri[3]){

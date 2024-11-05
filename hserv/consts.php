@@ -37,7 +37,7 @@ if(!@$heuristReferenceServer){
     //$heuristReferenceServer = 'https://HeuristRef.Net';
 }
 
-define('HEURIST_DEF_DIR', '/heurist/'); //default Heurist folder
+define('HEURIST_DEF_DIR', '/heurist/'); //default Heurist folder 
 define('HEURIST_MAIN_SERVER', $heuristReferenceServer);
 define('HEURIST_INDEX_BASE_URL', $heuristReferenceServer.HEURIST_DEF_DIR);//central index and template databases url
 define('HEURIST_INDEX_DBREC', '1-22');//concept code for record type "Registered Database" in Heurist Reference Index (HEURIST_INDEX_DATABASE)
@@ -67,18 +67,14 @@ if (!@$mailDomain) {
 define('HEURIST_SERVER_URL', $host_params['server_url']);
 define('HEURIST_SERVER_NAME', @$host_params['server_name']);// server host name for the configured name, eg. myheurist.net
 
-if(@$_SERVER["REQUEST_URI"]) {define('HEURIST_CURRENT_URL', $host_params['server_url'] . $_SERVER["REQUEST_URI"]);}//NOT USED
-if(!defined('HEURIST_DIR')){
-  define('HEURIST_DIR',
-    (@$host_params['heurist_dir']? $host_params['heurist_dir'] :@$_SERVER["DOCUMENT_ROOT"])
-    . $host_params['install_dir']);//  eg. /var/www/html/HEURIST @todo - read simlink (realpath)
-}
+if(!defined('HEURIST_DIR'))  { define('HEURIST_DIR', $host_params['heurist_dir']); } 
 
-define('HEURIST_BASE_URL', $host_params['server_url'] . $host_params['install_dir']  );// eg. https://myheurist.net/heurist/
-
-define('HEURIST_BASE_URL_PRO', $host_params['server_url'] . $host_params['install_dir_pro'] );// production url eg. https://myheurist.net/heurist/
+define('HEURIST_BASE_URL', $host_params['baseURL'] );// eg. https://myheurist.net/h6-alpha/
+define('HEURIST_BASE_URL_PRO', $host_params['baseURL_pro'] );// production url eg. https://myheurist.net/heurist/
 
 define('HEURIST_SCRATCHSPACE_DIR', sys_get_temp_dir());
+
+//------------ database connection
 
 if ($dbHost) {
     define('HEURIST_DBSERVER_NAME', $dbHost);
