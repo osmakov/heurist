@@ -134,23 +134,31 @@ class USystem {
             }
         }
 
-        $host_params['server_url'] = ($isSecure ? 'https' : 'http') . "://" . $host_params['server_name'];
+        $serverUrl = ($isSecure ? 'https' : 'http') . "://" . $host_params['server_name'];
         
         if(isset($heuristBaseURL)){
-            $host_params['baseURL'] = $heuristBaseURL;
-            $host_params['baseURL_pro'] = $heuristBaseURL_pro ?? $host_params['baseURL'];
+            $baseUrl = $heuristBaseURL;
+            $baseUrl_pro = $heuristBaseURL_pro ?? $heuristBaseURL;
             
-            if( substr($host_params['baseURL'], -1, 1) != '/' )  {
-                $host_params['baseURL'] .= '/';
+            if(strpos($baseUrl, $serverUrl)===false){ //alpha version is on different domain
+                $baseUrl = $baseUrl_pro;
             }
-            if( substr($host_params['baseURL_pro'], -1, 1) != '/' )  {
-                $host_params['baseURL_pro'] .= '/';
+            if( substr($baseUrl, -1, 1) != '/' )  {
+                $baseUrl .= '/';
+            }
+            if( substr($baseUrl_pro, -1, 1) != '/' )  {
+                $baseUrl_pro .= '/';
             }
             
         }else{
-            $host_params['baseURL'] = $host_params['server_url'] . $installDir;
-            $host_params['baseURL_pro'] = $host_params['server_url'] . $installDir_pro;
+            //for auto detect both alpha and pro version must be on the same domain
+            $baseUrl = $serverUrl . $installDir;
+            $baseUrl_pro = $serverUrl . $installDir_pro;
         }
+        
+        $host_params['server_url']  = $serverUrl;
+        $host_params['baseURL']     = $baseUrl;
+        $host_params['baseURL_pro'] = $baseUrl_pro;
         
         return $host_params;
 
