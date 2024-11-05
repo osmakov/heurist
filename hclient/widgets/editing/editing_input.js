@@ -6342,6 +6342,7 @@ $.widget( "heurist.editing_input", {
                             // Update calendar for calendarPicker
                             if(new_cal && new_date && typeof $tinpt !== 'undefined'){
 
+                                let gregorian_date = '';
                                 if(new_date.getYear()){
                                     let hasMonth = new_date.getMonth();
                                     let hasDay = new_date.getDay();
@@ -6351,6 +6352,7 @@ $.widget( "heurist.editing_input", {
 
                                     let g_calendar = $.calendars.instance('gregorian');
 
+                                    gregorian_date = `${new_date.getYear()}-${month}-${day}`;
                                     new_date = translateDate({'year': new_date.getYear(), 'month': month, 'day': day}, g_calendar, new_cal);
                                     new_date = new_date.formatDate('yyyy-mm-dd', new_cal);
                                 }
@@ -6362,6 +6364,11 @@ $.widget( "heurist.editing_input", {
 
                                 if(typeof new_date == 'string'){
                                     $tinpt.val(new_date).trigger('change');
+                                }
+
+                                if(new_cal.local.name.toLowerCase() === 'japanese'){
+                                    value_era = new_cal.getEraFromGregorian(...gregorian_date.split('-'));
+                                    setMinMaxDatesJPN(new_cal, value_era, gregorian_date);
                                 }
                             }
                         }
