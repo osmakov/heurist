@@ -111,29 +111,29 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
         this.updateOldConfigurations();
 
         //fill record type selector
-        this.selectRecordType = this.element.find('#sel_rectype').css({'list-style-type': 'none'});
+        this.selectRecordType = this._$('#sel_rectype').css({'list-style-type': 'none'});
         this.selectRecordType = window.hWin.HEURIST4.ui.createRectypeSelectNew(this.selectRecordType.get(0),
             {topOptions:'select record type'});
 
         // on change handler
         this._on(this.selectRecordType, { change: this._onRectypeChange });
 
-        let ele = this.element.find('#inpt_label');
+        let ele = this._$('#inpt_label');
         this._on(ele, {input: this._updateStatus });
 
-        ele = this.element.find('#btnAddService').button({ icon: "ui-icon-plus" }).css('left', '165px');
+        ele = this._$('#btnAddService').button({ icon: "ui-icon-plus" }).css('left', '165px');
         this._on(ele, {click: this._addNewService});
 
-        this.btnApply = this.element.find('#btnApplyCfg').button().css("margin-right", "10px");
+        this.btnApply = this._$('#btnApplyCfg').button().css("margin-right", "10px");
         this._on(this.btnApply, {click: this._applyConfig});            
 
-        this.btnDiscard = this.element.find('#btnDiscard').button().hide();
+        this.btnDiscard = this._$('#btnDiscard').button().hide();
         this._on(this.btnDiscard, {click: function(){this._removeConfig(null)}});
 
-        this._on(this.element.find('#example_records .ui-icon'), {
+        this._on(this._$('#example_records .ui-icon'), {
             'click': function(event){
 
-                let idx = that.element.find('#tbl_matches').attr('data-idx');
+                let idx = that._$('#tbl_matches').attr('data-idx');
                 let service = that.selectServiceType.val();
                 let max = 0;
 
@@ -149,8 +149,8 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
                     idx = idx == 0 ? max : parseInt(idx) - 1;
                 }
 
-                that.element.find('#current_idx').text(parseInt(idx)+1);
-                that.element.find('#tbl_matches').attr('data-idx', idx);
+                that._$('#current_idx').text(parseInt(idx)+1);
+                that._$('#tbl_matches').attr('data-idx', idx);
 
                 that._displayTestResults(service);
             }
@@ -255,14 +255,14 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
             this._current_cfg = cfg0;
             
-            this.element.find('#service_name').html(cfg0.label);
-            this.element.find('#service_description').html(`<strong>${cfg0.service}</strong>: ${cfg0.description}`);
-            this.element.find('#inpt_label').val(cfg0.label);
+            this._$('#service_name').html(cfg0.label);
+            this._$('#service_description').html(`<strong>${cfg0.service}</strong>: ${cfg0.description}`);
+            this._$('#inpt_label').val(cfg0.label);
             
-            let tbl = this.element.find('#tbl_matches');
+            let tbl = this._$('#tbl_matches');
             tbl.empty();
 
-            for(const field of this._current_cfg.fields){
+            for(const field in this._current_cfg.fields){
                 $(`<tr><td>${field}</td><td><select data-field="${field}"></select></td><td class="lookup_data" data-field="${field}"></td></tr>`).appendTo(tbl);
             }
 
@@ -280,8 +280,8 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
             this.selectServiceType.val('');
             this.selectRecordType.val('');
 
-            this.element.find('#inpt_label').val('');
-            this.element.find('#service_name').html('');
+            this._$('#inpt_label').val('');
+            this._$('#service_name').html('');
             
             if(service_id=='new'){
                 this._isNewCfg = true;
@@ -303,30 +303,30 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
         if(this._current_cfg==null){
             
-            this.element.find('#service_name').html('<span class="ui-icon ui-icon-arrowthick-1-w"></span>Select a service to edit or click the assign button');
-            this.element.find('#service_config').hide();
+            this._$('#service_name').html('<span class="ui-icon ui-icon-arrowthick-1-w"></span>Select a service to edit or click the assign button');
+            this._$('#service_config').hide();
             
         }else{
-            this.element.find('#service_config').show();
+            this._$('#service_config').show();
 
             this._checkModification();
 
             if(!$.isEmptyObject(this._current_cfg) || this.selectServiceType.val()){
-                this.element.find('.service_details').show();
+                this._$('.service_details').show();
             }else{
-                this.element.find('.service_details').hide();
-                this.element.find('#example_records').hide();
+                this._$('.service_details').hide();
+                this._$('#example_records').hide();
             }
 
             if(this.selectRecordType.val()){
 
-                this.element.find('#service_mapping').show();
+                this._$('#service_mapping').show();
                 this.btnApply.show();
             }else{
 
-                this.element.find('#service_mapping').hide();
+                this._$('#service_mapping').hide();
                 this.btnApply.hide();
-                this.element.find('#example_records').hide();
+                this._$('#example_records').hide();
             }
         }
 
@@ -349,16 +349,16 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
         if($.isEmptyObject(this._current_cfg) || this._isNewCfg){ //new cfg
 
-            this.element.find('#assign_fieldset').show();
+            this._$('#assign_fieldset').show();
             this._is_modified = true;
         }else{
 
-            this.element.find('#assign_fieldset').hide();  //hide service selector
-            this.element.find('.service_details').show();
+            this._$('#assign_fieldset').hide();  //hide service selector
+            this._$('.service_details').show();
 
             //verify if modified
             this._is_modified = (this._current_cfg.rty_ID != this.selectRecordType.val())
-                             || (this._current_cfg.label != this.element.find('#inpt_label').val());
+                             || (this._current_cfg.label != this._$('#inpt_label').val());
     
             if(!this._is_modified){
                 this._super();
@@ -380,18 +380,19 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
             return false;
         }
 
-        let that = this;
         let cfg0 = this.getServiceDefInfo(service_name, false);
 
         if(this._urls[service_name]){
 
+            let lookup_url = this._urls[service_name].lookup;
+            let lookup_label = this._urls[service_name].lookup;
             this._off($('#a_lookup_url'), 'click');
             if(service_name != 'geoName' && service_name != 'postalCodeSearch'){
 
                 this._on($('#a_lookup_url'), {
                     click: function(){
 
-                        let url = that._urls[service_name];
+                        let url = this._urls[service_name].lookup;
 
                         if($.isPlainObject(url)){
                             for(let type in url) {
@@ -414,13 +415,17 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
                         return false;
                     }
                 });
-            }
-    
-            $('#a_service_url').html(this._urls[service_name].service).attr('href', this._urls[service_name].service);
 
-            this.element.find('.service_urls').show();
+                lookup_label = 'Unavailable';
+                lookup_url = '#';
+            }
+
+            $('#a_service_url').html(this._urls[service_name].service).attr('href', this._urls[service_name].service);
+            $('#a_lookup_url').html(lookup_label).attr('href', lookup_url);
+
+            this._$('.service_urls').show();
         }else{
-            this.element.find('.service_urls').hide();
+            this._$('.service_urls').hide();
         }
         
         this._fillConfigForm(null, cfg0);
@@ -435,7 +440,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
         const handled_services = ['bnfLibrary', 'bnfLibraryAut', 'tlcmap', 'geoName', 'postalCodeSearch', 'nomisma', 'nakala', 'nakala_author'];
 
-        this.element.find('#example_records').hide();
+        this._$('#example_records').hide();
 
         if(handled_services.indexOf(service_name) == -1 || window.hWin.HEURIST4.util.isempty(this.selectRecordType.val())){
             return;
@@ -500,9 +505,9 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
         }
 
         // Display data
-        let $tbl_cells = this.element.find('.lookup_data');
+        let $tbl_cells = this._$('.lookup_data');
 
-        let idx = this.element.find('#tbl_matches').attr('data-idx');
+        let idx = this._$('#tbl_matches').attr('data-idx');
         let data = this.example_results[service_name] ? this.example_results[service_name][idx] : null;
 
         if(service_name == 'nakala'){
@@ -664,13 +669,13 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
         if(service_name == 'nomisma'){
             let type = this.example_results[service_name][idx]['properties']['type'];
-            this.element.find('#extra_fluff').html(`Currently showing a <strong>${type}</strong> record`);
+            this._$('#extra_fluff').html(`Currently showing a <strong>${type}</strong> record`);
         }else{
-            this.element.find('#extra_fluff').html('');
+            this._$('#extra_fluff').html('');
         }
 
-        this.element.find('#example_fluff').text('Search example records: ');
-        this.element.find('#example_records').show();
+        this._$('#example_fluff').text('Search example records: ');
+        this._$('#example_records').show();
     },
 
     //
@@ -733,7 +738,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
      
         let rty_ID = this.selectRecordType.val();   
         
-        let tbl = this.element.find('#tbl_matches');
+        let tbl = this._$('#tbl_matches');
         
         let that = this;
         
@@ -790,12 +795,12 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
                 that._on($(sel), {change:function(){that._updateStatus();}});
             });
             
-            this.element.find('#service_mapping').show();
+            this._$('#service_mapping').show();
             this.btnApply.show();
             
         }else{
 			
-            this.element.find('#service_mapping').hide();
+            this._$('#service_mapping').hide();
             this.btnApply.hide();
         }
         
@@ -817,7 +822,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
         let rty_ID = this.selectRecordType.val();
         let service_name = this.selectServiceType.val();
-        let label = this.element.find('#inpt_label').val();
+        let label = this._$('#inpt_label').val();
 
         let service_ready = rty_ID>0 && !window.hWin.HEURIST4.util.isempty(service_name); // check if a service and table have been selected
 
@@ -830,7 +835,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
             return;
         }
 
-        let tbl = this.element.find('#tbl_matches');
+        let tbl = this._$('#tbl_matches');
         let is_field_mapped = false;
 
         let fields = {};

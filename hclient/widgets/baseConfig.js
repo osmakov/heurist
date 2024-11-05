@@ -43,6 +43,7 @@ $.widget("heurist.baseConfig", {
         type: ''
     },
 
+    _$: $, // alias for this.element.find
     _as_dialog: null, //reference to itself as dialog (see options.isdialog)
 
     _need_load_content:true,
@@ -68,6 +69,8 @@ $.widget("heurist.baseConfig", {
     _create: function(){
         // prevent double click to select text
 
+        this._$ = selector => this.element.find(selector);
+
     }, //end _create
 
     _init: function(){
@@ -87,21 +90,22 @@ $.widget("heurist.baseConfig", {
             let html = `${window.hWin.HAPI4.baseURL}hclient/widgets/${sub_dir}/${this.options.htmlContent}?t=${window.hWin.HEURIST4.util.random()}`;
 
             this.element.load(html,
-            function(response, status, xhr){
-                that._need_load_content = false;
-                if(status == "error"){
+                (response, status, xhr) => {
+                    that._need_load_content = false;
+                    if(status == "error"){
 
-                    window.hWin.HEURIST4.msg.showMsgErr({
-                        message: response,
-                        error_title: 'Failed to load HTML content',
-                        status: window.hWin.ResponseStatus.UNKNOWN_ERROR
-                    });
+                        window.hWin.HEURIST4.msg.showMsgErr({
+                            message: response,
+                            error_title: 'Failed to load HTML content',
+                            status: window.hWin.ResponseStatus.UNKNOWN_ERROR
+                        });
 
-                    return;
+                        return;
+                    }
+
+                    that._initControls();
                 }
-
-                that._initControls();
-            });
+            );
             return;
         }
 
@@ -113,7 +117,7 @@ $.widget("heurist.baseConfig", {
         let that = this;
 
         //fill service configuration list
-        this.serviceList = this.element.find('#sel_service');
+        this.serviceList = this._$('#sel_service');
         this._reloadServiceList();
 
         // on selected handler
@@ -138,7 +142,7 @@ $.widget("heurist.baseConfig", {
         });
 
         //fill service types
-        this.selectServiceType = this.element.find('#sel_servicetype').css({'list-style-type': 'none'});
+        this.selectServiceType = this._$('#sel_servicetype').css({'list-style-type': 'none'});
         this._getServiceSelectmenu();
 
         // on change handler
@@ -151,18 +155,18 @@ $.widget("heurist.baseConfig", {
 
         if(this.options.isdialog){
             
-            this.element.find('.popup_buttons_div, .ui-heurist-header').hide();
-            this.element.find('div.ent_content').toggleClass(['ent_content', 'ent_content_full']).css('top', '-0.2em');
+            this._$('.popup_buttons_div, .ui-heurist-header').hide();
+            this._$('div.ent_content').toggleClass(['ent_content', 'ent_content_full']).css('top', '-0.2em');
 
             this.popupDialog();
         }else{
 
             // add title/heading
-            this.element.find('.ui-heurist-header').text(this.options.title);
+            this._$('.ui-heurist-header').text(this.options.title);
 
             // bottom bar buttons
-            this.save_btn = this.element.find('.btnSave').button();
-            this.close_btn = this.element.find('.btnClose').button();
+            this.save_btn = this._$('.btnSave').button();
+            this.close_btn = this._$('.btnClose').button();
 
             this._on(this.save_btn, {
                 click: () => {
@@ -175,7 +179,6 @@ $.widget("heurist.baseConfig", {
                 }
             });
 
-            // mouse leaves container
             this._on(this.element.find('.ent_wrapper:first'), {
                 mouseleave: (event) => {
                     if($(event.target).is('div') && (that._is_modified || that._services_modified) && !that._isNewCfg){
@@ -189,8 +192,8 @@ $.widget("heurist.baseConfig", {
 
         window.hWin.HEURIST4.util.setDisabled(this.save_btn, !this._services_modified);
 
-        let rpanel_width = this.element.find('#editing_panel').width() - 40;
-        this.element.find('#service_mapping').width(rpanel_width);
+        let rpanel_width = this._$('#editing_panel').width() - 40;
+        this._$('#service_mapping').width(rpanel_width);
 
         if(window.hWin.HEURIST4.util.isFunction(that.options.onInitFinished)){
             that.options.onInitFinished.call(that);
@@ -270,7 +273,7 @@ $.widget("heurist.baseConfig", {
             buttons: btn_array
         }); 
         this._as_dialog = $dlg; 
-        
+
         $dlg.parent().addClass('ui-dialog-heurist ui-heurist-design');
     },
 
@@ -329,7 +332,7 @@ $.widget("heurist.baseConfig", {
 
             $dlg.dialog('close');
 
-            // Update sysIdentification record
+            // Update config records/preferences
             that.saveConfigrations();
         };
 
@@ -338,15 +341,15 @@ $.widget("heurist.baseConfig", {
             that.element.empty().hide();
         };
 
-        if(!isSave && trigger && !trigger.is('button') && hasChanges){
+        if(isSave){
+            this.saveConfigrations();
+        }else if(trigger && !trigger.is('button') && hasChanges){
 
             let wording = this._is_modified ? 'current configuration' : 'available services';
             let button = this._is_modified ? '"Apply"' : '"Save"'
 
             $dlg = window.hWin.HEURIST4.msg.showMsgDlg(`You have made changes to the ${wording}. Click ${button} otherwise all changes will be lost.`, 
-                buttons, {title: 'Unsaved Changes', yes: 'Save', no: 'Ignore and Close'}, {default_palette_class: 'ui-heurist-design'});
-        }else if(isSave){
-            this.saveConfigrations();
+                buttons, {title: `Unsaved Changes for ${this.options.type == 'service' ? 'Lookup' : 'Repository'} configurations`, yes: 'Save', no: 'Ignore and Close'}, {default_palette_class: 'ui-heurist-design'});
         }else if(isMouseLeave){
             return;
         }else if(this.options.isdialog && this._as_dialog.dialog('instance') !== undefined){
@@ -579,7 +582,7 @@ $.widget("heurist.baseConfig", {
 
     _checkModification: function(){
 
-        let tbl = this.element.find('#tbl_matches');
+        let tbl = this._$('#tbl_matches');
         let that = this;
 
         let values = this.options.type === 'service' ? that._current_cfg.fields : that._current_cfg.params;

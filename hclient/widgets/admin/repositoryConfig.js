@@ -56,7 +56,7 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
     _initControls:function(){
 
         //fill record type selector
-        this.selectUserGroups = this.element.find('#sel_usergroup').css({'list-style-type': 'none'});
+        this.selectUserGroups = this._$('#sel_usergroup').css({'list-style-type': 'none'});
 
         window.hWin.HEURIST4.ui.createUserGroupsSelect(this.selectUserGroups.get(0), null, //show groups for current user only
             [{key:-1, title:'select group or user...'},
@@ -66,16 +66,16 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
         // on change handler
         this._on(this.selectUserGroups, { change: this._onUserGroupChange });
 
-        let ele = this.element.find('#btnAddService').button({ icon: "ui-icon-plus" }).css('left', '165px');
+        let ele = this._$('#btnAddService').button({ icon: "ui-icon-plus" }).css('left', '165px');
         this._on(ele, {click: this._addNewService});
 
-        this.btnApply = this.element.find('#btnApplyCfg').button().css("margin-right", "10px");
+        this.btnApply = this._$('#btnApplyCfg').button().css("margin-right", "10px");
         this._on(this.btnApply, {click: this._applyConfig});            
 
-        this.btnDiscard = this.element.find('#btnDiscard').button().hide();
+        this.btnDiscard = this._$('#btnDiscard').button().hide();
         this._on(this.btnDiscard, {click: function(){this._removeConfig(null)}});            
 
-        ele = this.element.find('input[data-field]')
+        ele = this._$('input[data-field]')
         this._on(ele, {change: this._updateStatus, keyup: this._updateStatus});
 
         window.hWin.HEURIST4.ui.disableAutoFill(ele);
@@ -162,10 +162,12 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
             this._current_cfg = cfg0;
 
             //fill values
-            this.element.find('input[data-field]').val('');
+            this._$('input[data-field]').val('');
 
-            for(const [field, value] of Object.entries(this._current_cfg.params)){
-                $(`input[data-field=${field}]`).val(value);
+            if(this._current_cfg.params){ // fill in values
+                for(const [field, value] of Object.entries(this._current_cfg.params)){
+                    $(`input[data-field=${field}]`).val(value);
+                }
             }
 
             let usr_ID = this._current_cfg.usr_ID;
@@ -182,8 +184,8 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
             this.selectServiceType.val('');
             this.selectUserGroups.val(-1);
 
-            this.element.find('#service_name').html('');
-            this.element.find('input[data-field]').val('');
+            this._$('#service_name').html('');
+            this._$('input[data-field]').val('');
             
             if(service_id=='new'){
                 this._isNewCfg = true;
@@ -205,8 +207,8 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
 
         if(this._current_cfg==null){
 
-            this.element.find('#service_name').html('<span class="ui-icon ui-icon-arrowthick-1-w"></span>Select a repository to edit or click the assign button');
-            this.element.find('#service_config').hide();
+            this._$('#service_name').html('<span class="ui-icon ui-icon-arrowthick-1-w"></span>Select a repository to edit or click the assign button');
+            this._$('#service_config').hide();
 
         }else{
 
@@ -217,25 +219,25 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
 
             sName = `${sSrvName}<span class="ui-icon ui-icon-arrowthick-1-e"></span> ${sName}`;
 
-            this.element.find('#service_name').html(sName);
+            this._$('#service_name').html(sName);
 
-            this.element.find('#service_config').show();
+            this._$('#service_config').show();
 
             this._checkModification();
 
             if(!$.isEmptyObject(this._current_cfg) || this.selectServiceType.val()){
-                this.element.find('.service_details').show();
+                this._$('.service_details').show();
             }else{
-                this.element.find('.service_details').hide();
+                this._$('.service_details').hide();
             }
 
             if(this.selectUserGroups.val()){
 
-                this.element.find('#service_params').show();
+                this._$('#service_params').show();
                 this.btnApply.show();
             }else{
 
-                this.element.find('#service_params').hide();
+                this._$('#service_params').hide();
                 this.btnApply.hide();
             }
         }
@@ -259,12 +261,12 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
 
         if($.isEmptyObject(this._current_cfg) || this._isNewCfg){ //new cfg
 
-            this.element.find('#assign_fieldset').show();
+            this._$('#assign_fieldset').show();
             this._is_modified = true;
         }else{
 
-            this.element.find('#assign_fieldset').hide();  //hide service selector
-            this.element.find('.service_details').show();
+            this._$('#assign_fieldset').hide();  //hide service selector
+            this._$('.service_details').show();
 
             this._is_modified = this._current_cfg.usr_ID != this.selectUserGroups.val();
     
@@ -292,10 +294,10 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
         let usr_ID = this.selectUserGroups.val();   
         
         if(usr_ID>=0){
-            this.element.find('#service_params').show();
+            this._$('#service_params').show();
             this.btnApply.show();
         }else{
-            this.element.find('#service_params').hide();
+            this._$('#service_params').hide();
             this.btnApply.hide();
         }
         
@@ -308,7 +310,7 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
             
             sName = `${this._current_cfg.label}<span class="ui-icon ui-icon-arrowthick-1-e"></span> ${sName}`;
             this.serviceList.find('li[data-service-id="new"]').html(sName);
-            this.element.find('#service_name').html(sName);
+            this._$('#service_name').html(sName);
         }
         
     },
@@ -330,7 +332,7 @@ $.widget( "heurist.repositoryConfig", $.heurist.baseConfig, {
 
             let is_field_assigned = false;
 
-            let inputs = this.element.find('input[data-field]');
+            let inputs = this._$('input[data-field]');
             let fields = {};
             
             $.each(inputs, function(i, ele){ // get mapped fields
