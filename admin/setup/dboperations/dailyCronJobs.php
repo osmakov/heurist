@@ -257,7 +257,7 @@ foreach ($databases as $idx=>$db_name){
             if(!empty($invalid_rec_urls)){
                 echo $eol.'Records with invalid urls: ';
                 foreach ($invalid_rec_urls as $rec_id => $url) {
-                    echo $eol.$rec_id.' : '.$url;
+                    echo $eol.$rec_id.' : '.htmlspecialchars($url); // esc for snyk only
                     $url_list[$db_name][0][] = $rec_id.' : '.$url;
                 }
             }
@@ -267,22 +267,22 @@ foreach ($databases as $idx=>$db_name){
                     echo $eol.'text fields containing invalid urls: ';
 
                     foreach ($invalid_fb_urls as $rec_id => $flds) {
-                        echo $eol.$rec_id.': ';
+                        echo $eol.intval($rec_id).': ';
                         foreach($flds as $dty_id => $urls){
-                            echo $eol.$tabs.$dty_id.': '.implode(',', $urls);
+                            echo $eol.$tabs.htmlspecialchars($dty_id.': '.implode(',', $urls)); // esc for snyk only
                         }
 
                         $url_list[$db_name][1][] = $rec_id . ' : ' . implode(',', array_keys($flds));
                     }
-
+                                                    
             }
             if(!empty($invalid_file_urls)){
 
                     echo $eol.'file fields contain invalid urls: ';
                     foreach ($invalid_file_urls as $rec_id => $flds) {
-                        echo $eol.$rec_id.': ';
+                        echo $eol.intval($rec_id).': ';
                         foreach($flds as $dty_id => $urls){
-                            echo $eol.$tabs.$dty_id.': '.implode(',', $urls);
+                            echo $eol.$tabs.htmlspecialchars($dty_id.': '.implode(',', $urls)); // esc for snyk only
                         }
 
                         $url_list[$db_name][1][] = $rec_id . ' : ' . implode(',', array_keys($flds));
@@ -290,7 +290,7 @@ foreach ($databases as $idx=>$db_name){
             }
 
         }else{
-            echo $eol.'CURL error: '.$fatal_curl_error;
+            echo $eol.'CURL error: '.htmlspecialchars($fatal_curl_error);
             sendEmail(HEURIST_MAIL_TO_ADMIN, HEURIST_SERVER_NAME.' Check url fails.',
                 $fatal_curl_error.' It stopped on '.$db_name);
 

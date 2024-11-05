@@ -342,7 +342,7 @@ class URLChecker {
         if(!$exists){
             if ($glb_curl_code == HEURIST_SYSTEM_FATAL) {
                 if ($this->isVerbose) {
-                    echo error_Div( $glb_curl_error );
+                    echo error_Div( htmlspecialchars($glb_curl_error) );
                 }
                 $results[3] = $glb_curl_error;
                 $glb_curl_error = 'Fatal curl error '.$glb_curl_error;
@@ -429,6 +429,7 @@ class URLChecker {
 
         if ($this->isVerbose) {
             $recUrl = htmlspecialchars($recUrl);
+            $error_msg = htmlspecialchars($error_msg);
             echo '<div>' . intval($recId) . " : <a href=\"$recUrl\" target=\"_blank\" rel=\"noopener\">$recUrl</a>&nbsp;$error_msg</div>";
         }
 

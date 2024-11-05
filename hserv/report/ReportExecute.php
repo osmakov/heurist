@@ -1262,7 +1262,9 @@ class ReportExecute
 $rps_recid = @$gparams['rps_id']; //report schedule iD
 if($rps_recid){
 
-    $link = str_replace('&amp;','&',htmlspecialchars(HEURIST_BASE_URL."?db=".$this->system->dbname()."&publish=3&template_id=".$rps_recid));
+    //$link = str_replace('&amp;','&',htmlspecialchars(HEURIST_BASE_URL."?db=".$this->system->dbname()."&publish=3&template_id=".$rps_recid));
+    
+    $link = HEURIST_BASE_URL.'?db='.htmlspecialchars($this->system->dbname()).'&publish=3&template_id='.intval($rps_recid);
 ?>
 
     <p style="font-size: 14px;">Regenerate and view the file:<br><br>
