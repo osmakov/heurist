@@ -340,6 +340,9 @@
          * &#x[a-fA-F0-9]; hex code
          */
         $regex_entities = '&(?:[a-zA-Z]{2,35}|#[0-9]{1,6}|#x[a-fA-F0-9]{1,6});?';
+        $regex_less_than = '(?:<|&lt;)';
+        $regex_great_than = '(?:>|&gt;)';
+        $regex_quotes = '(?:\'|"|&quot;|&apos;)';
 
         $add_tags = function($matches) use ($is_xml) {
             $response = $is_xml ? "<notranslate>{$matches[0]}</notranslate>" : "<p translate='no'>{$matches[0]}</p>";
@@ -490,10 +493,10 @@
         $org_res = $res; // backup original result
         if($handling_encoding && !empty($res)){
 
-            $match = $is_xml ? "<notranslate>($regex_entities)<\/notranslate>" : "<p translate=\"no\">($regex_entities)<\/p>";
-            $res = mb_ereg_replace_callback($match, $remove_tags, $res);
+            $match = $is_xml
+                    ? "{$regex_less_than}notranslate{$regex_great_than}($regex_entities){$regex_less_than}\/notranslate{$regex_great_than}"
+                    : "{$regex_less_than}p translate={$regex_quotes}no{$regex_quotes}{$regex_great_than}($regex_entities){$regex_less_than}\/p{$regex_great_than}";
 
-            $match = $is_xml ? "&lt;notranslate&gt;($regex_entities)&lt;\/notranslate&gt;" : "&lt;p translate='no'&gt;($regex_entities)&lt;\/p&gt;";
             $res = mb_ereg_replace_callback($match, $remove_tags, $res);
 
             $res = $res !== false ? $res : $org_res;
@@ -502,7 +505,10 @@
 
         if($handling_copyright && !empty($res)){
 
-            $match = $is_xml ? '<notranslate>©<\/notranslate>' : '<p translate="no">©<\/p>';
+            $match = $is_xml
+                    ? "{$regex_less_than}notranslate{$regex_great_than}©{$regex_less_than}\/notranslate{$regex_great_than}"
+                    : "{$regex_less_than}p translate={$regex_quotes}no{$regex_quotes}{$regex_great_than}©{$regex_less_than}\/p{$regex_great_than}";
+
             mb_ereg_replace($match, "©", $res);
 
             $res = $res !== false ? $res : $org_res;
