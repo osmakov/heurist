@@ -5082,10 +5082,11 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                             : cur_title.replace(/[\r\n]+/g, ' ');
 
             cur_title = empty_title ? cur_title : window.hWin.HEURIST4.util.stripTags(cur_title,'u, i, b, strong, em');
+            const cur_title_title = window.hWin.HEURIST4.util.stripTags(cur_title, false); //remove all tags
 
             $title_field.find('input')
                         .replaceWith(`<div style="${cur_styling}background-color:#e3f0f0!important;font-size:13px;padding:3px;max-width:${title_maxwidth}px;width:${title_maxwidth}px;cursor:default;"`
-                            + ` class="truncate" title="${cur_title}">${cur_title}</div>`);
+                            + ` class="truncate" title="${cur_title_title}">${cur_title}</div>`);
 
             // change label to required version, and add help icon
             $title_field.find('div.header')
