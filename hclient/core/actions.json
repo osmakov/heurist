@@ -751,6 +751,7 @@
       "id": "menu-files-csv",
       "text": "Register files from CSV",
       "data": {
+        "logaction": "imp_ExtMedia",
         "user_admin_status": "1",
         "size": "medium",
         "header": "Import > Media files",
@@ -763,6 +764,7 @@
       "id": "menu-files-data",
       "text": "Import file data from CSV",
       "data": {
+        "logaction": "imp_FileData",
         "user_admin_status": "1",
         "size": "medium",
         "header": "Import > Media data for existing files",

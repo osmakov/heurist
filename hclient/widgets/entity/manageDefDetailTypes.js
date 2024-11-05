@@ -2294,6 +2294,8 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
 
         let sURL = `${window.hWin.HAPI4.baseURL}import/delimited/importDefDetailTypes.php?db=${window.hWin.HAPI4.database}&dtg_ID=${this.options.dtg_ID}`;
 
+        window.hWin.HAPI4.SystemMgr.user_log('imp_BaseFields');
+
         window.hWin.HEURIST4.msg.showDialog(sURL, {
             default_palette_class: 'ui-heurist-design',
             'close-on-blur': false,

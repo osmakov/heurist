@@ -2830,6 +2830,8 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
         + window.hWin.HAPI4.database +
         (isVocab?'&vcg_ID=':'&trm_ID=')+parent_ID;
 
+        window.hWin.HAPI4.SystemMgr.user_log(`imp_${isVocab ? 'Vocabulary' : 'Terms'}`);
+
         window.hWin.HEURIST4.msg.showDialog(sURL, {
             default_palette_class: 'ui-heurist-design',
             "close-on-blur": false,
@@ -2876,6 +2878,8 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
 
         let sURL = window.hWin.HAPI4.baseURL + "import/delimited/importDefTerms.php?trn=1&db="
         + window.hWin.HAPI4.database + '&trm_ID=' +parent_ID;
+
+        window.hWin.HAPI4.SystemMgr.user_log('imp_TermTranslations');
 
         window.hWin.HEURIST4.msg.showDialog(sURL, {
             default_palette_class: 'ui-heurist-design',

@@ -1829,6 +1829,8 @@ $.widget( "heurist.manageDefRecTypes", $.heurist.manageEntity, {
 
         let sURL = `${window.hWin.HAPI4.baseURL}import/delimited/importDefRecTypes.php?db=${window.hWin.HAPI4.database}&rtg_ID=${this.options.rtg_ID}`;
 
+        window.hWin.HAPI4.SystemMgr.user_log('imp_RecordTypes');
+
         window.hWin.HEURIST4.msg.showDialog(sURL, {
             default_palette_class: 'ui-heurist-design',
             'close-on-blur': false,

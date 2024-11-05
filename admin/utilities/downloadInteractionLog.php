@@ -80,7 +80,9 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
             break;
 
         case 'import':  // importing actions
-            array_push($action_filter, 'impDelimed', 'syncZotero', 'impKML', 'impRecords', 'impSt');
+            array_push($action_filter, 'impDelimed', 'syncZotero', 'impKML', 'impRecords', 'impSt',
+                'impBaseFields', 'impRecordTypes', 'impVocabulary', 'impTerms', 'impTermTranslations', 'impExtMedia', 'impFileData');
+
             $fileprefix = "import";
             break;
 
