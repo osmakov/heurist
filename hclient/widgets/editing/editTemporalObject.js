@@ -251,7 +251,7 @@ let TemporalPopup = (function () {
         $('input[value="Cancel"]').button();
         
 
-        $('#fTPQ, #fTAQ').blur(_updateSimpleRange).on('change', function(){
+        $('#fTPQ, #fTAQ').on('blur', _updateSimpleRange).on('change', function(){
         	const tpq = $('#fTPQ').val();
         	const taq = $('#fTAQ').val();
         	if(!window.hWin.HEURIST4.util.isempty(tpq) && !window.hWin.HEURIST4.util.isempty(taq)){

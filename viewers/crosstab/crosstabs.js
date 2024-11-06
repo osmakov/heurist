@@ -779,7 +779,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
                             //Create input box to change name
                             $(this).html('<input class="w-100" id="changeNameBox" value="'+fields3[name].intervals[intervalPosition].name+'">');
                             //When user clicks out of input box edit name
-                            $('#changeNameBox').blur(function(){
+                            $('#changeNameBox').on('blur', function(){
                                 let nameChanged = $('#changeNameBox').val();
                                 $(this).parent().html(nameChanged);
 
@@ -1164,7 +1164,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
 
                     $(this).html('<input type="number" class="w-100" id="changeValueBox" value="'+intervalValue+'">');
                     //When user clicks out of input box change the intervals value min and max
-                    $('#changeValueBox').blur(function(){                    
+                    $('#changeValueBox').on('blur', function(){                    
                         //Change the max value for the intervals based on what the user has entered.
                         let k=0;
                         while(k<fields3[name].intervals.length){
@@ -1608,7 +1608,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
 
                 $(this).html('<input class="w-100" id="changeNameBox" value="'+interval.name+'">');
                 //When user clicks out of input box edit name
-                $('#changeNameBox').blur(function(){
+                $('#changeNameBox').on('blur', function(){
                     let nameChanged = $('#changeNameBox').val();
                     $(this).parent().html(nameChanged);
 
