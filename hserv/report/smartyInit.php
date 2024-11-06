@@ -100,9 +100,9 @@ function smartyInit($smarty_templates_dir=null){
         $php_functions = array( 'count', //'constant',
                     'sizeof', 'in_array', 'is_array', 'intval', 'implode', 'explode',
                     //'array_key_exists', 'array_column',
-                    'array_count_values', 'array_keys', //'array_multisort',
+                    'array_count_values', 'array_keys',
                     'array_diff', 'array_merge', 'array_slice', 'array_unique',
-                    'asort', 'ksort', //'sort',
+                    //'array_multisort', 'asort', 'ksort', 'sort', - these function returns result by reference - it does not work in smarty5
                     'array_values',
                     'floatval', 'is_numeric', 'json_encode',
                     'nl2br',
@@ -121,9 +121,12 @@ function smartyInit($smarty_templates_dir=null){
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'translate', 'heuristModifierTranslate');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'arraysortby', 'heuristModifierArraySortByFields');
 
-        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'sort', 'heuristModifierArraySort');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_multisort', 'heuristModifierArrayMultiSort');
 
+        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'sort', 'heuristModifierArraySort');
+        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'asort', 'heuristModifierArrayASort');
+        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'ksort', 'heuristModifierArrayKSort');
+        
 
         return $smarty;
 }
@@ -131,6 +134,14 @@ function smartyInit($smarty_templates_dir=null){
 
 function heuristModifierArraySort($arr){
     sort($arr);
+    return $arr;
+}
+function heuristModifierArrayASort(&$arr){
+    asort($arr);
+    return $arr;
+}
+function heuristModifierArrayKSort($arr){
+    ksort($arr);
     return $arr;
 }
 
