@@ -2957,7 +2957,10 @@ $.widget( "heurist.editing_input", {
                         let $img = $input_img.find('img');
                         let $close_icon = $inputdiv.find('.ui-icon-window-close');
 
-                        $close_icon.css('left', $img.outerWidth(true) + 10);
+                        let base_width = $img.outerWidth() > $img.outerWidth(true) ? $img.outerWidth() : $img.outerWidth(true);
+                        base_width = base_width <= 0 ? $img[0].width : base_width;
+
+                        $close_icon.css('left', base_width + 10);
                     }, 500);
                 };
 
