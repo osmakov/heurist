@@ -373,7 +373,7 @@ $.widget( "heurist.searchBuilder", {
         let rty_ID = codes[codes.length-2];
         let dty_ID = codes[codes.length-1];
         let top_rty_ID = codes[0];
-        let lang = this.select_language.val();
+        let lang = this.select_language ? this.select_language.val() : '';
 
         if(!(top_rty_ID>0)) top_rty_ID = 0;
         if(!(rty_ID>0)) rty_ID = 0;
@@ -619,7 +619,7 @@ $.widget( "heurist.searchBuilder", {
                 this.refreshRectypeMenu();
             }
             
-            if(this.select_language == null){
+            if(this.select_language == null && this.element.find('#opt_language').length > 0){
 
                 this.select_language = this.element.find('#opt_language');
                 let options = [{title: 'ANY', key: '*', selected: true}, {title: 'Default', key: ''}];
@@ -799,15 +799,6 @@ $.widget( "heurist.searchBuilder", {
                         if(!treediv.is(':empty') && treediv.fancytree('instance')){
                             treediv.fancytree('destroy');
                         }
-
-            /* wrong place -> moved to utils_dbs
-            if(rectypeIds.length == 1){ //add first item for resource pointer
-                treedata[0]['children'].unshift({code: `${rectype}:exists`, key: 'exists', 
-                        name: `${$Db.rty(rectype, 'rty_Name')}`, 
-                        title: `${$Db.rty(rectype, 'rty_Name')} records`, 
-                        type: 'freetext'});
-            }
-            */
 
             //setTimeout(function(){
             treediv.addClass('tree-filter hidden_checkboxes').fancytree({
