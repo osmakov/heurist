@@ -1486,11 +1486,13 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
         getTranslation: function(values, lang){
             
             //"xx" means take current system language
+            let a2_lang = null;
             if(lang){
-
                 lang = window.hWin.HAPI4.getLangCode3(lang);
-                let a2_lang = that.sysinfo.common_languages[lang]['a2'].toUpperCase();
-
+                a2_lang = that.sysinfo.common_languages[lang]['a2'].toUpperCase();
+            }
+                
+            if(lang || a2_lang){
                 let def_val = '';
                 let is_object = $.isPlainObject(values);
                 
