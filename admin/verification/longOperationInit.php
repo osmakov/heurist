@@ -60,6 +60,7 @@ if(@$_REQUEST['type']=='titles'){
     <head>
         <title><?php echo $sTitle; ?></title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <link rel="stylesheet" type="text/css" href="../../h4styles.css">
 
         <script type="text/javascript">

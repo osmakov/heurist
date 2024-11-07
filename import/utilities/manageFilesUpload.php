@@ -45,6 +45,8 @@ if(!($max_size>0)) {$max_size = 0;}
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <![endif]-->
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
+        
         <title>File upload manager</title>
 
         <script type="text/javascript" src="<?php echo PDIR;?>external/jquery-ui-1.12.1/jquery-1.12.4.js"></script>

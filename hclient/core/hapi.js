@@ -83,7 +83,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
     *
     */
     function _init(_db, _oninit, _baseURL) { //, _currentUser) {
-    
+
         that.SystemMgr = new HSystemMgr(that);
 
         //@todo - take  database from URL
@@ -93,8 +93,8 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
             _database = window.hWin.HEURIST4.util.getUrlParameter('db');
         }
 
-        //not used anymore detectBaseURL();
-
+        detectBaseURL();
+        
         that.database = _database;
 
         if (!window.hWin.HR) {
@@ -167,7 +167,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
         }
     }
     
-    // not used anymore - we obtain correct values from server side 
+    // we obtain correct values from server side 
     // see window.hWin.HAPI4.sysinfo['baseURL']; and window.hWin.HAPI4.sysinfo['baseURL_pro'];
     //
     // finds and assign  installDir   baseURL    baseURL_pro

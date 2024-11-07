@@ -219,6 +219,7 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
     <head>
         <title>Heurist Interaction Log</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
 
         <?php
         includeJQuery();

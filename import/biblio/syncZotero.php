@@ -99,6 +99,7 @@ if($fh_data==null || is_string($fh_data)){
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <title>Zotero synchronization</title>
 
         <?php

@@ -120,6 +120,7 @@ $failed_exts = array();
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <title>Import Records In Situ / FieldHelepr Manifests</title>
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/detectHeurist.js"></script>
 

@@ -161,6 +161,7 @@ $url = str_replace('&amp;','&',htmlspecialchars($url));
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow">
 <meta content="charset=UTF-8"/>
 <title>3D Viewer</title>
 <script type="text/javascript" src="<?php echo EDIR;?>o3dv.min.js"></script>

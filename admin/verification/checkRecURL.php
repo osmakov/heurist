@@ -47,6 +47,7 @@ if(!$system->is_admin()){ //  $system->is_dbowner()
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>h4styles.css" />
         <title>Check Records URL</title>
     </head>

@@ -50,6 +50,7 @@ if($res){
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <title>Check Wysiwyg Texts</title>
         <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>h4styles.css" />
     </head>

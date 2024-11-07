@@ -136,6 +136,7 @@ if(mysql__check_dbname($db)==null){
                         <head>
                             <title>Heurist mediaplayer</title>
                             <base href="<?php echo HEURIST_BASE_URL;?>">
+                            <meta name="robots" content="noindex,nofollow">
                         </head>
                         <body>
                            <?php

@@ -39,6 +39,7 @@ if(! $system->init(@$_REQUEST['db'], true) ){
     <head>
         <title><?=HEURIST_TITLE ?></title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
     </head>
     <body style="padding:44px;">
         <div class="ui-corner-all ui-widget-content" style="width:640px; margin:0px auto; padding: 0.5em;">

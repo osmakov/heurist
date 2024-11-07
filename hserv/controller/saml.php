@@ -116,6 +116,7 @@ if($msg==null){
 <html lang="en">
 <head>
 <title>Heurist external authentification</title>
+<meta name="robots" content="noindex,nofollow">
 <script>
     window.onload = function(){
 console.log('Authentification completed ','<?php echo htmlspecialchars($msg);?>');

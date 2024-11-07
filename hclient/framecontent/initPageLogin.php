@@ -42,6 +42,7 @@ $hasAccess = ($system->is_admin());
 <head>
     <title><?php echo HEURIST_TITLE; ?></title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="robots" content="noindex,nofollow">
 
 <?php
     includeJQuery();

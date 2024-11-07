@@ -190,6 +190,7 @@ $use_custom_mirador = file_exists(dirname(__FILE__).'/../../../external/mirador3
 <html lang="en">
 <head>
 
+<meta name="robots" content="noindex,nofollow">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">

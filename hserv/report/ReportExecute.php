@@ -1,6 +1,7 @@
 <?php
 /*
-* ReportExecute.php
+* ReportExecute.php - executes Smarty templates, handles the
+* output of reports in various formats
 *
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org

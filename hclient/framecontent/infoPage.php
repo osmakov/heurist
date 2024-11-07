@@ -80,6 +80,7 @@ if(!isset($message)){
     <head>
         <title><?php print defined('HEURIST_TITLE')?HEURIST_TITLE:"Heurist";?></title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
 
         <link rel=icon href="<?php echo PDIR;?>favicon.ico" type="image/x-icon">
 

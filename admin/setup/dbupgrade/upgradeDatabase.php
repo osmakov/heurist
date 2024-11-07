@@ -46,6 +46,7 @@ if(!defined('PDIR')){
     <head>
         <title>Heurist database version upgrade</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
 
         <link rel=icon href="<?php echo PDIR?>favicon.ico" type="image/x-icon">
 

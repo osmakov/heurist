@@ -40,6 +40,7 @@ if($system->verifyActionPassword( $sysadmin_pwd, $passwordForServerFunctions) ){
         <title>Verify Heurist installation</title>
 
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
 
         <link rel="stylesheet" type="text/css" href="../../h4styles.css" />
         <style type="text/css">

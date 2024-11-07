@@ -196,6 +196,7 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
 
 <title><?php echo (@$_REQUEST['db']?htmlspecialchars($_REQUEST['db']):'').'. '.HEURIST_TITLE; ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="robots" content="noindex,nofollow">
 
 <meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE" />
 <meta content="telephone=no" name="format-detection">

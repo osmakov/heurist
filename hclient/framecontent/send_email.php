@@ -67,6 +67,7 @@ if(isset($_POST['data'])) {
 <html lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="robots" content="noindex,nofollow">
     <title>Bulk email sender</title>
 
     <!-- CSS -->

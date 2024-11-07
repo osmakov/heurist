@@ -44,6 +44,8 @@ $s_max_size = round($max_size/1024/1024).' MBytes';
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <![endif]-->
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
+        
         <title>Import XML or JSON</title>
 
         <?php

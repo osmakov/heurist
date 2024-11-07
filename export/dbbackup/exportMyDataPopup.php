@@ -78,6 +78,7 @@ if($mode>1){
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <title>Create data archive package</title>
 
 <?php

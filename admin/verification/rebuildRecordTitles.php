@@ -78,6 +78,7 @@ if(!$init_client || intval(@$_REQUEST['session'])>0){ //2a. init operation on cl
     <head>
         <title>Rebuild Constructed Record Titles</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>h4styles.css" />
 
 <?php if($init_client){

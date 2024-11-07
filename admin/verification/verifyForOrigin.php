@@ -41,6 +41,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow">
 <title>Verify Origin</title>
 <style>
     p {padding:0;margin:0px;}

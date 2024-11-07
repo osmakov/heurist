@@ -113,6 +113,8 @@ if(!@$_REQUEST['popup']){
 <head>
 	<title>HEURIST - View record</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="robots" content="noindex,nofollow">
+    
 	<link rel="icon" href="<?=HEURIST_BASE_URL?>favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="<?=HEURIST_BASE_URL?>favicon.ico" type="image/x-icon">
 

@@ -154,6 +154,8 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
 
         </script>
 
+        
+        <meta name="robots" content="noindex,nofollow">
     </head>
 
     <body class="popup" style="background-color: #FFF;padding: 0px;margin: 0px;">

@@ -68,6 +68,8 @@ if($is_json){
     <head>
         <title><?=HEURIST_TITLE?></title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="nofollow">
+        
         <link rel=icon href="<?php echo PDIR?>favicon.ico" type="image/x-icon">
 
         <!-- CSS -->

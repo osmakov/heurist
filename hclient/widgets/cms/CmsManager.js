@@ -23,7 +23,8 @@
 /**
  * Class: CmsManager
  * 
- * The CmsManager class is responsible for managing the CMS (Content Management System) functionalities such as selecting, viewing, and editing websites or pages.
+ * The CmsManager class is responsible for managing the CMS (Content Management System) 
+ * functionalities such as selecting, viewing, and editing websites or pages.
  * It also provides methods for creating new websites or pages.
  */
 class CmsManager {

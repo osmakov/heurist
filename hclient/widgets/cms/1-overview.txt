@@ -18,7 +18,7 @@ Overview:   Functions to manage a CMS-based website within a Heurist database. D
 
 Notes:
 
-Updated:     28 Jan 2021
+Updated:     06 Nov 2024
 
 ----------------------------------------------------------------------------------------------------------------
 
@@ -39,3 +39,54 @@ Updated:     28 Jan 2021
 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
 * See the License for the specific language governing permissions and limitations under the License.
 */
+
+development plan:
+
+1. editCMS2.js - to CmsEditor class
+
+2. hLayoutMgr.js - to HLayoutMgr class
+        save in new format: json configuration in header + html content (to avoid encoding/escaping issues)
+        on init it a) loads html b) applies styles c) inits widgets
+        
+
+3. websiteRecord.php  to CmsExectue.php - invocation via FrontController.php
+        a) finds home page
+        b) loads values from home record: for header and footer elements (title, logos, banner, languages)
+        c) custom css
+        d) main menu content as ul/li 
+        e) loads template file
+        f) outputs either to client or into file
+        e) outputs sitemap
+        
+4. websiteScriptAndStyles.php  to CmsScripts.php - include required scripts and styles 
+                                  CmsScripts.js  - class to manage (load pages, init widgets) 
+                                  
+5. ~10~20 sample templates
+                                  
+6.  CEO
+
+1) Sitemap for heurist (main) and published websites        
+    a) use Google API to submit
+    b) include into robots:    Sitemap: https://heurist.huma-num.fr/main_sitemap.xml
+2) META noindex, nofollow for Admin UI
+3) Disallow in robots.txt Admin UI folders
+4) Does not include to index recordView for particular records
+
+5) Create published/generated version of websites
+    https://heurist.huma-num.fr/MyDatabase/web/92/page_name.html - generated version form HEURIST_FILESTORE/MyDatabase/generated-web
+    https://heurist.huma-num.fr/MyDatabase/web/92/342 - dynamic version
+
+        
+
+// refer CMS: WordPress, Wix, Blogger        
+        
+// Turn on output buffering
+ob_start();
+echo "Foo";                          
+//  Return the contents of the output buffer
+$htmlStr = ob_get_contents();
+// Clean (erase) the output buffer and turn off output buffering
+ob_end_clean(); 
+// Write final string to file
+file_put_contents($fileName, $htmlStr);
+

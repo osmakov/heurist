@@ -1928,6 +1928,7 @@ if($intofile){ // flags HuNI manifest + separate files per record
 <!DOCTYPE html>
 <html lang="en">
         <head>
+            <meta name="robots" content="noindex,nofollow">
             <title>The HuNI project</title>
             <style>
                 * {

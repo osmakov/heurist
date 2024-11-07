@@ -147,8 +147,9 @@ $index_page = <<<EXP
 
     <head>
         <meta charset="UTF-8">
+        <meta name="robots" content="all">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name=”generator” content=”Heurist”>
+        <meta name="generator" content="Heurist">
         <meta name="keywords" content="Heurist, Heurist databases, Digital Humanitites, Database management">
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Index of Heurist Databases</title>
@@ -199,8 +200,9 @@ $template_page = <<<EXP
 
     <head>
         <meta charset="UTF-8">
+        <meta name="robots" content="all">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name=”generator” content=”Heurist”>
+        <meta name="generator" content="Heurist">
         <meta name="description" content="{db_desc}">
         <meta name="keywords" content="Heurist, Heurist database, Digital Humanitites, Database management, {db_name}, {db_dname}, {db_owner}">
         <meta name="author" content="{db_owner}">
@@ -439,7 +441,7 @@ foreach ($databases as $idx=>$db_name){
     }
 
     $values[14] = $vals['cnt'];
-
+        
     //list of all rectype names
 
     // This currently sorts alphabetically within groups, but could later use rty_OrderInGroup if it is ever set

@@ -39,6 +39,7 @@ if(!@$_REQUEST['mail']){
     <head>
         <title>List of databases with missing or non-writeable folders</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
         <link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>h4styles.css" />
     </head>
     <body class="popup">
