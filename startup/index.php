@@ -765,7 +765,7 @@ a{
                         </div>
                         <div style="font-size:smaller">You will be redirected to the Heurist database upon your selection</div>
                         <div style="font-size:smaller"><a href="#" id="showDatabaseList" data-step="8">Browse all databases on server</a>
-                        (as <a href="../../HarvestableDatabaseDescriptions/index.html" target="_blank" rel="noopener">html pages</a>)</div>
+                        (as <a href="../../databases/index.html" target="_blank" rel="noopener">html pages</a>)</div>
                     </div>
 
                 </div>

@@ -10,4 +10,4 @@ Disallow: /heurist/movetoparent/
 Disallow: /heurist/redirects/
 Disallow: /heurist/server_scripts/
 Disallow: /heurist/viewers/
-#Sitemap: [your domain]/sitemap_index.xml
+Sitemap: [your domain]/sitemap.xml

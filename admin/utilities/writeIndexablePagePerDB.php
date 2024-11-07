@@ -71,7 +71,6 @@ if (@$argv) {
     if(array_key_exists('db', $_REQUEST)){
         $arg_database = explode(',',$_REQUEST['db']);
     }*/
-
     exit('This function is for command line execution');
 }
 
@@ -103,6 +102,11 @@ if(defined('HEURIST_BASE_URL_PRO')){
 }else{
     $base_url = 'https://' . HEURIST_SERVER_NAME . HEURIST_DEF_DIR;
 }
+if(defined('HEURIST_SERVER_URL')){
+    $base_url_root = HEURIST_SERVER_URL.'/';
+}else{
+    $base_url_root = 'https://' . HEURIST_SERVER_NAME . '/';
+}
 
 if(empty($base_url) || strcmp($base_url, 'http://') == 0 || strcmp($base_url, 'https://') == 0){
     exit('The script was unable to determine the server\'s name, please define it within heuristConfigIni.php then re-run this script.');
@@ -111,15 +115,15 @@ if(empty($base_url) || strcmp($base_url, 'http://') == 0 || strcmp($base_url, 'h
 if(substr($base_url, -1, 1) != '/'){
     $base_url .= '/';
 }
-if(strpos($base_url, HEURIST_DEF_DIR) === false){
-    $base_url = rtrim($base_url, '/') . HEURIST_DEF_DIR;
-}
+//if(strpos($base_url, HEURIST_DEF_DIR) === false){
+//    $base_url = rtrim($base_url, '/') . HEURIST_DEF_DIR;
+//}
 
 $mysqli = $system->get_mysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 // TODO: Should be using setting for web root in configIni.php
-$index_dir = dirname(__FILE__)."/../../../HarvestableDatabaseDescriptions";
+$index_dir = dirname(__FILE__)."/../../../databases"; //was HarvestableDatabaseDescriptions
 
 $is_dir_writable = folderExists($index_dir, true);
 
@@ -138,8 +142,27 @@ $value_to_replace = array('{db_name}','{db_desc}','{db_url}','{db_website}','{db
                           '{server_host}','{server_url}','{owner_name}','{owner_email}',
                           '{rec_count}','{file_count}','{rec_last}','{struct_last}','{struct_names}','{date_now}');
 
+$curr_date = date('Y-m-d');
+
+//xml version="1.0" encoding="UTF-8"
+$sitemap_page = XML_HEADER."\n".<<<EXP
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <url>
+      <loc>{$base_url}startup/index.php</loc>
+   </url>
+   <url>
+      <loc>{$base_url_root}databases/index.html</loc>
+      <lastmod>{$curr_date}</lastmod>
+      <priority>0.8</priority>
+   </url>
+   {databases_urls}  
+</urlset> 
+EXP;
+
+                          
+
 //
-// File content for (HarvestableDatabaseDescriptions/index.html)
+// File content for (databases/index.html)
 //
 $index_page = <<<EXP
 <!DOCTYPE html>
@@ -168,7 +191,7 @@ $index_page = <<<EXP
         </div>
 
         <div style="margin: 10px 5px 15px;">
-            . 'Databases and websites on this server (<a href="$base_url" target=_blank>$base_url</a>)
+            Databases and websites on this server (<a href="$base_url" target=_blank>$base_url</a>)
             <p><b>**************************************************
             <br>This page is primarily for web indexing.
             <br>Many of these websites are just undeveloped stubs.
@@ -187,12 +210,17 @@ EXP;
 // Format for each row of database details within index.html
 //
 $index_row = '<strong>{db_name}</strong> (<a href="{db_page_link}" target=_blank>database page</a>)<br>' // <strong>{db_dname} ({db_name})</strong>
-            . '{website_url}<br>'
+            . '{website_link}<br>'
             . '<span class="desc">{db_desc}</span>';
-$index_row_replace = array('{db_name}', '{db_page_link}', '{website_url}', '{db_desc}');
+$index_row_replace = array('{db_name}', '{db_page_link}', '{website_link}', '{db_desc}');
+
+$sitemap_replace = array('{db_page_link}', '{website_url}', '{website_mod}');
+
+$sitemap_row_info = '<url><loc>'.$base_url_root.'databases/{db_page_link}</loc><lastmod>'.$curr_date.'</lastmod><priority>0.7</priority></url>';
+$sitemap_row_web = '<url><loc>{website_url}</loc><lastmod>{website_mod}</lastmod><priority>0.7</priority></url>';
 
 //
-// File content for each database file (HarvestableDatabaseDescriptions/{database_name}.html)
+// File content for each database file (databases/{database_name}.html)
 //
 $template_page = <<<EXP
 <!DOCTYPE html>
@@ -314,6 +342,7 @@ $pages_made = 0;
 $list_is_array = is_array($arg_database);
 
 $index_databases = array();// array of databases with websites (is inserted, with links, into index.html)
+$sitemap_databases = array();
 
 foreach ($databases as $idx=>$db_name){
 
@@ -373,18 +402,24 @@ foreach ($databases as $idx=>$db_name){
 
     $cms_home_id = mysql__select_value($mysqli, 'SELECT rty_ID FROM defRecTypes WHERE rty_OriginatingDBID = 99 AND rty_IDInOriginatingDB = 51');
     $db_name = basename($db_name);
-    $prime_url_base = $base_url.$db_name.'/web/';
+    $prime_url_base = $base_url_root.$db_name.'/web/'; //was $base_url.
     $alt_url_base = $base_url.'?db='.$db_name.'&website&id=';
 
+    $cms_links = array();
+    
     if($cms_home_id !== null){
 
-        $cms_homes = mysql__select_list2($mysqli, 'SELECT rec_ID FROM Records WHERE rec_RecTypeID = ' . $cms_home_id . ' AND rec_NonOwnerVisibility = "public"');
-        if(is_array($cms_homes) && !empty($cms_homes)){
+        //Search only public websites
+        $cms_homes = [];
+        $public_websites = mysql__select_assoc2($mysqli, 'SELECT rec_ID, rec_Modified FROM Records WHERE rec_RecTypeID = ' . $cms_home_id . ' AND rec_NonOwnerVisibility = "public"');
+        if(is_array($public_websites) && !empty($public_websites)){
 
-            foreach ($cms_homes as $idx => $rec_ID) {
+            foreach ($public_websites as $rec_ID => $rec_Date) {
                 $prime_url = $prime_url_base.$rec_ID;
                 $alt_url = $alt_url_base.$rec_ID;
-                $cms_homes[$idx] = '<a href="'.$prime_url.'" target="_blank" rel="noopener">'.$prime_url.'</a> (<a href="'.$alt_url.'" target="_blank" rel="noopener">alternative link</a>)';
+                
+                $cms_homes[] = '<a href="'.$prime_url.'" target="_blank" rel="noopener">'.$prime_url.'</a> (<a href="'.$alt_url.'" target="_blank" rel="noopener">alternative link</a>)';
+                $cms_links[] = array($prime_url, strstr($rec_Date,' ',true));
             }
             $values[3] = implode('<br>', $cms_homes);
         }
@@ -413,7 +448,8 @@ foreach ($databases as $idx=>$db_name){
 
     //find number of records and date of last update
 
-    $vals = mysql__select_row_assoc($mysqli, 'SELECT count(rec_ID) as cnt, max(rec_Modified) as last_rec FROM Records WHERE rec_FlagTemporary != 1');
+    $vals = mysql__select_row_assoc($mysqli, 'SELECT count(rec_ID) as cnt, max(rec_Modified) as last_rec FROM Records '
+                .'WHERE rec_FlagTemporary != 1');
     if($vals==null){
         echo $tabs0.$db_name.' cannot execute query for Records table'.$eol;
         continue;
@@ -456,8 +492,6 @@ foreach ($databases as $idx=>$db_name){
     // Setup content
     $content = str_replace($value_to_replace, $values, $template_page);
 
-
-
     //Write to file
     $fname = $index_dir.'/'.$db_name.'.html';
     $res = fileSave($content, $fname);
@@ -467,11 +501,20 @@ foreach ($databases as $idx=>$db_name){
     }
 
     // $db_name => Name, [1] => Description, [3] => Websites
-    if($values[3] !== 'None'){ // only databases with websites are listed in index.html
+    if($values[3] !== 'None'){ // only databases with PUBLIC websites are listed in index.html
 
         $index_details = str_replace($index_row_replace, array($db_name, $db_name.'.html', $values[3], $values[1]), $index_row);
 
         array_push($index_databases, $index_details);
+        
+        
+        $sitemap_row = str_replace($sitemap_replace, array($db_name.'.html', '', ''), $sitemap_row_info);
+        array_push($sitemap_databases, $sitemap_row); //link to description
+        
+        foreach ($cms_links as $cms_link){
+            $sitemap_row = str_replace($sitemap_replace, array('', $cms_link[0], $cms_link[1]), $sitemap_row_web);
+            array_push($sitemap_databases, $sitemap_row); //link to website
+        }
     }
 
     echo $tabs0.$db_name.' Completed, saved to '.$fname.$eol;
@@ -480,7 +523,19 @@ foreach ($databases as $idx=>$db_name){
 // Update index.html
 $index_file = $index_dir . '/index.html';
 
+$sitemap_file = dirname(__FILE__).'/../../../../sitemap.xml';
+
 $index_page = str_replace('{databases}', implode('<br><br><br>', $index_databases), $index_page);
+
+$sitemap_page = str_replace('{databases_urls}', implode($eol, $sitemap_databases), $sitemap_page);
+
+
+$res = fileSave($sitemap_page, $sitemap_file);
+if($res <= 0){
+    echo $tabs0.' We were unable to update sitemap.xml'.$eol;
+}else{
+    echo $tabs0.' Updated sitemap.xml'.$eol;
+}
 
 $res = fileSave($index_page, $index_file);
 if($res <= 0){
