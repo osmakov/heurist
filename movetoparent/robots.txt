@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /HEURIST_FILESTORE/
+Disallow: /h6-alpha/
+Disallow: /heurist/admin/
+Disallow: /heurist/export/
+Disallow: /heurist/hclient/
+Disallow: /heurist/hserv/
+Disallow: /heurist/import/
+Disallow: /heurist/movetoparent/
+Disallow: /heurist/redirects/
+Disallow: /heurist/server_scripts/
+Disallow: /heurist/viewers/
+#Sitemap: [your domain]/sitemap_index.xml
