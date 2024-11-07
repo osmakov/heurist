@@ -356,8 +356,8 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
                     if(arguments[1]){
 
                         //verify definitions relevance every 20 seconds
-                        if(false){
-                            setInterval(function(){window.hWin.HAPI4.EntityMgr.relevanceEntityData()}, 20000);
+                        if(!window.hWin.RefreshCacheInterval){
+                            window.hWin.RefreshCacheInterval = setInterval(function(){window.hWin.HAPI4.EntityMgr.relevanceEntityData()}, 600000);
                         }
 
                         if(!window.hWin.HEURIST4.util.isnull(callback) && window.hWin.HEURIST4.util.isFunction(callback)){

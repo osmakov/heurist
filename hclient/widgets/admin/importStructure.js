@@ -1525,10 +1525,10 @@ $.widget( "heurist.importStructure", {
         msg = '<div id="handled-defs">'
                     + '<div>'
                         + '<ul>'
-                            + (!window.hWin.HEURIST4.util.isempty(response.report.rectypes) ? `<li href="#rty">Record types</li>` : '')
-                            + (!window.hWin.HEURIST4.util.isempty(response.report.detailtypes) ? `<li href="#dty">Base fields</li>` : '')
-                            + (!window.hWin.HEURIST4.util.isempty(response.report.terms) ? `<li href="#trm">Terms</li>` : '')
-                            + (!window.hWin.HEURIST4.util.isempty(response.report.translations) ? `<li href="#translation">Translations</li>` : '')
+                            + (!window.hWin.HEURIST4.util.isempty(response.report.rectypes) ? `<li><a href="#rty">Record types</a></li>` : '')
+                            + (!window.hWin.HEURIST4.util.isempty(response.report.detailtypes) ? `<li><a href="#dty">Base fields</a></li>` : '')
+                            + (!window.hWin.HEURIST4.util.isempty(response.report.terms) ? `<li><a href="#trm">Terms</a></li>` : '')
+                            + (!window.hWin.HEURIST4.util.isempty(response.report.translations) ? `<li><a href="#translation">Translations</a></li>` : '')
                         + '</ul>'
                     + '</div>'
                     + msg

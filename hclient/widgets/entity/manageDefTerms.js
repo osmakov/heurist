@@ -2850,16 +2850,14 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                         that._filterByVocabulary();    
                     }
 
-
                     window.hWin.HEURIST4.msg.showMsgDlg(context.result.length
                         + ' term'
                         + (context.result.length>1?'s were':' was')
                         + ' added.', null, 'Terms imported',
                         {default_palette_class:that.options.default_palette_class});
 
+                    that._triggerRefresh('trm');
                 }
-
-
             }
         });
 
@@ -2902,9 +2900,8 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                          null, 'Terms translations imported',
                         {default_palette_class:that.options.default_palette_class});
 
+                    that._triggerRefresh('trm');
                 }
-
-
             }
         });
 

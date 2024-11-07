@@ -2049,8 +2049,10 @@ $.widget( "heurist.manageEntity", {
     //
     //
     _triggerRefresh: function( type, recID ){
-        window.hWin.HAPI4.triggerEvent(window.hWin.HAPI4.Event.ON_STRUCTURE_CHANGE, 
-            { source:this.uuid, type:type, recID: recID });    
+        window.hWin.HAPI4.EntityMgr.refreshEntityData(type, () => {
+            window.hWin.HAPI4.triggerEvent(window.hWin.HAPI4.Event.ON_STRUCTURE_CHANGE, 
+                { source:this.uuid, type:type, recID: recID });    
+        });
     }
 });
 
