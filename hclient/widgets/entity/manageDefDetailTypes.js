@@ -2310,11 +2310,13 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
 
                     that._loadData(false);
 
-                    let msg = context.result;;
+                    let entities = 'dty';
+                    let msg = context.result;
                     if(Array.isArray(context.result) || context.result.refresh_terms){
 
                         msg = '<strong>Definitions imported</strong>, report:<br><br>';
                         if(context.result.refresh_terms){
+                            entities += ',trm';
                             delete context.result.refresh_terms;
                         }
     
@@ -2323,6 +2325,10 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
 
                     window.hWin.HEURIST4.msg.showMsgDlg(msg, null, 'Base fields imported',
                         {default_palette_class:that.options.default_palette_class});
+
+                    window.hWin.HAPI4.EntityMgr.refreshEntityData(entities, () => {
+                        window.hWin.HAPI4.triggerEvent(window.hWin.HAPI4.Event.ON_STRUCTURE_CHANGE);
+                    });
                 }
             }
         });
