@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 
     /**
@@ -272,16 +271,16 @@ print '<script>var prepared_params = '.json_encode($params).';</script>';
                         in_popup_dialog: isPopup,
                         new_record_params: new_record_params,
                         layout_mode:'<div class="ent_wrapper editor">'
-                            + '<div class="ent_content_full recordList"  style="display:none;"/>'
+                            + '<div class="ent_content_full recordList"  style="display:none;"></div>'
 
                             + '<div class="ent_header editHeader"></div>'
                             + '<div class="editFormDialog ent_content">'
                                     + '<div class="ui-layout-west"><div class="editStructure treeview_with_header" style="background:white">'       +'</div></div>' //container for rts_editor
-                                    + '<div class="ui-layout-center"><div class="editForm"/></div>'
+                                    + '<div class="ui-layout-center"><div class="editForm"></div></div>'
                                     + '<div class="ui-layout-east"><div class="editFormSummary">....</div></div>'
-                                    //+ '<div class="ui-layout-south><div class="editForm-toolbar"/></div>'
+                                    //+ '<div class="ui-layout-south><div class="editForm-toolbar"></div></div>'
                             + '</div>'
-                            + '<div class="ent_footer editForm-toolbar"/>'
+                            + '<div class="ent_footer editForm-toolbar"></div>'
                         +'</div>',
                         onInitFinished:function(){
 
