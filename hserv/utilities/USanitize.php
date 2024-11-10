@@ -68,7 +68,7 @@ class USanitize {
     }
 
     //
-    //
+    //  to be removed (used only once in usr_info.php )
     //
     public static function sanitizeRequest(&$params){
 
@@ -222,8 +222,10 @@ class USanitize {
             $config = \HTMLPurifier_Config::createDefault();
 
             $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-            $config->set('HTML.DefinitionID', 'html5-definitions');// unqiue id
-            $config->set('HTML.DefinitionRev', 1);
+            
+            //reason: Warning: Due to a documentation error in previous version of HTML Purifier, your definitions are not being cached. If this is OK, you can remove the %$type.DefinitionRev and %$type.DefinitionID declaration. Otherwise, modify your code to use maybeGetRawDefinition, and test if the returned value is null before making any edits (if it is null, that means that a cached version is available, and no raw operations are necessary). 
+            //$config->set('HTML.DefinitionID', 'html5-definitions');// unqiue id
+            //$config->set('HTML.DefinitionRev', 1);
 
             $config->set('Cache.SerializerPath', HEURIST_SCRATCHSPACE_DIR);
             //$config->set('Core.EscapeNonASCIICharacters', true);
@@ -296,7 +298,7 @@ class USanitize {
         // sanitize filename
         if($filename!=null){
     //            [\x7F\xA0\xAD]|          # non-printing characters DEL, NO-BREAK SPACE, SOFT HYPHEN - removed since it brokes utf-8 characters
-
+    
     //            [#\[\]@!$&\'+,;=()]|     # URI reserved https://tools.ietf.org/html/rfc3986#section-2.2
     //            [{}^\~`]                 # URL unsafe characters https://www.ietf.org/rfc/rfc1738.txt
 

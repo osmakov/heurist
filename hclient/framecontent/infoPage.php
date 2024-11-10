@@ -36,16 +36,19 @@ $is_error_unknown = false;
 
 //variable message can be defined as global
 if(!isset($message)){
-    if( @$_REQUEST['error'] ){
-        $message = $_REQUEST['error'];
+    
+    $req_params = USanitize::sanitizeInputArray();
+    
+    if( @$req_params['error'] ){
+        $message = $req_params['error'];
         if(is_array($message)){
             $message = @$message['message'];
             if(@$message['sysmsg'] && $message!=null){
                 $message = $message.$message['sysmsg'];
             }
         }
-    }elseif( @$_REQUEST['message'] ){
-        $message = $_REQUEST['message'];
+    }elseif( @$req_params['message'] ){
+        $message = $req_params['message'];
         $is_error = false;
     }else{
         //take error message from system
@@ -62,6 +65,7 @@ if(!isset($message)){
         $message ='Unknown error.';
         $is_error_unknown = true;
     }
+    USanitize::purifyHTML($message);
 
     if($is_error_unknown){
         if(defined('CONTACT_HEURIST_TEAM')){
