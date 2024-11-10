@@ -177,15 +177,19 @@ $index_page = <<<EXP
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Index of Heurist Databases</title>
 
+        <link rel=icon href="{$base_url}favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" type="text/css" href="{$base_url}h4styles.css" />
+        
         <style>
             .desc{display: inline-block; max-width: 800px; text-align: justify;}
-            .heurist_logo{object-fit: cover;object-position: 5% 0;width: 40px;height: 38px;vertical-align: -12px;}
+            .logo{background-color:#2e3e50;width:100%}
         </style>
     </head>
 
     <body>
         <div style="margin: 10px 0px;">
-             <img src="{$base_url}hclient/assets/branding/h4logo_small.png" alt="Heurist logo" class="heurist_logo">
+             <div class="logo" style="background-color:#2e3e50;width:100%"></div>
+             <br>
              <strong>Heurist database builder for Humanities research </strong>
              (<a href="https://HeuristNetwork.org" target="_blank" rel="noopener">https://HeuristNetwork.org</a>)
         </div>
@@ -209,9 +213,9 @@ EXP;
 //
 // Format for each row of database details within index.html
 //
-$index_row = '<strong>{db_name}</strong> (<a href="{db_page_link}" target=_blank>database page</a>)<br>' // <strong>{db_dname} ({db_name})</strong>
+$index_row = '<div class="db-info"><strong>{db_name}</strong> (<a href="{db_page_link}" target=_blank>database page</a>)<br>' // <strong>{db_dname} ({db_name})</strong>
             . '{website_link}<br>'
-            . '<span class="desc">{db_desc}</span>';
+            . '<span class="desc">{db_desc}</span></div>';
 $index_row_replace = array('{db_name}', '{db_page_link}', '{website_link}', '{db_desc}');
 
 $sitemap_replace = array('{db_page_link}', '{website_url}', '{website_mod}');
@@ -525,7 +529,7 @@ $index_file = $index_dir . '/index.html';
 
 $sitemap_file = dirname(__FILE__).'/../../../../sitemap.xml';
 
-$index_page = str_replace('{databases}', implode('<br><br><br>', $index_databases), $index_page);
+$index_page = str_replace('{databases}', implode('<br><br>', $index_databases), $index_page);
 
 $sitemap_page = str_replace('{databases_urls}', implode($eol, $sitemap_databases), $sitemap_page);
 

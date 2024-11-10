@@ -1,4 +1,3 @@
-
 <?php
 /**
 * Main setup sequence page
@@ -82,8 +81,6 @@ if (!defined('PDIR')){
     _doCreateDatabase - create new database (from step3)
     _showGetStarted() - getting started (step6)
     _showDatabaseList()  - all databases (step8)
-
-
 */
 
     //
@@ -373,7 +370,6 @@ if (!defined('PDIR')){
     // server request for db list
     //
     function _getDatabases( show_list ){
-
             const url = baseURL+'startup/listDatabases.php';
 
             let request = {format:'json'};
@@ -386,9 +382,9 @@ if (!defined('PDIR')){
                         all_databases = response.data;
 
                         if(Object.keys(all_databases).length>0 && show_list){
-                            _showDatabaseList();
+                            _showDatabaseList(); //show list at once
                         }else{
-                            _initControls();
+                            _initControls(); //show new database
                         }
 
                     }else{
@@ -537,7 +533,9 @@ if (!defined('PDIR')){
     //
     // opens list of all databases
     //
-    function _showDatabaseList(){
+    function _showDatabaseList(event){
+        
+        window.hWin.HEURIST4.util.stopEvent(event);
 
         let screen = $('.center-box.screen8');
         let list_div = screen.find('.db-list');
@@ -553,8 +551,17 @@ if (!defined('PDIR')){
 
                 if(sval.length>1){
 
-                    list_div.find('li').each(function(i,li){
-                        if(li.innerHTML.toLowerCase().indexOf(sval)>=0){
+                    list_div.find('.db-info').each(function(i,li){
+                        
+                        let dbname;
+                        
+                        if(li.nodeName.toLowerCase()=='li'){
+                            dbname = li.innerHTML.toLowerCase();
+                        }else{
+                            dbname = li.firstChild.innerHTML.toLowerCase();
+                        }
+                        
+                        if(dbname.indexOf(sval)>=0){
                             li.style.display = 'block';
                         }else{
                             li.style.display = 'none';
@@ -562,7 +569,7 @@ if (!defined('PDIR')){
                     });
 
                 }else{
-                    list_div.find('li').show();
+                    list_div.find('.db-info').show();
                 }
             }});
 
@@ -570,7 +577,7 @@ if (!defined('PDIR')){
             list_div.empty();
             let len = Object.keys(all_databases).length;
             for (let idx=0;idx<len;idx++){
-                $('<li class="truncate">'+all_databases[idx]+'</li>').appendTo(list_div);
+                $('<li class=db-info truncate">'+all_databases[idx]+'</li>').appendTo(list_div);
             }
 
             // hide loading icon - show title and list
@@ -764,7 +771,7 @@ a{
                             <button class="ui-button-action" id="btnOpenDatabase">Go</button>
                         </div>
                         <div style="font-size:smaller">You will be redirected to the Heurist database upon your selection</div>
-                        <div style="font-size:smaller"><a href="#" id="showDatabaseList" data-step="8">Browse all databases on server</a>
+                        <div style="font-size:smaller"><a href="listDatabases.php" target="_blank" id="showDatabaseList" data-step="8">Browse all databases on server</a>
                         (as <a href="../../databases/index.html" target="_blank" rel="noopener">html pages</a>)</div>
                     </div>
 
@@ -867,7 +874,7 @@ a{
             </div>
 
 
-            <!-- SCREEN#8 Terms and conditions -->
+            <!-- SCREEN#8 Databases -->
             <div class="center-box screen8" style="width:1330;height:auto;margin:10px;width:auto;">
                 <h1 style="display:none">Databases</h1>
                 <span>Filter: </span>
