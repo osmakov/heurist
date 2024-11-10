@@ -95,8 +95,8 @@ function smartyInit($smarty_templates_dir=null){
         // create security instance
         $heurist_security_policy = new HeuristSecurityPolicy($smarty);
         
-        //search custom plugins in   vendor/smarty/smarty/libs/plugins/
-        $plugins = folderContent('vendor/smarty/smarty/libs/plugins/','php');
+        //search custom plugins in   vendor/smarty/smarty/libs/customplugins/
+        $plugins = folderContent('vendor/smarty/smarty/libs/customplugins/','php');
         foreach($plugins['records'] as $file){
             $file = $file[2].$file[1];
             if(file_exists($file)){
