@@ -259,8 +259,8 @@ $image_banner = __getFile($rec, '99-951', null);//DT_CMS_BANNER
 
 $image_logo = $image_logo?'<img style="max-width:270px;" src="'.$image_logo.'">':'';
 
-$meta_keywords = htmlspecialchars(__getValue($rec, DT_CMS_KEYWORDS));
-$meta_description = htmlspecialchars(__getValue($rec, DT_SHORT_SUMMARY));
+$meta_keywords = htmlspecialchars(strip_tags(__getValue($rec, DT_CMS_KEYWORDS)));
+$meta_description = htmlspecialchars(strip_tags(__getValue($rec, DT_SHORT_SUMMARY)));
 
 $website_language_def = '';
 $website_languages_links = '';

@@ -77,7 +77,7 @@
     <title><?php print htmlspecialchars(strip_tags($website_title_translated));?></title>
     <meta name="robots" content="all">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="keywords" content="Heurist, Digital Humanities, Humanities Data, Research Data, Database Management, Academic data, Open Source, Free software, FOSS, University of Sydney,<?php echo $meta_keywords;?>">
+    <meta name="keywords" content="<?php echo $meta_keywords;?>,Heurist, Digital Humanities, Humanities Data, Research Data, Database Management, Academic data, Open Source, Free software, FOSS, University of Sydney">
     <meta name="description" content="<?php echo $meta_description;?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="<?php echo $image_icon;?>"> <!--  type="image/x-icon" -->
