@@ -49,9 +49,9 @@ class HeuristSecurityPolicy extends Security {
                     'strip', 'strstr', 'substr', 'strpos', 'string_format', 'strlen', 'strip_tags',
                     'arraysortby',
                     'time','translate','truncate',
-                    'out','wrap',
+                    'out','wrap',  
                     'upper','utf8_encode','wordwrap');
-
+                    
   public $allow_super_globals = true; //default true
 
   public $allowed_tags = false;
@@ -91,11 +91,22 @@ function smartyInit($smarty_templates_dir=null){
         $smarty->setCompileDir($smarty_templates_dir.'compiled');
         $smarty->setCacheDir($smarty_templates_dir.'cache');
         $smarty->setConfigDir($smarty_templates_dir.'configs');
+        
+        // create security instance
+        $heurist_security_policy = new HeuristSecurityPolicy($smarty);
+        
+        //search custom plugins in   vendor/smarty/smarty/libs/plugins/
+        $plugins = folderContent('vendor/smarty/smarty/libs/plugins/','php');
+        foreach($plugins['records'] as $file){
+            $file = $file[2].$file[1];
+            if(file_exists($file)){
+                include $file;
+            }
+        }
 
         // enable security
-
-        $smarty->enableSecurity('HeuristSecurityPolicy');
-
+        $smarty->enableSecurity($heurist_security_policy);
+        
         //allowed php functions
         $php_functions = array( 'count', //'constant',
                     'sizeof', 'in_array', 'is_array', 'intval', 'implode', 'explode',
@@ -127,7 +138,6 @@ function smartyInit($smarty_templates_dir=null){
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'asort', 'heuristModifierArrayASort');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'ksort', 'heuristModifierArrayKSort');
         
-
         return $smarty;
 }
 
