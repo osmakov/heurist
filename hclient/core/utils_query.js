@@ -568,6 +568,263 @@ window.hWin.HEURIST4.query = {
         result['code'] = code.join(':');  //qcode without last dty_ID
         
         return result;
+    },
+
+    jsonQueryToPlainText: function(query, is_sub_query = false){
+
+        let plain_text = '';
+        if(window.hWin.HEURIST4.util.isempty(query) || !window.hWin.HEURIST4.util.isJSON(query)){
+            return plain_text;
+        }
+
+        query = window.hWin.HEURIST4.util.isJSON(query);
+        let rty_ID = null;
+        let deconstructed = [];
+        let sortby = [];
+
+        let idx = query.findIndex((obj) => Object.hasOwn(obj, 't'));
+        if(idx > 0){
+            query.unshift(query.splice(idx, 1)[0]);
+        }
+
+        for(const idx in query){
+
+            let part = query[idx];
+            let key = Object.keys(part)[0];
+            let field_key = key;
+            let value = part[key];
+            let cond = '';
+
+            let parts = key.split(':');
+            key = parts.shift();
+
+            let field = '';
+            let type = 'freetext';
+
+            switch(field_key){
+                case 'ids':
+                case 'id':
+                    field = 'Record IDs';
+                    break;
+                case 'title':
+                    field = 'Record Titles';
+                    break;
+                case 'url':
+                case 'u':
+                    field = 'Record URLs';
+                    break;
+                case 'notes':
+                case 'n':
+                    field = 'Record Notes';
+                    break;
+                case 'added':
+                    field = 'Record Creation date';
+                    break;
+                case 'date':
+                case 'modified':
+                    field = 'Record Last Modification';
+                    break;
+                case 'addedby':
+                    field = 'Record Creator';
+                    break;
+                case 'owner':
+                case 'workgroup':
+                case 'wg':
+                    field = 'Record Owner';
+                    break;
+                case 'tag':
+                case 'keyword':
+                case 'kwd':
+                    field = 'Record Tags';
+                    break;
+                case 'visibility':
+                case 'access':
+                    field = 'Record Accessibility';
+                    break;
+                case 'user':
+                    cond = `Records Bookmarked by user(s) in "${value}"`;
+                    break;
+                case 'before':
+                case 'after':
+                case 'date':
+                case 'modified':
+                    let filler = field_key == 'date' || field_key == 'modified' ? 'on' : field_key;
+                    cond = `Records last modified ${filler} the ${value}`;
+                    break;
+                case 'sortby':
+                    value = window.hWin.HEURIST4.query.sortbyValue(value);
+                    !value || sortby.push(value);
+                    break;
+                case 't':
+                case 'type':
+                    rty_ID = value;
+                    value = window.hWin.HEURIST4.util.isPositiveInt(value) ? $Db.rty(value, 'rty_Name') : value;
+                    deconstructed.unshift(`Searching for ${value} records`);
+                    break;
+                case 'all':
+                case 'any':
+                    let sub_query = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
+                    deconstructed.push(`${field_key === 'any' ? 'Meets one of the following filters:<div style="margin-left:5px;">' : ''}${sub_query}${field_key === 'any' ? '</div>' : ''}`);
+                    break;
+
+                default:
+
+                    //key === 'f' || key === 'field' || key === 'fc' || key === 'count'
+
+                    field = parts.join(':');
+                    if(window.hWin.HEURIST4.util.isPositiveInt(field)){
+                        type = $Db.dty(field, 'dty_Type');
+                        let field_name = $Db.rst(rty_ID, field, 'rst_DisplayName');
+                        field_name = field_name ?? $Db.dty(field, 'dty_Name');
+                        field = field_name;
+                    }
+
+                    if(key.startsWith('link') || key.startsWith('related')){
+                        //linked_to,linkedfrom,related_to,relatedfrom,links
+                        let sub_query = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
+                        let linking = key.indexOf('link') >= 0 ? 'Linked' : 'Related';
+                        let direction = key.indexOf('from') >= 0 ? 'from' : 'to';
+                        cond = `<br>Search ${linking} Records ${direction} ${field}:<br><div style="padding:5px;">${sub_query}</div>`;
+                        field = '';
+                    }
+
+                    break;
+            }
+
+            if(window.hWin.HEURIST4.util.isempty(field) && window.hWin.HEURIST4.util.isempty(cond)){
+                continue;
+            }
+
+            cond = window.hWin.HEURIST4.util.isempty(cond) ? window.hWin.HEURIST4.query.extractCondition(value, type) : cond;
+            if(window.hWin.HEURIST4.util.isempty(cond)){
+                continue;
+            }
+
+            deconstructed.push(cond.replace('__FIELD__', field));
+        }
+
+        if(rty_ID){
+            plain_text = `${deconstructed.shift()}${deconstructed.length > 0 ? ', refined by:<br>' : ''}`;
+        }else if(!is_sub_query){
+            plain_text = `Searching all records${deconstructed.length > 0 ? ', refined by:<br>' : ''}`;
+        }
+
+        plain_text += deconstructed.join(', AND <br>');
+
+        return window.hWin.HEURIST4.util.stripTags(plain_text, 'br, em, b, strong, u, i, div');
+    },
+
+    extractCondition: function(value, type){
+
+        let res = 'Filter by ';
+        let ext = '<em>__FIELD__</em> values';
+
+        if(typeof value !== 'string' && typeof value !== 'number'){
+            res = '';
+        }
+
+        if(type === 'enum' && value.match(/^(?:[0-9]+,?)+$/)){
+            value = value.split(',');
+            value = value.map((id) => $Db.trm(id, 'trm_Label'));
+            value = value.filter((trm) => !window.hWin.HEURIST4.util.isempty(trm)).join(', ');
+        }
+
+        if(value === 'NULL'){
+            res += 'records that do not have any <em>__FIELD__</em>';
+        }else if(window.hWin.HEURIST4.util.isempty(value)){
+            res += 'records that have a <em>__FIELD__</em> value';
+        }else if(value.startsWith('=') || value.startsWith('-')){
+            value = value.substring(1);
+            res += `${ext} that extactly match "<em>${value}</em>"`;
+        }else if(value.startsWith('@++') || value.startsWith('@--')){
+            value = value.substring(3);
+            res = `${ext} that contain ${value.startsWith('@++') ? 'all' : 'none'} of the words in "<em>${value}</em>"`;
+        }else if(value.startsWith('@')){
+            value = value.substring(1);
+            res = `${ext} that contain all of the words in "<em>${value}</em>"`;
+        }else if(value[0] === '%' || value.endsWith('%')){
+            value = value[0] === '%' ? value.substring(1) : value.slice(0, -1);
+            res = `${ext} that ${value[0] === '%' ? 'start' : 'end'} with "<em>${value}</em>"`;
+        }else if(value.startsWith('<=') || value.startsWith('>=')){
+            value = value.substring(2);
+            let compare = '';
+            if(value.startsWith('<')){
+                compare = type == 'date' ? 'before' : 'less than';
+            }else{
+                compare = type == 'date' ? 'after' : 'greater than';
+            }
+            res = `${ext} that are ${compare} ${value}`;
+        }else if(value.indexOf('<>') > 0 || value.indexOf('><') > 0){
+            let compare = '';
+            if(value.indexOf('<>') > 0){
+                compare = type == 'date' ? 'overlaps within' : 'between';
+                value = value.split('<>');
+            }else{
+                compare = type == 'date' ? 'falls between' : '???';
+                value = value.split('><');
+            }
+            res = `${ext} that ${compare} ${value[0]} and ${value[1]}`;
+        }else{
+            res = `${ext} that contains "<em>${value}</em>"`;
+        }
+
+        return res;
+    },
+
+    sortbyValue: function(value){
+
+        let res = '';
+        const is_negate = value[0] === '-';
+        value = is_negate ? value.substring(1) : value;
+
+        switch(value){
+            case 'id':
+                res = 'Record ID';
+                break;
+            case 'url':
+                res = 'Record URL';
+                break;
+            case 'm':
+            case 'modified':
+                res = 'Last Modified';
+                break;
+            case 'a':
+            case 'added':
+                res = 'Created Date';
+                break;
+            case 't':
+            case 'title':
+                res = 'Record Title';
+                break;
+            case 'rt':
+            case 'record type':
+                res = 'Record Type';
+                break;
+            case 'r':
+            case 'rating':
+                res = 'Your Ratings';
+                break;
+            case 'p':
+            case 'popularity':
+                res = 'Your Bookmarks';
+                break;
+            default:
+                if(value.startsWith('f:') || value.startsWith('field:')){
+
+                    let parts = value.split(':');
+                    parts.shift();
+                    value = parts.join(':');
+
+                    res = value;
+                    if(window.hWin.HEURIST4.util.isPositiveInt(value)){
+                        res = $Db.rst(rty_ID, value, 'rst_DisplayName');
+                        res = res ?? $Db.dty(value, 'dty_Name');
+                    }
+                }
+                break;
+        }
+
+        return res;
     }
     
 }

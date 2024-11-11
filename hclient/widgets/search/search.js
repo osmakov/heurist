@@ -59,6 +59,8 @@ $.widget( "heurist.search", {
 
     _use_global_query: false, // when on clicking 'filter', apply the global query instead
 
+    _query_as_plain: '', // current query in plain text
+
     // the constructor
     _create: function() {
 
@@ -154,7 +156,7 @@ $.widget( "heurist.search", {
         }} );
 
 
-        this.input_search = $( "<textarea>", {rows: 2} )
+        this.input_search = $( "<textarea>", {rows: 2, title: 'Insert value to search'} )
         .css({
             'max-width':'99%',
             'resize':'none', 
@@ -194,7 +196,8 @@ $.widget( "heurist.search", {
             this.input_search.css('padding-right', '28px');
         }
 
-        // AAAA
+        // Search textarea
+        let $tooltip = null;
         this._on( this.input_search, {
             click: function(){
                 if(this.input_search_prompt2.is(':visible')){
@@ -202,7 +205,28 @@ $.widget( "heurist.search", {
                 }
             },
             keyup: this._showhide_input_prompt, 
-            change: this._showhide_input_prompt
+            change: this._showhide_input_prompt,
+            mouseenter: () => {
+                $tooltip = this.input_search.tooltip({
+                    show: {
+                        delay: 2000,
+                        duration: 0
+                    },
+                    content: this._query_as_plain,
+                    open: (event, ui) => {
+                        ui.tooltip.css({
+                            'font-size': '12px',
+                            'background-color': '#D4DBEA'
+                        })
+                    }
+                });
+                $tooltip.tooltip('open');
+            },
+            mouseleave: () => {
+                if($tooltip && $tooltip.tooltip('instance') !== undefined){
+                    $tooltip.tooltip('destroy');
+                }
+            }
         });
 
         //disable because of initial search
@@ -680,6 +704,8 @@ $.widget( "heurist.search", {
             this.btn_search_as_user.attr('title', window.hWin.HR('filter_start_hint'));
             this.btn_search_as_user.button('option', 'label', window.hWin.HR(this.options.search_button_label));
         }
+
+        this._query_as_plain = window.hWin.HEURIST4.query.jsonQueryToPlainText(this.input_search.val(), false);
     },
 
     /* EXPERIMENTAL
