@@ -1480,7 +1480,7 @@ console.error('Cardinal layout widget does not have proper options');
             let ele = $('div[layout_id="'+layout_id+'"]');
             
             if( ele.hasClass('ui-tabs-panel') ){
-                let ele2 = $(ele.parent()).find('ul li:eq('+(ele.index()-1)+')');
+                let ele2 = $(ele.parent()).find('ul li').eq(ele.index()-1);
                 if(show_or_hide){
                     ele2.show();
                 }else{

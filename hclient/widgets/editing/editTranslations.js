@@ -319,7 +319,7 @@ $.widget( "heurist.editTranslations", {
 
             //find last seleted
             if(!check_default){
-                let ele = this.element.find('select:last');
+                let ele = this.element.find('select').last();
                 if(ele.length>0){
                     ind = ele[0].selectedIndex;
                     if(ind<0) ind = 0;
