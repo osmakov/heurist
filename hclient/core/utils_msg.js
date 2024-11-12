@@ -97,6 +97,13 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                 }
 
             }
+            
+            let error_report_team = '';
+            if(window.hWin?.HAPI4 && window.hWin.HAPI4?.sysinfo){
+                let admin_email =  window.hWin.HAPI4.sysinfo.sysadmin_email;
+                error_report_team = '<br><br>'+window.hWin.HR('Error_Report_Team').replace('#sysadmin_email#', admin_email)
+            }
+            
             if(response.status==window.hWin.ResponseStatus.SYSTEM_FATAL
             || response.status==window.hWin.ResponseStatus.SYSTEM_CONFIG){
 
@@ -109,7 +116,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                 dlg_title = window.hWin.HEURIST4.util.isempty(dlg_title) ? 'Invalid request made' : dlg_title;
 
                 msg = msg + '<br><br>' + window.hWin.HR('Error_Wrong_Request') 
-                    +'<br><br>' + window.hWin.HR('Error_Report_Team').replace('#sysadmin_email#', window.hWin.HAPI4.sysinfo.sysadmin_email);
+                    +'<br><br>' + error_report_team;
 
             }else if(response.status==window.hWin.ResponseStatus.REQUEST_DENIED){
                 
@@ -134,7 +141,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                 
             }else if(response.status==window.hWin.ResponseStatus.DB_ERROR){
                 dlg_title = window.hWin.HEURIST4.util.isempty(dlg_title) ? 'Database error' : dlg_title;
-                msg = msg + '<br><br>'+window.hWin.HR('Error_Report_Team').replace('#sysadmin_email#', window.hWin.HAPI4.sysinfo.sysadmin_email);
+                msg = msg + error_report_team;
             }else  if(response.status==window.hWin.ResponseStatus.ACTION_BLOCKED){
                 // No enough rights or action is blocked by constraints
                 dlg_title = window.hWin.HEURIST4.util.isempty(dlg_title) ? 'Action blocked' : dlg_title;
@@ -144,7 +151,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
             }else if(response.status==window.hWin.ResponseStatus.UNKNOWN_ERROR){
                 // An unknown/un-handled error
                 dlg_title = window.hWin.HEURIST4.util.isempty(dlg_title) ? 'An unknown error has occurred' : dlg_title;
-                msg += '<br><br>'+window.hWin.HR('Error_Report_Team').replace('#sysadmin_email#', window.hWin.HAPI4.sysinfo.sysadmin_email);
+                msg += error_report_team;
             }
             
             if(request_code!=null){
@@ -167,8 +174,10 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                     let $dlg = window.hWin.HEURIST4.msg.getMsgDlg();            
                     $dlg.dialog( "close" );
                     if(show_login_dlg){
-                            window.hWin.HAPI4.setCurrentUser(null);
-                            $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_CREDENTIALS);
+                            if(window.hWin?.HAPI4){
+                                window.hWin.HAPI4.setCurrentUser(null);
+                                $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_CREDENTIALS);
+                            }
                     }
                 }; 
                 

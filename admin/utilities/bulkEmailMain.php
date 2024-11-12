@@ -286,7 +286,7 @@ if(!$has_emails || empty($emails)) {
 
                 //input[name="databases"]
                 $('#db_list').val(dbs.join(','));
-
+                
                 return dbs;
             }
 
