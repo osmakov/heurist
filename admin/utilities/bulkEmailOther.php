@@ -377,7 +377,8 @@ function getDatabaseDetails($mysqli, $db_list){
 		// Get record count
         $db_data['rec_count'] = mysql__select_value($mysqli, "SELECT COUNT(*) FROM `$database`.Records WHERE rec_FlagTemporary != 1");
 
-        $last_recent = mysql__select_value($mysqli, "SELECT CONVERT_TZ(MAX(rec_Modified), @@session.time_zone, "+00:00") FROM `$database`.Records WHERE rec_FlagTemporary != 1");
+        $last_recent = mysql__select_value($mysqli, 
+        "SELECT CONVERT_TZ(MAX(rec_Modified), @@session.time_zone, \"+00:00\") FROM `$database`.Records WHERE rec_FlagTemporary != 1");
 
         if(!$last_recent){
             $last_recent = date_create($last_recent);
