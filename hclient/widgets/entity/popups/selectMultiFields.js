@@ -67,6 +67,9 @@ class HRapidFieldAdditions{
 		}
 
 		this.rty_ID = _rty_ID;
+	}
+
+	init(){
 
 		this.setupVariables();
 
