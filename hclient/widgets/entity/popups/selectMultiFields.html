@@ -43,7 +43,8 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 let rty_ID = window.hWin.HEURIST4.util.getUrlParameter('rtyID', location.search);
-                new HRapidFieldAdditions(rty_ID);
+                let rfa_object = new HRapidFieldAdditions(rty_ID);
+                rfa_object.init();
             });
         </script> 
 

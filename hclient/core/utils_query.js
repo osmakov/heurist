@@ -582,6 +582,51 @@ window.hWin.HEURIST4.query = {
         let deconstructed = [];
         let sortby = [];
 
+        function handleRectype(rty_IDs){
+
+            if(rty_IDs.match(/\d, ?\d/)){
+                rty_IDs = window.hWin.HEURIST4.util.isPositiveInt(id) ? [id] : rty_IDs.split(',').filter((id) => window.hWin.HEURIST4.util.isPositiveInt(id) && id > 0);
+            }else{
+                rty_IDs = [rty_IDs];
+            }
+
+            let labels = [];
+            for(const id of rty_IDs){
+                labels.push($Db.rty(id, 'rty_Name') ?? id);
+            }
+            rty_ID = rty_IDs.join(',');
+
+            deconstructed.unshift(`Searching for <em>${window.hWin.HEURIST4.util.stripTags(labels.join(', '))}</em> records`);
+        }
+
+        function handleDefault(key, field, value){
+
+            let type = '';
+            let conditional = '';
+            if(window.hWin.HEURIST4.util.isPositiveInt(field)){
+                type = $Db.dty(field, 'dty_Type');
+                let field_name = $Db.rst(rty_ID, field, 'rst_DisplayName');
+                field_name = field_name ?? $Db.dty(field, 'dty_Name');
+                field = field_name;
+            }
+
+            if(key.startsWith('link') || key.startsWith('related')){
+                //linked_to,linkedfrom,related_to,relatedfrom,links
+                let sub_query = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
+                let linking = key.indexOf('link') >= 0 ? 'Linked' : 'Related';
+                let direction = key.indexOf('from') >= 0 ? 'from' : 'to';
+                conditional = `<br>Search ${linking} Records ${direction} ${field}:<br><div style="padding:5px;">${sub_query}</div>`;
+                field = '';
+            }
+
+            return [field, conditional, type];
+        }
+
+        function handleAnyAll(type, value){
+            let sub_text = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
+            deconstructed.push(`${type === 'any' ? 'Meets one of the following filters:<div style="margin-left:5px;">' : ''}${sub_text}${type === 'any' ? '</div>' : ''}`);
+        }
+
         let idx = query.findIndex((obj) => Object.hasOwn(obj, 't'));
         if(idx > 0){
             query.unshift(query.splice(idx, 1)[0]);
@@ -646,10 +691,7 @@ window.hWin.HEURIST4.query = {
                     break;
                 case 'before':
                 case 'after':
-                case 'date':
-                case 'modified':
-                    let filler = field_key == 'date' || field_key == 'modified' ? 'on' : field_key;
-                    cond = `Records last modified ${filler} the ${value}`;
+                    cond = `Records last modified ${field_key} the ${value}`;
                     break;
                 case 'sortby':
                     value = window.hWin.HEURIST4.query.sortbyValue(value);
@@ -657,37 +699,17 @@ window.hWin.HEURIST4.query = {
                     break;
                 case 't':
                 case 'type':
-                    rty_ID = value;
-                    value = window.hWin.HEURIST4.util.isPositiveInt(value) ? $Db.rty(value, 'rty_Name') : value;
-                    deconstructed.unshift(`Searching for ${value} records`);
+                    handleRectype(value);
                     break;
                 case 'all':
                 case 'any':
-                    let sub_query = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
-                    deconstructed.push(`${field_key === 'any' ? 'Meets one of the following filters:<div style="margin-left:5px;">' : ''}${sub_query}${field_key === 'any' ? '</div>' : ''}`);
+                    handleAnyAll(field_key, value);
                     break;
 
                 default:
 
                     //key === 'f' || key === 'field' || key === 'fc' || key === 'count'
-
-                    field = parts.join(':');
-                    if(window.hWin.HEURIST4.util.isPositiveInt(field)){
-                        type = $Db.dty(field, 'dty_Type');
-                        let field_name = $Db.rst(rty_ID, field, 'rst_DisplayName');
-                        field_name = field_name ?? $Db.dty(field, 'dty_Name');
-                        field = field_name;
-                    }
-
-                    if(key.startsWith('link') || key.startsWith('related')){
-                        //linked_to,linkedfrom,related_to,relatedfrom,links
-                        let sub_query = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
-                        let linking = key.indexOf('link') >= 0 ? 'Linked' : 'Related';
-                        let direction = key.indexOf('from') >= 0 ? 'from' : 'to';
-                        cond = `<br>Search ${linking} Records ${direction} ${field}:<br><div style="padding:5px;">${sub_query}</div>`;
-                        field = '';
-                    }
-
+                    [field, cond, type] = handleDefault(key, parts.join(':'), value);
                     break;
             }
 
@@ -723,8 +745,9 @@ window.hWin.HEURIST4.query = {
             res = '';
         }
 
-        if(type === 'enum' && value.match(/^(?:[0-9]+,?)+$/)){
+        if(type === 'enum' && (window.hWin.HEURIST4.util.isPositiveInt(value) || value.match(/\d, ?\d/))){
             value = value.split(',');
+            value = value.filter((id) => window.hWin.HEURIST4.util.isPositiveInt(id));
             value = value.map((id) => $Db.trm(id, 'trm_Label'));
             value = value.filter((trm) => !window.hWin.HEURIST4.util.isempty(trm)).join(', ');
         }
