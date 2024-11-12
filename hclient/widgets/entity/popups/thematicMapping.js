@@ -554,7 +554,7 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
             let themes_list = this.element.find('#thematic_maps_list');
             this.options.thematic_mapping.splice(this.currentThemeIdx, 1);
             //remove from select
-            themes_list.find('option:eq(' + this.currentThemeIdx + ')').remove();
+            themes_list.find('option').eq(this.currentThemeIdx).remove();
             
             if(this.options.thematic_mapping.length==0){
                 //offer exit
@@ -618,7 +618,7 @@ $.widget( "heurist.thematicMapping", $.heurist.recordAction, {
             }
 
             //rename in the list
-            this.element.find('#thematic_maps_list').find('option:eq(' + this.currentThemeIdx + ')').html(t_map.title);
+            this.element.find('#thematic_maps_list').find('option').eq(this.currentThemeIdx).html(t_map.title);
             
             this.options.thematic_mapping[this.currentThemeIdx] = t_map;
             
