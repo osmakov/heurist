@@ -1,5 +1,7 @@
 /**
 *  appInitAll - main function which initialises everything
+* 
+*  to be replaced with cms/HLayoutMgr
 *
 *  @see ext/layout
 *  @see layout_defaults.js - configuration file

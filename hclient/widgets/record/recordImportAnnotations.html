@@ -1,0 +1,44 @@
+<div id="div_header" class="ent_wrapper" style="margin:10px 10px 0px 40px;font-size:0.95em">
+
+    <h2>ADVANCED USERS</h2>
+    <p style="font-weight:bold;font-size:larger;padding:10 0">Create Annotation records from registred IIIF manifests</p>
+
+    <p>Note: Use with caution, this function can create a lot of extra records if there are many registred manifests</p>
+
+    <p>This function creates, updates and reads XML manifest files in the folders (and their descendants)
+        listed in Design > Properties (Paths which contain files to be indexed as multimedia records)
+        and creates Digital Media records for all files uploaded to the database, with pointers back to the files.
+        New files are added to existing manifests. </p>
+
+    <p>
+        Digital Media records are only added for files without such a record, existing Digital Media records are unaffected.
+    </p><p>
+        <i>Note (in case of need): If you get the message that your folders are not writeable, ask your system adminstrator to adjust the permissions on the HEURIST_FILESTORE directory and its descendants. The folders in the filestore must be writeable by the PHP system - normally they should belong to and be writable by the group heurist (which should be set up to include apache and any administrators who have access to the backend), or be owned and writable by apache or www-data (as appropriate).</i>
+    </p>
+
+
+    <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records</label>
+    <p>
+        <button class="ui-button-action btnAction">Proceed</button>
+    </p>
+
+
+</div>
+
+<div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
+    <h3 style="margin:0">Report:</h3>
+    <p>
+    <table>
+    <tr><td>Total count of manifests:</td><td id="total"></td></tr>
+    <tr><td>Processed manifests:</td><td id="processed"></td></tr>
+    <tr><td>Without annotations:</td><td id="without_annotations"></td></tr>
+    <tr><td colspan="2"><br><br></td></tr>
+
+    <tr><td>Annotations added:</td><td id="added"></td></tr>
+    <tr><td>Annotations updated:</td><td id="updated"></td></tr>
+
+    <tr><td colspan="2"><br><br></td></tr>
+    <tr><td style="vertical-align:top">Issues:</td><td id="issues"></td></tr>
+    </table>
+    </p>
+</div>

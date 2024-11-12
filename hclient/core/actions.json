@@ -747,6 +747,16 @@
       }
     },
     {
+      "id": "menu-files-annotations",
+      "text": "Import Annotations from IIIF manifests",
+      "data": {
+        "user_admin_status": "1",
+        "size": "medium",
+        "icon": "ui-icon-tags",
+        "container": "populate"
+      }
+    },
+    {
       "href": "import/delimited/importMedia.php",
       "id": "menu-files-csv",
       "text": "Register files from CSV",

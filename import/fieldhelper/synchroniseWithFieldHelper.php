@@ -47,18 +47,11 @@ global $rep_counter, $rep_issues, $system_folders,
 $fieldhelper_to_heurist_map, $mediaExts, $progress_divid,
 $geoDT, $fileDT, $titleDT, $startdateDT, $enddateDT, $descriptionDT, $failed_exts;
 
-
 if(!defined('RT_MEDIA_RECORD')){
 
-    $isOK = false;
-
     $importDef = new DbsImport( $system );
-    if($importDef->doPrepare(  array('defType'=>'rectype',
-    'conceptCode'=>$rtDefines['RT_MEDIA_RECORD'] ) ))
-    {
-        $isOK = $importDef->doImport();
-    }
-
+    $isOK = $importDef->checkAndImportRty($rtDefines['RT_MEDIA_RECORD']);
+    
     if(!$isOK){
         $system->addErrorMsg('Cannot download record type "Digital Media item" required by the function you have requested. ');
         include_once ERROR_REDIR;

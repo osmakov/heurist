@@ -1,5 +1,5 @@
 /**
-*  ActionHandler
+*  ActionHandler - manages list of (menu) actions 
 *
 *
 * @package     Heurist academic knowledge management system
@@ -23,7 +23,7 @@
 /**
  * Class: ActionHandler
  * 
- * The ActionHandler class is responsible for managing a list of actions fetched from a remote JSON file or provided directly as an array. 
+ * The ActionHandler class is responsible for managing a list of actions (menu actions) fetched from a remote JSON file or provided directly as an array. 
  * It offers methods for executing actions based on their ID and performing verification tasks where necessary.
  */
 class ActionHandler {
@@ -215,7 +215,7 @@ class ActionHandler {
              menu_container.find('li').removeClass('ui-state-active');
              menu_container.find('li[data-action="' + actionid + '"]').addClass('ui-state-active');
          }
-
+                                                   
          let popup_dialog_options = {
              isdialog: !container,
              innerTitle: true,
@@ -231,8 +231,11 @@ class ActionHandler {
              ...dialog_options
          };
 
-         if (window.hWin.HR(actionid+'-header') != actionid+'-header') {
+         const title_key = actionid+'-header';
+         if (window.hWin.HR(title_key) == title_key) { //translation not found
              popup_dialog_options.title = window.hWin.HR(adata?.header || action.text);
+         }else{
+             popup_dialog_options.title = window.hWin.HR(title_key);
          }
          
          return popup_dialog_options;
@@ -414,7 +417,9 @@ class ActionHandler {
 
                 window.hWin.HEURIST4.ui.showRecordActionDialog('repositoryConfig', popup_dialog_options);
                 break;
-                
+            case "menu-files-annotations":
+                window.hWin.HEURIST4.ui.showRecordActionDialog('recordImportAnnotations', popup_dialog_options);
+                break;
             case "menu-records-archive":  // not used
                 window.hWin.HEURIST4.ui.showRecordActionDialog('recordArchive');
                 break;

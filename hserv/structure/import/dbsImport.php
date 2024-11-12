@@ -2500,5 +2500,25 @@ $mysqli->commit();
             $definition[$indexes[3]] = $source_Name;
         }
     }
+    
+    //
+    // Check and download missed record type 
+    //
+    public function checkAndImportRty($rty_ID){
+        
+        //import missed record type
+        $isOK = false;
+        $importDef = new \DbsImport( $this->system );
+        if($importDef->doPrepare(  array(
+        'defType'=>'rectype',
+        'databaseID'=>2,
+        'conceptCode'=>array($rty_ID))))
+        {
+            $isOK = $importDef->doImport();
+        }
+        
+        return $isOK;
+    }
+    
 }
 ?>

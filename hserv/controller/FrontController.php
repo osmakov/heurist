@@ -22,6 +22,7 @@
 namespace hserv\controller;
 
 use hserv\controller\ReportController;
+use hserv\records\import\ImportAnnotations;
 use hserv\System;
 use hserv\utilities\USanitize;
 use hserv\structure\ConceptCode;
@@ -86,13 +87,25 @@ class FrontController
             return;
         }
 
-        if (@$_REQUEST['controller'] == 'ReportController'  // $this->req_params['controller']
+        if (@$this->req_params['controller'] == 'ReportController'  // $this->req_params['controller']
             || @$this->req_params['template']
             || @$this->req_params['template_body']
             || @$this->req_params['template_id']) {
 
             $controller = new ReportController($this->system, $this->req_params);
             $controller->handleRequest(@$this->req_params['action']);
+            
+        }elseif(@$this->req_params['controller'] == 'ImportAnnotations'){
+            
+            $controller = new ImportAnnotations($this->system, $this->req_params);
+            $result = $controller->execute();
+            
+            if (is_bool($result) && $result == false) {
+                $result = $this->system->getError();
+            } else {
+                $result = ['status' => HEURIST_OK, 'data' => $result];
+            }
+            dataOutput($result);            
         }
     }
 }

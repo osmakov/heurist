@@ -2220,7 +2220,7 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
     //              rec_cnt   - count of recrds
     //              file_ids   - file ids
     //
-    private function getMediaRecords($ids, $search_mode, $return_mode)
+    public function getMediaRecords($ids, $search_mode, $return_mode)
     {
         $ids = prepareIds($ids);
 

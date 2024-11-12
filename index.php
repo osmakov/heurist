@@ -117,9 +117,10 @@ if( @$_REQUEST['isalive']==1){
     return;
 
 
-}elseif (@$_REQUEST['controller']=='ReportController' || array_key_exists('template',$_REQUEST) || array_key_exists('template_id',$_REQUEST)){
+}elseif (@$_REQUEST['controller']=='ReportController' || array_key_exists('template',$_REQUEST) || array_key_exists('template_id',$_REQUEST)
+        || @$_REQUEST['controller']=='ImportAnnotations'){
 
-    //execute smarty template
+    //execute smarty template,  $_REQUEST may be composed in resolver.php
     $controller = new FrontController($_REQUEST);
     $controller->run();
     exit;
