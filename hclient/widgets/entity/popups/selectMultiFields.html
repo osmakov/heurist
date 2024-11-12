@@ -41,15 +41,9 @@
         <script type="text/javascript" src="selectMultiFields.js"></script>
 
         <script type="text/javascript">
-            var multiSelectObj;
             $(document).ready(function() {
-                multiSelectObj = new HMultiSelect();
-
-                multiSelectObj.init(); // initialise popup's JS
-
-                multiSelectObj.setupElements();
-
-                multiSelectObj.setupStyling();
+                let rty_ID = window.hWin.HEURIST4.util.getUrlParameter('rtyID', location.search);
+                new HRapidFieldAdditions(rty_ID);
             });
         </script> 
 

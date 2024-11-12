@@ -787,7 +787,7 @@ $.widget( "heurist.manageDefDetailTypes", $.heurist.manageEntity, {
                                 "close-on-blur": false,
                                 title: 'Insert Base Fields',
                                 window: window.hWin,
-                                height: '735px',
+                                height: '765px',
                                 width: '1020px',
                                 padding: 0,
                                 default_palette_class: 'ui-heurist-design',
