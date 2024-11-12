@@ -2200,6 +2200,7 @@ function recordUpdateTitle($system, $recID, $rectype_or_mask, $recTitleDefault)
         }
     }
 
+    TitleMask::initialize($system);
     $new_title = TitleMask::fill($recID, $mask);
 
     if(($new_title==null || strpos($new_title, 'Title mask not generated.') === 0) && $recTitleDefault!=null) {

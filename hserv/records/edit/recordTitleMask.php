@@ -76,18 +76,23 @@ class TitleMask {
 
     //private static $DT_PARENT_ENTITY = 0;
 
-    public static function initialize()
+    public static function initialize($_system=null)
     {
 
         if (self::$initialized) {return;}
 
-        global $system;
-        self::$system = $system;
-        self::$mysqli = $system->get_mysqli();
-        self::$db_regid = $system->get_system('sys_dbRegisteredID');
+        if(isset($_system)){
+            self::$system = $_system;
+        }else{
+            global $system;
+            self::$system = $system;
+        }
+        
+        self::$mysqli = self::$system->get_mysqli();
+        self::$db_regid = self::$system->get_system('sys_dbRegisteredID');
         self::$initialized = true;
 
-        $system->defineConstant('DT_PARENT_ENTITY');
+        self::$system->defineConstant('DT_PARENT_ENTITY');
     }
 
     public static function set_fields_correspondence($fields_correspondence){
