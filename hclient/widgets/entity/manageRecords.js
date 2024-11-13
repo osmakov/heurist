@@ -4255,6 +4255,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                 +'<div style="padding:10px 50px 0px 0px;float:right">'
                     +'<span class="btn-edit-rt btns-admin-only">Attributes</span>'
                     +'<span class="btn-update-struct btns-admin-only">Update structure from source</span>'
+                    +'<span class="btn-refresh-struct">Refresh structure</span>'
                     +'<span class="btn-rec-history btns-admin-only">History</span>'
                     +'<span class="btn-edit-rt-template btns-admin-only">Template</span>'
                     +'<span class="btn-bugreport">Bug report</span>'
@@ -4313,6 +4314,14 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                                     ,{recordType:that._currentEditRecTypeID,
                                       default_palette_class: 'ui-heurist-design'});});
 
+                this.element.find('.btn-refresh-struct').button({icon: 'ui-icon-refresh'})
+                        .css(btn_css).on('click', () => {
+                            window.hWin.HEURIST4.msg.bringCoverallToFront(this.element, null, '<span style="color: white;">Refreshing database cache...</span>');
+                            window.hWin.HAPI4.EntityMgr.refreshEntityData('rty,trm,dty,rst', () => {
+                                window.hWin.HEURIST4.msg.sendCoverallToBack();
+                                that._initEditForm_step3(that._currentEditID);
+                            });
+                        });
                 if(this._currentEditID){
 
                     this.element.find('.btn-rec-history').button({icon:'ui-icon-clock'})
