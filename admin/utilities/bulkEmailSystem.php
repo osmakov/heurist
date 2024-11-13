@@ -826,6 +826,7 @@ class SystemEmailExt {
         $title_detailtype_id = ConceptCode::getDetailTypeLocalID("2-1");
         $summary_detailtype_id = ConceptCode::getDetailTypeLocalID("2-3");
         $date_detailtype_id = ConceptCode::getDetailTypeLocalID("2-9");
+        $count_detailtype_id = ConceptCode::getDetailTypeLocalID("1609-3322");
 
         if (empty($note_rectype_id) || empty($title_detailtype_id) || empty($summary_detailtype_id) || empty($date_detailtype_id)) { // ensure all are valid
 
@@ -850,10 +851,16 @@ class SystemEmailExt {
                 $title = 'ERROR. '.$title;
             }
 
-            $details = array($title_detailtype_id=>$title,
+            $details = [
+                $title_detailtype_id=>$title,
                 $date_detailtype_id=>"now",
                 $summary_detailtype_id=>$this->get_receipt(), //content
-                "rec_ID"=>$rec_id);
+                "rec_ID"=>$rec_id
+            ];
+
+            if(!empty($count_detailtype_id)){
+                $details[$count_detailtype_id] = $this->emails_sent_count;
+            }
 
             // Proceed with saving
             $rtn = recordSave($system, array("ID"=>$rec_id, "RecTypeID"=>$note_rectype_id, "details"=>$details));
