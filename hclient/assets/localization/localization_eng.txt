@@ -202,6 +202,7 @@
 #HELP#
 #menu-help-roadmap#Roadmap
 #menu-help-devhist#Feature history
+#menu-help-issues#Current issues
 #menu-help-quick-tips#Understanding Heurist
 #menu-help-online#Documentation
 #menu-help-website#Heurist Network website

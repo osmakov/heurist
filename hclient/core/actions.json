@@ -614,6 +614,12 @@
         "text": "Feature history"
     },
     {
+        "id": "menu-help-issues",
+        "text": "Current issues",
+        "href": "https://heuristref.net/Heurist_Job_Tracker/web/64/1526",
+        "target": "_blank"
+    },
+    {
         "id": "menu-help-bugreport",
         "text": "Bug report/feature request",
         
