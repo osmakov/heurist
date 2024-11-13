@@ -98,7 +98,7 @@ use hserv\controller\ReportController;
 require_once dirname(__FILE__).'/../../../autoload.php';
 
 require_once dirname(__FILE__).'/../../../hserv/records/search/recordFile.php';
-require_once dirname(__FILE__).'/../../../admin/verification/checkRecURL.php';
+require_once dirname(__FILE__).'/../../verification/URLChecker.php';
 
 //retrieve list of databases
 $system = new hserv\System();
