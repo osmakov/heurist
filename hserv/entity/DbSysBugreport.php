@@ -298,8 +298,10 @@ class DbSysBugreport extends DbEntityBase
                 $bug_title = "Heurist tracker #$rec_ID: {$record['2-1']}";
                 $sMessage .= "<p>Link: " . HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/edit/$rec_ID</p>";
 
-                $res = "Your bug report has been successfully added to the Heurist Job tracker database.<br>"
-                      ."You can view your report at: " . HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$rec_ID";
+                $res = 'Your bug report has been successfully added to the Heurist Job tracker database.<br>'
+                      .'You can view your report at:  '. HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$rec_ID<br>"
+                      .'See current and resolved issues list: <a href="https://heuristref.net/Heurist_Job_Tracker/web/64/1526">https://heuristref.net/Heurist_Job_Tracker</a>';
+                      
             }elseif(is_array($res)){
                 $this->system->addErrorArr($res);
                 $res = false;
