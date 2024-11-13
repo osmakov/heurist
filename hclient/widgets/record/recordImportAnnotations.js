@@ -94,6 +94,13 @@ console.log(data);
             this._$('#updated').text( '0' );
         }
 
+        if(data['retained'].length>0){
+            this._$('#retained').html( `<a href="${link+data['retained'].join(',')}" target="_blank">${data['retained'].length}</a>` );
+        }else{
+            this._$('#retained').text( '0' );
+        }
+        
+        
         s = ' ';
         for (const recID in data['issues']) {
            s = s +  `<a href="${link+recID}" target="_blank">${data['issues'][recID]}</a><br>`;

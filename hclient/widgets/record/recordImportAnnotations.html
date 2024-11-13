@@ -5,19 +5,19 @@
 
     <p>Note: Use with caution, this function can create a lot of extra records if there are many registred manifests</p>
 
-    <p>This function creates, updates and reads XML manifest files in the folders (and their descendants)
-        listed in Design > Properties (Paths which contain files to be indexed as multimedia records)
-        and creates Digital Media records for all files uploaded to the database, with pointers back to the files.
-        New files are added to existing manifests. </p>
-
+    <p>This function reads IIIF manifest and linked AnnotationList and then creates or updates Annotation records in Heurist database.
+        <br>
+        <ul>
+            <li>It owerwrites any local changes in these records.</li>
+            <li>Annotation records are linked to parent manifest either via record link or file field (that refers to registered manifest)</li>
+            <li>It is possible to define internal Annotations via Mirador viewer. They are independent from imported ones and retain unchanged by this operation</li>
+        </ul>
+    </p>
     <p>
-        Digital Media records are only added for files without such a record, existing Digital Media records are unaffected.
-    </p><p>
-        <i>Note (in case of need): If you get the message that your folders are not writeable, ask your system adminstrator to adjust the permissions on the HEURIST_FILESTORE directory and its descendants. The folders in the filestore must be writeable by the PHP system - normally they should belong to and be writable by the group heurist (which should be set up to include apache and any administrators who have access to the backend), or be owned and writable by apache or www-data (as appropriate).</i>
+        <i></i>
     </p>
 
-
-    <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records</label>
+    <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records (makes process slower)</label>
     <p>
         <button class="ui-button-action btnAction">Proceed</button>
     </p>
@@ -28,17 +28,19 @@
 <div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
     <h3 style="margin:0">Report:</h3>
     <p>
-    <table>
-    <tr><td>Total count of manifests:</td><td id="total"></td></tr>
-    <tr><td>Processed manifests:</td><td id="processed"></td></tr>
-    <tr><td>Without annotations:</td><td id="without_annotations"></td></tr>
-    <tr><td colspan="2"><br><br></td></tr>
+        <table>
+            <tr><td>Total count of manifests:</td><td id="total"></td></tr>
+            <tr><td>Processed manifests:</td><td id="processed"></td></tr>
+            <tr><td>Without annotations:</td><td id="without_annotations"></td></tr>
+            <tr><td colspan="2"><br><br></td></tr>
 
-    <tr><td>Annotations added:</td><td id="added"></td></tr>
-    <tr><td>Annotations updated:</td><td id="updated"></td></tr>
+            <tr><td colspan="2">Annotations</td></tr>
+            <tr><td>Added:</td><td id="added"></td></tr>
+            <tr><td>Updated:</td><td id="updated"></td></tr>
+            <tr><td>Unchanged:</td><td id="retained"></td></tr>
 
-    <tr><td colspan="2"><br><br></td></tr>
-    <tr><td style="vertical-align:top">Issues:</td><td id="issues"></td></tr>
-    </table>
+            <tr><td colspan="2"><br><br></td></tr>
+            <tr><td style="vertical-align:top">Issues:</td><td id="issues"></td></tr>
+        </table>
     </p>
 </div>

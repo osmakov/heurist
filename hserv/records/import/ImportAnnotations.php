@@ -45,7 +45,7 @@ class ImportAnnotations{
     public function __construct( $system, $params = null ) {
         $this->system = $system;    
         
-        $this->ulf_IDs = @$params['ids'];
+        $this->ulf_IDs = @$params['ids']; //'98a16af997b52cb888232ab5d79a527b0716561c';
         
         $this->progressSessionId = @$params['session'];
         
@@ -160,48 +160,56 @@ class ImportAnnotations{
         $cnt_processed = 0;
         $recids_added = array();
         $recids_updated = array();
+        $recids_retained = array();
         $without_annotations = array();
-    $issues = array();
+        $issues = array();
         
         //loop manifests
-        foreach($urls as $ulf_ID=>$url){
-            $annotations = $this->processManifest($url);
+        foreach($urls as $ulf_ID=>$manifest_url){
+            $annotations = $this->processManifest($manifest_url);
 
             $cnt_processed++;
 
             //find linked records
             $rec_ids = $dbUlf->getMediaRecords($ulf_ID, 'file_fields', 'rec_ids');
             
-            $rec_id = $rec_ids?$rec_ids[0]:0;
+            $source_rec_id = $rec_ids?$rec_ids[0]:0;
+            if($source_rec_id==0){
+                continue;
+            }
 
             if(empty($annotations)){
-                $without_annotations[$ulf_ID] = $rec_id;
+                $without_annotations[$ulf_ID] = $source_rec_id;
                 continue;
             }
            
             foreach ($annotations as $anno){
                 
-                $anno['sourceRecordId'] = $rec_id;
-                $anno['manifestUrl'] = $url;
+                //$anno['sourceRecordId'] = $source_rec_id;
+                //$anno['manifestUrl'] = $manifest_url;
                 
-                $dbAnno->setData(array('fields'=>array('annotation'=>$anno)));    
+                $dbAnno->setData(array('fields'=>array('annotation'=>$anno, 'sourceRecordId'=>$source_rec_id, 'manifestUrl'=>$manifest_url)));    
                 $res = $dbAnno->save($this->createThumbnail);
                 
                 if($res===false){
                     
                     $err_msg = $this->system->getError();
-                    $issues[$rec_id] = $err_msg['message'];
+                    $issues[$source_rec_id] = $err_msg['message'];
                     $this->system->clearError();
                     
                 }elseif(is_array($res) && $res['status']!=HEURIST_OK){
                     
-                    $issues[$rec_id] = $res['message'];
+                    $issues[$source_rec_id] = $res['message'];
                     
                 }else{
                     
                     $rec_id = $res['data'];
-                    if($res['is_new']){
+                    if(@$res['is_new']){
                         $recids_added[] = $rec_id;
+                    }elseif(@$res['is_retained']){
+                        if(!in_array($rec_id, $recids_added)){
+                            $recids_retained[] = $rec_id;
+                        }
                     }else{
                         $recids_updated[] = $rec_id;
                     }
@@ -227,12 +235,15 @@ class ImportAnnotations{
                          'processed'=>$cnt_processed,
                          'added'=>$recids_added,
                          'updated'=>$recids_updated,
+                         'retained'=>$recids_retained,
                          'without_annotations'=>$without_annotations,
                          'issues'=>$issues
                          );
                          
+// 1. duplicates
+// 2. link via file or link via record
+// 3. unchanged 
+// 4. thumbnail for local image annotation
                          
-//updated(27) [926, 927, 928, 929, 926, 927, 928, 929, 923, 924, 930, 931, 932, 933, 934, 935, 936, 937, 938, 939, 940, 941, 942, 943, 944, 945, 946]
-//without_annotations {17: '914', 18: '915'}     
     }
 }

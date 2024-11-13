@@ -1,43 +1,45 @@
 <div id="div_header" class="ent_wrapper" style="margin:10px 10px 0px 40px;font-size:0.95em">
-        
+
     <h2>UTILISATEURS AVANCÉS</h2>
     <p style="font-weight:bold;font-size:larger;padding:10 0">Créer des enregistrements d'annotation à partir de manifestes IIIF enregistrés</p>
 
     <p>Remarque : utilisez cette fonction avec précaution, car elle peut créer de nombreux enregistrements supplémentaires s'il existe de nombreux manifestes enregistrés</p>
 
-    <p>This function creates, updates and reads XML manifest files in the folders (and their descendants)
-        listed in Design > Properties (Paths which contain files to be indexed as multimedia records)
-        and creates Digital Media records for all files uploaded to the database, with pointers back to the files.
-        New files are added to existing manifests. </p>
-
+    <p>Cette fonction lit le manifeste IIIF et la liste d'annotations liée, puis crée ou met à jour les enregistrements d'annotation dans la base de données Heurist.
+        <br>
+        <ul>
+            <li>Il annule toutes les modifications locales dans ces enregistrements.</li>
+            <li>Les enregistrements d'annotation sont liés au manifeste parent soit via un lien d'enregistrement, soit via un champ de fichier (qui fait référence au manifeste enregistré)</li>
+            <li>Il est possible de définir des annotations internes via la visionneuse Mirador. Elles sont indépendantes de celles importées et restent inchangées par cette opération</li>
+        </ul>
+    </p>
     <p>
-        Digital Media records are only added for files without such a record, existing Digital Media records are unaffected.
-    </p><p>
-        <i>Note (in case of need): If you get the message that your folders are not writeable, ask your system adminstrator to adjust the permissions on the HEURIST_FILESTORE directory and its descendants. The folders in the filestore must be writeable by the PHP system - normally they should belong to and be writable by the group heurist (which should be set up to include apache and any administrators who have access to the backend), or be owned and writable by apache or www-data (as appropriate).</i>
+        <i></i>
     </p>
 
-
-    <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records</label>
+    <label><input type='checkbox' id="chb_create_thumbs"> Créer des miniatures pour les enregistrements d'annotation (ralentit le processus)</label>
     <p>
-        <button class="ui-button-action btnAction">Proceed</button>
+        <button class="ui-button-action btnAction">Continuer</button>
     </p>
-    
+
 </div>
 
 <div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
-    <h3 style="margin:0">Report:</h3>
+    <h3 style="margin:0">Rapport :</h3>
     <p>
-    <table>
-    <tr><td>Total count of manifests:</td><td id="total"></td></tr>
-    <tr><td>Processed manifests:</td><td id="processed"></td></tr>
-    <tr><td>Without annotations:</td><td id="without_annotations"></td></tr>
-    <tr><td colspan="2"><br><br></td></tr>
+        <table>
+            <tr><td>Nombre total de manifestes :</td><td id="total"></td></tr>
+            <tr><td>Traité manifestes :</td><td id="processed"></td></tr>
+            <tr><td>Sans annotations :</td><td id="without_annotations"></td></tr>
+            <tr><td colspan="2"><br><br></td></tr>
 
-    <tr><td>Annotations added:</td><td id="added"></td></tr>
-    <tr><td>Annotations updated:</td><td id="updated"></td></tr>
+            <tr><td colspan="2">Annotations</td></tr>
+            <tr><td>Ajouté :</td><td id="added"></td></tr>
+            <tr><td>Mis à jour :</td><td id="updated"></td></tr>
+            <tr><td>Inchangé :</td><td id="retained"></td></tr>
 
-    <tr><td colspan="2"><br><br></td></tr>
-    <tr><td style="vertical-align:top">Issues:</td><td id="issues"></td></tr>
-    </table>
+            <tr><td colspan="2"><br><br></td></tr>
+            <tr><td style="vertical-align:top">Problèmes :</td><td id="problèmes"></td></tr>
+        </table>
     </p>
 </div>
