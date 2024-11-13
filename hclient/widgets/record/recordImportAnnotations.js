@@ -66,11 +66,10 @@ $.widget( "heurist.recordImportAnnotations", $.heurist.recordAction, {
         
         this._$('#total').text( data['total'] );
         this._$('#processed').text( data['processed'] );
+        this._$('#missed').text( data['missed'] );
         
         let link = window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database+'&q=ids:';
         
-console.log(data);
-
         let ids = [];
         let s = ' ';
         for (const ulfID in data['without_annotations']) {
@@ -119,6 +118,7 @@ console.log(data);
                 db: window.hWin.HAPI4.database,
                 controller: 'ImportAnnotations',
                 session  : window.hWin.HEURIST4.msg.showProgress(),
+                direct_link: this._$('#chb_direct_link').is('checked')?1:0,
                 create_thumb: this._$('#chb_create_thumbs').is('checked')?1:0
             };
             

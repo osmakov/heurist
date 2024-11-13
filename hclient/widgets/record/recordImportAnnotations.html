@@ -14,14 +14,13 @@
         </ul>
     </p>
     <p>
-        <i></i>
+        <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records (makes process slower)</label>
+        <br>
+        <label><input type='checkbox' checked id="chb_direct_link"> Lier l'enregistrement d'annotation directement au manifeste enregistré (sinon via l'enregistrement multimédia)</label>
     </p>
-
-    <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records (makes process slower)</label>
     <p>
         <button class="ui-button-action btnAction">Proceed</button>
     </p>
-
 
 </div>
 
@@ -31,6 +30,7 @@
         <table>
             <tr><td>Total count of manifests:</td><td id="total"></td></tr>
             <tr><td>Processed manifests:</td><td id="processed"></td></tr>
+            <tr><td>Missed of invaid:</td><td id="missed"></td></tr>
             <tr><td>Without annotations:</td><td id="without_annotations"></td></tr>
             <tr><td colspan="2"><br><br></td></tr>
 

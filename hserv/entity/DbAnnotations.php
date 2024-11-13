@@ -46,6 +46,7 @@ class DbAnnotations extends DbEntityBase
 
         $this->system->defineConstant('DT_SHORT_SUMMARY');
         $this->system->defineConstant('DT_THUMBNAIL');
+        $this->system->defineConstant('DT_FILE_RESOURCE');
 
 
         $this->dty_Annotation_Info = (defined('DT_ANNOTATION_INFO'))
@@ -223,7 +224,7 @@ class DbAnnotations extends DbEntityBase
     //
     //
     //
-    public function save($createThumbnail=true){
+    public function save($createThumbnail=true, $ulf_ID=0){
          //validate permission for current user and set of records see $this->recordIDs
         if(!$this->_validatePermission()){
             return false;
@@ -323,7 +324,12 @@ class DbAnnotations extends DbEntityBase
                     'Can not add annotation. Anotation text is not found');
             return false;
         }
-        if($sourceRecordId>0 && $recordId!=$sourceRecordId){
+        
+        if($ulf_ID>0){
+            //link annotation record to registered manifest
+            $this->assignField($details, 'DT_FILE_RESOURCE', $ulf_ID);
+            
+        }elseif($sourceRecordId>0 && $recordId!=$sourceRecordId){
             //link referenced image record with annotation record
             $this->assignField($details, 'DT_MEDIA_RESOURCE', $sourceRecordId);
         }

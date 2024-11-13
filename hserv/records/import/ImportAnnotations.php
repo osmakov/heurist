@@ -41,6 +41,9 @@ class ImportAnnotations{
     private $progressSessionId = 0;
     
     private $createThumbnail = false;
+
+    private $linkAnnotationWithManifest = false;
+
     
     public function __construct( $system, $params = null ) {
         $this->system = $system;    
@@ -50,6 +53,7 @@ class ImportAnnotations{
         $this->progressSessionId = @$params['session'];
         
         $this->createThumbnail = @$params['create_thumb']==1;
+        $this->linkAnnotationWithManifest = @$params['direct_link']==1;
         
     }
 
@@ -88,6 +92,12 @@ class ImportAnnotations{
         $annotations = null;
         
         $iiif_manifest = loadRemoteURLContent($url);//check that json is iiif manifest
+        
+        if(!$iiif_manifest){
+            $this->system->addError(HEURIST_ACTION_BLOCKED, 'Manifest file '.$url.' is not accessible');
+            return false;
+        }
+        
         $iiif_manifest = json_decode($iiif_manifest, true);
         // Check if the JSON was decoded successfully
         if($iiif_manifest!==false && is_array($iiif_manifest))
@@ -104,8 +114,13 @@ class ImportAnnotations{
                 $annotations = $iiif_manifest['resources'] ?? [];
             }
             
-        }else if (json_last_error() !== JSON_ERROR_NONE) {
-            // 'Error: JSON decoding failed with error: ' . json_last_error_msg()
+        }else{
+            $msg = '';
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                    $msg = json_last_error_msg();
+            }
+            $this->system->addError(HEURIST_ACTION_BLOCKED, 'Manifest file is not valid. '.$msg);
+            return false;
         }
 
         
@@ -158,6 +173,7 @@ class ImportAnnotations{
         $dbUlf  = new DbRecUploadedFiles($this->system);
         
         $cnt_processed = 0;
+        $cnt_missed = 0;
         $recids_added = array();
         $recids_updated = array();
         $recids_retained = array();
@@ -166,8 +182,8 @@ class ImportAnnotations{
         
         //loop manifests
         foreach($urls as $ulf_ID=>$manifest_url){
+            
             $annotations = $this->processManifest($manifest_url);
-
             $cnt_processed++;
 
             //find linked records
@@ -178,6 +194,14 @@ class ImportAnnotations{
                 continue;
             }
 
+            if($annotations===false){
+                $cnt_missed++;
+                $err_msg = $this->system->getError();
+                $issues[$source_rec_id] = $err_msg['message'];
+                $this->system->clearError();
+                continue;
+            }
+            
             if(empty($annotations)){
                 $without_annotations[$ulf_ID] = $source_rec_id;
                 continue;
@@ -189,7 +213,7 @@ class ImportAnnotations{
                 //$anno['manifestUrl'] = $manifest_url;
                 
                 $dbAnno->setData(array('fields'=>array('annotation'=>$anno, 'sourceRecordId'=>$source_rec_id, 'manifestUrl'=>$manifest_url)));    
-                $res = $dbAnno->save($this->createThumbnail);
+                $res = $dbAnno->save($this->createThumbnail, $this->linkAnnotationWithManifest?$ulf_ID:0);
                 
                 if($res===false){
                     
@@ -233,6 +257,7 @@ class ImportAnnotations{
       
         return  array('total'=>$tot_count, 
                          'processed'=>$cnt_processed,
+                         'missed'=>$cnt_missed,
                          'added'=>$recids_added,
                          'updated'=>$recids_updated,
                          'retained'=>$recids_retained,
