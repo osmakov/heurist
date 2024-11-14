@@ -46,6 +46,7 @@ class ImportAnnotations{
 
     private $linkAnnotationWithManifest = false;
 
+    private $dbAnno;
 
     public function __construct( $system, $params = null ) {
         $this->system = $system;
@@ -177,7 +178,7 @@ class ImportAnnotations{
 
         $urls = $this->prepareExecution();
 
-        if(!$urls || @$urls['total']==0 ){
+        if(!$urls || array_key_exists('total',$urls) ){
             return $urls;
         }
 
@@ -188,8 +189,7 @@ class ImportAnnotations{
             mysql__update_progress(null, $this->progressSessionId, true, '0,'.$tot_count);
         }
 
-
-        $dbAnno = new DbAnnotations($this->system);
+        $this->dbAnno = new DbAnnotations($this->system);
         $dbUlf  = new DbRecUploadedFiles($this->system);
 
         $result = array('total'=>$tot_count,
@@ -231,13 +231,10 @@ class ImportAnnotations{
 
             $this->processAnnotations($annotations, $source_rec_id, $manifest_url, $ulf_ID, $result);
           
-            if($this->progressSessionId && $result['cnt_processed'] % 5 == 0){
-                $current_val = mysql__update_progress(null, $this->progressSessionId, true, $result['cnt_processed'].','.$tot_count);
-                if($current_val && $current_val=='terminate'){
-                    $this->system->addError(HEURIST_ACTION_BLOCKED, 'Operation is terminated by user');
-                    return false;
-                }
+            if($this->progressSession($result)){
+                return false;
             }
+          
 
         }//for
 
@@ -247,6 +244,22 @@ class ImportAnnotations{
         }
 
         return $result;
+    }
+    
+    //
+    // returns true if process is terminated
+    //
+    private function progressSession($result){
+        
+            if($this->progressSessionId && $result['cnt_processed'] % 5 == 0){
+                $current_val = mysql__update_progress(null, $this->progressSessionId, true, $result['cnt_processed'].','.$result['total']);
+                if($current_val && $current_val=='terminate'){
+                    $this->system->addError(HEURIST_ACTION_BLOCKED, 'Operation is terminated by user');
+                    return true;
+                }
+            }
+        
+            return false;
     }
 
     //
@@ -264,24 +277,26 @@ class ImportAnnotations{
                 $err_msg = $this->system->getError();
                 $result['issues'][$source_rec_id] = $err_msg['message'];
                 $this->system->clearError();
-
+                continue;
+                
             }elseif(is_array($res) && $res['status']!=HEURIST_OK){
 
                 $result['issues'][$source_rec_id] = $res['message'];
-
-            }else{
-
-                $rec_id = $res['data'];
-                if(@$res['is_new']){
-                    $result['added'][] = $rec_id;
-                }elseif(@$res['is_retained']){
-                    if(!in_array($rec_id, $result['added'])){
-                        $result['retained'][] = $rec_id;
-                    }
-                }else{
-                    $result['updated'][] = $rec_id;
-                }
+                continue;
             }
+            
+
+            $rec_id = $res['data'];
+            if(@$res['is_new']){
+                $result['added'][] = $rec_id;
+            }elseif(@$res['is_retained']){
+                if(!in_array($rec_id, $result['added'])){
+                    $result['retained'][] = $rec_id;
+                }
+            }else{
+                $result['updated'][] = $rec_id;
+            }
+            
         }
     }
 

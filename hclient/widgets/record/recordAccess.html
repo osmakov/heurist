@@ -7,8 +7,6 @@
     <select id="sel_record_scope" class="text ui-widget-content ui-corner-all" style="max-width:30em"></select>
 </div>
 
-<!-- <hr style="margin:5px" id="hr_sel_record_scope"/> -->
-
 <div id="div_operation_mode" class="input">
 
     <div class="header_narrow" style="padding:  0px 16px 0px 0px;">Change:</div>
@@ -45,8 +43,6 @@
 
 <div id="sel_OwnerGroups"  style="padding: 0.2em; min-width: 480px;display:none;" class="input"></div>
 
-<!-- <hr style="margin:5px"/> -->
-
 <div id="div_sel_access" class="input">
     <div class="header_narrow" style="padding:  10px 16px 0px 0px;">Record is viewable by:</div>
     <div></div>
@@ -63,21 +59,13 @@
     </div>
 </div>
 
-
 <div id="div_sel_access3" style="padding:0.2em; min-width: 410px;" class="input">
 
     <div class="detailRow" style="padding-bottom:1em;display:block;padding-left:80px">
         <label><input type="radio" name="rb_Access" value="viewable" id="rb_Access-viewable">
         Any logged-in user can view the record(s)</label>
     </div>
-    <!--
-    <div class="detailRow" style="padding-bottom:1em;">
-        <label><input type="radio" name="rb_Access" value="pending" id="rb_Access-pending">
-        Flagged for external publication, any logged-in user</label>
-        <div style="margin-left: 20px; font-style: italic;">No effect on existing external views - hml, html etc.</div>
-        <div style="margin-left: 20px; font-style: italic;">Can be auto-set whenever a public record is edited.</div>
-    </div>
-    -->
+
     <div class="detailRow" style="padding-bottom:20px;display:block;padding-left:80px">
         <label>
         <input type="radio" name="rb_Access" value="public" id="rb_Access-public">
@@ -100,20 +88,6 @@
                 <div class="header_narrow" style="display:inline-block;width:115px;">Add these tags:</div>
                 <div id="div_sel_tags2" style="display:inline-block;padding-bottom:20px;"></div>
             </div>
-                <!--
-            <div id="div_add_link" style="padding: 0.2em; min-width: 600px;display:none;" class="input add_record">
-                <div class="header" style="padding: 0 16px;vertical-align:top">
-                    <label for="txt_add_link">Hyperlink this URL in a web page, browser bookmark or desktop shortcut to provide one-click addition of records:</label>
-                </div>
-                <textarea id="txt_add_link" readonly
-                    onclick="select(); if (window.clipboardData) clipboardData.setData('Text', value);"
-                    class="text ui-widget-content ui-corner-all" rows=5 style="width:80ex"></textarea>
-                <div class="heurist-helper1" style="padding-bottom: 1em; display: block;">
-                    Hyperlink this URL in a web page, browser bookmark or desktop shortcut to provide one-click addition of records
-                </div>    
-            </div>
-                -->
-
             <div id="div_def_acc" style="padding: 0.2em; max-width:480px;display:none;" class="add_record">
                 <div class="heurist-helper1" style="display:block;padding-bottom: 1em;">
                     Provide a default account to use for creating the new record, if the user isn't already logged in<br>
