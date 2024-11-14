@@ -31,6 +31,8 @@ use hserv\entity\DbRecUploadedFiles;
 
 require_once dirname(__FILE__).'/../edit/recordModify.php';
 
+set_time_limit(0);
+
 class ImportAnnotations{
     
     private $system;
@@ -240,7 +242,7 @@ class ImportAnnotations{
                 }
             }
             
-            if($this->progressSessionId){ // && $cnt_processed % 10 == 0
+            if($this->progressSessionId && $cnt_processed % 5 == 0){
                 $current_val = mysql__update_progress(null, $this->progressSessionId, true, $cnt_processed.','.$tot_count);
                 if($current_val && $current_val=='terminate'){
                     $this->system->addError(HEURIST_ACTION_BLOCKED, 'Operation is terminated by user');

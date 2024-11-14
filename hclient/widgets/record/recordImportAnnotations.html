@@ -16,7 +16,7 @@
     <p>
         <label><input type='checkbox' id="chb_create_thumbs"> Create thumbnails for annotation records (makes process slower)</label>
         <br>
-        <label><input type='checkbox' checked id="chb_direct_link"> Lier l'enregistrement d'annotation directement au manifeste enregistré (sinon via l'enregistrement multimédia)</label>
+        <label><input type='checkbox' checked id="chb_direct_link"> Link annotation record directly with registered manifest (otherwise via media record)</label>
     </p>
     <p>
         <button class="ui-button-action btnAction">Proceed</button>
@@ -26,7 +26,7 @@
 
 <div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
     <h3 style="margin:0">Report:</h3>
-    <p>
+    <br>
         <table>
             <tr><td>Total count of manifests:</td><td id="total"></td></tr>
             <tr><td>Processed manifests:</td><td id="processed"></td></tr>
@@ -42,5 +42,4 @@
             <tr><td colspan="2"><br><br></td></tr>
             <tr><td style="vertical-align:top">Issues:</td><td id="issues"></td></tr>
         </table>
-    </p>
 </div>
