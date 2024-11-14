@@ -313,15 +313,6 @@ class DbAnnotations extends DbEntityBase
           uuid: annotation.id,
         },
 */
-
-        $anno_uid = $this->removeUriSchema($this->isOpenAnnotation($anno)?@$anno['@id']:@$anno['uuid']);
-        if(!$anno_uid){
-            $this->system->addError(HEURIST_ACTION_BLOCKED,
-                    'Can not add annotation. Anotation UUID is not found');
-            return false;
-        }
-
-
         $this->dtyAnnotationInfo = DT_ANNOTATION_INFO;
 
         $recordId = 0;
@@ -381,7 +372,7 @@ class DbAnnotations extends DbEntityBase
     //
     //
     //
-    private function parseOpenAnnotation(&$details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl){
+    private function parseAnnotation(&$details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl){
 
         if($this->isOpenAnnotation($anno)){
             //Open Annotation
@@ -566,7 +557,7 @@ class DbAnnotations extends DbEntityBase
     }
 
 
-    private function extractImageUrlFromCanvas($canvas) {
+    private function extractImageUrlFromCanvas($canvas, $url) {
         if($canvas['@id']!=$url || !is_array(@$canvas['images'])){
             return null;
         }
