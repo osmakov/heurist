@@ -250,6 +250,10 @@ class DbAnnotations extends DbEntityBase
     // to implement - make general function
     //
     private function findOriginalRecord($recordId, &$details){
+        
+        if(!$recordId){
+            return;
+        }
 
         $query = "SELECT dtl_Id, dtl_DetailTypeID, dtl_Value, ST_asWKT(dtl_Geo), dtl_UploadedFileID FROM recDetails WHERE dtl_RecID=$recordId ORDER BY dtl_DetailTypeID";
         $dets = mysql__select_all($this->system->get_mysqli(), $query);
@@ -307,10 +311,8 @@ class DbAnnotations extends DbEntityBase
         if(!$this->is_addition){
             //find record id by annotation UID
             $recordId = $this->findRecIDbyUUID($anno_uid);
-            if($recordId>0){
-                //already exists
-                $this->findOriginalRecord($recordId, $details);
-            }
+            //already exists
+            $this->findOriginalRecord($recordId, $details);
         }
 
         $sourceRecordId = $this->data['fields']['sourceRecordId']??@$anno['sourceRecordId'];
@@ -349,7 +351,6 @@ class DbAnnotations extends DbEntityBase
             $record['no_validation'] = true;
             $record['details'] = $details;
 
-            //$out = $this->system->addError(HEURIST_ACTION_BLOCKED,'skipped '.$recordId);
             $out = recordSave($this->system, $record, false, true);
             if(is_array($out) && $out['data']>0){
                 $out['is_new'] = $recordId == 0;
@@ -359,7 +360,7 @@ class DbAnnotations extends DbEntityBase
         }else{
             $this->system->addError(HEURIST_ACTION_BLOCKED,
                     'Can not add annotation. Anotation data is not valid');
-            return false;
+            $out = false;
         }
 
         return $out;
@@ -409,14 +410,12 @@ class DbAnnotations extends DbEntityBase
 
         // "selector":[{"type":"FragmentSelector","value":"xywh=524,358,396,445"}
         //canvas defined on addition only
-        if(!@$anno['canvas']){
-
-            if($this->is_addition && @$anno_dec['target']['source']){ //page is not changed on edit
-                $this->assignField($details, 'DT_URL', $anno_dec['target']['source']); //canvas url
-            }
-        }else{
+        if(@$anno['canvas']){
             //url to page/canvas
             $details[DT_URL][] = $anno['canvas'];
+            
+        }elseif($this->is_addition && @$anno_dec['target']['source']){ //page is not changed on edit
+                $this->assignField($details, 'DT_URL', $anno_dec['target']['source']); //canvas url
         }
 
 
@@ -562,6 +561,25 @@ class DbAnnotations extends DbEntityBase
         //not found
         return $url;
     }
+    
+    
+    private function extractImageUrlFromAnnotationPage($annot_page, $url) {
+        
+        if(@$annot_page['type']=='AnnotationPage' && is_array(@$annot_page['items']))
+        {
+            foreach($annot_page['items'] as $annot){
+                if(@$annot['type']=='Annotation'
+                && @$annot['body']['type']=='Image')
+                {
+                    $url2 = @$annot['body']['service']['id'];
+                    if($url2!=null) {
+                        return $url2;
+                    }
+                }
+            }
+        }
+        return null;
+    }    
 
     private function getImageUrlV3($iiif_manifest, $url){
 
@@ -572,19 +590,7 @@ class DbAnnotations extends DbEntityBase
         foreach($iiif_manifest['items'] as $canvas){
             if(@$canvas['type']=='Canvas' && $canvas['id']==$url && is_array(@$canvas['items'])){
                 foreach($canvas['items'] as $annot_page){
-                    if(@$annot_page['type']=='AnnotationPage' && is_array(@$annot_page['items']))
-                    {
-                        foreach($annot_page['items'] as $annot){
-                            if(@$annot['type']=='Annotation'
-                            && @$annot['body']['type']=='Image')
-                            {
-                                $url2 = @$annot['body']['service']['id'];
-                                if($url2!=null) {
-                                    return $url2;
-                                }
-                            }
-                        }
-                    }
+                    $this->extractImageUrlFromAnnotationPage($annot_page, $url);
                 }
             }
         }
