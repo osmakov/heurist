@@ -250,7 +250,7 @@ class DbAnnotations extends DbEntityBase
     // to implement - make general function
     //
     private function findOriginalRecord($recordId, &$details){
-        
+
         if(!$recordId){
             return;
         }
@@ -276,13 +276,34 @@ class DbAnnotations extends DbEntityBase
 
     }
 
+    //
+    //
+    //
+    private function getAnnotationId($anno){
+
+        $anno_uid = $this->removeUriSchema($this->isOpenAnnotation($anno)?@$anno['@id']:@$anno['uuid']);
+        if(!$anno_uid){
+            $this->system->addError(HEURIST_ACTION_BLOCKED,
+                    'Can not add annotation. Anotation UUID is not found');
+            return false;
+        }
+        return $anno_uid;
+    }
 
     //
     //
     //
     public function save($createThumbnail=true, $ulf_ID=0){
-         //validate permission for current user and set of records see $this->recordIDs
-        if(!($this->_validatePermission() && $this->checkRequiredDefintions())){
+
+
+        $anno = $this->data['fields']['annotation'];
+        $anno_uid = $this->getAnnotationId($anno);
+
+        //validate permission for current user and set of records see $this->recordIDs
+        if(!($this->_validatePermission() &&
+             $this->checkRequiredDefintions() &&
+             $anno_uid
+           )){
             return false;
         }
 /*
@@ -292,8 +313,6 @@ class DbAnnotations extends DbEntityBase
           uuid: annotation.id,
         },
 */
-
-        $anno = $this->data['fields']['annotation'];
 
         $anno_uid = $this->removeUriSchema($this->isOpenAnnotation($anno)?@$anno['@id']:@$anno['uuid']);
         if(!$anno_uid){
@@ -319,14 +338,7 @@ class DbAnnotations extends DbEntityBase
         $manifestUrl = $this->data['fields']['manifestUrl']??@$anno['manifestUrl'];
 
         //get values from annotation and add/replace values in current record
-        $was_changed = false;
-        if($this->isOpenAnnotation($anno)){
-            //Open Annotation
-            $was_changed = $this->parseOpenAnnotation($details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl);
-        }elseif(@$anno['data']){
-            //WebAnnotation
-            $was_changed = $this->parseWebAnnotation($details, $anno, $createThumbnail);
-        }
+        $was_changed = $this->parseAnnotation($details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl);
         if(!$details[DT_NAME]){
             $this->system->addError(HEURIST_ACTION_BLOCKED,
                     'Can not add annotation. Anotation text is not found');
@@ -364,6 +376,21 @@ class DbAnnotations extends DbEntityBase
         }
 
         return $out;
+    }
+
+    //
+    //
+    //
+    private function parseOpenAnnotation(&$details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl){
+
+        if($this->isOpenAnnotation($anno)){
+            //Open Annotation
+            $was_changed = $this->parseOpenAnnotation($details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl);
+        }elseif(@$anno['data']){
+            //WebAnnotation
+            $was_changed = $this->parseWebAnnotation($details, $anno, $createThumbnail);
+        }
+        return $was_changed;
     }
 
 
@@ -413,7 +440,7 @@ class DbAnnotations extends DbEntityBase
         if(@$anno['canvas']){
             //url to page/canvas
             $details[DT_URL][] = $anno['canvas'];
-            
+
         }elseif($this->is_addition && @$anno_dec['target']['source']){ //page is not changed on edit
                 $this->assignField($details, 'DT_URL', $anno_dec['target']['source']); //canvas url
         }
@@ -435,7 +462,7 @@ class DbAnnotations extends DbEntityBase
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -538,33 +565,44 @@ class DbAnnotations extends DbEntityBase
         return true;
     }
 
+
+    private function extractImageUrlFromCanvas($canvas) {
+        if($canvas['@id']!=$url || !is_array(@$canvas['images'])){
+            return null;
+        }
+        foreach($canvas['images'] as $image){
+            $url2 = @$image['resource']['service']['@id'];
+            if($url2!=null) {
+                return $url2;
+            }
+        }
+        return null;
+    }
+
+
     private function getImageUrlV2($iiif_manifest, $url){
 
         if(!is_array(@$iiif_manifest['sequences'])){
-            return $url;
+            return null;
         }
 
         foreach($iiif_manifest['sequences'] as $seq){
             if(is_array(@$seq['canvases'])){
                 foreach($seq['canvases'] as $canvas){
-                    if($canvas['@id']==$url && is_array(@$canvas['images'])){
-                        foreach($canvas['images'] as $image){
-                            $url2 = @$image['resource']['service']['@id'];
-                            if($url2!=null) {
-                                return $url2;
-                            }
-                        }
+                    $url2 = $this->extractImageUrlFromCanvas($canvas, $url);
+                    if($url2!=null) {
+                        return $url2;
                     }
                 }
             }
         }
         //not found
-        return $url;
+        return null;
     }
-    
-    
-    private function extractImageUrlFromAnnotationPage($annot_page, $url) {
-        
+
+
+    private function extractImageUrlFromAnnotationPage($annot_page) {
+
         if(@$annot_page['type']=='AnnotationPage' && is_array(@$annot_page['items']))
         {
             foreach($annot_page['items'] as $annot){
@@ -579,7 +617,7 @@ class DbAnnotations extends DbEntityBase
             }
         }
         return null;
-    }    
+    }
 
     private function getImageUrlV3($iiif_manifest, $url){
 
@@ -590,7 +628,10 @@ class DbAnnotations extends DbEntityBase
         foreach($iiif_manifest['items'] as $canvas){
             if(@$canvas['type']=='Canvas' && $canvas['id']==$url && is_array(@$canvas['items'])){
                 foreach($canvas['items'] as $annot_page){
-                    $this->extractImageUrlFromAnnotationPage($annot_page, $url);
+                    $url2 = $this->extractImageUrlFromAnnotationPage($annot_page);
+                    if($url2!=null) {
+                        return $url2;
+                    }
                 }
             }
         }
