@@ -175,7 +175,7 @@ class ImportAnnotations{
 
     public function execute(){
 
-        $urls = prepareExecution();
+        $urls = $this->prepareExecution();
 
         if(!$urls || @$urls['total']==0 ){
             return $urls;
@@ -229,16 +229,10 @@ class ImportAnnotations{
                 continue;
             }
 
-            foreach ($annotations as $anno){
-
-                $dbAnno->setData(array('fields'=>array('annotation'=>$anno, 'sourceRecordId'=>$source_rec_id, 'manifestUrl'=>$manifest_url)));
-                $res = $dbAnno->save($this->createThumbnail, $this->linkAnnotationWithManifest?$ulf_ID:0);
-
-                $this->processResult($result, $res, $source_rec_id);
-            }
-
-            if($this->progressSessionId && $cnt_processed % 5 == 0){
-                $current_val = mysql__update_progress(null, $this->progressSessionId, true, $cnt_processed.','.$tot_count);
+            $this->processAnnotations($annotations, $source_rec_id, $manifest_url, $ulf_ID, $result);
+          
+            if($this->progressSessionId && $result['cnt_processed'] % 5 == 0){
+                $current_val = mysql__update_progress(null, $this->progressSessionId, true, $result['cnt_processed'].','.$tot_count);
                 if($current_val && $current_val=='terminate'){
                     $this->system->addError(HEURIST_ACTION_BLOCKED, 'Operation is terminated by user');
                     return false;
@@ -258,29 +252,35 @@ class ImportAnnotations{
     //
     //
     //
-    private function processResult(&$result, $res, $source_rec_id)
+    private function processAnnotations($annotations, $source_rec_id, $manifest_url, $ulf_ID, &$result)
     {
-        if($res===false){
+        foreach ($annotations as $anno){
 
-            $err_msg = $this->system->getError();
-            $result['issues'][$source_rec_id] = $err_msg['message'];
-            $this->system->clearError();
+            $this->dbAnno->setData(array('fields'=>array('annotation'=>$anno, 'sourceRecordId'=>$source_rec_id, 'manifestUrl'=>$manifest_url)));
+            $res = $this->dbAnno->save($this->createThumbnail, $this->linkAnnotationWithManifest?$ulf_ID:0);
 
-        }elseif(is_array($res) && $res['status']!=HEURIST_OK){
+            if($res===false){
 
-            $result['issues'][$source_rec_id] = $res['message'];
+                $err_msg = $this->system->getError();
+                $result['issues'][$source_rec_id] = $err_msg['message'];
+                $this->system->clearError();
 
-        }else{
+            }elseif(is_array($res) && $res['status']!=HEURIST_OK){
 
-            $rec_id = $res['data'];
-            if(@$res['is_new']){
-                $result['added'][] = $rec_id;
-            }elseif(@$res['is_retained']){
-                if(!in_array($rec_id, $recids_added)){
-                    $result['retained'][] = $rec_id;
-                }
+                $result['issues'][$source_rec_id] = $res['message'];
+
             }else{
-                $result['updated'][] = $rec_id;
+
+                $rec_id = $res['data'];
+                if(@$res['is_new']){
+                    $result['added'][] = $rec_id;
+                }elseif(@$res['is_retained']){
+                    if(!in_array($rec_id, $result['added'])){
+                        $result['retained'][] = $rec_id;
+                    }
+                }else{
+                    $result['updated'][] = $rec_id;
+                }
             }
         }
     }
