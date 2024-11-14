@@ -100,7 +100,7 @@ function smartyInit($smarty_templates_dir=null){
         foreach($plugins['records'] as $file){
             $file = $file[2].$file[1];
             if(file_exists($file)){
-                include $file;
+                include_once $file;
             }
         }
 

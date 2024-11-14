@@ -2508,13 +2508,12 @@ $mysqli->commit();
         
         //import missed record type
         $isOK = false;
-        $importDef = new \DbsImport( $this->system );
-        if($importDef->doPrepare(  array(
+        if($this->doPrepare(  array(
         'defType'=>'rectype',
         'databaseID'=>2,
         'conceptCode'=>array($rty_ID))))
         {
-            $isOK = $importDef->doImport();
+            $isOK = $this->doImport();
         }
         
         return $isOK;

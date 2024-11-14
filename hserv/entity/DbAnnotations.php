@@ -1,8 +1,10 @@
 <?php
 namespace hserv\entity;
+
 use hserv\entity\DbEntityBase;
 use hserv\entity\DbRecUploadedFiles;
 use hserv\utilities\USanitize;
+// use hserv\structure\import\DbsImport;
 
     /**
     * dbAnnotations
@@ -28,13 +30,13 @@ require_once dirname(__FILE__).'/../structure/import/dbsImport.php';
 
 class DbAnnotations extends DbEntityBase
 {
-    private $dty_Annotation_Info;
+    private $dtyAnnotationInfo;
 
 
     public function __construct( $system, $data=null ) {
         $this->system = $system;
         $this->data = $data;
-        
+
         $this->system->defineConstant('RT_MAP_ANNOTATION');
         $this->system->defineConstant('DT_NAME');
         $this->system->defineConstant('DT_URL');
@@ -49,7 +51,7 @@ class DbAnnotations extends DbEntityBase
         $this->system->defineConstant('DT_FILE_RESOURCE');
 
 
-        $this->dty_Annotation_Info = (defined('DT_ANNOTATION_INFO'))
+        $this->dtyAnnotationInfo = (defined('DT_ANNOTATION_INFO'))
                 ? DT_ANNOTATION_INFO
                 : 0;
 
@@ -64,8 +66,6 @@ class DbAnnotations extends DbEntityBase
     *  or particular annotaion id
     *
     *  Mirador requests our Annotation server (via api/annotations) for annotations per page(canvas).
-    *
-    *  @todo overwrite
     */
     public function search(){
 
@@ -83,32 +83,30 @@ class DbAnnotations extends DbEntityBase
                 $this->data['uri'] = $params['uri']; //filter_var(substr($_SERVER['QUERY_STRING'],4), FILTER_SANITIZE_URL);  //remove "uri="
             }
             $uri = $this->data['uri'];
-            $items = $this->findItems_by_Canvas($uri);
-            if(!isEmptyArray($items)){
-                //@todo - exclude annotations that are included into manifest
-
-                foreach($items as $item){
-                    $anno = json_decode($item, true);
-                    if($anno && $anno['type']=='Annotation'){ //only WebAnnotations
-                        $sjson['items'][] = $anno;    
-                    }
-                }
-
-            }else{
+            $items = $this->findItemsByCanvas($uri);
+            if(isEmptyArray($items)){
                 $sjson['items'] = array();
+                return $sjson;
+            }
+
+            foreach($items as $item){
+                $anno = json_decode($item, true);
+                if($anno && $anno['type']=='Annotation'){ //only WebAnnotations
+                    $sjson['items'][] = $anno;
+                }
             }
         }
         elseif($this->data['recID']=='edit'){
 
-            $recordId = $this->findRecID_by_UUID($this->data['uuid']);
-
-            $redirect = HEURIST_BASE_URL.'/hclient/framecontent/recordEdit.php?db='.HEURIST_DBNAME.'&fmt=edit&recID='.$recordId;
-
-            redirectURL($redirect);
+            $recordId = $this->findRecIDbyUUID($this->data['uuid']);
+            if($recordId>0){
+                $redirect = HEURIST_BASE_URL.'/hclient/framecontent/recordEdit.php?db='.HEURIST_DBNAME.'&fmt=edit&recID='.$recordId;
+                redirectURL($redirect);
+            }
             exit;
 
         }else{
-            $item = $this->findItem_by_UUID($this->data['recID']);
+            $item = $this->findItembyUUID($this->data['recID']);
             if($item!=null){
                 $sjson['items'] = array(json_decode($item, true));
             }
@@ -120,14 +118,13 @@ class DbAnnotations extends DbEntityBase
     //
     // returns Annotation description by Canvas URI
     //
-    private function findItems_by_Canvas($canvasUri){
-        if($this->dty_Annotation_Info>0 && defined('DT_URL')){
+    private function findItemsByCanvas($canvasUri){
+        if($this->dtyAnnotationInfo>0 && defined('DT_URL')){
             $query = 'SELECT d2.dtl_Value FROM recDetails d1, recDetails d2 WHERE '
             .'d1.dtl_DetailTypeID='.DT_URL .' AND d1.dtl_Value="'.$canvasUri.'"'
             .' AND d1.dtl_RecID=d2.dtl_RecID'
-            .' AND d2.dtl_DetailTypeID='.$this->dty_Annotation_Info;
-            $items = mysql__select_list2($this->system->get_mysqli(), $query);
-            return $items;
+            .' AND d2.dtl_DetailTypeID='.$this->dtyAnnotationInfo;
+            return mysql__select_list2($this->system->get_mysqli(), $query);
         }else{
             return array();
         }
@@ -136,14 +133,13 @@ class DbAnnotations extends DbEntityBase
     //
     //
     //
-    private function findItem_by_UUID($uuid){
-        if($this->dty_Annotation_Info>0 && defined('DT_ORIGINAL_RECORD_ID')){
+    private function findItembyUUID($uuid){
+        if($this->dtyAnnotationInfo>0 && defined('DT_ORIGINAL_RECORD_ID')){
             $query = 'SELECT d2.dtl_Value FROM recDetails d1, recDetails d2 WHERE '
             .'d1.dtl_DetailTypeID='.DT_ORIGINAL_RECORD_ID .' AND d1.dtl_Value="'.$uuid.'"'
             .' AND d1.dtl_RecID=d2.dtl_RecID'
-            .' AND d2.dtl_DetailTypeID='.$this->dty_Annotation_Info;
-            $item = mysql__select_value($this->system->get_mysqli(), $query);
-            return $item;
+            .' AND d2.dtl_DetailTypeID='.$this->dtyAnnotationInfo;
+            return mysql__select_value($this->system->get_mysqli(), $query);
         }else{
             return array();
         }
@@ -152,14 +148,15 @@ class DbAnnotations extends DbEntityBase
     //
     //
     //
-    private function findRecID_by_UUID($uuid){
+    private function findRecIDbyUUID($uuid){
         if(defined('DT_ORIGINAL_RECORD_ID')){
             $query = 'SELECT dtl_RecID FROM recDetails WHERE dtl_DetailTypeID='.DT_ORIGINAL_RECORD_ID.' AND dtl_Value="'.$uuid.'"';
             $recordId = mysql__select_value($this->system->get_mysqli(), $query);
-            return $recordId;
-        }else{
-            return 0;
         }
+        if(!$recordId){
+            $recordId = 0;
+        }
+        return $recordId;
     }
 
     //
@@ -175,40 +172,40 @@ class DbAnnotations extends DbEntityBase
             }
 
             //remove annotation with given ID
-            $recordId = $this->findRecID_by_UUID($this->data['recID']);
+            $recordId = $this->findRecIDbyUUID($this->data['recID']);
             if($recordId>0){
                 return recordDelete($this->system, $recordId);
-            }else{
-                $this->system->addError(HEURIST_NOT_FOUND, 'Annotation record to be deleted not found');
-                return false;
             }
+            
+            $this->system->addError(HEURIST_NOT_FOUND, 'Annotation record to be deleted not found');
 
         }else{
             $this->system->addError(HEURIST_INVALID_REQUEST, 'Invalid annotation identificator');
-            return false;
         }
+        
+        return false;
     }
 
     //
     //
     //
     private function assignField(&$details, $id, $value){
-        
+
         //field id
         if(intval($id)>0){
             $id = intval($id);
         }elseif(defined($id)){
             $id = constant($id);
         }
-        
+
         $was_changed = false;
-        
+
         //$id = "t:".$id;
         if(intval($id)>0){
             if(@$details[$id]){
                 //already exist
                 if(array_search($value, $details[$id])===false){
-                    $details[$id][] = $value;    
+                    $details[$id][] = $value;
                     $was_changed = true;
                 }
             }else{
@@ -217,30 +214,17 @@ class DbAnnotations extends DbEntityBase
                 $was_changed = true;
             }
         }
-        
+
         return $was_changed;
     }
-
-    //
-    //
-    //
-    public function save($createThumbnail=true, $ulf_ID=0){
-         //validate permission for current user and set of records see $this->recordIDs
-        if(!$this->_validatePermission()){
-            return false;
-        }
-/*
-        annotation: {
-          canvas: this.canvasId,
-          data: JSON.stringify(annotation),
-          uuid: annotation.id,
-        },
-*/
+    
+    private function checkRequiredDefintions(){
+        
         if(!defined('RT_MAP_ANNOTATION')){
             //import missed record type
             $importDef = new \DbsImport( $this->system );
-            $isOK = $importDef->checkAndDownloadRty('2-101');
-            
+            $isOK = $importDef->checkAndImportRty('2-101');
+
             if(!$isOK){
                 $this->system->addError(HEURIST_ACTION_BLOCKED,
                     'Can not add annotation. This database does not have "Map/Image Annotation" record type. '
@@ -260,59 +244,84 @@ class DbAnnotations extends DbEntityBase
                     .'Import record type "Map/Image Annotation" to get this field');
             return false;
         }
+        
+        return true;
+    }
+    
+    //
+    // see similar in importAction
+    // to implement - make general function
+    // 
+    private function findOriginalRecord($recordId, &$details){
+        
+        $query = "SELECT dtl_Id, dtl_DetailTypeID, dtl_Value, ST_asWKT(dtl_Geo), dtl_UploadedFileID FROM recDetails WHERE dtl_RecID=$recordId ORDER BY dtl_DetailTypeID";
+        $dets = mysql__select_all($this->system->get_mysqli(), $query);
+        if(!$dets){
+            return;
+        }
+        
+        foreach ($dets as $row){
+            //uniuque dtl_ID $bd_id = $row[0]; 
+            $field_type = $row[1];
+            if($row[4]){ //dtl_UploadedFileID
+                $value = $row[4];
+            }elseif($row[3]){ //geo
+                $value = $row[2].' '.$row[3];
+            }else{
+                $value = $row[2];
+            }
+            $details[$field_type][] = $value; //"t:"
+        }
+                
+    }
 
-        $anno = $this->data['fields']['annotation'];  
 
-        $anno_uid = $this->removeUriSchema(@$anno['@type']=='oa:Annotation'?@$anno['@id']:@$anno['uuid']);
+    //
+    //
+    //
+    public function save($createThumbnail=true, $ulf_ID=0){
+         //validate permission for current user and set of records see $this->recordIDs
+        if(!($this->_validatePermission() && $this->checkRequiredDefintions())){
+            return false;
+        }
+/*
+        annotation: {
+          canvas: this.canvasId,
+          data: JSON.stringify(annotation),
+          uuid: annotation.id,
+        },
+*/
+
+        $anno = $this->data['fields']['annotation'];
+
+        $anno_uid = $this->removeUriSchema($this->isOpenAnnotation($anno)?@$anno['@id']:@$anno['uuid']);
         if(!$anno_uid){
             $this->system->addError(HEURIST_ACTION_BLOCKED,
                     'Can not add annotation. Anotation UUID is not found');
             return false;
         }
 
-        
-        $this->dty_Annotation_Info = DT_ANNOTATION_INFO;
 
+        $this->dtyAnnotationInfo = DT_ANNOTATION_INFO;
+
+        $recordId = 0;
         $details = array();
-       
-        if($this->is_addition){
-             $recordId = 0;
-        }else{
-            //find record id by annotation UID
-            $recordId = $this->findRecID_by_UUID($anno_uid);
 
+        if(!$this->is_addition){
+            //find record id by annotation UID
+            $recordId = $this->findRecIDbyUUID($anno_uid);
             if($recordId>0){
                 //already exists
-                
-                //@todo make common function findOriginalRecord (see importAction)
-                $query = "SELECT dtl_Id, dtl_DetailTypeID, dtl_Value, ST_asWKT(dtl_Geo), dtl_UploadedFileID FROM recDetails WHERE dtl_RecID=$recordId ORDER BY dtl_DetailTypeID";
-                $dets = mysql__select_all($this->system->get_mysqli(), $query);
-                if($dets){
-                    foreach ($dets as $row){
-                        $bd_id = $row[0];
-                        $field_type = $row[1];
-                        if($row[4]){ //dtl_UploadedFileID
-                            $value = $row[4];
-                        }elseif($row[3]){ //geo
-                            $value = $row[2].' '.$row[3];
-                        }else{
-                            $value = $row[2];
-                        }
-                        $details[$field_type][] = $value; //"t:"
-                    }
-                }
-                
-            }else{
-               $recordId = 0; //add new annotation
+                $this->findOriginalRecord($recordId, $details);
             }
         }
-        
+
         $sourceRecordId = $this->data['fields']['sourceRecordId']??@$anno['sourceRecordId'];
         $manifestUrl = $this->data['fields']['manifestUrl']??@$anno['manifestUrl'];
-        
+
         //get values from annotation and add/replace values in current record
         $was_changed = false;
-        if(@$anno['@type']=='oa:Annotation'){
+        if($this->isOpenAnnotation($anno)){
             //Open Annotation
             $was_changed = $this->parseOpenAnnotation($details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl);
         }elseif(@$anno['data']){
@@ -324,17 +333,17 @@ class DbAnnotations extends DbEntityBase
                     'Can not add annotation. Anotation text is not found');
             return false;
         }
-        
+
         if($ulf_ID>0){
             //link annotation record to registered manifest
             $this->assignField($details, 'DT_FILE_RESOURCE', $ulf_ID);
-            
+
         }elseif($sourceRecordId>0 && $recordId!=$sourceRecordId){
             //link referenced image record with annotation record
             $this->assignField($details, 'DT_MEDIA_RESOURCE', $sourceRecordId);
         }
-        
-        
+
+
         if($was_changed){
             //record header
             $record = array();
@@ -342,14 +351,14 @@ class DbAnnotations extends DbEntityBase
             $record['RecTypeID'] = RT_MAP_ANNOTATION;
             $record['no_validation'] = true;
             $record['details'] = $details;
-            
+
             //$out = $this->system->addError(HEURIST_ACTION_BLOCKED,'skipped '.$recordId);
             $out = recordSave($this->system, $record, false, true);
             if(is_array($out) && $out['data']>0){
                 $out['is_new'] = $recordId == 0;
             }
         }elseif($recordId>0){
-            $out = array('status'=>HEURIST_OK, 'data'=>$recordId, 'is_retained'=>true);    
+            $out = array('status'=>HEURIST_OK, 'data'=>$recordId, 'is_retained'=>true);
         }else{
             $this->system->addError(HEURIST_ACTION_BLOCKED,
                     'Can not add annotation. Anotation data is not valid');
@@ -358,12 +367,12 @@ class DbAnnotations extends DbEntityBase
 
         return $out;
     }
-    
-        
-    /*      
+
+
+    /*
             Web Annotation
             Sample:
-            
+
             sourceRecordId:15
             manifestUrl: http://127.0.0.1//h6-alpha/?db=iiif_import&file=3c6a9074ce8037cb5ec4da4cc1a2d0a63deacb65
             canvas: http://8f74dd58-ab81-4d0c-8003-28d1d008f3db
@@ -371,7 +380,7 @@ class DbAnnotations extends DbEntityBase
                 body:{type:"TextualBody",
                       value:"text"},
                 id:"d6a3f2a3-c8bc-48ba-abbe-f6bfb4a6d30f",
-                motivation:"commenting",    
+                motivation:"commenting",
                 target:{
                     source:"http://8f74dd58-ab81-4d0c-8003-28d1d008f3db",
                     selector:[
@@ -382,74 +391,72 @@ class DbAnnotations extends DbEntityBase
                           }]
                     },
                 type: "Annotation"}
-            uuid: "d6a3f2a3-c8bc-48ba-abbe-f6bfb4a6d30f"        
-    */        
+            uuid: "d6a3f2a3-c8bc-48ba-abbe-f6bfb4a6d30f"
+    */
     private function parseWebAnnotation(&$details, $anno, $createThumbnail){
-        
+
         //"body":{"type":"TextualBody","value":"<p>RR Station</p>"},
         $anno_dec = json_decode($anno['data'], true);
-        if(!is_array($anno_dec)){
-            return false; //wrong annotation data   
+        
+        if(! (is_array($anno_dec) && //invalid annotation data
+             $this->assignField($details, $this->dtyAnnotationInfo, $anno['data']))){//not changed
+            return false; 
         }
 
-        if(!$this->assignField($details, $this->dty_Annotation_Info, $anno['data'])){
-            return false;  //not changed
-        }
-        
         if(@$anno_dec['body']['type']=='TextualBody'){
             $this->assignField($details, 'DT_NAME', substr(strip_tags($anno_dec['body']['value']),0,50));
             $this->assignField($details, 'DT_SHORT_SUMMARY', $anno_dec['body']['value']);
         }
 
+        $this->assignField($details, 'DT_ORIGINAL_RECORD_ID', $anno['uuid']);
+        
         //thumbnail
         // "selector":[{"type":"FragmentSelector","value":"xywh=524,358,396,445"}
-        if(@$anno['canvas']){ //canvas defined on addition only
-
-            //at the moment it creates thumbnail on addition only
-            //@todo - check  FragmentSelector and compare with $details[$this->dty_Annotation_Info]
-            // recreate thumbnail if annotated area is changed
-            if($createThumbnail && is_array(@$anno_dec['target']) && @$anno_dec['target']['selector'] && defined('DT_THUMBNAIL')){
-                
-                foreach ($anno_dec['target']['selector'] as $selector){
-                    if(@$selector['type']=='FragmentSelector'){
-                        $region = @$selector['value'];
-                        
-                        $thumb_id = $this->getAnnotationImage($anno['manifestUrl'], $anno['uuid'], $region, $anno['canvas']);
-                        if($thumb_id>0){
-                            $this->assignField($details, 'DT_THUMBNAIL', $thumb_id);
-                        }
-                    }
-                }
-    
-                
-                
-            }
-            //url to page/canvas
-            $details[DT_URL][] = $anno['canvas'];
-        }else {
+        if(!@$anno['canvas']){ 
+            
             if($this->is_addition && @$anno_dec['target']['source']){ //page is not changed on edit
                 $this->assignField($details, 'DT_URL', $anno_dec['target']['source']); //canvas url
             }
-        }
-       
-
-        $this->assignField($details, 'DT_ORIGINAL_RECORD_ID', $anno['uuid']);
+            return true;
+            
+        }    
+            
+        //canvas defined on addition only
         
+        //at the moment it creates thumbnail on addition only
+        //@todo - check  FragmentSelector and compare with $details[$this->dtyAnnotationInfo]
+        // recreate thumbnail if annotated area is changed
+        if($createThumbnail && is_array(@$anno_dec['target']) && @$anno_dec['target']['selector'] && defined('DT_THUMBNAIL')){
+
+            foreach ($anno_dec['target']['selector'] as $selector){
+                if(@$selector['type']=='FragmentSelector'){
+                    $region = @$selector['value'];
+
+                    $thumb_id = $this->getAnnotationImage($anno['manifestUrl'], $anno['uuid'], $region, $anno['canvas']);
+                    if($thumb_id>0){
+                        $this->assignField($details, 'DT_THUMBNAIL', $thumb_id);
+                    }
+                }
+            }
+        }
+        //url to page/canvas
+        $details[DT_URL][] = $anno['canvas'];
+
         return true;
     }
-    
+
     /**
     * remove http:// schema
-    *     
+    *
     * @param mixed $val
     */
     private function removeUriSchema($val){
         if($val && strpos($val, 'http://')!==false){
-            $val = substr($val, 7);    
+            $val = substr($val, 7);
         }
-        return $val;        
+        return $val;
     }
-    
+
     /* Sample:
             "resource": [
                 {
@@ -486,40 +493,43 @@ class DbAnnotations extends DbEntityBase
                 }
             ]
     */
+    
+    private function isOpenAnnotation($anno){
+       return @$anno['@type']=='oa:Annotation';
+    }
+    
+    
     private function parseOpenAnnotation(&$details, $anno, $createThumbnail, $manifestUrl){
-        
-        if($anno['@type']!="oa:Annotation"){
-            return false;
-        }
-        $anno_uid = $this->removeUriSchema(@$anno['@id']);
-        if(!$anno_uid){
-            return false;
-        }
 
-        if(!$this->assignField($details, $this->dty_Annotation_Info, json_encode($anno))){
-            return false; //annotation is not changed
+        $anno_uid = $this->removeUriSchema(@$anno['@id']);
+        
+        if(! ($this->isOpenAnnotation($anno) && 
+              $anno_uid && 
+              $this->assignField($details, $this->dtyAnnotationInfo, json_encode($anno)))) //annotation is not changed
+        {
+            return false;
         }
 
         $value = $anno['resource'][0]['full_text'];
         $this->assignField($details, 'DT_NAME', substr(strip_tags($value),0,50));
-        $value = $anno['resource'][0]['chars']; 
+        $value = $anno['resource'][0]['chars'];
         $this->assignField($details, 'DT_SHORT_SUMMARY', $value);
-        
+
         $this->assignField($details, 'DT_ORIGINAL_RECORD_ID', $anno_uid);
-        
+
         if(@$anno['dcterms:modified']){
             $this->assignField($details, 'DT_DATE', $anno['dcterms:modified']);
         }
 
         if(is_array(@$anno['on'])){
-            
+
             foreach($anno['on'] as $target){
-            
+
                 $canvas_url = @$target['full'];
-                $this->assignField($details, 'DT_URL', $canvas_url); //canvas url    
+                $this->assignField($details, 'DT_URL', $canvas_url); //canvas url
 
                 $fragment = @$target['selector']['default']['value'];
-                
+
                 if($fragment && defined('DT_THUMBNAIL') && $createThumbnail)
                 {
                         $thumb_id = $this->getAnnotationImage($manifestUrl, $anno_uid, $fragment, $canvas_url);
@@ -527,19 +537,21 @@ class DbAnnotations extends DbEntityBase
                             $this->assignField($details, 'DT_THUMBNAIL', $thumb_id);
                         }
                 }
-                
+
             }
         }
 
         return true;
     }
-    
+
 
     private function getAnnotationImage($manifestUrl, $anno_uid, $region, $canvas_url){
-        
+
         $context_url = 'http'.'://iiif.io/api/presentation/2/context.json';
 
-        if($region){
+        if(!$region){
+            return 0;
+        }
             $region = substr($region, 5);
 
             // https://fragmentarium.ms/metadata/iiif/F-hsd6/canvas/F-hsd6/fol_2r.jp2.json
@@ -633,11 +645,6 @@ class DbAnnotations extends DbEntityBase
                     return $dtl_UploadedFileID[0];
                 }
             }
-        }
-    
-        return 0;
     }
-    
-    
 }
-?>
+

@@ -27,19 +27,45 @@
 <div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
     <h3 style="margin:0">Report:</h3>
     <br>
-        <table>
-            <tr><td>Total count of manifests:</td><td id="total"></td></tr>
-            <tr><td>Processed manifests:</td><td id="processed"></td></tr>
-            <tr><td>Missed of invaid:</td><td id="missed"></td></tr>
-            <tr><td>Without annotations:</td><td id="without_annotations"></td></tr>
-            <tr><td colspan="2"><br><br></td></tr>
+    <div class="table">
+        <div class="row">
+            <div class="cell" style="width:200px">Total count of manifests:</div>
+            <div class="cell" id="total"></div>
+        </div>
+        <div class="row">
+            <div class="cell" style="width:200px">Processed manifests:</div>
+            <div class="cell" id="processed"></div>
+        </div>
+        <div class="row">
+            <div class="cell" style="width:200px">Missed of invaid:</div>
+            <div class="cell" id="missed"></div>
+        </div>
+        <div class="row">
+            <div class="cell" style="width:200px">Without annotations:</div>
+            <div class="cell" id="without_annotations"></div>
+        </div>
+        <div class="row" style="height:22px"></div>
 
-            <tr><td colspan="2">Annotations</td></tr>
-            <tr><td>Added:</td><td id="added"></td></tr>
-            <tr><td>Updated:</td><td id="updated"></td></tr>
-            <tr><td>Unchanged:</td><td id="retained"></td></tr>
+        <div class="row">
+            <div class="cell" style="width:200px">Annotations</div>
+        </div>
+        <div class="row">
+            <div class="cell" style="width:200px">Added:</div>
+            <div class="cell" id="added"></div>
+        </div>
+        <div class="row">
+            <div class="cell" style="width:200px">Updated:</div>
+            <div class="cell" id="updated"></div>
+        </div>
+        <div class="row">
+            <div class="cell" style="width:200px">Unchanged:</div>
+            <div class="cell" id="retained"></div>
+        </div>
+        <div class="row" style="height:22px"></div>
 
-            <tr><td colspan="2"><br><br></td></tr>
-            <tr><td style="vertical-align:top">Issues:</td><td id="issues"></td></tr>
-        </table>
+        <div class="row">
+            <div class="cell" style="width:200px;vertical-align:top">Issues:</div>
+            <div class="cell" id="issues"></div>
+        </div>
+    </div>        
 </div>

@@ -72,13 +72,14 @@ $.widget( "heurist.recordImportAnnotations", $.heurist.recordAction, {
         
         let ids = [];
         let s = ' ';
+        
         for (const ulfID in data['without_annotations']) {
            ids.push(data['without_annotations'][ulfID]); 
         }
         if(ids.length>0){
-           s = `<a href="${link+ids.join(',')}" target="_blank">${ids.join(',')}</a><br>`;
+           s = `<a href="${link+ids.join(',')}" target="_blank">${ids.length} <span class="ui-icon ui-icon-extlink">&nbsp;</span></a><br>`;
         }
-        this._$('#without_annotations').html( s );
+        this._$('#without_annotations').html( s);
 
         
         if(data['added'].length>0){
@@ -99,10 +100,14 @@ $.widget( "heurist.recordImportAnnotations", $.heurist.recordAction, {
             this._$('#retained').text( '0' );
         }
         
-        
         s = ' ';
+        ids = [];
         for (const recID in data['issues']) {
            s = s +  `<a href="${link+recID}" target="_blank">${data['issues'][recID]}</a><br>`;
+           ids.push(recID);
+        }
+        if(ids.length>1){
+           s = s + `<a href="${link+ids.join(',')}" target="_blank">all issues ( ${ids.length} ) <span class="ui-icon ui-icon-extlink">&nbsp;</span></a><br>`;
         }
         
         this._$('#issues').html( s );
