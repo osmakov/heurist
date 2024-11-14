@@ -511,7 +511,7 @@ class DbAnnotations extends DbEntityBase
     }
 
 
-    private function parseOpenAnnotation(&$details, $anno, $createThumbnail, $manifestUrl){
+    private function parseOpenAnnotation(&$details, $anno, $createThumbnail, $sourceRecordId, $manifestUrl){
 
         $anno_uid = $this->removeUriSchema(@$anno['@id']);
 

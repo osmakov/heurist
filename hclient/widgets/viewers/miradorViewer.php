@@ -56,7 +56,7 @@ $canvasUri = null;
 $baseUrl = null;
 //if database and record id are defined we take manifest url from database
 
-if(!preg_match('[\W]', $dbname) && $rec_ID>0 && @$_REQUEST['iiif_image']==null){
+if(!preg_match('[\W]', $dbname) && $rec_ID>0 && @$_REQUEST['iiif_image']==null && @$_REQUEST['iiif']==null){
 
 require_once dirname(__FILE__).'/../../../autoload.php';
 

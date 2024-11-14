@@ -118,13 +118,13 @@ $.widget( "heurist.recordImportAnnotations", $.heurist.recordAction, {
     // 
     //
     doAction: function(){
-        
+
             let request = {
                 db: window.hWin.HAPI4.database,
                 controller: 'ImportAnnotations',
                 session  : window.hWin.HEURIST4.msg.showProgress(),
-                direct_link: this._$('#chb_direct_link').is('checked')?1:0,
-                create_thumb: this._$('#chb_create_thumbs').is('checked')?1:0
+                direct_link: this._$('#chb_direct_link').is(':checked')?1:0,
+                create_thumb: this._$('#chb_create_thumbs').is(':checked')?1:0
             };
             
             let url = window.hWin.HAPI4.baseURL;
