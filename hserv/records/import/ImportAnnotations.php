@@ -37,8 +37,8 @@ class ImportAnnotations{
 
     private $system;
 
-    private $rec_IDs; // record ids to check manifest
-    private $ulf_IDs; // files ids to check manifest
+    //private $recIDs; // record ids to check manifest
+    private $ulfIDs; // files ids to check manifest
 
     private $progressSessionId = 0;
 
@@ -50,7 +50,7 @@ class ImportAnnotations{
     public function __construct( $system, $params = null ) {
         $this->system = $system;
 
-        $this->ulf_IDs = @$params['ids']; //'98a16af997b52cb888232ab5d79a527b0716561c';
+        $this->ulfIDs = @$params['ids'];
 
         $this->progressSessionId = @$params['session'];
 
@@ -67,15 +67,14 @@ class ImportAnnotations{
         $mysqli = $this->system->get_mysqli();
         $query = 'SELECT ulf_ID, ulf_ExternalFileReference FROM recUploadedFiles WHERE ulf_OrigFileName="'.ULF_IIIF.'"';
 
-        if(!empty($this->ulf_IDs)){
-            $ids = prepareStrIds($this->ulf_IDs);
+        if(!empty($this->ulfIDs)){
+            $ids = prepareStrIds($this->ulfIDs);
             if(!empty($ids)){
                 if(count($ids)==1){
                     $query = $query . ' AND ulf_ObfuscatedFileID='.$ids[0];
                 }else{
                     $query = $query . ' AND ('.implode(' OR ulf_ObfuscatedFileID =',$ids).')';
                 }
-                //predicateId('ulf_ID', $this->ulf_IDs, SQL_AND);
             }
         }
 
@@ -110,7 +109,7 @@ class ImportAnnotations{
             {
                 $annotations = $this->getIiifAnnotationList($iiif_manifest);
 
-            }elseif(@$iiif_manifest['@type']=='sc:AnnotationList' ||   //v2
+            }elseif( $this->isAnnotationList($iiif_manifest) ||   //v2
                     @$iiif_manifest['type']=='AnnotationList')        //v3
             {
                 $annotations = $iiif_manifest['resources'] ?? [];
@@ -129,7 +128,16 @@ class ImportAnnotations{
         return $annotations;
     }
 
+    //
+    //
+    //
+    private function isAnnotationList($ele){
+        return @$ele['@type']=='sc:AnnotationList';
+    }
 
+    //
+    //
+    //
     private function getIiifAnnotationList($iiif_manifest){
 
         //find annoatations in sequences->[canvases->[otherContent->["@type": "sc:AnnotationList"]
@@ -138,7 +146,7 @@ class ImportAnnotations{
         foreach($iiif_manifest['sequences'] as $seq){
             foreach($seq['canvases'] as $canvas){
                 foreach($canvas['otherContent'] as $annoList){
-                    if(@$annoList['@type']=='sc:AnnotationList'){
+                    if($this->isAnnotationList($annoList)){
                         $annotations = $this->processManifest(@$annoList['@id']);
                     }
                 }
@@ -148,7 +156,7 @@ class ImportAnnotations{
         return $annotations;
     }
 
-    public function execute(){
+    private function prepareExecution(){
 
         //must be database manager
         if(!$this->system->is_admin()){
@@ -160,7 +168,17 @@ class ImportAnnotations{
         $urls = $this->findRegisteredManifests();
 
         if(empty($urls)){
-            return array('total'=>0);
+            $urls = array('total'=>0);
+        }
+        return $urls;
+    }
+
+    public function execute(){
+
+        $urls = prepareExecution();
+
+        if(!$urls || @$urls['total']==0 ){
+            return $urls;
         }
 
         $tot_count = count($urls);
@@ -174,19 +192,21 @@ class ImportAnnotations{
         $dbAnno = new DbAnnotations($this->system);
         $dbUlf  = new DbRecUploadedFiles($this->system);
 
-        $cnt_processed = 0;
-        $cnt_missed = 0;
-        $recids_added = array();
-        $recids_updated = array();
-        $recids_retained = array();
-        $without_annotations = array();
-        $issues = array();
+        $result = array('total'=>$tot_count,
+                         'processed'=>0,
+                         'missed'=>0,
+                         'added'=>array(),
+                         'updated'=>array(),
+                         'retained'=>array(),
+                         'without_annotations'=>array(),
+                         'issues'=>array()
+                         );
 
         //loop manifests
         foreach($urls as $ulf_ID=>$manifest_url){
 
             $annotations = $this->processManifest($manifest_url);
-            $cnt_processed++;
+            $result['processed']++;
 
             //find linked records
             $rec_ids = $dbUlf->getMediaRecords($ulf_ID, 'file_fields', 'rec_ids');
@@ -197,7 +217,7 @@ class ImportAnnotations{
             }
 
             if($annotations===false){
-                $cnt_missed++;
+                $result['missed']++;
                 $err_msg = $this->system->getError();
                 $issues[$source_rec_id] = $err_msg['message'];
                 $this->system->clearError();
@@ -205,41 +225,16 @@ class ImportAnnotations{
             }
 
             if(empty($annotations)){
-                $without_annotations[$ulf_ID] = $source_rec_id;
+                $result['without_annotations'][$ulf_ID] = $source_rec_id;
                 continue;
             }
 
             foreach ($annotations as $anno){
 
-                //$anno['sourceRecordId'] = $source_rec_id;
-                //$anno['manifestUrl'] = $manifest_url;
-
                 $dbAnno->setData(array('fields'=>array('annotation'=>$anno, 'sourceRecordId'=>$source_rec_id, 'manifestUrl'=>$manifest_url)));
                 $res = $dbAnno->save($this->createThumbnail, $this->linkAnnotationWithManifest?$ulf_ID:0);
 
-                if($res===false){
-
-                    $err_msg = $this->system->getError();
-                    $issues[$source_rec_id] = $err_msg['message'];
-                    $this->system->clearError();
-
-                }elseif(is_array($res) && $res['status']!=HEURIST_OK){
-
-                    $issues[$source_rec_id] = $res['message'];
-
-                }else{
-
-                    $rec_id = $res['data'];
-                    if(@$res['is_new']){
-                        $recids_added[] = $rec_id;
-                    }elseif(@$res['is_retained']){
-                        if(!in_array($rec_id, $recids_added)){
-                            $recids_retained[] = $rec_id;
-                        }
-                    }else{
-                        $recids_updated[] = $rec_id;
-                    }
-                }
+                $this->processResult($result, $res, $source_rec_id);
             }
 
             if($this->progressSessionId && $cnt_processed % 5 == 0){
@@ -251,20 +246,43 @@ class ImportAnnotations{
             }
 
         }//for
-    
+
         if($this->progressSessionId){
             //remove session file
             mysql__update_progress(null, $this->progressSessionId, false, 'REMOVE');
         }
 
-        return  array('total'=>$tot_count,
-                         'processed'=>$cnt_processed,
-                         'missed'=>$cnt_missed,
-                         'added'=>$recids_added,
-                         'updated'=>$recids_updated,
-                         'retained'=>$recids_retained,
-                         'without_annotations'=>$without_annotations,
-                         'issues'=>$issues
-                         );
+        return $result;
     }
+
+    //
+    //
+    //
+    private function processResult(&$result, $res, $source_rec_id)
+    {
+        if($res===false){
+
+            $err_msg = $this->system->getError();
+            $result['issues'][$source_rec_id] = $err_msg['message'];
+            $this->system->clearError();
+
+        }elseif(is_array($res) && $res['status']!=HEURIST_OK){
+
+            $result['issues'][$source_rec_id] = $res['message'];
+
+        }else{
+
+            $rec_id = $res['data'];
+            if(@$res['is_new']){
+                $result['added'][] = $rec_id;
+            }elseif(@$res['is_retained']){
+                if(!in_array($rec_id, $recids_added)){
+                    $result['retained'][] = $rec_id;
+                }
+            }else{
+                $result['updated'][] = $rec_id;
+            }
+        }
+    }
+
 }
