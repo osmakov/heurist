@@ -4,7 +4,6 @@ namespace hserv\entity;
 use hserv\entity\DbEntityBase;
 use hserv\entity\DbRecUploadedFiles;
 use hserv\utilities\USanitize;
-// use hserv\structure\import\DbsImport;
 
     /**
     * dbAnnotations
@@ -69,34 +68,7 @@ class DbAnnotations extends DbEntityBase
     */
     public function search(){
 
-        $sjson = array('id'=>"https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]",
-                        'type' => 'AnnotationPage');
-
-
-        //find all annotation for given uri
-
-        if($this->data['recID']=='pages'){
-            $sjson['items'] = array();
-
-            if(!@$this->data['uri']){
-                $params = USanitize::sanitizeInputArray();
-                $this->data['uri'] = $params['uri']; //filter_var(substr($_SERVER['QUERY_STRING'],4), FILTER_SANITIZE_URL);  //remove "uri="
-            }
-            $uri = $this->data['uri'];
-            $items = $this->findItemsByCanvas($uri);
-            if(isEmptyArray($items)){
-                $sjson['items'] = array();
-                return $sjson;
-            }
-
-            foreach($items as $item){
-                $anno = json_decode($item, true);
-                if($anno && $anno['type']=='Annotation'){ //only WebAnnotations
-                    $sjson['items'][] = $anno;
-                }
-            }
-        }
-        elseif($this->data['recID']=='edit'){
+        if($this->data['recID']=='edit'){
 
             $recordId = $this->findRecIDbyUUID($this->data['uuid']);
             if($recordId>0){
@@ -104,11 +76,37 @@ class DbAnnotations extends DbEntityBase
                 redirectURL($redirect);
             }
             exit;
+        }
 
-        }else{
+
+        $sjson = array('id'=>"https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]",
+                        'type' => 'AnnotationPage');
+
+        $sjson['items'] = array();
+
+        //find all annotation for given uri
+        if($this->data['recID']!='pages'){
             $item = $this->findItembyUUID($this->data['recID']);
             if($item!=null){
                 $sjson['items'] = array(json_decode($item, true));
+            }
+            return $sjson;
+        }
+
+        if(!@$this->data['uri']){
+            $params = USanitize::sanitizeInputArray();
+            $this->data['uri'] = @$params['uri'];
+        }
+        $uri = $this->data['uri'];
+        $items = $this->findItemsByCanvas($uri);
+        if(isEmptyArray($items)){
+            return $sjson;
+        }
+
+        foreach($items as $item){
+            $anno = json_decode($item, true);
+            if($anno && $anno['type']=='Annotation'){ //only WebAnnotations
+                $sjson['items'][] = $anno;
             }
         }
 
@@ -176,13 +174,13 @@ class DbAnnotations extends DbEntityBase
             if($recordId>0){
                 return recordDelete($this->system, $recordId);
             }
-            
+
             $this->system->addError(HEURIST_NOT_FOUND, 'Annotation record to be deleted not found');
 
         }else{
             $this->system->addError(HEURIST_INVALID_REQUEST, 'Invalid annotation identificator');
         }
-        
+
         return false;
     }
 
@@ -200,7 +198,6 @@ class DbAnnotations extends DbEntityBase
 
         $was_changed = false;
 
-        //$id = "t:".$id;
         if(intval($id)>0){
             if(@$details[$id]){
                 //already exist
@@ -217,9 +214,9 @@ class DbAnnotations extends DbEntityBase
 
         return $was_changed;
     }
-    
+
     private function checkRequiredDefintions(){
-        
+
         if(!defined('RT_MAP_ANNOTATION')){
             //import missed record type
             $importDef = new \DbsImport( $this->system );
@@ -244,24 +241,24 @@ class DbAnnotations extends DbEntityBase
                     .'Import record type "Map/Image Annotation" to get this field');
             return false;
         }
-        
+
         return true;
     }
-    
+
     //
     // see similar in importAction
     // to implement - make general function
-    // 
+    //
     private function findOriginalRecord($recordId, &$details){
-        
+
         $query = "SELECT dtl_Id, dtl_DetailTypeID, dtl_Value, ST_asWKT(dtl_Geo), dtl_UploadedFileID FROM recDetails WHERE dtl_RecID=$recordId ORDER BY dtl_DetailTypeID";
         $dets = mysql__select_all($this->system->get_mysqli(), $query);
         if(!$dets){
             return;
         }
-        
+
         foreach ($dets as $row){
-            //uniuque dtl_ID $bd_id = $row[0]; 
+            //uniuque dtl_ID $bd_id = $row[0];
             $field_type = $row[1];
             if($row[4]){ //dtl_UploadedFileID
                 $value = $row[4];
@@ -272,7 +269,7 @@ class DbAnnotations extends DbEntityBase
             }
             $details[$field_type][] = $value; //"t:"
         }
-                
+
     }
 
 
@@ -397,10 +394,10 @@ class DbAnnotations extends DbEntityBase
 
         //"body":{"type":"TextualBody","value":"<p>RR Station</p>"},
         $anno_dec = json_decode($anno['data'], true);
-        
+
         if(! (is_array($anno_dec) && //invalid annotation data
              $this->assignField($details, $this->dtyAnnotationInfo, $anno['data']))){//not changed
-            return false; 
+            return false;
         }
 
         if(@$anno_dec['body']['type']=='TextualBody'){
@@ -409,39 +406,37 @@ class DbAnnotations extends DbEntityBase
         }
 
         $this->assignField($details, 'DT_ORIGINAL_RECORD_ID', $anno['uuid']);
-        
-        //thumbnail
+
         // "selector":[{"type":"FragmentSelector","value":"xywh=524,358,396,445"}
-        if(!@$anno['canvas']){ 
-            
+        //canvas defined on addition only
+        if(!@$anno['canvas']){
+
             if($this->is_addition && @$anno_dec['target']['source']){ //page is not changed on edit
                 $this->assignField($details, 'DT_URL', $anno_dec['target']['source']); //canvas url
             }
-            return true;
-            
-        }    
-            
-        //canvas defined on addition only
-        
+        }else{
+            //url to page/canvas
+            $details[DT_URL][] = $anno['canvas'];
+        }
+
+
         //at the moment it creates thumbnail on addition only
-        //@todo - check  FragmentSelector and compare with $details[$this->dtyAnnotationInfo]
         // recreate thumbnail if annotated area is changed
-        if($createThumbnail && is_array(@$anno_dec['target']) && @$anno_dec['target']['selector'] && defined('DT_THUMBNAIL')){
+        if(!($createThumbnail && is_array(@$anno_dec['target']) && @$anno_dec['target']['selector'] && defined('DT_THUMBNAIL'))){
+            return true;
+        }
 
-            foreach ($anno_dec['target']['selector'] as $selector){
-                if(@$selector['type']=='FragmentSelector'){
-                    $region = @$selector['value'];
+        foreach ($anno_dec['target']['selector'] as $selector){
+            if(@$selector['type']=='FragmentSelector'){
+                $region = @$selector['value'];
 
-                    $thumb_id = $this->getAnnotationImage($anno['manifestUrl'], $anno['uuid'], $region, $anno['canvas']);
-                    if($thumb_id>0){
-                        $this->assignField($details, 'DT_THUMBNAIL', $thumb_id);
-                    }
+                $thumb_id = $this->getAnnotationImage($anno['manifestUrl'], $anno['uuid'], $region, $anno['canvas']);
+                if($thumb_id>0){
+                    $this->assignField($details, 'DT_THUMBNAIL', $thumb_id);
                 }
             }
         }
-        //url to page/canvas
-        $details[DT_URL][] = $anno['canvas'];
-
+        
         return true;
     }
 
@@ -493,18 +488,18 @@ class DbAnnotations extends DbEntityBase
                 }
             ]
     */
-    
+
     private function isOpenAnnotation($anno){
        return @$anno['@type']=='oa:Annotation';
     }
-    
-    
+
+
     private function parseOpenAnnotation(&$details, $anno, $createThumbnail, $manifestUrl){
 
         $anno_uid = $this->removeUriSchema(@$anno['@id']);
-        
-        if(! ($this->isOpenAnnotation($anno) && 
-              $anno_uid && 
+
+        if(! ($this->isOpenAnnotation($anno) &&
+              $anno_uid &&
               $this->assignField($details, $this->dtyAnnotationInfo, json_encode($anno)))) //annotation is not changed
         {
             return false;
@@ -544,10 +539,61 @@ class DbAnnotations extends DbEntityBase
         return true;
     }
 
+    private function getImageUrlV2($iiif_manifest, $url){
+
+        if(!is_array(@$iiif_manifest['sequences'])){
+            return $url;
+        }
+
+        foreach($iiif_manifest['sequences'] as $seq){
+            if(is_array(@$seq['canvases'])){
+                foreach($seq['canvases'] as $canvas){
+                    if($canvas['@id']==$url && is_array(@$canvas['images'])){
+                        foreach($canvas['images'] as $image){
+                            $url2 = @$image['resource']['service']['@id'];
+                            if($url2!=null) {
+                                return $url2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //not found
+        return $url;
+    }
+
+    private function getImageUrlV3($iiif_manifest, $url){
+
+        if(!is_array(@$iiif_manifest['items'])){
+            return $url;
+        }
+
+        foreach($iiif_manifest['items'] as $canvas){
+            if(@$canvas['type']=='Canvas' && $canvas['id']==$url && is_array(@$canvas['items'])){
+                foreach($canvas['items'] as $annot_page){
+                    if(@$annot_page['type']=='AnnotationPage' && is_array(@$annot_page['items']))
+                    {
+                        foreach($annot_page['items'] as $annot){
+                            if(@$annot['type']=='Annotation'
+                            && @$annot['body']['type']=='Image')
+                            {
+                                $url2 = @$annot['body']['service']['id'];
+                                if($url2!=null) {
+                                    return $url2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //not found
+        return $url;
+    }
 
     private function getAnnotationImage($manifestUrl, $anno_uid, $region, $canvas_url){
-
-        $context_url = 'http'.'://iiif.io/api/presentation/2/context.json';
 
         if(!$region){
             return 0;
@@ -556,7 +602,6 @@ class DbAnnotations extends DbEntityBase
 
             // https://fragmentarium.ms/metadata/iiif/F-hsd6/canvas/F-hsd6/fol_2r.jp2.json
             // https://gallica.bnf.fr/iiif/ark:/12148/bpt6k9604118j/canvas/f11/
-            $url2 = $canvas_url;
             $url = $canvas_url;
 
             if($manifestUrl){ //target manifest url
@@ -568,53 +613,17 @@ class DbAnnotations extends DbEntityBase
 
                     //"@context": "http://iiif.io/api/presentation/2/context.json"
                     //sequences->canvases->images->resource->service->@id
+                    $context_url = 'http'.'://iiif.io/api/presentation/2/context.json';
+
                     if(@$iiif_manifest['@context']==$context_url){
-                        if(is_array(@$iiif_manifest['sequences'])){
-                            foreach($iiif_manifest['sequences'] as $seq){
-                                if(is_array(@$seq['canvases'])){
-                                    foreach($seq['canvases'] as $canvas){
-                                        if($canvas['@id']==$url && is_array(@$canvas['images'])){
-                                            foreach($canvas['images'] as $image){
-                                                $url2 = @$image['resource']['service']['@id'];
-                                                if($url2!=null) {
-                                                    $url = $url2;
-                                                    break 3;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+
+                        $url = $this->getImageUrlV2($iiif_manifest, $url);
 
                     }else{ //version 3
                         //"@context": "http://iiif.io/api/presentation/3/context.json"
                         //items(type:Canvas)->items[AnnotationPage]->items[Annotation]->body->service[0]->id
 
-                        if(is_array(@$iiif_manifest['items'])){
-                            foreach($iiif_manifest['items'] as $canvas){
-                                if(@$canvas['type']=='Canvas' && $canvas['id']==$url && is_array(@$canvas['items'])){
-                                    foreach($canvas['items'] as $annot_page){
-                                        if(@$annot_page['type']=='AnnotationPage' && is_array(@$annot_page['items']))
-                                        {
-                                            foreach($annot_page['items'] as $annot){
-                                                if(@$annot['type']=='Annotation'
-                                                && @$annot['body']['type']=='Image')
-                                                {
-                                                    $url2 = @$annot['body']['service']['id'];
-                                                    if($url2!=null) {
-                                                        $url = $url2;
-                                                        break 3;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-
+                        $url = $this->getImageUrlV3($iiif_manifest, $url);
                     }
 
                 }
