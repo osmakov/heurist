@@ -694,7 +694,7 @@ window.hWin.HEURIST4.query = {
                     cond = `Records last modified ${field_key} the ${value}`;
                     break;
                 case 'sortby':
-                    value = window.hWin.HEURIST4.query.sortbyValue(value);
+                    value = window.hWin.HEURIST4.query.sortbyValue(value, rty_ID);
                     !value || sortby.push(value);
                     break;
                 case 't':
@@ -794,7 +794,7 @@ window.hWin.HEURIST4.query = {
         return res;
     },
 
-    sortbyValue: function(value){
+    sortbyValue: function(value, rty_ID){
 
         let res = '';
         const is_negate = value[0] === '-';
@@ -840,7 +840,11 @@ window.hWin.HEURIST4.query = {
 
                     res = value;
                     if(window.hWin.HEURIST4.util.isPositiveInt(value)){
-                        res = $Db.rst(rty_ID, value, 'rst_DisplayName');
+                        if(rty_ID>0){
+                            res = $Db.rst(rty_ID, value, 'rst_DisplayName');    
+                        }else{
+                            res = null;
+                        }
                         res = res ?? $Db.dty(value, 'dty_Name');
                     }
                 }
