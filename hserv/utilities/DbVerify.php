@@ -313,7 +313,7 @@ class DbVerify {
     * @param array $params
     */
     public function check_dup_terms($params=null){
-        global $TL;
+        global $trmLookup;
 
         $resStatus = true;
         $resMsg = '';
@@ -396,7 +396,7 @@ class DbVerify {
                     $resMsg .= '<h3>'.count($trmWithWrongParents).' terms have wrong parent term references</h3>';
                     $cnt = 0;
                     foreach ($trmWithWrongParents as $trm_ID) {
-                        $resMsg .= ('<br>'.$trm_ID.'  '.$TL[$trm_ID]['trm_Label']);
+                        $resMsg .= ('<br>'.$trm_ID.'  '.$trmLookup[$trm_ID]['trm_Label']);
                         if($cnt>30){
                           $resMsg .= ('<br>'.count($trmWithWrongParents)-$cnt.' more...');
                           break;
@@ -410,7 +410,7 @@ class DbVerify {
                     $resMsg .= '<h3>'.count($trmWithWrongInverse).' terms have wrong inverse term references</h3>';
                     $cnt = 0;
                     foreach ($trmWithWrongInverse as $trm_ID) {
-                        $resMsg .= '<br>'.$trm_ID.'  '.$TL[$trm_ID]['trm_Label'];
+                        $resMsg .= '<br>'.$trm_ID.'  '.$trmLookup[$trm_ID]['trm_Label'];
                         if($cnt>30){
                           $resMsg .= '<br>'.count($trmWithWrongInverse)-$cnt.' more...';
                           break;
@@ -430,10 +430,10 @@ class DbVerify {
             .'If so, we suggest deleting the numbered term or using Design > Vocabularies to merge it with the un-numbered version.</h3>';
             foreach ($trmDuplicates as $parent_ID=>$dupes) {
                 $resMsg .= '<div style="padding-top:10px;font-style:italic">parent '.intval($parent_ID).'  '
-                    .htmlspecialchars($TL[$parent_ID]['trm_Label']).DIV_E;
+                    .htmlspecialchars($trmLookup[$parent_ID]['trm_Label']).DIV_E;
                 foreach ($dupes as $trm_ID) {
                     $resMsg .= '<div style="padding-left:60px">'.intval($trm_ID).'  '
-                    .htmlspecialchars($TL[$trm_ID]['trm_Label']).DIV_E;
+                    .htmlspecialchars($trmLookup[$trm_ID]['trm_Label']).DIV_E;
                 }
             }
         }
@@ -455,7 +455,6 @@ class DbVerify {
      *               'message' contains success/error or repair information.
      */
     public function check_field_type($params=null){
-        global $TL;
 
         $mysqli = $this->mysqli;
         $lists = array();

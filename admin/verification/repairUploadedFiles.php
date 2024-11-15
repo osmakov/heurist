@@ -75,8 +75,9 @@ if(@$req_params['data']){
 
             $realpath_file = isPathInHeuristUploadFolder($file);//snyk SSRF
 
-            if($realpath_file && file_exists($realpath_file)){
-                if(unlink($realpath_file)) {array_push($res, $file);}
+            if($realpath_file && file_exists($realpath_file) && unlink($realpath_file)) 
+            {
+                array_push($res, $file);
             }
         }
         $response = array("status"=>HEURIST_OK, "data"=> $res);
@@ -103,17 +104,6 @@ if(@$req_params['data']){
         print json_encode($response);
         exit;
     }
-
-    /*
-    foreach ($files as $file) {
-        $ulf_ID = $file[0];
-        $isfound = $file[1];//if true - find and delete file if in db root or uploaded files
-        if($isfound==1){
-            deleteUploadedFiles($ulf_ID);
-        }
-        $ids[] = $ulf_ID;
-    }
-    */
 
     //------------------------------------------------------
     // remove missed files
@@ -142,4 +132,3 @@ if(@$req_params['data']){
     $response = $system->addError(HEURIST_INVALID_REQUEST,
                                 'Wrong parameters. No data defined');
     print json_encode($response);
-?>

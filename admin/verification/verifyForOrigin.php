@@ -183,7 +183,7 @@
 
                  $domain = $row['dty_Type']=='enum'?'enum':'relation';
 
-                 $terms = VerifyValue::getAllowedTerms($row['dty_JsonTermIDTree'], null, $row['dty_ID']);
+                 $terms = VerifyValue::getAllowedTerms($row['dty_JsonTermIDTree'], $row['dty_ID']);
                  $codes = array();
                  foreach($terms as $trm_id){
                      $term = $all_terms['termsByDomainLookup'][$domain][$trm_id];
@@ -197,18 +197,6 @@
 
     }//for origin
 
-   /*
-    print 'rectypes '.print_r($rty_CodesToCheck, true);
-
-    print '<br><br>FIELDS: '.print_r($fields, true);
-
-    print '<br><br>POINTERS: '.print_r($constraints, true);
-
-
-    print '<br><br>TERMS: '.print_r($terms_codes, true);
-
-    exit;
-    */
     //-----------------------------------------------
 
     foreach ($databases as $idx=>$db_name){
@@ -240,7 +228,7 @@
 
             $msg_error = '';
 
-            if(array_search($rty_Code, $rty_Codes2)==false) {continue;}//there is no such record type
+            if(array_search($rty_Code, $rty_Codes2)===false) {continue;}//there is no such record type
 
             list($db_id, $orig_id) = explode('-',$rty_Code);
 
@@ -261,11 +249,9 @@
 
                 if (!$res) {  print htmlspecialchars($db_name.'  '.$query.'  '.$mysqli->error); return; }
                 $row = $res->fetch_assoc();
-                if($row){
-                    if($row[0]!=$db_id || $row[1]!=$orig_id){
+                if($row && $row[0]!=$db_id || $row[1]!=$orig_id){
                        $msg_error = $msg_error."<p style='padding-left:20px'>name = ".htmlspecialchars($rty_Name)
                         ." : Unexpected concept ID ".$row[0].'-'.$row[1].'</p>';
-                    }
                 }
             }
 
@@ -310,7 +296,7 @@
 
                      $domain = $row['dty_Type']=='enum'?'enum':'relation';
 
-                     $terms = VerifyValue::getAllowedTerms($row['dty_JsonTermIDTree'], null, $row['dty_ID']);
+                     $terms = VerifyValue::getAllowedTerms($row['dty_JsonTermIDTree'], $row['dty_ID']);
 
                      $codes = array();
                      if(is_array($terms)){
@@ -377,13 +363,6 @@
                                     .' '.htmlspecialchars($fields[$rty_Code][$dty_Code])
                                     .': missing constraint record types '.implode(',',$missing).'</p>';
                     }
-                    /*
-                    if(!empty($missing2)){
-                       $msg_error = $msg_error."<p style='padding-left:40px'>field ".$dty_Code.' '.$fields[$rty_Code][$dty_Code]
-                                    .': missing record types '.implode(',',$missing2).'</p>';
-                    }
-                    */
-
                 }
             }//foreach constaints
 

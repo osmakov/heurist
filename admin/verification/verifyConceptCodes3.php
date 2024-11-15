@@ -61,7 +61,7 @@ $mysqli = $system->get_mysqli();
         $query = 'SELECT sys_dbRegisteredID from '.$db_name.'.sysIdentification';
         $ver = mysql__select_value($mysqli, $query);
         $ver = intval($ver);
-        if(!($ver>0)) {continue;}
+        if(!isPositiveInt($var)) {continue;} 
 /* assign values for unregistered databases
         if($db_name=='hdb_johns_test_028') {continue;}
         $query = 'UPDATE '.$db_name
@@ -174,20 +174,6 @@ if($mysqli->error){print $query.'  '.$mysqli->error; break;}
             $query = "UPDATE `$db_name`.defDetailTypes SET dty_OriginatingDBID = $ver WHERE dty_OriginatingDBID = 0";
             $mysqli->query($query);
         }
-        if(!empty($det_types)){
-
-/*
-$query = 'UPDATE '.$db_name.'.defDetailTypes set dty_IDInOriginatingDB = dty_ID, dty_NameInOriginatingDB = dty_Name, dty_OriginatingDBID=2'
-            ." WHERE (dty_ID>56 and dty_ID<73 and dty_OriginatingDBID=0 and dty_IDInOriginatingDB=0)";
-$mysqli->query($query);
-
-$query = 'UPDATE '.$db_name.'.defDetailTypes set dty_IDInOriginatingDB = dty_ID, dty_NameInOriginatingDB = dty_Name, dty_OriginatingDBID='.$ver
-            ." WHERE (dty_OriginatingDBID='' OR dty_OriginatingDBID=0 OR dty_OriginatingDBID IS NULL "
-            ." OR dty_IDInOriginatingDB='' OR dty_IDInOriginatingDB=0 OR dty_IDInOriginatingDB IS NULL)";
-$mysqli->query($query);
-*/
-        }
-
 
         }
 
@@ -214,21 +200,7 @@ $mysqli->query($query);
                 $query = "UPDATE `$db_name`.defTerms SET trm_OriginatingDBID = $ver WHERE trm_OriginatingDBID = 0";
                 $mysqli->query($query);
             }
-          /*
-        if(!empty($terms)){
-$query = 'UPDATE '.$db_name.'.defTerms set trm_IDInOriginatingDB = trm_ID, trm_NameInOriginatingDB = trm_Label,'
-            .' trm_OriginatingDBID=2'
-            ." WHERE (trm_ID>3257 and trm_ID<3297 and trm_OriginatingDBID=0 and trm_IDInOriginatingDB=0)";
-$mysqli->query($query);
 
-$query = 'UPDATE '.$db_name.'.defTerms set trm_IDInOriginatingDB = trm_ID, trm_NameInOriginatingDB = trm_Label,'
-            .' trm_OriginatingDBID='.$ver
-            ." WHERE (trm_OriginatingDBID='' OR trm_OriginatingDBID=0 OR trm_OriginatingDBID IS NULL "
-            ." OR trm_IDInOriginatingDB='' OR trm_IDInOriginatingDB=0 OR trm_IDInOriginatingDB IS NULL)";
-$mysqli->query($query);
-
-        }
-        */
         }
 
         if($is_found){
@@ -279,20 +251,4 @@ $mysqli->query($query);
     }
 
     print '[end report]</div>';
-
-/*
-    print DIV_S.TABLE_S;
-    foreach($all_rty_regs as $k=>$rty)
-    {
-        print TR_S.$rty[1].TD.$rty[2].TD.$rty[3].TR_E;
-    }
-    print TABLE_E.DIV_E;
-*/
-/*
-    asort($registered);
-
-    foreach ($registered as $db_name=>$regid){
-        print $regid.'  '.$db_name.'<br>';
-    }
-*/
 ?>

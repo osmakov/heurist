@@ -99,11 +99,6 @@ $mysqli = $system->get_mysqli();
         while ($row = $res->fetch_row()) {
                $is_found = true;
                array_push($det_types, array_map('htmlspecialchars',$row));
-   /*
-               $query = 'update '.$db_name.'.defDetailTypes set dty_OriginatingDBID=2,'
-.'dty_NameInOriginatingDB="Related Person(s)", dty_IDInOriginatingDB = 235 '
-.' where dty_Name like "Related Person%" AND dty_ID ='.$row[0];
-               $mysqli->query($query);*/
         }
 
         }

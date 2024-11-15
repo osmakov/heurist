@@ -113,11 +113,11 @@ class DbsTerms
 
         // Validate termIDs
         if($domain!=null){
-            $TL = $this->data['termsByDomainLookup'][$domain];
+            $trmLookup2 = $this->data['termsByDomainLookup'][$domain];
 
             foreach ($termIDs as $trmID) {
                 // check that the term valid
-                if ( $trmID && array_key_exists($trmID,$TL) && !in_array($trmID, $validTermIDs)){ // valid trm ID
+                if ( $trmID && array_key_exists($trmID, $trmLookup2) && !in_array($trmID, $validTermIDs)){ // valid trm ID
                     array_push($validTermIDs,$trmID);
                 }
             }

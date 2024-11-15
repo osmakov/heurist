@@ -3,7 +3,7 @@
 * verifyValue.php - library of functions to verify values - pointers and terms to conform to
 * the constraints in detail and record type definitions
 * Used in dbVerify.php, importCSV_lib.php
-* @todo saveRecordDetail and importRectype
+* to implement in saveRecordDetail and importRectype
 *
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org
@@ -41,11 +41,11 @@ class VerifyValue {
     private static $initialized = false;
 
     private static $dtyIDDefs = array();//list of allowed terms for particular detail type ID
-    private static $dtyIDDefs_labels = array();//with hierarchy
-    private static $dtyIDDefs_labels_plain = array();//without hierarchy
-    private static $dtyIDDefs_codes = array();
+    private static $dtyIDDefsLabels = array();//with hierarchy
+    private static $dtyIDDefsLabelsPlain = array();//without hierarchy
+    private static $dtyIDDefsCodes = array();
     private static $terms = null;
-    private static $dbs_terms = null;
+    private static $dbsTerms = null;
 
     private static function initialize()
     {
@@ -65,9 +65,9 @@ class VerifyValue {
     //
     public static function reset(){
         self::$dtyIDDefs = array();//list of allowed terms for particular detail type ID
-        self::$dtyIDDefs_labels = array();
-        self::$dtyIDDefs_labels_plain = array();
-        self::$dtyIDDefs_codes = array();
+        self::$dtyIDDefsLabels = array();
+        self::$dtyIDDefsLabelsPlain = array();
+        self::$dtyIDDefsCodes = array();
 
         self::$terms = null;
     }
@@ -76,18 +76,15 @@ class VerifyValue {
 * get all terms ids allowed for given field type
 *
 * @param mixed $defs - array of all terms
-* @param mixed $defs_nonsel - array of disabled(header) terms
 * @param mixed $dtyID - detail type i
 */
-public static function getAllowedTerms($defs, $defs_nonsel, $dtyID){
+public static function getAllowedTerms($defs, $dtyID){
 
     self::initialize();
 
     $allowed_terms = null;
 
     if($dtyID==null || !@self::$dtyIDDefs[$dtyID]){ //detail type ID is not defined or terms are already found
-
-        //self::$system->defineConstant('DT_RELATION_TYPE');
 
         if ( $dtyID == self::$system->getConstant('DT_RELATION_TYPE')) {
             $parent_id = 'relation';
@@ -100,47 +97,11 @@ public static function getAllowedTerms($defs, $defs_nonsel, $dtyID){
             $allowed_terms = 'all';
         }else{
             self::getTerms();
-            $allowed_terms = self::$dbs_terms->treeData($parent_id, 3);
+            $allowed_terms = self::$dbsTerms->treeData($parent_id, 3);
         }
 
         self::$dtyIDDefs[$dtyID] = $allowed_terms;
 
-/*
-        if ( $dtyID == DT_RELATION_TYPE) {
-            //get all root terms (vocabs)
-            $allowed_terms = getTermListAll(self::$mysqli, 'relation');//see dbsData.php
-            self::$dtyIDDefs[$dtyID] = $allowed_terms;
-
-        } else {
-
-            $terms = getTermsFromFormat($defs);//see dbsData.php
-
-            if (($cntTrm = count($terms)) > 0) {
-
-                if ($cntTrm == 1) {  //vocabulary
-                    $vocabId = $terms[0];
-                    $terms = getTermOffspringList(self::$mysqli, $vocabId);//see dbsData.php
-                    array_push($terms, $vocabId);
-
-                }else{
-                    $nonTerms = getTermsFromFormat($defs_nonsel);//see dbsData.php
-                    if (!empty($nonTerms)) {
-                        $terms = array_diff($terms, $nonTerms);
-                    }
-                }
-                if (empty($terms)) {
-                    $allowed_terms = "all";
-                }else{
-                    $allowed_terms = $terms;
-                }
-
-                if($dtyID!=null){ //keep for future use
-                    self::$dtyIDDefs[$dtyID] = $allowed_terms;
-                }
-
-            }
-        }
-*/
     }else{
         //take from store
         $allowed_terms = self::$dtyIDDefs[$dtyID];
@@ -152,9 +113,9 @@ public static function getTerms(){
     if(self::$terms == null){
         self::initialize();
         self::$terms = dbs_GetTerms(self::$system);
-        self::$dbs_terms = new DbsTerms(self::$system, self::$terms);
+        self::$dbsTerms = new DbsTerms(self::$system, self::$terms);
     }
-    return self::$dbs_terms;
+    return self::$dbsTerms;
 }
 
 //
@@ -162,7 +123,7 @@ public static function getTerms(){
 //
 public static function hasVocabGivenLabel($vocab_id, $label){
     self::getTerms();
-    return self::$dbs_terms->getTermByLabel($vocab_id, $label);
+    return self::$dbsTerms->getTermByLabel($vocab_id, $label);
 }
 
 
@@ -176,7 +137,7 @@ public static function hasVocabGivenLabel($vocab_id, $label){
 */
 public static function isValidTerm($defs, $defs_nonsel, $id, $dtyID){
 
-    $allowed_terms = self::getAllowedTerms($defs, $defs_nonsel, $dtyID);
+    $allowed_terms = self::getAllowedTerms($defs, $dtyID);
 
     return $allowed_terms && ($allowed_terms === "all" || in_array($id, $allowed_terms));
 }
@@ -194,14 +155,13 @@ public static function isValidTerm($defs, $defs_nonsel, $id, $dtyID){
 */
 public static function isValidTermLabel($defs, $defs_nonsel, $label, $dtyID, $isStripAccents=false){
 
-    if($dtyID==null || !@self::$dtyIDDefs_labels[$dtyID]){
+    if($dtyID==null || !@self::$dtyIDDefsLabels[$dtyID]){
 
-        //label may have fullstop in its own name - so we always search with and without hierarchy
-        $withHierarchy = true;
+        //label may have fullstop in its own name - so we always search with and without hierarchy $withHierarchy = true;
 
         self::initialize();
         self::getTerms();
-        $allowed_terms = self::getAllowedTerms($defs, $defs_nonsel, $dtyID);
+        $allowed_terms = self::getAllowedTerms($defs, $dtyID);
 
         $allowed_labels = array();
         $allowed_labels_plain = array();
@@ -226,13 +186,13 @@ public static function isValidTermLabel($defs, $defs_nonsel, $label, $dtyID, $is
 
         //keep for future use
         if($dtyID!=null){
-            self::$dtyIDDefs_labels[$dtyID] = $allowed_labels;
-            self::$dtyIDDefs_labels_plain[$dtyID] = $allowed_labels_plain;
+            self::$dtyIDDefsLabels[$dtyID] = $allowed_labels;
+            self::$dtyIDDefsLabelsPlain[$dtyID] = $allowed_labels_plain;
         }
 
     }else{
-        $allowed_labels = self::$dtyIDDefs_labels[$dtyID];
-        $allowed_labels_plain = self::$dtyIDDefs_labels_plain[$dtyID];
+        $allowed_labels = self::$dtyIDDefsLabels[$dtyID];
+        $allowed_labels_plain = self::$dtyIDDefsLabelsPlain[$dtyID];
     }
 
     //check if given label among allowed
@@ -244,7 +204,7 @@ public static function isValidTermLabel($defs, $defs_nonsel, $label, $dtyID, $is
     }
 
     $term_ID = array_search($label, $allowed_labels, true);
-    if(!($term_ID>0)){
+    if(!isPositiveInt($term_ID)){
         $term_ID = array_search($label, $allowed_labels_plain, true);
     }
 
@@ -263,11 +223,11 @@ public static function isValidTermLabel($defs, $defs_nonsel, $label, $dtyID, $is
 */
 public static function isValidTermCode($defs, $defs_nonsel, $code, $dtyID){
 
-    if($dtyID==null || !@self::$dtyIDDefs_codes[$dtyID]){
+    if($dtyID==null || !@self::$dtyIDDefsCodes[$dtyID]){
 
         self::initialize();
         self::getTerms();
-        $allowed_terms = self::getAllowedTerms($defs, $defs_nonsel, $dtyID);
+        $allowed_terms = self::getAllowedTerms($defs, $dtyID);
 
         $allowed_codes = array();
 
@@ -282,11 +242,11 @@ public static function isValidTermCode($defs, $defs_nonsel, $code, $dtyID){
 
         //keep for future use
         if($dtyID!=null){
-            self::$dtyIDDefs_codes[$dtyID] = $allowed_codes;
+            self::$dtyIDDefsCodes[$dtyID] = $allowed_codes;
         }
 
     }else{
-        $allowed_codes = self::$dtyIDDefs_codes[$dtyID];
+        $allowed_codes = self::$dtyIDDefsCodes[$dtyID];
     }
 
     //check if given code among allowed
@@ -306,7 +266,7 @@ public static function isValidTermCode($defs, $defs_nonsel, $code, $dtyID){
 //
 // verify that given record $rec_id is a rectype that suits $constraints
 //
-public static function isValidPointer($constraints, $rec_id, $dtyID ){
+public static function isValidPointer($constraints, $rec_id ){
 
     $isvalid = false;
 
@@ -333,4 +293,3 @@ public static function isValidPointer($constraints, $rec_id, $dtyID ){
 }
 
 }
-?>

@@ -29,7 +29,7 @@ spl_autoload_register(function ($class) {
 
     $prefix = 'hserv\\';
     if (strpos($class, $prefix) !== 0) {
-        //$prefix = __NAMESPACE__ . $class;
+        //alternative $prefix = __NAMESPACE__ . $class;
         return;
     }
 

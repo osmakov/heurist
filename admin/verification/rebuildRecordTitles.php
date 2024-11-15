@@ -256,9 +256,7 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
     //masks per record types
     $masks = mysql__select_assoc2($mysqli, 'select rty_ID, rty_TitleMask from  defRecTypes');
 
-    if($progress_session_id>0 && $rec_count>100){
-        mysql__update_progress(null, $progress_session_id, true, '0,'.$rec_count);
-    }
+    progressSession($progress_session_id, $processed_count, $rec_count);
 
     $titleDT = intval($system->defineConstant('DT_NAME')?DT_NAME :0);
 
@@ -296,13 +294,9 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
                 ++$blank_count;
         }
 
-        if($progress_session_id>0 &&  $rec_count>100){
-            $session_val = $processed_count.','.$rec_count;
-            $current_val = mysql__update_progress(null, $progress_session_id, false, $session_val);
-            if($current_val && $current_val=='terminate'){
+        if(progressSession($progress_session_id, $processed_count, $rec_count)){
                 // Operation has been terminated by user
                 break;
-            }
         }
 
     }//while records
@@ -310,9 +304,7 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
     $res->close();
 
     //remove session file
-    if($progress_session_id>0 && $rec_count>25 && ($processed_count % 25 == 0)){
-        mysql__update_progress(null, $progress_session_id, false, 'REMOVE');
-    }
+    progressSession($progress_session_id, 'REMOVE', $rec_count);
 
     $q_updates = '';
     if(count($updates)>1000){
@@ -329,6 +321,30 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
 
     return array('changed_count'=>count($updates), 'same_count'=>$unchanged_count, 'blank_count'=>$blank_count, 'total_count'=>$rec_count,
        'q_updates'=>$q_updates, 'q_blanks'=>$q_blanks);
+}
+//
+//
+//
+function progressSession($progress_session_id, $processed_count, $total_count){
+    
+    if($progress_session_id>0 && $total_count>0){
+        
+        if($processed_count=='REMOVE'){
+            mysql__update_progress(null, $progress_session_id, false, 'REMOVE');    
+            
+        }elseif($rec_count>25 && ($processed_count % 25 == 0)){
+            
+            $current_val = mysql__update_progress(null, $progress_session_id, false, $processed_count.','.$total_count);
+            return $current_val=='terminate';
+            
+        }elseif($rec_count==0){
+
+            mysql__update_progress(null, $progress_session_id, true, '0,'.$rec_count);
+            
+        }
+
+    }
+    return false;
 }
 //
 //

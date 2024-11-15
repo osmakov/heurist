@@ -1824,7 +1824,7 @@ private static function validateResourcePointers($mysqli, $query, $imp_session,
                 $r_value2 = super_trim($r_value);
                 if(!($r_value2=='' || $r_value2=='NULL' || $r_value2<0)){        // && $r_value2>0
 
-                    if (!VerifyValue::isValidPointer($dt_def[$idx_pointer_types], $r_value2, $dt_id ))
+                    if (!VerifyValue::isValidPointer($dt_def[$idx_pointer_types], $r_value2 ))
                     {//not found
                         $is_error = true;
                         array_push($newvalue, "<span style=\"color:red\">$r_value</span>");
@@ -2840,7 +2840,7 @@ public static function performImport($params, $mode_output){
                             }
                             elseif($fieldtype_type == "resource"){
 
-                                if(!VerifyValue::isValidPointer(null, $r_value, $field_type)){
+                                if(!VerifyValue::isValidPointer(null, $r_value)){
                                      $value  = null;
                                 }else{
                                      $value = $r_value;
