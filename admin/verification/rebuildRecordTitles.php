@@ -332,14 +332,14 @@ function progressSession($progress_session_id, $processed_count, $total_count){
         if($processed_count=='REMOVE'){
             mysql__update_progress(null, $progress_session_id, false, 'REMOVE');    
             
-        }elseif($rec_count>25 && ($processed_count % 25 == 0)){
+        }elseif($total_count>25 && ($processed_count % 25 == 0)){
             
             $current_val = mysql__update_progress(null, $progress_session_id, false, $processed_count.','.$total_count);
             return $current_val=='terminate';
             
-        }elseif($rec_count==0){
+        }elseif($processed_count==0){
 
-            mysql__update_progress(null, $progress_session_id, true, '0,'.$rec_count);
+            mysql__update_progress(null, $progress_session_id, true, '0,'.$total_count);
             
         }
 
