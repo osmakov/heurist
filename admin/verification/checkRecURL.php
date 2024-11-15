@@ -58,7 +58,7 @@ if(!$system->is_admin()){ //  $system->is_dbowner()
         <div id="page-inner">
 <?php
 
-//$list_only = true;
+
 $isHeuristReferenceIndex = (strcasecmp(HEURIST_DBNAME,'Heurist_Reference_Index')==0);
 $checker = new URLChecker($system->get_mysqli(), HEURIST_SERVER_URL, $isHeuristReferenceIndex);
 $results = $checker->checkURLs(true, $list_only);

@@ -55,7 +55,7 @@ function __checkVersionDatabase(){
 
     $min_version = '1.3.16';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -124,7 +124,7 @@ function __updateDatabase(){
 
     global $mysqli, $databases;
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -190,7 +190,7 @@ function __renameDegreeToKM(){
     .'dty_Name = REPLACE(dty_Name, "degrees", "km") WHERE dty_ID>0';
 
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -221,7 +221,7 @@ function findMissedTermLinks() {
     $db2_with_terms = array();
     $db3_with_terms = array();
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         $db_name = preg_replace(REGEX_ALPHANUM, "", $db_name);
 
@@ -423,7 +423,7 @@ function __findWrongChars(){
 
     print '[wrong characeters in rty_TitleMask]<br>';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -436,8 +436,6 @@ function __findWrongChars(){
             $isOK = true;
 
             $db_name = htmlspecialchars($db_name);
-
-            $res = json_encode($list);//JSON_INVALID_UTF8_IGNORE
 
                 foreach($list as $id => $val){
                     $wrong_string = null;
@@ -477,7 +475,7 @@ function __findLongTermLabels(){
 
     print '[long term labels]<br>';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -508,7 +506,7 @@ function __setTermNameTo255(){
 
     print '[set both trm_Label and trm_NameInOriginatingDB  to varchar(250)]<br>';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 $query = "ALTER TABLE `defTerms` "
@@ -555,7 +553,7 @@ function __setTermYesNo(){
 
     print '[Fix Yes/No terms]<br>';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -673,17 +671,13 @@ function __recreateProceduresTriggers(){
 
         mysql__usedatabase($mysqli, $db_name);
 
-        $res = false;
         if(db_script(HEURIST_DB_PREFIX.$db_name, dirname(__FILE__).'/../setup/dbcreate/addProceduresTriggers.sql', false)){
-            $res = true;
-            if(db_script(HEURIST_DB_PREFIX.$db_name, dirname(__FILE__).'/../setup/dbcreate/addFunctions.sql', false)){
-                $res = true;
-            }else{
-                exit;
+            if(!db_script(HEURIST_DB_PREFIX.$db_name, dirname(__FILE__).'/../setup/dbcreate/addFunctions.sql', false)){
+                return false;
             }
         }
     }//foreach
-
+    return true;
 }
 
 function getLocalCode($db_id, $id){
@@ -795,7 +789,7 @@ function __renameField39(){
     $query2 = "UPDATE defDetailTypes SET dty_HelpText='$new2' WHERE dty_HelpText='$old2' AND dty_ID=";
     $query4 = "UPDATE defRecStructure SET rst_DisplayHelpText='$new2' WHERE rst_DisplayHelpText='$old2' AND rst_DetailTypeID=";
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         print htmlspecialchars($db_name);
 
@@ -839,7 +833,7 @@ function __correctGetEstDate(){
 
     print '__correctGetEstDate<br>';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -851,7 +845,6 @@ function __correctGetEstDate(){
         }
 
             $cnt=0;
-            $is_invalid = false;
             while ($row = $res->fetch_row()){
                 $dtl_ID = $row[0];
                 $dtl_Value = $row[1];
@@ -870,8 +863,8 @@ function __correctGetEstDate(){
                     $cnt++;
                     if($cnt>10) {break;}
                 }else{
+                    //invalid value
                     print htmlspecialchars($rec_ID.'  '.$dtl_Value).'<br>';
-                    $is_invalid = true;
                 }
 
             }
@@ -891,7 +884,7 @@ function __correctGetEstDate_and_ConvertTemporals_JSON_to_Plain(){
 
     global $mysqli, $databases;
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -983,11 +976,8 @@ DELIMITER ;
 
                     while ($row = $res->fetch_row()){
                         $dtl_ID = $row[0];
-                        $dtl_RecID = $row[1];
-                        $dtl_DetailTypeID = $row[2];
                         $dtl_Value = $row[3];
                         $dtl_NewValue = '';
-                        $error = '';
 
                         $value = json_decode($dtl_Value,true);
 
@@ -1024,7 +1014,7 @@ function __delete_OLD_RecType_And_Term_Icons_Folders(){
 
     echo '__delete_OLD_RecType_And_Term_Icons_Folders<br>';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         $cnt = 0;
 
@@ -1102,7 +1092,7 @@ function __listOfAdminUsers(){
 
     $mind = '9999';
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         if($db_name=='') {continue;}
 
@@ -1378,7 +1368,7 @@ AMP =>TS_AMP,
 function __findRDF(){
     global $system, $mysqli, $databases;
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         if($db_name=='') {continue;}
 
@@ -1420,7 +1410,7 @@ function __dropBkpDateIndex(){
 
     global $system, $mysqli, $databases;
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         if($db_name=='') {continue;}
 
@@ -1458,7 +1448,7 @@ function __findBelegSpan($context){
 
     $nodes = $finder->query("//span[contains(concat(' ', normalize-space(@class), ' '), ' Beleg ')]");
 
-    foreach ($nodes as $idsx=>$node)
+    foreach ($nodes as $node)
     {
         $nvals[] = $dom->saveHTML($node);
         //if(strpos($nval))
@@ -1582,7 +1572,7 @@ function __fixDirectPathImages(){
 
     $doc = new DOMDocument();
 
-    foreach ($databases as $idx=>$db_name){
+    foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
 
@@ -1606,7 +1596,7 @@ function __fixDirectPathImages(){
 
         $keep_autocommit = mysql__begin_transaction($mysqli);
 
-        foreach($vals as $dtl_ID=>$val){
+        foreach($vals as $val){
 
             $rec_ID = $val['rec_ID'];
             $val_orig = $val['dtl_Value'];

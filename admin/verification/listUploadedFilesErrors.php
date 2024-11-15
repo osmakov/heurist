@@ -236,9 +236,9 @@ $mysqli = $system->get_mysqli();
 
     //search for duplicated files (identical files in different folders)
     $query2 = 'SELECT ulf_OrigFileName, count(*) as cnt FROM recUploadedFiles '
-.' where ulf_OrigFileName is not null and ulf_OrigFileName<>"_remote" and '   //@todo check preferred source
+.' where ulf_OrigFileName is not null and ulf_OrigFileName<>"_remote" and '
 .'ulf_OrigFileName NOT LIKE "'.ULF_IIIF.'%" and ulf_OrigFileName NOT LIKE "'.ULF_TILED_IMAGE.'%" '
-.'GROUP BY ulf_OrigFileName HAVING cnt>1';//@todo check preferred source
+.'GROUP BY ulf_OrigFileName HAVING cnt>1';
     $res2 = $mysqli->query($query2);
 
     if ($res2 && $res2->num_rows > 0) {
@@ -382,7 +382,7 @@ $mysqli = $system->get_mysqli();
                 $is_local = (strpos($res['db_fullpath'],'http://')===false && strpos($res['db_fullpath'],'https://')===false);
 
                 if($currentRecID==null){
-
+                    continue;
                 }elseif ( $is_local && !file_exists($res['res_fullpath']) ){
                     //file not found
                     $files_notfound[$res['ulf_ID']] = array(
@@ -766,14 +766,11 @@ $mysqli = $system->get_mysqli();
                 if(!isEmptyArray($files_unused_local)){
                 ?>
                 <div id="unused_file_local" style="padding-top:20px">
-                    <a name="unused_local"></a>
+                    <a href="#unused_local"></a>
                     <h3>Unused local files</h3>
                     <div style="padding-bottom:10px;font-weight:bold"><?php echo count($files_unused_local);?> entries</div>
                     <div>These files are not referenced by a File field in any record in the database.
-                    <!-- Select all or some entries and click the button
-                    <button onclick="doRepairAction('unused_file_local')">Remove selected unused local files</button>
-                    to remove registrations from the database. Files remain untouched
-                    -->
+                    
                     <br>Unfortunately these files cannot be removed because they may have
                     <br>been referenced within text fields, which we do not check at present.
                     <br>If you need this function, please let us know.
@@ -785,7 +782,7 @@ $mysqli = $system->get_mysqli();
                     <br>
                 <?php
                 foreach ($files_unused_local as $row) {
-                    out_checkbox('unused_file_local', $row['ulf_ID'], htmlspecialchars($row['res_fullpath']).( $row['isfound']?'':' ( file not found )' ));
+                    outCheckbox('unused_file_local', $row['ulf_ID'], htmlspecialchars($row['res_fullpath']).( $row['isfound']?'':' ( file not found )' ));
                 }//for
 
                 /*  24/12/23 - removed by Ian b/c too dangerous, see explanation below
@@ -803,15 +800,11 @@ $mysqli = $system->get_mysqli();
                 if(!isEmptyArray($files_unused_remote)){
                 ?>
                 <div id="unused_file_remote" style="padding-top:20px">
-                    <a name="unused_remote"></a>
+                    <a href="#unused_remote"></a>
                     <h3>Unused remote files</h3>
                     <div style="padding-bottom:10px;font-weight:bold"><?php echo count($files_unused_remote);?> entries</div>
                     <div>These URLs are not referenced by any record in the database.
-                    Select all or some entries and click the button
-                    <!--
-                    <button onclick="doRepairAction('unused_file_remote')">Remove selected unused URLs</button>
-                    to remove registrations from the database.
-                    -->
+
                     <br>Unfortunately these references cannot be removed because they may have
                     <br>been referenced within text fields, which we do not check at present.
                     <br>If you need this function, please let us know.
@@ -824,14 +817,9 @@ $mysqli = $system->get_mysqli();
                     <br>
                 <?php
                 foreach ($files_unused_remote as $row) {
-                    out_checkbox('unused_file_remote', $row['ulf_ID'], filter_var($row['ulf_ExternalFileReference'],FILTER_SANITIZE_URL));
+                    outCheckbox('unused_file_remote', $row['ulf_ID'], filter_var($row['ulf_ExternalFileReference'],FILTER_SANITIZE_URL));
                 }//for
 
-                /*
-                if(is_array($files_unused_remote) && count($files_unused_remote)>10){
-                    print '<div><br><button onclick="doRepairAction(\'unused_file_remote\')">Remove selected unused URLs</button></div>';
-                }
-                */
 
                 print '
                     <br>Unfortunately these references cannot be removed because they may have
@@ -844,7 +832,7 @@ $mysqli = $system->get_mysqli();
                 if(!isEmptyArray($files_notfound)){
                 ?>
                 <div id="files_notfound" style="padding-top:20px">
-                    <a name="files_notfound"></a>
+                    <a href="#files_notfound"></a>
                     <h3>Missing registered files </h3>
                     <div style="padding-bottom:10px;font-weight:bold"><?php echo count($files_notfound);?> entries</div>
                     <div>Path specified in database is wrong and file cannot be found.
@@ -859,7 +847,7 @@ $mysqli = $system->get_mysqli();
                     <br>
                 <?php
                 foreach ($files_notfound as $row) {
-                    out_checkbox('files_notfound', $row['ulf_ID'], htmlspecialchars($row['db_fullpath']));
+                    outCheckbox('files_notfound', $row['ulf_ID'], htmlspecialchars($row['db_fullpath']));
                 }//for
                 if(count($files_notfound)>10){
                     print '<div><br><button onclick="doRepairAction(\'files_notfound\')">Remove entries for missing files</button></div>';
@@ -871,7 +859,7 @@ $mysqli = $system->get_mysqli();
                 if(!isEmptyArray($files_notreg)){
                 ?>
                 <div id="files_notreg" style="padding-top:20px">
-                    <a name="files_notreg"></a>
+                    <a href="#files_notreg"></a>
                     <h3>Non-registered files</h3>
                     <div style="padding-bottom:10px;font-weight:bold"><?php echo count($files_notreg);?> entries</div>
                     <div>
@@ -903,7 +891,7 @@ $mysqli = $system->get_mysqli();
                 print "<br><br><p><h3>All uploaded file entries are valid</h3></p>";
             }
 
-function out_checkbox($ele_class, $ulf_id, $text){
+function outCheckbox($ele_class, $ulf_id, $text){
 
     $ulf_id = intval($ulf_id);
     print <<<EXP

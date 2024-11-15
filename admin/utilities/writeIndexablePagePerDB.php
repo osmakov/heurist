@@ -47,7 +47,8 @@ if (@$argv) {
 
     // handle command-line queries
     $ARGV = array();
-    for ($i = 0;$i < count($argv);++$i) {
+    $i = 0;
+    while ($i < count($argv)) {
         if ($argv[$i][0] === '-') {
             if (@$argv[$i + 1] && $argv[$i + 1][0] != '-') {
                 $ARGV[$argv[$i]] = $argv[$i + 1];
@@ -58,6 +59,7 @@ if (@$argv) {
         } else {
             array_push($ARGV, $argv[$i]);
         }
+        ++$i;
     }
 
     if (@$ARGV['-db']) {$arg_database = explode(',', $ARGV['-db']);}
@@ -100,29 +102,26 @@ $base_url = '';
 if(defined('HEURIST_BASE_URL_PRO')){
     $base_url = HEURIST_BASE_URL_PRO;
 }else{
-    $base_url = 'https://' . HEURIST_SERVER_NAME . HEURIST_DEF_DIR;
+    $base_url = HTTPS_SCHEMA . HEURIST_SERVER_NAME . HEURIST_DEF_DIR;
 }
 if(defined('HEURIST_SERVER_URL')){
     $base_url_root = HEURIST_SERVER_URL.'/';
 }else{
-    $base_url_root = 'https://' . HEURIST_SERVER_NAME . '/';
+    $base_url_root = HTTPS_SCHEMA . HEURIST_SERVER_NAME . '/';
 }
 
-if(empty($base_url) || strcmp($base_url, 'http://') == 0 || strcmp($base_url, 'https://') == 0){
+if(empty($base_url) || strcmp($base_url, 'http://') == 0 || strcmp($base_url, HTTPS_SCHEMA) == 0){
     exit('The script was unable to determine the server\'s name, please define it within heuristConfigIni.php then re-run this script.');
 }
 
 if(substr($base_url, -1, 1) != '/'){
     $base_url .= '/';
 }
-//if(strpos($base_url, HEURIST_DEF_DIR) === false){
-//    $base_url = rtrim($base_url, '/') . HEURIST_DEF_DIR;
-//}
 
 $mysqli = $system->get_mysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
-// TODO: Should be using setting for web root in configIni.php
+// Consider to use setting for web root in configIni.php
 $index_dir = dirname(__FILE__)."/../../../databases"; //was HarvestableDatabaseDescriptions
 
 $is_dir_writable = folderExists($index_dir, true);
@@ -155,8 +154,8 @@ $sitemap_page = XML_HEADER."\n".<<<EXP
       <lastmod>{$curr_date}</lastmod>
       <priority>0.8</priority>
    </url>
-   {databases_urls}  
-</urlset> 
+   {databases_urls}
+</urlset>
 EXP;
 
                           
@@ -495,9 +494,11 @@ foreach ($databases as $idx=>$db_name){
 
     // Setup content
     $content = str_replace($value_to_replace, $values, $template_page);
+    
+    $db_filename = $db_name.'.html';
 
     //Write to file
-    $fname = $index_dir.'/'.$db_name.'.html';
+    $fname = $index_dir.'/'.$db_filename;
     $res = fileSave($content, $fname);
     if($res <= 0){
         echo $tabs0.$db_name.' cannot save html page'.$eol;
@@ -507,12 +508,12 @@ foreach ($databases as $idx=>$db_name){
     // $db_name => Name, [1] => Description, [3] => Websites
     if($values[3] !== 'None'){ // only databases with PUBLIC websites are listed in index.html
 
-        $index_details = str_replace($index_row_replace, array($db_name, $db_name.'.html', $values[3], $values[1]), $index_row);
+        $index_details = str_replace($index_row_replace, array($db_name, $db_filename, $values[3], $values[1]), $index_row);
 
         array_push($index_databases, $index_details);
         
         
-        $sitemap_row = str_replace($sitemap_replace, array($db_name.'.html', '', ''), $sitemap_row_info);
+        $sitemap_row = str_replace($sitemap_replace, array($db_filename, '', ''), $sitemap_row_info);
         array_push($sitemap_databases, $sitemap_row); //link to description
         
         foreach ($cms_links as $cms_link){
@@ -568,4 +569,3 @@ if(is_array($files)){ // iterate through files
 }else{ // failed
     echo $tabs0.' We were unable to scan the index directory'.$eol;
 }
-?>

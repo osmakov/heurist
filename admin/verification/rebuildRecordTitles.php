@@ -24,10 +24,6 @@
     * See the License for the specific language governing permissions and limitations under the License.
     */
 
-    /*
-    * TODO: Massive redundancy: This is pretty much identical code to recalcTitlesSopecifiedRectypes.php and should be
-    * combined into one file, or call the same functions to do the work
-    */
 set_time_limit(0);
 
 define('MANGER_REQUIRED',1);
@@ -191,19 +187,6 @@ if($init_client){
                 </span>
             </div>
 <?php
-/*
-print '<br><br><b>DONE</b><br><br><a target=_blank href="'.HEURIST_BASE_URL.'?db='.HEURIST_DBNAME.
-    '&w=all&q=ids:'.join(',', $updates).'">Click to view updated records</a><br>&nbsp;<br>';
-
-if(!empty($blanks)){
-    print '<br>&nbsp;<br><a target=_blank href="'.HEURIST_BASE_URL.'?db='.HEURIST_DBNAME.
-        '&w=all&q=ids:'.join(',', $blanks).
-    '">Click to view records for which the data would create a blank title</a>'.
-    '<br>This is generally due to faulty title mask (verify with Check Title Masks)<br>'.
-    'or faulty data in individual records. These titles have not been changed.';
-}
-*/
-
 }else{
 
     if( is_bool($res) && !$res ){
@@ -277,13 +260,12 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
         mysql__update_progress(null, $progress_session_id, true, '0,'.$rec_count);
     }
 
-    $titleDT = $system->defineConstant('DT_NAME')?DT_NAME :0;
+    $titleDT = intval($system->defineConstant('DT_NAME')?DT_NAME :0);
 
     while ($row = $res->fetch_assoc() ) {
 
-        $rec_id = $row['rec_ID'];
+        $rec_id = intval($row['rec_ID']);
         $rec = $row;
-
 
         $mask = $masks[$rec['rec_RecTypeID']];
 
@@ -306,35 +288,19 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
             $mysqli->query('update Records set rec_Modified=rec_Modified, rec_Title="'.
                 $mysqli->real_escape_string($new_title).'" where rec_ID='.$rec_id);
 
-        }else {
-            if ( $rec['rec_RecTypeID'] == 1 && $rec['rec_Title']) {
-                $titleDT = intval($titleDT);
-
-                $has_detail_160 = mysql__select_value($mysqli,
-                    "select dtl_ID from recDetails where dtl_DetailTypeID = $titleDT and dtl_RecID =". $rec_id);
-                //touch the record so we can update it  (required by the heuristdb triggers)
-                $mysqli->query('update Records set rec_RecTypeID=1 where rec_ID='.$rec_id);
-                if ($has_detail_160) {
-                    $query = "update recDetails set dtl_Value=? where dtl_DetailTypeID = $titleDT and dtl_RecID=".$rec_id;
-                }else{
-                    $query = 'insert into recDetails (dtl_RecID, dtl_DetailTypeID, dtl_Value) VALUES('
-                        .intval($rec_id) . ','. intval($titleDT)  .',?)';
-                }
-
-                mysql__exec_param_query($mysqli, $query, array('s', $rec['rec_Title']));
-
+        }elseif (updateRaltionhipForBlankTitle($rec, $titleDT))  {
+            
                 ++$repair_count;
-            }else{
+        }else{
                 array_push($blanks, $rec_id);
                 ++$blank_count;
-            }
         }
 
         if($progress_session_id>0 &&  $rec_count>100){
             $session_val = $processed_count.','.$rec_count;
             $current_val = mysql__update_progress(null, $progress_session_id, false, $session_val);
             if($current_val && $current_val=='terminate'){
-                $msg_termination = 'Operation has been terminated by user';
+                // Operation has been terminated by user
                 break;
             }
         }
@@ -364,4 +330,32 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
     return array('changed_count'=>count($updates), 'same_count'=>$unchanged_count, 'blank_count'=>$blank_count, 'total_count'=>$rec_count,
        'q_updates'=>$q_updates, 'q_blanks'=>$q_blanks);
 }
+//
+//
+//
+function updateRaltionhipForBlankTitle($rec, $titleDT){
+   
+    if ( $rec['rec_RecTypeID'] == 1 && $rec['rec_Title']) {
+        
+        $rec_id = intval($rec['rec_ID']);
+
+        $has_detail_160 = mysql__select_value($mysqli,
+            "select dtl_ID from recDetails where dtl_DetailTypeID = $titleDT and dtl_RecID =". $rec_id);
+        //touch the record so we can update it  (required by the heuristdb triggers)
+        $mysqli->query('update Records set rec_RecTypeID=1 where rec_ID='.$rec_id);
+        if ($has_detail_160) {
+            $query = "update recDetails set dtl_Value=? where dtl_DetailTypeID = $titleDT and dtl_RecID=".$rec_id;
+        }else{
+            $query = 'insert into recDetails (dtl_RecID, dtl_DetailTypeID, dtl_Value) VALUES('
+                .$rec_id . ','. $titleDT  .',?)';
+        }
+
+        mysql__exec_param_query($mysqli, $query, array('s', $rec['rec_Title']));
+
+        return true;
+    }else{
+        return false;
+    }
+}
 ?>
+

@@ -79,17 +79,6 @@ $is_csv = (@$_REQUEST['html']!=1);
 
         while ($row = $res->fetch_row()) {
 
-            /*
-            $key = intval(@$row[1]);
-            $is_vocab = ($key>0);
-            if($is_vocab){
-                $cnt1++;
-            }else{
-                $cnt2++;
-            }
-            if($is_vocab) {continue;}
-            */
-
             //parse
             $terms = getTermsFromFormat(@$row[1]);//see dbsData.php
 
@@ -170,23 +159,9 @@ $is_csv = (@$_REQUEST['html']!=1);
             return null;
         }
 
-      /*
-        $parentId = mysql__select_value($mysqli, $query);
-        if($termId==3329){
-print $query.' '.$termId.' parent '.$parentId.'<br>';
+        if($parentId>0 && !in_array($parentId, $terms)){ //avoid recursion
+            array_push($terms, $parentId);
+            $termId = getTermTopMostParent22($db_name, $mysqli, $parentId, $terms);
         }
-      */
-        if($parentId>0){
-
-            if(in_array($parentId, $terms)){ //avoid recursion
-                return $termId;
-            }else{
-                array_push($terms, $parentId);
-                return getTermTopMostParent22($db_name, $mysqli, $parentId, $terms);
-            }
-        }else{
-            return $termId;
-        }
+        return $termId;
     }
-
-?>

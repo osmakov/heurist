@@ -47,7 +47,8 @@ if (@$argv) {
 
     // handle command-line queries
     $ARGV = array();
-    for ($i = 0;$i < count($argv);++$i) {
+    $i = 0;
+    while ($i < count($argv)) {
         if ($argv[$i][0] === '-') {
             if (@$argv[$i + 1] && $argv[$i + 1][0] != '-') {
                 $ARGV[$argv[$i]] = $argv[$i + 1];
@@ -66,6 +67,7 @@ if (@$argv) {
         } else {
             array_push($ARGV, $argv[$i]);
         }
+        ++$i;
     }
 
     if (@$ARGV[PURGE]) {$arg_need_action = true;}
@@ -82,7 +84,6 @@ if (@$argv) {
     $eol = "</div><br>";
     $tabs0 = '<div style="min-width:300px;display:inline-block;text-align:left">';
     $tabs = DIV_E.$tabs0;
-    //exit('This function must be run from the shell');
 
     $arg_need_report = true;
     $arg_need_action = (@$_REQUEST['purge']=='1');
@@ -126,20 +127,11 @@ $exclusion_list = array();
 if(!$arg_no_action){
 
     $action = 'cleanupFoldersDBs';
-    if(false && !isActionInProgress($action, 1)){
+    $check_action_in_progress = false;
+    if($check_action_in_progress && !isActionInProgress($action, 1)){
         exit("It appears that cleanup operation has been started already. Please try this function later\n");
     }
 }
-
-/*TMP
-//Arche_RECAP
-//AmateurS1
-
-$databases = array('AmateurS1');
-
-*/
-
-//userInteraction.log
 
 set_time_limit(0);//no limit
 ini_set('memory_limit','1024M');
@@ -337,12 +329,10 @@ foreach ($databases as $idx=>$db_name){
 
         }
 
-        if($arg_need_report){
-            if($report!=''){
+        if($arg_need_report && $report!=''){
                 echo $tabs0.'---'.$eol;
                 echo $tabs0.$db_name.$eol;
                 echo $tabs0.$report.$eol;
-            }
         }
 
         $cnt_archived++;
@@ -360,12 +350,6 @@ foreach ($databases as $idx=>$db_name){
 echo $tabs0.'---'.$eol;
 if($arg_need_action){
     echo $tabs0.'Processed '.$cnt_archived.' databases. Total disk volume cleaned: '.round($tot_size/(1024*1024)).'Mb'.$eol;
-    /*
-    if(!empty($email_list_deleted)){
-        $sTitle = 'Cleanup databases on '.HEURIST_SERVER_NAME;
-        sendEmail(array(HEURIST_MAIL_TO_ADMIN), $sTitle, $sTitle.TABLE_S.implode("\n",$email_list_deleted).TABLE_E,true);
-    }
-    */
 }else{
     echo $tabs0.'Databases: '.$cnt_archived.'. Total size: '.round($tot_size/(1024*1024)).'Mb'.$eol;
 }
@@ -374,14 +358,6 @@ echo $tabs0.'finished'.$eol;
 
 if(!$is_command_line) {print '</body></html>';}
 
-/*
-if(!isEmptyArray($email_list)){
-
-sendEmail(HEURIST_MAIL_TO_ADMIN, "List of inactive databases on ".HEURIST_SERVER_NAME,
-    "List of inactive databases for more than a year with more than 200 records:\n"
-    .implode(",\n", $email_list));
-}
-*/
 function listFolderContent($dir){
 
     $size = 0;
@@ -398,4 +374,3 @@ function listFolderContent($dir){
     $list = $list.'<tr><td align="left">total</td><td align="right">'.($size).'</td></tr></table>';
     return array($size, $list);
 }
-?>
