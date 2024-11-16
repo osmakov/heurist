@@ -61,8 +61,9 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
      * Setting record type and title fields before formatting HTML
      *
      * @param {HRecordSet} recordset - complete record set
-     * @param {array} record - current record being rendered
-     * @returns 
+     * @param {Array} record - current record being rendered
+     *
+     * @returns {String} formatted html string
      */
     _rendererResultList: function (recordset, record) {
 
@@ -76,8 +77,6 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
 
     /**
      * Retrieve and add options to the book format dropdown, formats are retrieve from ESTC database
-     *
-     * @returns {void}
      */
     _populateBookFormats: function(){
 
@@ -120,7 +119,7 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
      *  it would be to retrieve ALL details for ALL results
      *
      * @param {HRecordSet} recset - complete record set
-     * @param {array} record - the relevent record missing record details
+     * @param {Array} record - the relevent record missing record details
      */
     _getRecordDetails: function(recset, record){
 
@@ -171,7 +170,7 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
     /**
      * Import selected records from ESTC database
      *
-     * @param {array|string} rec_IDs - the records selectd by the user to be imported from the ESTC database
+     * @param {Array|String} rec_IDs - the records selectd by the user to be imported from the ESTC database
      */
     _importRecords: function(rec_IDs){
 
@@ -219,9 +218,9 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
      * Get additional record(s) from the ESTC database,
      *  these records belong to record pointer fields
      *
-     * @param {json} dlg_response - alreay mapped field results, new record ids to be added
-     * @param {array|string} rec_IDs - record ID(s) to import from ESTC database
-     * @param {integer|array} term_ID - term ID(s) to import from ESTC database, after the records
+     * @param {Object} dlg_response - alreay mapped field results, new record ids to be added
+     * @param {Array|String} rec_IDs - record ID(s) to import from ESTC database
+     * @param {Number|Array} term_ID - term ID(s) to import from ESTC database, after the records
      */
     _getRecPointers: function(dlg_response, rec_IDs, term_ID){
 
@@ -280,8 +279,8 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
     /**
      * Gets the missing terms from the ESTC database, for user to define matching value / create new term
      *
-     * @param {json} dlg_response - alreay mapped field results, new term IDs to be added
-     * @param {integer|array} term_ID - term ID(s) to import from ESTC database
+     * @param {Object} dlg_response - alreay mapped field results, new term IDs to be added
+     * @param {Number|Array} term_ID - term ID(s) to import from ESTC database
      */
     _getTerms: function(dlg_response, term_ID){
 
@@ -342,11 +341,11 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
      *  select an existing term/record, or 
      *  create a new term/record
      *
-     * @param {array} values - array of values to check
-     * @param {integer} to_replace - the id value to replace
-     * @param {mixed} replace_value - what to replace the id value with
+     * @param {Array} values - array of values to check
+     * @param {Number} to_replace - the id value to replace
+     * @param {String|Array} replace_value - what to replace the id value with
      *
-     * @returns {boolean} whether the value was replaced
+     * @returns {Boolean} whether the value was replaced
      */
     assignValue: function(values, to_replace, replace_value){
 
@@ -368,8 +367,8 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
     /**
      * Report results from importing ESTC records
      *
-     * @param {array|string} rec_IDs - array or comma list of record IDs
-     * @param {json} data - counts and new record IDs to display in report
+     * @param {Array|String} rec_IDs - array or comma list of record IDs
+     * @param {Object} data - counts and new record IDs to display in report
      */
     _reportResults: function(rec_IDs, data){
 
@@ -507,7 +506,7 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
      * Build each Book(Edition) [LRC18C|ESTC_editions] or Works [ESTC_works]
      *  as a record to display list of records that can be selected by the user
      *
-     * @param {json} response - JSON response from local/remote Heurist server
+     * @param {Object} response - JSON response from local/remote Heurist server
      */
     _onSearchResult: function (response) {
         if(!response.data){
@@ -520,10 +519,11 @@ $.widget("heurist.lookupESTC", $.heurist.lookupBase, {
      * Retrieves the value from the record via the mapping provided
      *  defintions mapping can be found in the original version => lookupLRC18C.js
      *
-     * @param {string} field_name - field to be mapped
+     * @param {String} field_name - field to be mapped
      * @param {HRecordSet} recordset - current record set
-     * @param {array} record - current record from record set
-     * @returns 
+     * @param {Array} record - current record from record set
+     *
+     * @returns {String} final value
      */
     _mapValues: function(field_name, recordset, record){
 

@@ -90,8 +90,6 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
 
     /**
      * Initialises various UI elements; buttons, selects, result list, etc...
-     *
-     * @returns void
      */
     _initControls: function(){
 
@@ -200,7 +198,6 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      * Function handler for pressing the enter button while focused on input element
      *
      * @param {KeyboardEvent} e - keypress event
-     * @returns void
      */
     startSearchOnEnterPress: function(e){
         if(e.key === 'Enter' || e.key === 'NumpadEnter'){
@@ -218,7 +215,7 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      * buttons[0] => Cancel/Close: Closes dialog
      * buttons[1] => Go/Select: Calls doAction
      * 
-     * @returns array of dialog buttons
+     * @returns {Array} array of dialog buttons
      */
     _getActionButtons: function(){
 
@@ -235,7 +232,8 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      *
      * @param {HRecordSet} recordset - complete record set, to retrieve fields
      * @param {Array} record - record being rendered
-     * @returns formatted html string
+     *
+     * @returns {String} formatted html string
      */
     _rendererResultList: function(recordset, record){
 
@@ -258,6 +256,11 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         return html;
     },
 
+    /**
+     * Begins steps to processing the user's selection
+     *
+     * @param {String} url_fld - field key containing the record's URL, if applicable
+     */
     doAction: function(url_fld = ''){
 
         window.hWin.HEURIST4.msg.bringCoverallToFront(this._as_dialog.parent());
@@ -289,10 +292,11 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      *  e.g. res['ext_url'] = '<a href="www.example.com" target="_blank">Link to Example</a>'
      * 
      * @param {HRecordSet} recordset - overall record set
-     * @param {json} record - current record
-     * @param {json} dlg_response - results to return
-     * @param {json} extra_settings - extra settings
-     * @returns {json} mapped return values from selection
+     * @param {Object} record - current record
+     * @param {Object} dlg_response - results to return
+     * @param {Object} extra_settings - extra settings
+     *
+     * @returns {Object} mapped return values from selection
      */
     prepareValues: function(recordset, record, dlg_response = {}, extra_settings = {}){
 
@@ -330,9 +334,9 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Process the value(s) for the provided field, based on the field's type
      *
-     * @param {any} values - value/values to be processed, will be converted into an array
-     * @param {integer} dty_ID - field's ID, to retrieve field type
-     * @param {json} extra_settings - additional settings
+     * @param {String|Object|Array} values - value/values to be processed, will be converted into an array
+     * @param {Number} dty_ID - field's ID, to retrieve field type
+     * @param {Object} extra_settings - additional settings
      */
     prepareValue: function(values, dty_ID, extra_settings){
 
@@ -367,8 +371,8 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      * Perform final actions before exiting popup
      * Clear timeout before returning result
      *
-     * @param {json|boolean} dlg_response - mapped values to fields, or false to return nothing
-     * @param {boolean} check_for_empty - check the response values for empty values, multi-value only
+     * @param {Object|Boolean} dlg_response - mapped values to fields, or false to return nothing
+     * @param {Boolean} check_for_empty - check the response values for empty values, multi-value only
      */
     closingAction: function(dlg_response, check_for_empty = true){
 
@@ -403,9 +407,8 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Display result via the Heurist resultList widget
      *
-     * @param {json|boolean|null} data - data to display
-     * @param {boolean} is_record_set - whether the data is ready for HRecordSet, usually a response from Heurist
-     * @returns void
+     * @param {Object|Boolean|Null} data - data to display
+     * @param {Boolean} is_record_set - whether the data is ready for HRecordSet, usually a response from Heurist
      */
     _onSearchResult: function(data, is_record_set=false){
 
@@ -458,8 +461,6 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
 
     /**
      * Loads extra settings/options
-     *
-     * @returns void
      */
     _setupSettings: function(){
         return;
@@ -468,9 +469,8 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Save extra settings
      *
-     * @param {json} [settings] - service extra settings to be saved
-     * @param {boolean} [close_dlg] - whether to close the dialog after saving 
-     * @returns void
+     * @param {Object} [settings] - service extra settings to be saved
+     * @param {Boolean} [close_dlg] - whether to close the dialog after saving
      */
     _saveExtraSettings: function(settings, close_dlg = false){
 
@@ -527,9 +527,8 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Creates a new record of the provided type, and includes the provided details by default
      *
-     * @param {integer} rec_RecTypeID - record type id for the new record
-     * @param {json} details - mapped fields of record details for the new record
-     * @returns void
+     * @param {Number} rec_RecTypeID - record type id for the new record
+     * @param {Object} details - mapped fields of record details for the new record
      */
     _addNewRecord: function(rec_RecTypeID, details){
 
@@ -561,8 +560,9 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Retrieves the user's selection from the result list
      *
-     * @param {boolean} get_first - whether to retrieve the first record separately
-     * @returns record set [HRecordSet] & record [json]
+     * @param {Boolean} get_first - whether to retrieve the first record separately
+     *
+     * @returns {HRecordSet|Object} record set or record
      */
     _getSelection: function(get_first = true){
 
@@ -585,10 +585,11 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Checks the array of values as term codes from within the provided vocabulary
      *
-     * @param {integer} vocab_ID - vocabulary to check for term code
-     * @param {integer} dty_ID - field ID for new value, used to get backup vocab ID if needed
-     * @param {array} values - array of values to check
-     * @returns array of processed values
+     * @param {Number} vocab_ID - vocabulary to check for term code
+     * @param {Number} dty_ID - field ID for new value, used to get backup vocab ID if needed
+     * @param {Array} values - array of values to check
+     *
+     * @returns {Array} processed term values, from strings to integers
      */
     _getTermByCode: function(vocab_ID, dty_ID, values){
 
@@ -619,8 +620,9 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      * Checks the array of values for record pointer and relationship marker fields
      *  if the value is a number greater than zero it is assumed to be a record ID
      *
-     * @param {array} values - array of values
-     * @returns array of converted values
+     * @param {Array} values - array of values
+     *
+     * @returns {Array} array of converted values
      */
     _processRecordFields: function(values){
 
@@ -644,7 +646,7 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     /**
      * Trims leading and trailing spaces from values and removes empty values from array of values
      *
-     * @param {array} values - array of values
+     * @param {Array} values - array of values
      */
     _processValues: function(values){
 
@@ -657,6 +659,9 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         }
     },
 
+    /**
+     * Setting up timeout for mapping values, currently used only by BnF Bib lookup
+     */
     setupTimeout: function(){
 
         let that = this;
@@ -687,6 +692,12 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         }, 20000); // set timeout to 20 seconds
     },
 
+    /**
+     * Check the size of the results against the current max, showing a error message if results are larger
+     *
+     * @param {Number} result_size - current result size
+     * @param {Number} max_size - maximum requested result size
+     */
     checkResultSize: function(result_size, max_size){
 
         if(result_size > max_size){
@@ -700,8 +711,9 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
      * Converts the provided country name into it's country code, 
      *  this is just for the few missed/incorrect with default Heurist
      *
-     * @param {string} country_code - country's code/label to be mapped
-     * @returns the country in code format
+     * @param {String|Number} country_code - country's code/label to be mapped
+     *
+     * @returns {String} the country in code format
      */
     _getCountryCode: function(country_code){
 
@@ -748,28 +760,14 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         return _countryCode;
     },
 
-    constructLocation: function(long, lat){
-
-        return !window.hWin.HEURIST4.util.isempty(long) && !window.hWin.HEURIST4.util.isempty(lat)
-                ? `p POINT(${long} ${lat})`
-                : '';
-    },
-
-    getTimespan: function(fld_Names, value){
-
-        if(!fld_Names[0].startsWith('when') || window.hWin.HEURIST4.util.isempty(value)){
-            return value;
-        }
-
-        if(fld_Names[2].startsWith('start') && value['timespans']){
-            value = value['timespans'][0]['start'];
-        }else if(fld_Names[2].startsWith('end') && value['timespans']){
-            value = value['timespans'][0]['end'];
-        }
-
-        return value;
-    },
-
+    /**
+     * Retrieve nested values from JSON
+     *
+     * @param {Array} fld_Names - Nested field names, that have been pre-split
+     * @param {Object} value - Values to retrieve the field values from
+     *
+     * @returns {Object} updated values removing necessary nested values
+     */
     getValueByParts: function(fld_Names, value){
 
         if(window.hWin.HEURIST4.util.isempty(value)){
@@ -787,6 +785,13 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         return value;
     },
 
+    /**
+     * Translate geospatial value into WKT
+     *
+     * @param {String} value - Geospatial value to translate
+     *
+     * @returns {String} WKT value
+     */
     createGeoFeature: function(value){
 
         value = {type: 'Feature', geometry: value};
@@ -811,16 +816,61 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         return `${typeCode} ${wkt}`;
     },
 
+    /**
+     * Convert lat and long points into a WKT Point
+     *
+     * @param {Number} long - longitude
+     * @param {Number} lat - latitude
+     *
+     * @returns {String} formatted WKT Point string
+     */
+    constructLocation: function(long, lat){
+
+        return !window.hWin.HEURIST4.util.isempty(long) && !window.hWin.HEURIST4.util.isempty(lat)
+                ? `p POINT(${long} ${lat})`
+                : '';
+    },
+
+    /**
+     * Extract the start or end time from temporal geojson
+     *
+     * @param {Array<String>} fld_Names - array of split up field names [when, _, start|end]
+     * @param {Object} value - GeoJSON-T original value to extract the timespan from
+     *
+     * @returns {String} timespan value
+     */
+    getTimespan: function(fld_Names, value){
+
+        if(!fld_Names[0].startsWith('when') || window.hWin.HEURIST4.util.isempty(value)){
+            return value;
+        }
+
+        if(fld_Names[2].startsWith('start') && value['timespans']){
+            value = value['timespans'][0]['start'];
+        }else if(fld_Names[2].startsWith('end') && value['timespans']){
+            value = value['timespans'][0]['end'];
+        }
+
+        return value;
+    },
+
+    /**
+     * Send request server side, sending the valid response _handleSearchResult
+     *
+     * @param {Object} parameters - url parameters to process
+     * @param {Object} request - extra request parameters, to be extended with basic request parameters
+     */
     _doSearch: function(parameters, request = {}){
 
         let that = this;
 
+        // Prepare URL
         let full_url = this.baseURL;
         if(!full_url.endsWith('?') && !full_url.endsWith('&')){
             full_url += full_url.indexOf('?') === false ? '?' : '&';
         }
 
-        // Add parameters
+        // Process + Add parameters
         let has_params = false;
         if(!window.hWin.HEURIST4.util.isempty(parameters) && window.hWin.HEURIST4.util.isObject(parameters)){
             let params = {};
@@ -871,10 +921,23 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
         });
     },
 
+    /**
+     * Handles search results, generally goes straigth to _onSearchResult
+     *
+     * @param {Object} response - response from server side for search
+     */
     _handleSearchResult: function(response){
         this._onSearchResult(response);
     },
 
+    /**
+     * Transform values into array, so multi-value fields can be handled correctly by the record editor
+     *  Also removes any empty values
+     *
+     * @param {String|Object|Array} values - value to transform into array for multi-value fields
+     *
+     * @returns {Array} array of values, to be sent to the record editor
+     */
     valueToArray: function(values){
 
         if(window.hWin.HEURIST4.util.isObject(values)){

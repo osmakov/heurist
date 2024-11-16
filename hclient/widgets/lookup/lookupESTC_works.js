@@ -45,9 +45,6 @@ $.widget("heurist.lookupESTC_works", $.heurist.lookupESTC, {
         'sortby': 'f:__sort_by_field__'
     },
 
-    //    
-    //
-    //
     _initControls: function () {
 
         this.element.find('#btnStartSearch').parent().parent().position({
@@ -59,8 +56,10 @@ $.widget("heurist.lookupESTC_works", $.heurist.lookupESTC, {
         return this._super();
     },
 
-    // Show a confirmation window after user selects a record from the lookup query results
-    // If the user clicks "Check Author", then call method _checkAuthor
+    /**
+     * Show a confirmation window after user selects a record from the lookup query results
+     *  If the user clicks "Check Author", then call method _checkAuthor
+     */
     doAction: function(){
 
         let [recset, record] = this._getSelection(true);

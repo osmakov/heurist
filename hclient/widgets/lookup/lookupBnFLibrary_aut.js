@@ -41,9 +41,6 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
     baseURL: 'https://catalogue.bnf.fr/api/SRU?', // external url base
     serviceName: 'bnflibrary_aut', // service name
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         // Extra field styling
@@ -53,6 +50,9 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
         return this._super();
     },
 
+    /**
+     * Set up additional settings tab
+     */
     _setupSettings: function(){
 
         this._super({
@@ -63,8 +63,9 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
 
     /**
      * Save extra settings
-     * @param {boolean} settings - whether to get settings for saving 
-     * @param {boolean} close_dlg - whether to close the dialog after saving 
+     *
+     * @param {Boolean} settings - whether to get settings for saving 
+     * @param {Boolean} close_dlg - whether to close the dialog after saving 
      */
     _saveExtraSettings: function(settings = false, close_dlg = false){
 
@@ -82,15 +83,23 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
 
     /**
      * Result list rendering function called for each record
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
      * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     * @returns {String} formatted html string
      */
     _rendererResultList: function(recordset, record){
 
+        /**
+         * Retrieve specific field width
+         *
+         * @param {Number} def_width - default width
+         * @param {Number} type - field code
+         * @param {String} fld_name - field name
+         *
+         * @returns {Number} field width
+         */
         function getFieldWidth(def_width, type, fld_name){
 
             let width = def_width;
@@ -126,11 +135,10 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
         /**
          * Get field details for displaying
          * 
-         * Param:
-         *  fldname (string) => mapping field name
-         *  width (int) => width for field
+         * @param {String} fldname - mapping field name
+         * @param {Number} width - width for field
          * 
-         * Return: html
+         * @returns {String} sized and formatted html string
          */
         function fld(fldname, width){
 
@@ -164,8 +172,6 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
     /**
      * Return record field values in the form of a json array mapped as [dty_ID: value, ...]
      * For multi-values, [dty_ID: [value1, value2, ...], ...]
-     * 
-     * Param: None
      */
     doAction: function(){
 
@@ -188,8 +194,6 @@ $.widget( "heurist.lookupBnFLibrary_aut", $.heurist.lookupBnF, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
 

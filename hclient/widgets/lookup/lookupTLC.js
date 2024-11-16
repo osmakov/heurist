@@ -40,9 +40,6 @@ $.widget( "heurist.lookupTLC", $.heurist.lookupBase, {
     baseURL: '', // external url base
     serviceName: 'tlcmap', // service name
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         this.element.find('fieldset > div > .header').css({width:'80px','min-width':'80px'});
@@ -61,13 +58,24 @@ $.widget( "heurist.lookupTLC", $.heurist.lookupBase, {
         return this._super();
     },
 
-    //
-    // Record Renderer
-    // Defines how a record is rendered within the list, customised via the recTitle variable within
-    // Field names are those found within this.options.mapping.fields
-    //
+    /**
+     * Result list rendering function called for each record
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
+     * 
+     * @returns {String} formatted html string
+     */
     _rendererResultList: function(recordset, record){
 
+        /**
+         * Get field details for displaying
+         * 
+         * @param {String} fldname - mapping field name
+         * @param {Number} width - width for field
+         * 
+         * @returns {String} sized and formatted html string
+         */
         function fld(fldname, width){
 
             let s = recordset.fld(record, fldname);
@@ -93,9 +101,9 @@ $.widget( "heurist.lookupTLC", $.heurist.lookupBase, {
         return this._super(recordset, record);
     },
 
-    //
-    // Either return mapped fields to record or create a new record using the mapped fields
-    //
+    /**
+     * Either return mapped fields to record or create a new record using the mapped fields
+     */
     doAction: function(){
 
         // retrieve selected record/s
@@ -113,11 +121,10 @@ $.widget( "heurist.lookupTLC", $.heurist.lookupBase, {
         let rectype_id = (!window.hWin.HEURIST4.util.isempty(this.options.rectype_for_new_record)) ? this.options.rectype_for_new_record : this.options.mapping.rty_ID;
         this._addNewRecord(rectype_id, recset);
     },
-    
-    //
-    // create search url
-    // perform search and call result handler
-    //
+
+    /**
+     * Create search url, perform search and call result handler
+     */
     _doSearch: function(){
         
         let params = {
@@ -164,7 +171,7 @@ $.widget( "heurist.lookupTLC", $.heurist.lookupBase, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(geojson_data){
 

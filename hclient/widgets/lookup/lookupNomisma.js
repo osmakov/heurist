@@ -46,9 +46,6 @@ $.widget( "heurist.lookupNomisma", $.heurist.lookupBase, {
 
     search_button_selector: '#btnMintSearch, #btnHoardsSearch, #btnFindspotsSearch',
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         // Extra field styling
@@ -65,18 +62,25 @@ $.widget( "heurist.lookupNomisma", $.heurist.lookupBase, {
 
         return this._super();
     },
-    
+
     /**
      * Result list rendering function called for each record
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
      * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     * @returns {String} formatted html string
      */
     _rendererResultList: function(recordset, record){
 
+        /**
+         * Get field details for displaying
+         * 
+         * @param {String} fldname - mapping field name
+         * @param {Number} width - width for field
+         * 
+         * @returns {String} sized and formatted html string
+         */
         function fld(fldname, width){
 
             let s
@@ -112,9 +116,9 @@ $.widget( "heurist.lookupNomisma", $.heurist.lookupBase, {
         return this._super(recordset, record);
     },
 
-    //
-    // Either perform search or select entry in resultList and triggers addition of new record
-    //
+    /**
+     * Either perform search or select entry in resultList and triggers addition of new record
+     */
     doAction: function(){
 
         let [recset, record] = this._getSelection(true);
@@ -124,11 +128,12 @@ $.widget( "heurist.lookupNomisma", $.heurist.lookupBase, {
 
         this.closingAction(recset);
     },
-    
-    //
-    // create search url
-    // perform search
-    //
+
+    /**
+     * Create search URL and perform search
+     *
+     * @param {MouseEvent} event - OnClick event to retrieve the lookup type
+     */
     _doSearch: function(event){
 
         let search_type = $(event.target).val();
@@ -158,7 +163,7 @@ $.widget( "heurist.lookupNomisma", $.heurist.lookupBase, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(geojson_data){
 

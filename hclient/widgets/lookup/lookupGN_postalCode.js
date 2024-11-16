@@ -1,10 +1,5 @@
 /**
 * lookupGN_postalCode.js - GeoNames postalCode DB lookup service
-* 
-* This file:
-*   1) Loads the content of the corresponding html file (lookupGN_postakCode.html)
-*   2) Performs an api call to the Geoname service's Postalcode DB using the User's input, displaying the results within a Heurist result list
-*   3) map external results with our field details (see options.mapping) and returns the mapped results to the record edit form
 *
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org
@@ -24,9 +19,9 @@
 
 $.widget("heurist.lookupGN_postalCode", $.heurist.lookupGeonames, {
 
-    //
-    // invoked from _init after loading of html content
-    //
+    baseURL: 'http'+'://api.geonames.org/postalCodeLookupJSON?', // external url base
+    serviceName: 'geonames', // service name
+
     _initControls: function(){
 
         this.element.find('#search_container > div > div > .header').css({width:'80px','min-width':'80px', display: 'inline-block'});
@@ -36,17 +31,13 @@ $.widget("heurist.lookupGN_postalCode", $.heurist.lookupGeonames, {
         return this._super();
     },
 
-    baseURL: 'http'+'://api.geonames.org/postalCodeLookupJSON?', // external url base
-    serviceName: 'geonames', // service name
-    
     /**
      * Result list rendering function called for each record
-     * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     *
+     * @param {HRecordSet} recordset - Complete Heurist recordset
+     * @param {Object} record - Current record being rendered
+     *
+     * @returns {String} formatted html
      */
     _rendererResultList: function(recordset, record){
         
@@ -74,8 +65,6 @@ $.widget("heurist.lookupGN_postalCode", $.heurist.lookupGeonames, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
         
@@ -94,7 +83,7 @@ $.widget("heurist.lookupGN_postalCode", $.heurist.lookupGeonames, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(json_data){
 

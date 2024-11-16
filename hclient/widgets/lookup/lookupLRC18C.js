@@ -157,8 +157,10 @@ $.widget("heurist.lookupLRC18C", $.heurist.lookupESTC, {
         'sortby': 'f:__sort_by_field__'
     },
 
-    // Show a confirmation window after user selects a record from the lookup query results
-    // If the user clicks "Check Author", then call method _checkAuthor
+    /**
+     * Show a confirmation window after user selects a record from the lookup query results
+     *  If the user clicks "Check Author", then call method _checkAuthor
+     */
     doAction: function(){
 
         let that = this;

@@ -51,9 +51,6 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
 
     _refreshCollections: false,
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         let that = this;
@@ -155,9 +152,7 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
     /**
      * Retrieve thesauruses for selected server
      * 
-     * @param {bool} is_refresh - Update list from opentheso server
-     * 
-     * @returns void
+     * @param {Boolean} is_refresh - Update list from opentheso server
      */
     _updateThesauruses: function(is_refresh = false){
 
@@ -193,6 +188,12 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
         window.hWin.HEURIST4.msg.bringCoverallToFront(this.element, null, '<span style="color: white;">Retrieving thesauruses...</span>');
     },
 
+    /**
+     * Update list of thesauruses in html
+     *
+     * @param {Object} response - json containing the list of thesauruses for each server
+     * @param {Boolean} is_refresh - Update list from opentheso server
+     */
     _updateThesaurusList: function(response, is_refresh){
 
         for(const server in this._servers){
@@ -221,8 +222,6 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
     
     /**
      * Populate thesaurus dropdown for selected server
-     * 
-     * @returns void
      */
     _displayThesauruses: function(){
 
@@ -251,9 +250,7 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
     /**
      * Retrieve collections for current thesaurus
      * 
-     * @param {bool} is_refresh - Update list from opentheso server
-     * 
-     * @returns void
+     * @param {Boolean} is_refresh - Update list from opentheso server
      */
     _updateCollections: function(is_refresh = false){
 
@@ -303,8 +300,6 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
 
     /**
      * Update multi-select with collections for current theso
-     * 
-     * @returns void
      */
     _displayCollections: function(){
 
@@ -340,23 +335,21 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
 
     /**
      * Result list rendering function called for each record
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
      * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     * @returns {String} formatted html string
      */
     _rendererResultList: function(recordset, record){
 
         /**
          * Get field details for displaying
          * 
-         * Param:
-         *  fldname (string) => mapping field name
-         *  width (int) => width for field
+         * @param {String} fldname - mapping field name
+         * @param {Number} width - width for field
          * 
-         * Return: html
+         * @returns {String} sized and formatted html string
          */
         function fld(fldname, width){
 
@@ -383,8 +376,6 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
     /**
      * Return record field values in the form of a json array mapped as [dty_ID: value, ...]
      * For multi-values, [dty_ID: [value1, value2, ...], ...]
-     * 
-     * Param: None
      */
     doAction: function(){
 
@@ -436,8 +427,6 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
 
@@ -484,7 +473,7 @@ $.widget( "heurist.lookupOpentheso", $.heurist.lookupBase, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(json_data){
 

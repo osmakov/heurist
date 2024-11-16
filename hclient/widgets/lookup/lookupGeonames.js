@@ -42,9 +42,6 @@ $.widget("heurist.lookupGeonames", $.heurist.lookupBase, {
         return this._super();
     },
 
-    //
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         // Fill countries dropdown
@@ -66,16 +63,8 @@ $.widget("heurist.lookupGeonames", $.heurist.lookupBase, {
     },
 
     /**
-     * Return record field values in the form of a json array mapped as [dty_ID: value, ...]
-     * For multi-values, [dty_ID: [value1, value2, ...], ...]
-     * 
-     * To trigger record pointer selection/creation popup, value must equal [dty_ID, default_searching_value]
-     * 
-     * Include a url to an external record that will appear in the record pointer guiding popup, add 'ext_url' to res
-     *  the value must be the complete html (i.e. anchor tag with href and target attributes set)
-     *  e.g. res['ext_url'] = '<a href="www.geonames.com" target="_blank">Link to Example</a>'
-     * 
-     * Param: None
+     * Return record field values in the form of a json array mapped as [dty_ID: value, ...], or
+     * for multi-values, [dty_ID: [value1, value2, ...], ...]
      */
     doAction: function(){
 
@@ -96,6 +85,13 @@ $.widget("heurist.lookupGeonames", $.heurist.lookupBase, {
         this.closingAction(res);
     },
 
+    /**
+     * Corrects the geospatial fields (lat and long) before returning the results back to the record editor
+     *
+     * @param {Object} res - Assigned field values, containing the keys lat and long
+     *
+     * @returns {Object} updated assigned field values
+     */
     handleGeoValue: function(res){
 
         let geo_keys = Object.keys(res);

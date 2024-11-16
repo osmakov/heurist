@@ -39,9 +39,6 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
     baseURL: 'https://catalogue.bnf.fr/api/SRU?', // external url base
     serviceName: 'bnflibrary_bib', // service name
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         // Extra field styling
@@ -64,7 +61,9 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
     },
 
     /**
-     * Get listed author codes
+     * Get listed author and contributor codes
+     * 
+     * @returns {Array<String, String>} array containing [author codes, contributor codes]
      */
     _getRoleCodes: function(){
 
@@ -79,8 +78,9 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
 
     /**
      * Save extra settings
-     * @param {boolean} settings - whether to get settings for saving
-     * @param {boolean} close_dlg - whether to close the dialog after saving 
+     *
+     * @param {Boolean} settings - whether to get settings for saving
+     * @param {Boolean} close_dlg - whether to close the dialog after saving 
      */
     _saveExtraSettings: function(settings = false, close_dlg = false){
 
@@ -100,12 +100,11 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
 
     /**
      * Result list rendering function called for each record
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
      * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     * @returns {String} formatted html string
      */
     _rendererResultList: function(recordset, record){
 
@@ -114,11 +113,10 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         /**
          * Get field details for displaying
          * 
-         * Param:
-         *  fldname (string) => mapping field name
-         *  width (int) => width for field
+         * @param {String} fldname - mapping field name
+         * @param {Number} width - width for field
          * 
-         * Return: html
+         * @returns {String} sized and formatted html string
          */
         function fld(fldname, width){
 
@@ -153,6 +151,14 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         return this._super(recordset, record);
     },
 
+    /**
+     * Get author value as a html string
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
+     * 
+     * @returns {String} html formatted author value
+     */
     getAuthorHTML: function(recordset, record){
 
         let value = recordset.fld(record, 'author');
@@ -183,6 +189,14 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         return creator_val;
     },
 
+    /**
+     * Convert author value into formatted array of values
+     *
+     * @param {Object} cur_value - Author value to process
+     * @param {Boolean} returning_search - is this for a search
+     *
+     * @returns {String|Array<String, String, String>} either field value or array of values [field value, search string, author role ID]
+     */
     _extractAuthorValue: function(cur_value, returning_search = false){
 
         if(window.hWin.HEURIST4.util.isempty(cur_value)){
@@ -214,6 +228,13 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         return [value, search, role];
     },
 
+    /**
+     * Convert publisher values into a html string
+     *
+     * @param {Array} value - array of publiher values to convert
+     *
+     * @returns {String} html formatted publisher string
+     */
     getPublisherHTML: function(value){
 
         if(window.hWin.HEURIST4.util.isempty(value)){
@@ -237,6 +258,14 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         return pub_val;
     },
 
+    /**
+     * Convert publisher value into formatted array of values
+     *
+     * @param {Object} cur_value - the current publisher
+     * @param {Boolean} returning_search - is this for a search
+     *
+     * @returns {Array<String,String|Null>} an array containing [publisher value, seach string]
+     */
     _extractPublisherValue: function(cur_value, returning_search = false){
 
         let value = '', search = '';
@@ -256,14 +285,6 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
     /**
      * Return record field values in the form of a json array mapped as [dty_ID: value, ...]
      * For multi-values, [dty_ID: [value1, value2, ...], ...]
-     * 
-     * To trigger record pointer selection/creation popup, value must equal [dty_ID, default_searching_value]
-     * 
-     * Include a url to an external record that will appear in the record pointer guiding popup, add 'ext_url' to res
-     *  the value must be the complete html (i.e. anchor tag with href and target attributes set)
-     *  e.g. res['ext_url'] = '<a href="www.example.com" target="_blank">Link to Example</a>'
-     * 
-     * Param: None
      */
     doAction: function(){
 
@@ -336,6 +357,13 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         this.closingAction(res);
     },
 
+    /**
+     * Prepare the current value for returning to the record editor
+     *
+     * @param {Object} values - mapped object of field valus
+     * @param {Number} dty_ID - current field ID
+     * @param {Object} settings - Any extra settings, for saving
+     */
     prepareValue: function(values, dty_ID, settings){
 
         this._super(values, dty_ID, settings);
@@ -346,6 +374,12 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         }
     },
 
+    /**
+     * Processes author values for the specific field type
+     *
+     * @param {Object} values - mapped object of field values
+     * @param {String} field_type - field type
+     */
     getAuthorValues: function(values, field_type){
 
         for(const idx in values){
@@ -369,6 +403,12 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         }
     },
 
+    /**
+     * Processes publisher values for the specific field type
+     *
+     * @param {Object} values - mapped object of field values
+     * @param {String} field_type - field type
+     */
     getPublisherValues: function(values, field_type){
 
         for(const idx in values){
@@ -395,6 +435,11 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
         }
     },
 
+    /**
+     * Handle language strings, mostly to handle unknowns
+     *
+     * @param {String} values - mapped field values
+     */
     getLanguageValues: function(values){
 
         for(const idx in values){
@@ -408,8 +453,6 @@ $.widget( "heurist.lookupBnFLibrary_bib", $.heurist.lookupBnF, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
 

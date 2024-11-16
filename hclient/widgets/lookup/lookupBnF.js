@@ -98,6 +98,8 @@ $.widget("heurist.lookupBnF", $.heurist.lookupBase, {
 
     /**
      * Get record dump settings
+     * 
+     * @returns {Array<Boolean, String>} array containing the record dump setting and which record field to use
      */
     _getRecDumpSetting: function(){
 
@@ -118,7 +120,7 @@ $.widget("heurist.lookupBnF", $.heurist.lookupBase, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(json_data){
 

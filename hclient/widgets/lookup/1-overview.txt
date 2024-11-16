@@ -6,7 +6,9 @@ Service requests are handled within hserv/controller/record_lookup.php
 
 New and existing service mapping is found at hserv/controller/record_lookup_config.json
 
-All lookups are extenstions of the recordAction widget (hclient/widget/record/recordAction.js)
+All lookups are extensions of the lookupBase widget (hclient/widget/lookup/lookupBase.js), which itself extends the recordAction widget (hclient/widget/record/recordAction.js)
+
+Some similar lookups (e.g. Geonames and Geonames Postalcodes) have an additional parent widget to avoid code duplication between lookups.
 
 lookup_Template.js and lookup_Template.html can provide a simple template for creating new external lookups, 
     this also includes how to prepare data for terms, record pointer, files and relationship marker fields.
@@ -29,6 +31,7 @@ Notes:
 
 The services can be accessed via a call to window.hWin.HAPI4.RecordMgr.lookup_external_service(request, callback), where:
  => request (JSON Object): requires at least two keys; 'service': the complete URL for the external API request, and 'service_type': the name of the current external lookup (e.g. tlcmap, geonames)
+    -> The request parameters will be validated server side, so add the necessary lookup details to service_types and service_parameters (hserv/controller/record_lookup.php)
  => callback (Function): Function to receive the response from the server call
     -> The response variable will be a JSON object with two keys of focus; status: response status, and data: containing the response from the external API request
 
@@ -38,9 +41,12 @@ Alternatively, perform a simple record search by calling window.hWin.HAPI4.Recor
 Both the MPCE and LRC18C lookups contain examples of record searching.
 
 Result Lists (widget found at hclient/widget/viewers/resultList.js) can be used to display the retrieved data as records in a list format for the user to select from.
+Result Lists accepts the resulting records as a HRecordSet (hclient/core/recordset.js).
 
-For record pointer and term fields, an id is needed to assign the corresponding value (record id and term id, respectively), or an array of ids.
+For record pointer, term and relationship fields, an id is needed to assign the corresponding value (record id and term id, respectively), or an array of ids.
 If any other value is returned, as necessary, the user will be prompted to create new terms and select/create new records for record pointer fields.
+
+For file fields, either the ulf_ID or ulf_ObfuscatedFileID need to be passed back, or a URL pointing to the file that will be registered upon returning the value.
 
 Updated: 13 Mar 2022
 

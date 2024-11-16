@@ -1,10 +1,5 @@
 /**
-* lookupGN.js - GeoNames lookup service
-* 
-* This file:
-*   1) Loads the content of the corresponding html file (lookupGN_postakCode.html)
-*   2) Performs an api call to the Geoname service using the User's input, displaying the results within a Heurist result list
-*   3) map external results with our field details (see options.mapping) and returns the mapped results to the record edit form
+* lookupGN.js - GeoNames DB lookup service
 *
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org
@@ -29,12 +24,11 @@ $.widget("heurist.lookupGN", $.heurist.lookupGeonames, {
 
     /**
      * Result list rendering function called for each record
-     * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     *
+     * @param {HRecordSet} recordset - Complete Heurist recordset
+     * @param {Object} record - Current record being rendered
+     *
+     * @returns {String} formatted html
      */
     _rendererResultList: function(recordset, record){
         
@@ -62,8 +56,6 @@ $.widget("heurist.lookupGN", $.heurist.lookupGeonames, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
         
@@ -97,7 +89,7 @@ $.widget("heurist.lookupGN", $.heurist.lookupGeonames, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(json_data){
 

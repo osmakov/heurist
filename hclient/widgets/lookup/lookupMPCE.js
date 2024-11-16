@@ -81,9 +81,6 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
     // Editions Variables
     editions_info: null,    // basic information about editions for this work
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         let that = this;
@@ -241,12 +238,8 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         return this._super();
     },
 
-    /*
-        Update Record with selected Classifications and move back to Record Editor popup
-
-        Param: None
-
-        Return: VOID, closes classification tool
+    /**
+     * Update Record with selected Classifications and move back to Record Editor popup
      */
     doAction: function(){
 
@@ -282,14 +275,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
     /** Keyword Assignment **/
 
-    /*
-        Creates a Heurist popup capable of searching all Project Keywords,
-        When an keyword is selected, it is assigned to the work, if it is not already,
-        this keyword is removed from the associated and previous (recent) keyword lists
-
-        Param: None
-
-        Return: VOID
+    /**
+     * Creates a Heurist popup capable of searching all Project Keywords,
+     * When an keyword is selected, it is assigned to the work, if it is not already,
+     * this keyword is removed from the associated and previous (recent) keyword lists
      */
     keywordLookup: function(){
 
@@ -363,12 +352,8 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         window.hWin.HEURIST4.ui.showEntityDialog('records', popup_options);
     },
 
-    /*
-        Retrieve the list of checked keywords that need to be moved to the assigned keyword list
-
-        Param: None
-
-        Return: VOID, assignment of selected keyword
+    /**
+     * Retrieve the list of checked keywords that need to be moved to the assigned keyword list
      */
     addPrevtoAssigned: function(){
 
@@ -399,12 +384,8 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         this.disableUpdateBtn();
     },
 
-    /*
-        Retrieve the list of checked keywords that need to be moved to the assigned keyword list
-
-        Param: None
-
-        Return: VOID
+    /**
+     * Retrieve the list of checked keywords that need to be moved to the assigned keyword list
      */
     addAssoctoAssigned: function(){
 
@@ -445,12 +426,8 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
     /** External Searches **/
 
-    /*
-        Search for Editions of the Work within Heurist, displaying the results in a separate popup
-
-        Param: None
-
-        Return: VOID
+    /**
+     * Search for Editions of the Work within Heurist, displaying the results in a separate popup
      */
     lookupEditions: function(){
 
@@ -491,13 +468,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         );
     },
 
-
-    /*
-        Search for All Keywords
-
-        Param: None
-
-        Return: json -> all keywords, containing {id: 'keyword name', ...}
+    /**
+     * Search for All Keywords
+     *
+     * @param {String} next_step - after action
+     * @param {Number|Array<Number>} extra_ids - keyword record id(s)
      */
     getKeywords: function(next_step='none', extra_ids = null){
 
@@ -539,6 +514,12 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         );
     },
 
+    /**
+     * Process results from getKeyords
+     *
+     * @param {String} step - action to take
+     * @param {Number|Array<Number>} ids - extra keyword record id(s)
+     */
     getKeywordsNextStep: function(step, ids){
         let that = this;
         let title = null;
@@ -554,7 +535,7 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
                             title = that.full_keywords_list[id];
                         }
 
-                        that.showKeyword(title, id); // Add to Keyword Table
+                        that.showKeyword(id, title); // Add to Keyword Table
                     }
                 }
 
@@ -569,7 +550,7 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
                 break;
             case 'add': // add new assigned keyword
 
-                title = that.full_keywords_list[ids] !== undefined ? `Record ID - ${ids}` : that.full_keywords_list[ids];
+                title = that.full_keywords_list[ids] === undefined ? `Record ID - ${ids}` : that.full_keywords_list[ids];
                 that.addKeyword(ids, title);
 
                 break;
@@ -579,12 +560,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         }
     },
 
-    /*
-        Search for Work Title in Google Books
-
-        Param: None
-
-        Return: (false), opens new tab for Google Books search
+    /**
+     * Search for Work Title in Google Books
+     *
+     * @returns {false}
      */
     lookupGoogle: function(){
         let title = $($('#title_field')[0]).text();
@@ -595,12 +574,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         return false;
     },
 
-    /*
-        Search for Work Title in World Cat
-
-        Param: None
-
-        Return: (false), opens new tab for World Cat search
+    /**
+     * Search for Work Title in World Cat
+     *
+     * @returns {false}
      */
     lookupWorldCat: function(){
         let title = $($('#title_field')[0]).text();
@@ -611,12 +588,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         return false;
     },
 
-    /*
-        Search for Work Title in Hathi Trust
-
-        Param: None
-
-        Return: (false), opens new tab for Hathi Trust search
+    /**
+     * Search for Work Title in Hathi Trust
+     *
+     * @returns {false}
      */
     lookupHathiTrust: function(){
         let title = $($('#title_field')[0]).text();
@@ -627,12 +602,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         return false;
     },
 
-    /*
-        Search for Work Title in Karlsruhe Portal
-
-        Param: None
-
-        Return: (false), opens new tab for Karlsruhe Portal search form
+    /**
+     * Search for Work Title in Karlsruhe Portal
+     *
+     * @returns {false}
      */
     lookupKarlsruhePortal: function(){
         let title = $($('#title_field')[0]).text();
@@ -645,15 +618,13 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
     /** Associated Keyword System **/
 
-    /* 
-        Searches for works that have the selected keyword,
-        the program then goes through each returned work's keywords, 
-        adding them to the associated keyword list, 
-        finally displaying the result to the user.
-
-        Param: id -> Keyword's Title Mask (or, the Keyword's ID)
-
-        Return: VOID
+    /**
+     * Searches for works that have the selected keyword,
+     *  the program then goes through each returned work's keywords, 
+     *  adding them to the associated keyword list, 
+     *  finally displaying the result to the user.
+     *
+     * @param {String|Number} id - Keyword's Title Mask (or, the Keyword's ID)
      */
     setupAssocKeywords: function(id){
 
@@ -718,24 +689,21 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
             }
         );
     },
-    
-    /*
-        Updates the Associate Keyword List (this.assoc_keywords)
-        Performs a check if the current keyword is already part of the list, 
-            if it is, increase occurances
-            else, push into list
-        The list is then sorted by occurrances
-        Once completed, the corresponding table is updated
 
-        Param: ids -> list of associated keywords
-
-        Return: VOID
+    /**
+     * Updates the Associate Keyword List (this.assoc_keywords)
+     * Performs a check if the current keyword is already part of the list, 
+     *  if it is, increase occurances
+     *  else, push into list
+     * The list is then sorted by occurrances
+     * Once completed, the corresponding table is updated
+     *
+     * @param {Array<Number>} id_list - list of associated keywords
      */
-
-    updateAssocList: function(ids){
+    updateAssocList: function(id_list){
 
         // Go through 2d array of keywords
-        for(const ids of ids){
+        for(const ids of id_list){
 
             for(const id of ids){
 
@@ -755,13 +723,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
         this.updateAssocDisplay(true); // Update UI display of associated keywords
     },
-    
-    /*
-        Update the Associated Keywords List, UI, and display which kyeword was selected
 
-        Param: move_to_start -> whether this is the next set of keywords, or starting from the start of list
-
-        Return: VOID
+    /**
+     * Update the Associated Keywords List, UI, and display which kyeword was selected
+     *
+     * @param {Boolean} move_to_start - whether this is the next set of keywords, or starting from the start of list
      */
     updateAssocDisplay: function(move_to_start=true){
 
@@ -816,6 +782,13 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         this.disableUpdateBtn();
     },
 
+    /**
+     * Render associated keywords list
+     *
+     * @param {Array<Number, Number, String>} keywords - array of keywords [Keyword ID, Count, Keyword Title]
+     *
+     * @returns {Number} starting index for associated list
+     */
     renderAssocKeywods: function(keywords){
 
         let list = $('#associated_field');
@@ -872,18 +845,14 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
         return i;
     },
-    
-    /*
-        Checks if keyword is already in arr,
-            if it is, increase the counter
-            else, push it in
 
-        Param:
-            arr -> arr of associated keywords
-            id -> the current keyword
-            title -> the keyword in english
-
-        Return: VOID
+    /**
+     * Checks if keyword is already in arr,
+     *  if it is, increase the counter
+     *  else, push it in
+     *
+     * @param {Number} id - Keyword ID searching for
+     * @param {String} title - Keyword Title
      */
     isAssocKeyword: function(id, title){
         
@@ -903,12 +872,8 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         }
     },
 
-    /*
-        Unselects and removes all selected keywords from the associated keywords list
-
-        Param: NONE
-
-        Return: VOID
+    /**
+     * Unselects and removes all selected keywords from the associated keywords list
      */
     unselectAssoc: function(){
 
@@ -921,15 +886,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
     
     /** Recent Keywords System **/
 
-    /*
-        Sets up the list of works and calls startup function for Recent Keywords,
-        This will display a list of keywords from previously viewed works from within a session (life span of the tab),
-        a list of 4 work titles is remembered and those four work's keywords are displayed to the UI.
-        Keywords assigned to the current work are ignored, as are ones already displayed under the recent keyword section.
-
-        Param: None
-
-        Return: VOID
+    /**
+     * Sets up the list of works and calls startup function for Recent Keywords,
+     * This will display a list of keywords from previously viewed works from within a session (life span of the tab),
+     *  a list of 4 work titles is remembered and those four work's keywords are displayed to the UI.
+     * Keywords assigned to the current work are ignored, as are ones already displayed under the recent keyword section.
      */
     setupRecentWorks: async function(){
 
@@ -972,14 +933,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         localStorage.setItem("prev_classify", JSON.stringify(this.prev_works));
     },
 
-    /*
-        Retrieves the supplied work's keywords and add them to the displayed list
-
-        Param: 
-            work_code -> Work Code of Interest
-            is_checked -> Bool whether to check new option
-
-        Return: VOID
+    /**
+     * Retrieves the supplied work's keywords and add them to the displayed list
+     *
+     * @param {Number} id - Keyword to search for
+     * @param {Boolean} is_checked - whether to set checked by default
      */
     startRecentWork: function(id, is_checked=false){
 
@@ -1012,14 +970,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         );
     },
 
-    /*
-        From a list of keywords, retrieve their titles and display them to the user, or remove them if necessary
-
-        Param: 
-            keyword_IDs -> Array of Keyword IDs
-            is_checked -> Bool whether to check new option
-
-        Return: VOID
+    /**
+     * From a list of keywords, retrieve their titles and display them to the user, or remove them if necessary
+     *
+     * @param {Array<Number>} keyword_IDs - array of keyword IDs
+     * @param {Boolean} is_checked - whether to set checked for new option
      */
     getRecentKeywords: function(keyword_IDs, is_checked=false){
         
@@ -1058,13 +1013,19 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
     },
 
     /*
-        Add new keyword to recently used keyword list
+        
 
         Param:
             id -> Keyword's Record ID
             title -> Keyword Title
 
         Return: VOID
+     */
+    /**
+     * Add new keyword to recently used keyword list
+     *
+     * @param {Number} id - Keyword ID
+     * @param {String} title - Keyword Title
      */
     updateRecentKeywordDisplay: function(id, title){
 
@@ -1089,12 +1050,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         list.append(item);
     },
 
-    /*
-        Check if provided keyword is a displayed as a recently used keyword
-
-        Param: id -> Keyword's ID
-
-        Return: VOID
+    /**
+     * Check if provided keyword is a displayed as a recently used keyword
+     *
+     * @param {Number} id - Keyword ID
      */
     isRecentKeyword: function(id){
 
@@ -1107,16 +1066,13 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
     /** Assigned Keyword System **/
 
-    /*
-        Add Newly Assigned Keyword to Table UI
-
-        Param: 
-            keyword -> Keyword's Title
-            id -> Keyword's Record ID
-
-        Return: VOID
+    /**
+     * Add Newly Assigned Keyword to Table UI
+     *
+     * @param {String} title - Keyword Title
+     * @param {Number} id - Keyword ID
      */
-    showKeyword: function(title, id){
+    showKeyword: function(id, title){
 
         let that = this;
 
@@ -1142,14 +1098,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         list.append(item);
     },
 
-    /*
-        Add new Keyword to Assigned Keywords List
-
-        Param:
-            title -> Keyword Title
-            id -> Keyword's Record ID
-
-        Return: VOID
+    /**
+     * Add new Keyword to Assigned Keywords List
+     *
+     * @param {Number} id - Keyword ID
+     * @param {String} title - Keyword Title
      */
     addKeyword: function(id, title){
 
@@ -1164,7 +1117,7 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
         if($('#keyword_field').find(`li#${id}_m`).length == 0){
 
-            this.showKeyword(title, id); // Add to Table
+            this.showKeyword(id, title); // Add to Table
 
             if(window.hWin.HEURIST4.util.isempty(this.project_keywords)){
                 this.project_keywords = [];
@@ -1175,11 +1128,17 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
     },
 
     /*
-        Remove selected keyword from Assigned Keyword Table and List
+        
 
         Param: id -> Selected Keyword's Record ID
 
         Return: VOID
+     */
+    /**
+     * Remove selected keyword from Assigned Keyword Table and List
+     *
+     * @param {jQuery} $ele - Element selected by jQuery
+     * @param {Number} id - Keyword ID
      */
     removeKeyword: function($ele, id){
 
@@ -1195,12 +1154,8 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         this.updateAssocDisplay(); // Check if keyword was a associated keyword
     },
 
-    /*
-        Display all found editions for the selected work
-
-        Param: works -> List of Edition's Title Masks
-
-        Return: VOID
+    /**
+     * Display all found editions for the selected work
      */
     showEditions: function(){
 
@@ -1222,12 +1177,12 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
     /** Other Function **/
 
-    /*
-        Determines which keywords have been checked
-
-        Param: list -> document element, unordered list
-
-        Return: Array -> list of checked keywords
+    /**
+     * Determines which keywords have been checked
+     *
+     * @param {HTMLDListElement} list - HTML List to retrieve checked items from
+     * 
+     * @returns {Array<Number>} list of checked keywords
      */
     getAllChecked: function(list){
 
@@ -1247,13 +1202,9 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         return checked_items;
     },
 
-    /*
-        Disable the Update Record button when a checkbox is checked, displaying message to uncheck or add selections
-
-        Param: NONE
-
-        Return: VOID
-    */
+    /**
+     * Disable the Update Record button when a checkbox is checked, displaying message to uncheck or add selections
+     */
     disableUpdateBtn: function(){
 
         if($('.mpce').find('input:checked').not('.check-all').length > 0 || this.assoc_selected.length > 0){
@@ -1266,16 +1217,13 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         }
     },
 
-    /*
-        Toggles the checkboxes based on whether the "Check All" options is set
-
-        Param: 
-            list -> list of interest
-            isChecked -> whether we are checking all boxes or not
-            isAssoc -> is this for the associated keywords, needs extra handling
-
-        Return: VOID
-    */
+    /**
+     * Toggles the checkboxes based on whether the "Check All" options is set
+     *
+     * @param {HTMLLIElement} list - HTML List to retrieve checked items from
+     * @param {Boolean} isChecked - whether we are checking all boxes or not
+     * @param {Boolean} isAssoc - is this for the associated keywords, needs extra handling
+     */
     checkAllOptions: function(list, isChecked, isAssoc=false){
 
         let items = $(list).find('li');
@@ -1300,6 +1248,12 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         this.disableUpdateBtn();
     },
 
+    /**
+     * Add or remove keyword by ID from the associated keywords list
+     *
+     * @param {Boolean} is_checked - triggers whether to add/remove id from the list
+     * @param {Number} id - Keyword ID
+     */
     handleAssocOption: function(is_checked, id){
 
         if(is_checked){
@@ -1314,12 +1268,10 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         }
     },
 
-    /*
-        Open the provided record in a separate tab
-
-        Param: id -> record id
-
-        Return: VOID
+    /**
+     * Open the provided record in a separate tab
+     *
+     * @param {Number} id - Record ID
      */
     openRecordInTab: function(id){
 
@@ -1328,12 +1280,11 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
         window.open(rec_url, "_blank");
     },
 
-    /*
-        Mapping Ids for Detail and Record Types (Heurist Specific)
-
-        Param: mapping -> mapped options
-
-        Return: VOID
+    /**
+     * Mapping Ids for Detail and Record Types (Heurist Specific)
+     *
+     * @param {Object} mapping - field and vocab mapping for the current setup
+     * @param {Number} main_rty_id - record type this lookup is assigned to
      */
     mapIds: function(mapping, main_rty_id){
 
@@ -1363,15 +1314,13 @@ $.widget( "heurist.lookupMPCE", $.heurist.lookupBase, {
 
 /** Misc Function **/
 
-/*
-    Comparison Function for the arr.sort() function for the 2D of associated keywords
-    Note: arr[n][1] == the number of occurrances
-
-    Param:
-        a -> Array Index 1
-        b -> Array Index 2
-
-    Return: Boolean -> whether the second element within index A is larger than B
+/**
+ * Comparison Function for the arr.sort() function for the 2D of associated keywords
+ * Note: arr[n][1] == the number of occurrances
+ *
+ * @param {Array} a - Array Index 1
+ * @param {Array} b - Array Index 2
+ * @returns {Boolean} whether the second element within index A is larger than B
  */
 function compareIndexes(a, b){
 
@@ -1382,23 +1331,21 @@ function compareIndexes(a, b){
     return (a[1] > b[1]) ? -1 : 1;
 }
 
-/*
-    Merge two arrays, keeping only unqiue values
-
-    Param:
-        a -> base array
-        b -> array to merge to 'a'
-
-    Return: Array -> Merged array
-
+/**
+ * Merge two arrays, keeping only unqiue values
+ *
+ * @param {Array} a - Base array
+ * @param {Array} b - Array to be merged
+ *
+ * @returns {Array} merged array
  */
 function mergeArraysUnique(a, b){
     
-    if(!a && !Array.isArray(a)){
+    if(!Array.isArray(a)){
         msgToConsole('mergeArraysUnique() Error: arguement \'a\' is not an array', a, 1);
     }
 
-    if(!b && !Array.isArray(b)){
+    if(!Array.isArray(b)){
         msgToConsole('mergeArraysUnique() Error: arguement \'b\' is not an array', b, 1);
     }
 
@@ -1415,15 +1362,12 @@ function mergeArraysUnique(a, b){
     return a;
 }
 
-/*
-    Message/Data pair for printing to the console
-
-    Param:
-        msg -> primary message to console log
-        data -> can be null, additional information
-        type -> type of message 0 = warn, 1 = error
-
-    Return: VOID
+/**
+ * Message/Data pair for printing to the console
+ *
+ * @param {String} msg - error message
+ * @param {Any} data - error data
+ * @param {Number} type - error type; 0: Warning, 1: Error
  */
 function msgToConsole(msg, data, type=0){
 
@@ -1434,12 +1378,11 @@ function msgToConsole(msg, data, type=0){
     }
 }
 
-/*
-    Sleep Function
-
-    Param: ms -> time to wait, in mmilliseconds
-
-    Return: VOID
+/**
+ * Sleep Function
+ *
+ * @param {Number} ms - timeout time in ms
+ * @returns {Promise} promise to await timeout
  */
 function sleep(ms){
     return new Promise(r => setTimeout(r, ms));

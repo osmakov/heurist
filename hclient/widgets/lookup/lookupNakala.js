@@ -33,9 +33,6 @@ $.widget( "heurist.lookupNakala", $.heurist.lookupBase, {
         htmlContent: 'lookupNakala.html'
     },
 
-    //  
-    // invoked from _init after loading of html content
-    //
     _initControls: function(){
 
         let that = this;
@@ -97,23 +94,21 @@ $.widget( "heurist.lookupNakala", $.heurist.lookupBase, {
 
     /**
      * Result list rendering function called for each record
+     *
+     * @param {HRecordSet} recordset - complete record set, to retrieve fields
+     * @param {Array} record - record being rendered
      * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
-     * 
-     * Return: html
+     * @returns {String} formatted html string
      */
     _rendererResultList: function(recordset, record){
 
         /**
          * Get field details for displaying
          * 
-         * Param:
-         *  fldname (string) => mapping field name
-         *  width (int) => width for field
+         * @param {String} fldname - mapping field name
+         * @param {Number} width - width for field
          * 
-         * Return: html
+         * @returns {String} sized and formatted html string
          */
         function fld(fldname, width){
 
@@ -148,14 +143,6 @@ $.widget( "heurist.lookupNakala", $.heurist.lookupBase, {
     /**
      * Return record field values in the form of a json array mapped as [dty_ID: value, ...]
      * For multi-values, [dty_ID: [value1, value2, ...], ...]
-     * 
-     * To trigger record pointer selection/creation popup, value must equal [dty_ID, default_searching_value]
-     * 
-     * Include a url to an external record that will appear in the record pointer guiding popup, add 'ext_url' to res
-     *  the value must be the complete html (i.e. anchor tag with href and target attributes set)
-     *  e.g. res['ext_url'] = '<a href="www.example.com" target="_blank">Link to Example</a>'
-     * 
-     * Param: None
      */
     doAction: function(){
         this._super('rec_url');
@@ -164,8 +151,6 @@ $.widget( "heurist.lookupNakala", $.heurist.lookupBase, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
 
@@ -240,7 +225,7 @@ $.widget( "heurist.lookupNakala", $.heurist.lookupBase, {
     /**
      * Prepare json for displaying via the Heuirst resultList widget
      *
-     * @param {json} json_data - search response
+     * @param {Object} json_data - search response
      */
     _onSearchResult: function(json_data){
 
@@ -285,6 +270,11 @@ $.widget( "heurist.lookupNakala", $.heurist.lookupBase, {
         this._super(res);
     },
 
+    /**
+     * Format year value for lookup service
+     *
+     * @returns {String} formatted year value
+     */
     getYear: function(){
 
         let years = this.element.find('#inpt_year').val();

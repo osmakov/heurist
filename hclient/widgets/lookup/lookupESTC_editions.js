@@ -58,7 +58,9 @@ $.widget("heurist.lookupESTC_editions", $.heurist.lookupESTC, {
         'sortby': 'f:__sort_by_field__'
     },
 
-    // Show a confirmation window after user selects a record from the lookup query results
+    /**
+     * Show a confirmation window after user selects a record from the lookup query results
+     */
     doAction: function(){
 
         let [recset, record] = this._getSelection(true);
