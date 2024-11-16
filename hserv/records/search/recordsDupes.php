@@ -62,7 +62,7 @@ private static function initialize()
 
     global $system;
     self::$system  = $system;
-    self::$mysqli = $system->get_mysqli();
+    self::$mysqli = $system->getMysqli();
     self::$initialized = true;
 
     //check existense NEW_LIPOSUCTION_255
@@ -74,7 +74,7 @@ private static function initialize()
 //
 public static function setSession($system){
     self::$system  = $system;
-    self::$mysqli = $system->get_mysqli();
+    self::$mysqli = $system->getMysqli();
     self::$initialized = true;
 }
 

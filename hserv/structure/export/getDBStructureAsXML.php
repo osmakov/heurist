@@ -30,7 +30,7 @@ header("Content-Type: application/xml");
 // Normally jsut outputs definitions, this will include users/groups
 $includeUgrps = @$_REQUEST["includeUgrps"];// returns null if not set
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $sysinfo = $system->settings->get();
 
@@ -179,7 +179,7 @@ if (!$includeUgrps) {
     return;
 }
 
-if (! $system->is_admin() ) {
+if (! $system->isAdmin() ) {
     print "\n\n<!-- You do not have sufficient privileges to list users and groups -->";
     print "\n</hml_structure>";
     return;

@@ -58,7 +58,7 @@ function _getTermByID($system, $id) {
 
     // Select term
     $query = "SELECT * FROM defTerms WHERE trm_ID=".intval($id);
-    $res = $system->get_mysqli()->query($query);
+    $res = $system->getMysqli()->query($query);
 
     if ($res) {
         $row = $res->fetch_assoc();
@@ -85,7 +85,7 @@ function getRecordByID($system, $id) {
 
     // Select the record
     $query = $recordQuery.SQL_WHERE.$recordWhere." and r.rec_ID=".intval($id);
-    $res = $system->get_mysqli()->query($query);
+    $res = $system->getMysqli()->query($query);
 
     if ($res) {
         $row = $res->fetch_assoc();
@@ -173,7 +173,7 @@ function getRecordDetails($system, $record) {
 
     // Retrieve extended details
     $query = $detailQuery . intval($record->id);
-    $details = $system->get_mysqli()->query($query);
+    $details = $system->getMysqli()->query($query);
     if($details) {
 
         $record->bookmarks = array();
@@ -367,7 +367,7 @@ function getMapDocuments($system, $recId) {
             $query = $query . ' and rec_ID='.intval($recId);
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $res = $mysqli->query($query);
         if ($res) {
             // Loop through all rows
@@ -389,7 +389,7 @@ $system = new hserv\System();
 
 if( $system->init(@$_REQUEST['db']) ){
 
-    $wg_ids = $system->get_user_group_ids();
+    $wg_ids = $system->getUserGroupIds();
     if($wg_ids==null) {$wg_ids = array();}
     array_push($wg_ids, 0);
     $recordWhere = '(not r.rec_FlagTemporary) and ((not r.rec_NonOwnerVisibility="hidden") or '

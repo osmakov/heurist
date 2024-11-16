@@ -47,11 +47,11 @@
 
     }elseif($action=='verify_credentials'){ //just check only if logged in (db connection not required)
 
-        $res = $system->verify_credentials($dbname);
+        $res = $system->verifyCredentials($dbname);
 
         if( $res>0 ){ //if logged id verify that session info (especially groups) is up to date
             //if exists file with userid it means need to reload system info
-            $db_full_name = $system->dbname_full();
+            $db_full_name = $system->dbnameFull();
             $reload_user_from_db = (@$_SESSION[$db_full_name]['need_refresh']==1);
 
             $const_toinit = true;
@@ -97,10 +97,10 @@
     }
     elseif($action=='usr_log'){
 
-        if($system->set_dbname_full($dbname)){
+        if($system->setDbnameFull($dbname)){
 
             $system->initPathConstants($dbname);
-            $system->user_LogActivity(@$req_params['activity'], @$req_params['suplementary'], @$req_params['user']);
+            $system->userLogActivity(@$req_params['activity'], @$req_params['suplementary'], @$req_params['user']);
             $res = true;
 
             if(@$req_params['activity']=='impEmails'){
@@ -111,17 +111,17 @@
 
     } elseif (false && $action == "save_prefs"){ //NOT USED save preferences into session (without db)
 
-        if($system->verify_credentials($dbname)>0){
+        if($system->verifyCredentials($dbname)>0){
             user_setPreferences($system, $req_params);
             $res = true;
         }
 
     } elseif($action == "logout"){ //save preferences into session
 
-        if($system->set_dbname_full($dbname)){
+        if($system->setDbnameFull($dbname)){
 
             $system->initPathConstants($dbname);
-            $system->user_LogActivity('Logout');
+            $system->userLogActivity('Logout');
 
             if($system->doLogout()){
                 $res = true;
@@ -136,7 +136,7 @@
         if(!$is_alpha){
 
             if(!defined('HEURIST_FILESTORE_ROOT')){
-                if($system->set_dbname_full($dbname)){
+                if($system->setDbnameFull($dbname)){
                     $system->initPathConstants($dbname);
                 }
             }
@@ -203,7 +203,7 @@
 
     }elseif($action == 'check_for_databases'){ // check if the provided databases are available on the current server
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $data = $req_params['data'];
         if(!is_array($data)){
             $data = json_decode($data, true);
@@ -354,7 +354,7 @@
         $res = getExternalTranslation($system, @$req_params['string'], @$req_params['target'], @$req_params['source']);
     }else{
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         //allowed actions for guest
         $quest_allowed = array('login','reset_password','svs_savetree','svs_gettree','usr_save','svs_get');
@@ -365,14 +365,14 @@
 
         }elseif($action == "save_prefs"){
 
-            if($system->verify_credentials($dbname)>0){
+            if($system->verifyCredentials($dbname)>0){
                 user_setPreferences($system, $req_params);
                 $res = true;
                 //session_write_close();
             }
 
         }
-        elseif ( $system->get_user_id()<1 &&  !in_array($action,$quest_allowed)) {
+        elseif ( $system->getUserId()<1 &&  !in_array($action,$quest_allowed)) {
 
             $response = $system->addError(HEURIST_REQUEST_DENIED);
 
@@ -596,7 +596,7 @@
 
                     checkDatabaseFunctions($mysqli);
 
-                    $system->user_LogActivity('Login');
+                    $system->userLogActivity('Login');
                 }
 
             } elseif($action=="reset_password") {
@@ -605,10 +605,10 @@
                 if(array_key_exists('new_password', $req_params)) {unset($req_params['new_password']);}// remove from REQUEST
 
                 if($req_params['pin'] && $req_params['username'] && $password){ // update password w/ pin
-                    $system->user_LogActivity('ResetPassword', "Updating password for {$req_params['username']}");
+                    $system->userLogActivity('ResetPassword', "Updating password for {$req_params['username']}");
                     $res = user_ResetPassword($system, $req_params['username'], $password, $req_params['pin']);
                 }elseif($req_params['pin']){ // get/validate reset pin
-                    $system->user_LogActivity('ResetPassword', "Handling reset pin for {$req_params['username']}");
+                    $system->userLogActivity('ResetPassword', "Handling reset pin for {$req_params['username']}");
                     $res = user_HandleResetPin($system, @$req_params['username'], @$req_params['pin'], @$req_params['captcha']);
                 }else{
                     $res = $system->addError(HEURIST_ERROR, 'An invalid request was made to the password reset system.<br>Please contact the Heurist team.');
@@ -656,8 +656,8 @@
 
                 $ugrID = $req_params['UGrpID'];
 
-                if($system->has_access($ugrID)){  //allowed for itself only
-                    $res = user_getById($system->get_mysqli(), $ugrID);
+                if($system->hasAccess($ugrID)){  //allowed for itself only
+                    $res = user_getById($system->getMysqli(), $ugrID);
                     if(is_array($res)){
                         $res['ugr_Password'] = '';
                     }
@@ -671,13 +671,13 @@
 
             } elseif($action=="groups") {
 
-                $ugr_ID = @$req_params['UGrpID']?$req_params['UGrpID']:$system->get_user_id();
+                $ugr_ID = @$req_params['UGrpID']?$req_params['UGrpID']:$system->getUserId();
 
-                $res = user_getWorkgroups($system->get_mysqli(), $ugr_ID, true);
+                $res = user_getWorkgroups($system->getMysqli(), $ugr_ID, true);
 
             } elseif($action=="members" && @$req_params['UGrpID']) {
 
-                $res = user_getWorkgroupMembers($system->get_mysqli(), @$req_params['UGrpID']);
+                $res = user_getWorkgroupMembers($system->getMysqli(), @$req_params['UGrpID']);
 
             } elseif($action=="user_wss") {
 

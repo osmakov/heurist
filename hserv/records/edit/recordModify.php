@@ -77,7 +77,7 @@ function recordAddDefaultValues($system, $record=null){
 
 
     //obtain user preferences values
-    $addRecDefaults = $system->user_GetPreference('record-add-defaults');
+    $addRecDefaults = $system->userGetPreference('record-add-defaults');
     if ($addRecDefaults){
         if (@$addRecDefaults[0]){
             $userDefaultRectype = intval($addRecDefaults[0]);
@@ -113,7 +113,7 @@ function recordAddDefaultValues($system, $record=null){
         $ownerid = (empty(@$record['OwnerUGrpID']) && @$record['OwnerUGrpID']!=0) ? -1 : $record['OwnerUGrpID'];
 
         if($ownerid == 'current_user'){
-            $ownerid = $system->get_user_id();
+            $ownerid = $system->getUserId();
         }else {
             $ownerid = prepareIds($ownerid, true);
         }
@@ -136,7 +136,7 @@ function recordAddDefaultValues($system, $record=null){
         $ownerid = @$sysvals['sys_NewRecOwnerGrpID'];//from database properties
     }
     if(!(is_array($ownerid) && !empty($ownerid)) || !($ownerid[0]>=0)){
-        $ownerid = $system->get_user_id();//by default current user
+        $ownerid = $system->getUserId();//by default current user
     }
     if(is_array($ownerid)){
         $owner_grps = $ownerid;
@@ -176,7 +176,7 @@ function recordAdd($system, $record, $return_id_only=false){
         return false;
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $def_params = recordAddDefaultValues($system, $record);
 
@@ -197,7 +197,7 @@ function recordAdd($system, $record, $return_id_only=false){
     }
 
     //$record['swf'] - ownership is set from swf rules
-    if (!(@$record['swf'] || $system->is_admin() || $system->is_member($owner_grps) || $system->is_guest_user() )){
+    if (!(@$record['swf'] || $system->isAdmin() || $system->isMember($owner_grps) || $system->isGuestUser() )){
         $system->addError(HEURIST_REQUEST_DENIED,
             'Current user does not have sufficient authority to add record with default ownership. '
             .'User must be member of the group that will own this record', 'Default ownership: '.implode(',', $owner_grps));
@@ -239,7 +239,7 @@ function recordAdd($system, $record, $return_id_only=false){
 
     $stmt = $mysqli->prepare($query);
 
-    $currentUserId = $system->get_user_id();
+    $currentUserId = $system->getUserId();
     $rec_url  = USanitize::sanitizeURL(@$record['URL']);
 
     $rec_scr  = @$record['ScratchPad'];
@@ -347,7 +347,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
             return $system->addError(HEURIST_ACTION_BLOCKED,
                 'Are you a bot? Please enter the correct answer to the challenge question');
         }else{
-            if($system->get_user_id()<1){ //if captcha is valid allow
+            if($system->getUserId()<1){ //if captcha is valid allow
                 $system->setCurrentUser(array('ugr_ID'=>5, 'ugr_FullName'=>'Guest'));
             }
         }
@@ -364,7 +364,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         return $system->addError(HEURIST_INVALID_REQUEST, "Record ID is not defined");
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //it is allowed with prefix rec_ and without
     foreach ($record as $key=>$val){
@@ -619,9 +619,9 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         updateUsrRecPermissions($mysqli, $recID, $access_grps, $owner_grps);
 
         if(!$modeImport){
-            if($system->get_user_id()>0){
+            if($system->getUserId()>0){
                 //set current user for stored procedures (log purposes)
-                $mysqli->query('set @logged_in_user_id = '.$system->get_user_id());
+                $mysqli->query('set @logged_in_user_id = '.$system->getUserId());
             }
             mysql__supress_trigger($mysqli, false);
         }
@@ -813,7 +813,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         .'<a href="'.HEURIST_BASE_URL.'hclient/framecontent/recordEdit.php?db='.HEURIST_DBNAME.'&recID='.$recID.'">Record #'.$recID
         .'  "'.USanitize::sanitizeString($newTitle, false).'"</a><br>'
         .' has been changed to "'.$stage_name
-        .'"<br><br> by user: '.($user?$user:$system->get_user_id());
+        .'"<br><br> by user: '.($user?$user:$system->getUserId());
 
         if($total_record_count > 1){
             $msg = $msg . '<br><br><i>This is the first of multiple records'. ($modeImport > 0 ? ' imported' : '') .'. Please visit database for additional records.</i>';
@@ -928,7 +928,7 @@ function recordDelete($system, $recids, $need_transaction=true,
         }
 
         $is_error = false;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         if($need_transaction){
             $keep_autocommit = mysql__begin_transaction($mysqli);
         }
@@ -942,9 +942,9 @@ function recordDelete($system, $recids, $need_transaction=true,
 
         $system->defineConstant('RT_RELATION');
 
-        if($system->get_user_id()>0){
+        if($system->getUserId()>0){
             //set current user for stored procedures (log purposes)
-            $mysqli->query('set @logged_in_user_id = '.$system->get_user_id());
+            $mysqli->query('set @logged_in_user_id = '.$system->getUserId());
         }
         mysql__supress_trigger($mysqli, false);
 
@@ -1024,7 +1024,7 @@ function recordGetIncrementedValue($system, $params){
 
     if($rt_ID>0 && $dt_ID>0){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         //1. get detail type
         $res = mysql__select_list($mysqli, 'defDetailTypes','dty_Type','dty_ID='.$dt_ID);
@@ -1099,7 +1099,7 @@ function recordGetAllIncremenetedValues($system, $params){
             });
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $rst_dty_filter = '';
 
         if(!empty($ignore_dtys)){
@@ -1137,17 +1137,17 @@ function recordUpdateOwnerAccess($system, $params){
     if(!empty($recids)){
 
         if(@$params['OwnerUGrpID']=='current_user'){
-            $params['OwnerUGrpID'] = $system->get_user_id();
+            $params['OwnerUGrpID'] = $system->getUserId();
         }
 
         $owner_grps = prepareIds( @$params['OwnerUGrpID'], true);
         $access = @$params['NonOwnerVisibility'];
 
-        if((isEmptyArray($owner_grps) || $access==null) && !$system->is_admin()){
+        if((isEmptyArray($owner_grps) || $access==null) && !$system->isAdmin()){
             return $system->addError(HEURIST_INVALID_REQUEST, 'Neither owner nor visibility parameters defined');
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         //narrow by record type
         $rec_RecTypeID = @$params['rec_RecTypeID'];
@@ -1171,7 +1171,7 @@ function recordUpdateOwnerAccess($system, $params){
         $processed = 0;
         $progress_session_id = @$params['session'];
 
-        if($system->is_admin())  //admin can change everything
+        if($system->isAdmin())  //admin can change everything
         {
 
             $allowed_recids = $recids;
@@ -1346,14 +1346,14 @@ function deleteOneRecord($system, $id, $rectype){
     $rectype = intval($rectype);
 
     if(!($id>0)){
-        return array("error" => error_WrongParam('Record id'));
+        return array("error" => errorWrongParam('Record id'));
     }
 
     $bkmk_count = 0;
     $rels_count = 0;
     $deleted = array();//ids of deleted records
     $msg_error = '';
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //get list if child records
     $query = 'SELECT dtl_Value FROM recDetails, defRecStructure '
@@ -1543,7 +1543,7 @@ function removeReverseChildToParentPointer($system, $parent_id, $rectype){
         $query = 'SELECT dtl_Value FROM recDetails, defRecStructure '
         ." WHERE dtl_RecID=$parent_id AND dtl_DetailTypeID=rst_DetailTypeID AND rst_CreateChildIfRecPtr=1 AND rst_RecTypeID=$rectype";
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $recids = mysql__select_list2($mysqli, $query, 'intval');
 
@@ -1630,7 +1630,7 @@ function addPointerField($system, $source_id, $target_id, $dty_ID, $to_replace){
 
     $res = 0;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
         $dtl_ID = -1;
         $source_id = intval($source_id);
@@ -1699,7 +1699,7 @@ function isWrongAccessRights($system, $access){
 function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$access, &$rectypes)
 {
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $recID = intval($recID);
     //get current values
     $query = 'select rec_OwnerUGrpID, rec_NonOwnerVisibility, rec_RecTypeID from Records where rec_ID = '.$recID;
@@ -1726,7 +1726,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
 
     if(count($current_owner_groups)==1 && !($current_owner_groups[0]>=0)){
         //rare case when current record has wrong value
-        $current_owner_groups = array($system->get_user_id());
+        $current_owner_groups = array($system->getUserId());
     }
 
     //$ownerid_old = @$record["rec_OwnerUGrpID"];//current ownership
@@ -1740,7 +1740,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
 
     //1. Can current user edit this record?
     // record is not "everyone" and current user is_admin or itself or member of group
-    if (!$isEveryOne  && !($system->is_admin() || $system->is_member($current_owner_groups) || $system->is_guest_user() )){
+    if (!$isEveryOne  && !($system->isAdmin() || $system->isMember($current_owner_groups) || $system->isGuestUser() )){
 
         $system->addError(HEURIST_REQUEST_DENIED,
             'Current user does not have sufficient authority to change the record ID:'.$recID
@@ -1752,7 +1752,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
     }
 
     //2. Can current user change ownership of this record?
-    if(!$system->is_admin()){
+    if(!$system->isAdmin()){
 
         if($isEveryOne  && $owner_grps[0]>0){
             //C. Only DB admin can change "Everyone" record to group record
@@ -1766,7 +1766,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
             //A. new owners
             foreach($owner_grps as $grp){
                 if(array_search($grp, $current_owner_groups)===false){
-                    if(!$system->is_member($grp)){
+                    if(!$system->isMember($grp)){
                         $system->addError(HEURIST_REQUEST_DENIED,
                             'Cannot set ownership of record to the group without membership in this group', 'Group#'.grp);
                         return false;
@@ -1776,7 +1776,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
             //B. owners to remove
             foreach($current_owner_groups as $grp){
                 if(array_search($grp, $owner_grps)===false){
-                    if(!$system->has_access($grp)){
+                    if(!$system->hasAccess$grp)){
                         $system->addError(HEURIST_REQUEST_DENIED,
                             'Cannot change ownership. User does not have ownership rights. '
                             .'User must be either database administrator, record owner or administrator or record\'s ownership group',
@@ -1821,7 +1821,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
 //
 function findAndUpdateAffectedCalcFields( $system, $rty_ID ){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $query = 'SELECT cfn_ID FROM defCalcFunctions WHERE find_in_set('.$mysqli->real_escape_string($rty_ID).',cfn_RecTypeIDs) <> 0';
     $field_ids = mysql__select_list2($mysqli, $query);
@@ -1844,7 +1844,7 @@ function findAndUpdateAffectedCalcFields( $system, $rty_ID ){
 //
 function recordUpdateCalcFields($system, $recID, $rty_ID=null, $progress_session_id=null)
 {
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $rectypes = null;
     $rec_count = 0;
@@ -2171,7 +2171,7 @@ function smarty_remove_temp_template($tpl_source, Smarty_Internal_Template $temp
 function recordUpdateTitle($system, $recID, $rectype_or_mask, $recTitleDefault)
 {
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $mask = null;
     $rectype = null;
@@ -2379,7 +2379,7 @@ function _prepareDetails($system, $rectype, $record, $validation_mode, $recID, $
     //4. insert new set
 
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //exlude empty and wrong entries         t:dty_ID:[0:value, 1:value]
     $details2 = array();
@@ -2954,7 +2954,7 @@ function recordDuplicate($system, $id){
         return false;
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $id = intval($id);
     if ( $id<1 ) {
@@ -2966,7 +2966,7 @@ function recordDuplicate($system, $id){
     $access = $def_params['access'];
     $access_grps = $def_params['access_grps'];
 
-    $currentUserId = $system->get_user_id();
+    $currentUserId = $system->getUserId();
 
     $row = mysql__select_row($mysqli, "SELECT rec_OwnerUGrpID, rec_RecTypeID FROM Records WHERE rec_ID = ".$id);
     //$owner = $row[0];
@@ -3323,7 +3323,7 @@ function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
     $recID = abs($recID);
 
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     if(!$is_insert){
         //find current stage
@@ -3346,8 +3346,8 @@ function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
             $is_allowed = false;
             if($rule!=null &&
                 ($rule['swf_StageRestrictedTo']==null
-                || $system->is_admin()
-                || $system->is_member($rule['swf_StageRestrictedTo']))
+                || $system->isAdmin()
+                || $system->isMember($rule['swf_StageRestrictedTo']))
             ){
 
                 $is_allowed = true;
@@ -3395,7 +3395,7 @@ function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
 //
 function validateParentRecords($system, $child_record, &$new_child_details){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $rec_ID = $child_record['ID'];
     $rectype_ID = $child_record['RecTypeID'];
 

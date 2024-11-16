@@ -66,7 +66,7 @@ if ( !isset($_REQUEST['db']) || $system->verifyActionPassword($sysadmin_pwd, $pa
     }
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $emails = array();
 

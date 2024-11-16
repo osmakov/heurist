@@ -40,7 +40,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 <?php
 
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
     //1. find all database
     $query = 'show databases';

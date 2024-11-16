@@ -2,7 +2,7 @@
 /**
 * Class to retrieve system configurations in database (sysIdentification), /settings folder
 * and server root folder (list of databases javascript allowed, disk usage quotes )
-* 
+*
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org
 * @copyright   (C) 2005-2023 University of Sydney
@@ -99,12 +99,12 @@ class SystemSettings {
     *
     * @param string $setting_name - setting's name, matches a key in settingsInFiles
     * @param array $settings - settings in JSON format
-    * @param int $replace_settings - how to handle the saving, 
-    *                               0 - completely replace; 
-    *                               1 - merge and replace existing; 
+    * @param int $replace_settings - how to handle the saving,
+    *                               0 - completely replace;
+    *                               1 - merge and replace existing;
     *                               2 - merge and retain existing
     *
-    * @return true|false 
+    * @return true|false
     */
     public function setDatabaseSetting($setting_name, $settings, $replace_settings = 0){
 
@@ -148,7 +148,7 @@ class SystemSettings {
     //
     /**
     * Returns font-family and @impport font-face css for current Webfonts settings
-    * 
+    *
     * @param mixed $default_family - default font family name
     */
     public function getWebFontsLinks($default_family=null){
@@ -186,7 +186,7 @@ class SystemSettings {
 
     /**
     * Loads system settings (default values) from sysIdentification
-    * 
+    *
     * @param mixed $fieldname - returns particular value or all values as array
     * @param mixed $need_reset - reloads all values from database
     */
@@ -196,7 +196,7 @@ class SystemSettings {
         {
             //load from database
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             $this->settingsInDb = getSysValues($mysqli);
 
             if(!$this->settingsInDb){
@@ -207,8 +207,7 @@ class SystemSettings {
         }
 
         //returns all or particular value
-        $ret = ($fieldname) ?@$this->settingsInDb[$fieldname] :$this->settingsInDb;
-        return $ret;
+        return ($fieldname) ?@$this->settingsInDb[$fieldname] :$this->settingsInDb;
     }
 
     /**
@@ -221,7 +220,6 @@ class SystemSettings {
         $is_allowed = false;
         $fname = realpath(dirname(__FILE__)."/../../js_in_database_authorised.txt");
         if($fname!==false && file_exists($fname)){
-            //  ini_set('auto_detect_line_endings', 'true');
             $handle = @fopen($fname, "r");
             while (!feof($handle)) {
                 $line = trim(fgets($handle, 100));
@@ -245,7 +243,6 @@ class SystemSettings {
         $quota = 0;
         $fname = realpath(dirname(__FILE__)."/../../disk_quota_allowances.txt");
         if($fname!==false && file_exists($fname)){
-            //ini_set('auto_detect_line_endings', 'true');
             $handle = @fopen($fname, "r");
             while (!feof($handle)) {
                 $line = trim(fgets($handle, 100));

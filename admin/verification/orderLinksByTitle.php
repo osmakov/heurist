@@ -37,7 +37,7 @@ if(!$system->init(@$_REQUEST['db'])){
     print json_encode($response);
     exit;
 }
-if (!$system->is_admin()) {
+if (!$system->isAdmin()) {
     print 'To perform this action you must be logged in  as Administrator of group \'Database Managers\'';
     exit;
 }
@@ -47,7 +47,7 @@ if(!(@$_REQUEST['rty_ID']>0 && @$_REQUEST['dty_ID']>0)){
     exit;
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 //3, 134
 

@@ -156,7 +156,7 @@ class DbSysWorkflowRules extends DbEntityBase
         $rty_ID = @$this->data['rty_ID'];
         if($rty_ID>0){
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             if(mysql__select_value($mysqli,
             'SELECT swf_RecTypeID FROM sysWorkflowRules where swf_RecTypeID='.$rty_ID.' LIMIT 1')>0){
@@ -165,7 +165,7 @@ class DbSysWorkflowRules extends DbEntityBase
                 $ret = false;
             }else{
 
-                if(!$this->system->is_admin()){
+                if(!$this->system->isAdmin()){
 
                     $this->system->addError(HEURIST_REQUEST_DENIED,
                         'You are not DB admin. Insufficient rights (logout/in to refresh) for this operation');

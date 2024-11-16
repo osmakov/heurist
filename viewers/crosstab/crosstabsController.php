@@ -25,7 +25,7 @@ if( !$system->init(@$_REQUEST['db']) ){
     $response = $system->getError();
 }else{
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $params = $_REQUEST;
 
     if(@$_REQUEST['a'] == 'minmax' ){
@@ -62,7 +62,7 @@ exit;
 function recordSearchMinMax( $params){
     global $system;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     if(@$params['dt']){
 
@@ -188,7 +188,7 @@ function getCrossTab( $params){
 
     global $system;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $dt_page = @$params['dt_page'];
     if($dt_page){

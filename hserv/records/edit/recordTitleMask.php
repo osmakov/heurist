@@ -88,7 +88,7 @@ class TitleMask {
             self::$system = $system;
         }
         
-        self::$mysqli = self::$system->get_mysqli();
+        self::$mysqli = self::$system->getMysqli();
         self::$db_regid = self::$system->settings->get('sys_dbRegisteredID');
         self::$initialized = true;
 

@@ -58,7 +58,7 @@ $dtDateEnd = ($system->defineConstant('DT_END_DATE')?DT_END_DATE:0);
 
 
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 /*
 1. just print out content of uploaded kml files

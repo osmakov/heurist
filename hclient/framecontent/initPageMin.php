@@ -57,17 +57,17 @@ if(!$isSystemInited){
 $login_warning = 'To perform this action you must be logged in';
 $invalid_access = true;
 
-$is_admin = $system->is_admin();
+$is_admin = $system->isAdmin();
 
 //
 // to limit access to particular page
 //
 // @todo replacec with userCheckAccess
-if(defined('LOGIN_REQUIRED') && !$system->has_access()){
+if(defined('LOGIN_REQUIRED') && !$system->hasAccess()){
     $message = $login_warning;
 }elseif(defined('MANAGER_REQUIRED') && !$is_admin ){ //A member should also be able to create and open database
     $message = $login_warning.' as Administrator of group \'Database Managers\'';
-}elseif(defined('OWNER_REQUIRED') && !$system->is_dbowner()){
+}elseif(defined('OWNER_REQUIRED') && !$system->isDbOwner()){
     $message = $login_warning.' as Database Owner';
 }else{
     $invalid_access = false;

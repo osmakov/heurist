@@ -197,7 +197,7 @@ class SystemEmailExt {
     private function getUserEmail() {
 
         global $system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $query = "SELECT ugr.ugr_eMail FROM ". HEURIST_DBNAME_FULL .".sysUGrps AS ugr WHERE ugr.ugr_ID = ". $this->cur_user['ugr_ID'];
 
@@ -228,7 +228,7 @@ class SystemEmailExt {
     private function validateDatabases($db_list) {
 
         global $system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $valid_dbs = array();
 
@@ -260,7 +260,7 @@ class SystemEmailExt {
     private function createUserList() {
 
         global $system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $dbs = $this->databases;
         $users = $this->users;
@@ -350,7 +350,7 @@ class SystemEmailExt {
     private function createRecordsList() {
 
         global $system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $dbs = $this->databases;
 
@@ -819,7 +819,7 @@ class SystemEmailExt {
     public function export_receipt() {
 
         global $system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         // Get IDs
         $note_rectype_id = ConceptCode::getRecTypeLocalID("2-3");
@@ -903,7 +903,7 @@ function sendSystemEmail($data) {
 
         if ($rtn_value <= -1) {
 
-            echo error_Div('An error occurred with preparing and sending the system emails.<br>'
+            echo errorDiv('An error occurred with preparing and sending the system emails.<br>'
                 .$email_obj->get_log()); //remarked  due securiry reasons $email_obj->get_error().
             $rtn_value = -1;
         }
@@ -913,7 +913,7 @@ function sendSystemEmail($data) {
 
         return $rtn_value;
     } else {
-        echo error_Div('An error occurred with processing the form\'s data.'); //remarked due securiry reasons '<br>'.$email_obj->get_error());
+        echo errorDiv('An error occurred with processing the form\'s data.'); //remarked due securiry reasons '<br>'.$email_obj->get_error());
         return -1;
     }
 }

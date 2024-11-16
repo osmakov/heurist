@@ -254,7 +254,7 @@ abstract class DbEntityBase
     //
     public function files( $action ){
 
-        if(!($this->system->get_user_id()>0)){
+        if(!($this->system->getUserId()>0)){
             $this->system->addError(HEURIST_REQUEST_DENIED, 'Insufficient rights (logout/in to refresh) for this operation');
             return false;
         }
@@ -308,7 +308,7 @@ abstract class DbEntityBase
             $sMsg = 'Cannot get content of settings file. ';
 
             if($filename==null){
-                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.error_WrongParam('Filename'));
+                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.errorWrongParam('Filename'));
                 $res = false;
             }elseif (!file_exists($path.$filename)){
                 $this->system->addError(HEURIST_ERROR, $sMsg.'File does not exist');
@@ -328,13 +328,13 @@ abstract class DbEntityBase
             $sMsg = 'Cannot save content the settings file. ';
 
             if($filename==null){
-                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.error_WrongParam('Filename'));
+                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.errorWrongParam('Filename'));
                 $res = false;
             }elseif($ext!='cfg'){
                 $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.'Only cfg extension allowed for configuration file');
                 $res = false;
             }elseif($content==null){
-                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.error_WrongParam('Content'));
+                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.errorWrongParam('Content'));
                 $res = false;
             }else{
 
@@ -373,7 +373,7 @@ abstract class DbEntityBase
 
 
                 if($filename==null){
-                    $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.error_WrongParam('New filename'));
+                    $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.errorWrongParam('New filename'));
                     $res = false;
                 }elseif($ext!='cfg'){
                     $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.'Only cfg extension allowed for configuration file');
@@ -396,7 +396,7 @@ abstract class DbEntityBase
             $sMsg = 'Cannot remove the settings file. ';
 
             if($filename==null){
-                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.error_WrongParam('Filename'));
+                $this->system->addError(HEURIST_INVALID_REQUEST, $sMsg.errorWrongParam('Filename'));
                 $res = false;
             }elseif (!file_exists($path.$filename)){
                 $this->system->addError(HEURIST_ERROR, $sMsg.'File does not exist');
@@ -526,7 +526,7 @@ abstract class DbEntityBase
         $results = array();
 
         //start transaction
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if($this->need_transaction){
             $keep_autocommit = mysql__begin_transaction($mysqli);
@@ -658,7 +658,7 @@ abstract class DbEntityBase
                 $query .= $compare;
             }
 
-            $ret = mysql__select_value($this->system->get_mysqli(), $query);
+            $ret = mysql__select_value($this->system->getMysqli(), $query);
 
             if($ret>0){
                 $msg = @$check[1]?$check[1]:'Cannot delete '.$this->config['entityTitle'];
@@ -683,7 +683,7 @@ abstract class DbEntityBase
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         mysql__foreign_check($mysqli, false);
         $query = SQL_DELETE.$this->config['tableName'].SQL_WHERE.predicateId($this->primaryField, $this->recordIDs);
@@ -767,7 +767,7 @@ abstract class DbEntityBase
 
 
         if($this->requireAdminRights &&
-            !$this->system->is_admin() &&
+            !$this->system->isAdmin() &&
             ((!isEmptyArray($this->recordIDs))
             || (!isEmptyArray($this->records)))){ //there are records to update/delete
 
@@ -776,12 +776,12 @@ abstract class DbEntityBase
             $this->system->addError(HEURIST_REQUEST_DENIED,
                     'You are not admin and can\'t edit '.$ent_name
                     .'. Insufficient rights (logout/in to refresh) for this operation '
-                    .$this->system->get_user_id().'  '.print_r($this->system->getCurrentUser(), true));
+                    .$this->system->getUserId().'  '.print_r($this->system->getCurrentUser(), true));
             // You have to be Administrator of group \'Database Managers\' for this operation
             return false;
         }
 
-        if(!$this->system->has_access()){
+        if(!$this->system->hasAccess()){
              $this->system->addError(HEURIST_REQUEST_DENIED,
                     'You must be logged in. Insufficient rights (logout/in to refresh) for this operation');
              return false;
@@ -1063,7 +1063,7 @@ abstract class DbEntityBase
     protected function doDuplicationCheck($idx, $field, $message){
 
             if(@$this->records[$idx][$field]){
-                $mysqli = $this->system->get_mysqli();
+                $mysqli = $this->system->getMysqli();
                 $res = mysql__select_value($mysqli,
                         "SELECT {$this->primaryField} FROM ".$this->config['tableName']."  WHERE $field='"
                         .$mysqli->real_escape_string( $this->records[$idx][$field] )."'");

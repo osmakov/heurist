@@ -83,7 +83,7 @@ class DbUtils {
         if($mysqli){
             self::$mysqli = $mysqli;
         }else{
-            self::$mysqli = $system->get_mysqli();
+            self::$mysqli = $system->getMysqli();
         }
 
         self::$initialized = true;
@@ -1516,7 +1516,7 @@ class DbUtils {
 
         //$system = self::$system;
         $mysqli = self::$mysqli;
-        $ugr_ID = self::$system->get_user_id();//current user
+        $ugr_ID = self::$system->getUserId();//current user
         $usr_owner = user_getById($mysqli, $ugr_ID);
 
 
@@ -1531,7 +1531,7 @@ class DbUtils {
         }
 
         //additional check for self clone/rename
-        if($db_source==HEURIST_DBNAME && !self::$system->is_admin()){
+        if($db_source==HEURIST_DBNAME && !self::$system->isAdmin()){
 
                 self::$system->addError(HEURIST_REQUEST_DENIED,
                             'To perform this action you must be logged in as Administrator of group \'Database Managers\' or as Database Owner');

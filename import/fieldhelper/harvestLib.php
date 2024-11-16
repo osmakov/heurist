@@ -87,7 +87,7 @@ function doHarvest($system, $dirs_and_exts, $is_report, $imode, $allowed_system_
 
             if(!$real_path){
                 if($is_report){
-                    print error_Div(htmlspecialchars($dir).' is ignored. Folder '
+                    print errorDiv(htmlspecialchars($dir).' is ignored. Folder '
                     (($real_path==null)?'does not exist':'must be in Heurist filestore directory'));
                 }
                 continue;

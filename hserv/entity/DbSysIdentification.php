@@ -62,7 +62,7 @@ class DbSysIdentification extends DbEntityBase
 
         $query = 'SELECT * FROM sysIdentification LIMIT 1';
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $res = $mysqli->query($query);
 
         if (!$res){
@@ -108,7 +108,7 @@ class DbSysIdentification extends DbEntityBase
         if(!array_key_exists('sys_ExternalReferenceLookups', $sysValues))
         {
             $query = "ALTER TABLE `sysIdentification` ADD COLUMN `sys_ExternalReferenceLookups` TEXT default NULL COMMENT 'Record type-function-field specifications for lookup to external reference sources such as GeoNames'";
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             $res = $mysqli->query($query);
         }
 

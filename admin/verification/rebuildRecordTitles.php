@@ -44,7 +44,7 @@ $rty_ids_list = null;
 //sanitize
 if(@$_REQUEST['recTypeIDs']){
     $rty_ids = prepareIds(filter_var($_REQUEST['recTypeIDs']));
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     if(!empty($rty_ids)) {$rty_ids_list = implode(',', $rty_ids);}
 }
@@ -191,7 +191,7 @@ if($init_client){
 
     if( is_bool($res) && !$res ){
 
-        print error_Div($system->getErrorMsg());
+        print errorDiv($system->getErrorMsg());
 
     }else{
         print '<div><span id=total_count>'.intval($res['total_count']).'</span> records in total</div>';
@@ -241,7 +241,7 @@ function doRecTitleUpdate( $system, $progress_session_id, $recTypeIDs ){
     $unchanged_count = 0;
 
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $rec_count = mysql__select_value($mysqli, 'select count(rec_ID) rec_RecTypeID from Records where !rec_FlagTemporary '
                 .($recTypeIDs?'and rec_RecTypeID in ('.$recTypeIDs.')':''));

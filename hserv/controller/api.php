@@ -177,7 +177,7 @@ if (@$requestUri[3]=='iiif') {
     $system = new hserv\System();
     if( ! $system->init($req_params['db']) ){
         //get error and response
-        $system->error_exit_api();//exit from script
+        $system->errorExitApi();//exit from script
     }
 
     if($requestUri[3]==='login'){
@@ -185,7 +185,7 @@ if (@$requestUri[3]=='iiif') {
         if(!$system->doLogin(filter_var(@$req_params['fields']['login'], FILTER_SANITIZE_STRING),
                              @$req_params['fields']['password'], 'shared'))
         {
-            $system->error_exit_api();
+            $system->errorExitApi();
         }else{
             $lifetime = time() + 24*60*60;     //day
             USystem::sessionUpdateCookies($lifetime);

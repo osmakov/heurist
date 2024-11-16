@@ -121,7 +121,7 @@
 
         $ugr_IDs = prepareIds($ugr_IDs);
         if(!empty($ugr_IDs)){
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
             $query = 'SELECT ugr_ID, IF(ugr_Type=\'workgroup\',ugr_Name, concat(ugr_FirstName, \' \', ugr_LastName)) '
             .' FROM sysUGrps WHERE ugr_ID in ('.implode(',',$ugr_IDs).')';
             return mysql__select_assoc2($mysqli, $query);
@@ -161,10 +161,10 @@
     */
     function user_ResetPasswordRandom($system, $username){
         if($username){
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
             $user = user_getByField($mysqli, 'ugr_Name', $username);
             if(null==$user) {
-                $user = user_getByField($system->get_mysqli(), 'ugr_eMail', $username);
+                $user = user_getByField($system->getMysqli(), 'ugr_eMail', $username);
             }
 
             if(null==$user) {
@@ -229,7 +229,7 @@
      */
     function user_HandleResetPin($system, $username, $pin = '', $captcha = ''){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $now = strtotime('now');
         $an_hour = 60 * 60;
 
@@ -237,7 +237,7 @@
 
         if(session_status() == PHP_SESSION_ACTIVE){  // all information is stored within the current session
 
-            $db = $system->dbname_full();//dbname()
+            $db = $system->dbnameFull();//dbname()
 
             if(!@$_SESSION[$db]){
                 $_SESSION[$db] = array();
@@ -396,7 +396,7 @@
      */
     function user_ResetPassword($system, $username, $password, $pin){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         if(empty($username) || empty($password) || empty($pin)){ // check required values
             $system->addError(HEURIST_ACTION_BLOCKED, 'A username, the new password, and the reset pin are required for this function');
@@ -408,7 +408,7 @@
             return false;
         }
 
-        $db = $system->dbname_full();
+        $db = $system->dbnameFull();
 
         // Check for user
         $user = user_getByField($mysqli, 'ugr_Name', $username);
@@ -587,16 +587,16 @@
         );
     }
 
-    //@$_SESSION[$system->dbname_full()]['ugr_Groups'] = user_getWorkgroups( $this->mysqli, $userID );
+    //@$_SESSION[$system->dbnameFull()]['ugr_Groups'] = user_getWorkgroups( $this->mysqli, $userID );
 
     /**
     * Save set of properties into database
     */
     function user_setPreferences($system, $params){
 
-        $mysqli = $system->get_mysqli();
-        $ugrID = $system->get_user_id();
-        $dbname = $system->dbname_full();
+        $mysqli = $system->getMysqli();
+        $ugrID = $system->getUserId();
+        $dbname = $system->dbnameFull();
 
         $exclude = array('a','db','DBGSESSID');//do not save these params
 
@@ -628,15 +628,15 @@
 
     /**
     * Restores preferences from database and put it into SESSION (see login_verify)
-    * to get individual property use $system->user_GetPreference
+    * to get individual property use $system->userGetPreference
     *
     * @param mixed $system
     * @return null
     */
     function user_getPreferences( $system ){
 
-        $mysqli = $system->get_mysqli();
-        $ugrID = $system->get_user_id();
+        $mysqli = $system->getMysqli();
+        $ugrID = $system->getUserId();
 
         //1. from database
         if($ugrID>0){ //logged in
@@ -650,7 +650,7 @@
         }
 
         //2. from session or default
-        $dbname = $system->dbname_full();
+        $dbname = $system->dbnameFull();
         return(@$_SESSION[$dbname]['ugr_Preferences'])
                     ?$_SESSION[$dbname]['ugr_Preferences']
                     :user_getDefaultPreferences();
@@ -665,8 +665,8 @@
 
         $ret = false;
 
-        if($system->is_admin() && $recID>0){
-            $row = mysql__select_row($system->get_mysqli(),
+        if($system->isAdmin() && $recID>0){
+            $row = mysql__select_row($system->getMysqli(),
                 "select ugr_Type, ugr_Enabled, ugr_LoginCount from sysUGrps  where ugr_ID=".$recID);
             $ret = ($row[0]=="user" && $row[1]=="n" && $row[2]==0);
         }
@@ -680,10 +680,10 @@
     function user_WorkSet( $system, $params ){
 
         $res = false;
-        $curr_user_id = $system->get_user_id();
+        $curr_user_id = $system->getUserId();
         if($curr_user_id>0){
 
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
 
             $mysqli->query('DELETE FROM usrWorkingSubsets where wss_OwnerUGrpID='.$curr_user_id);
             if ($mysqli->error) {
@@ -766,7 +766,7 @@
             $is_registration = ($rectype=='user' && $recID<1);
             $is_guest_registration = ($is_registration && @$record['is_guest']==1);
 
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
 
             if($is_guest_registration && $recID<1 && $rectype=='user'){
                 //verify max allowed count of guest registrations per day
@@ -783,7 +783,7 @@
 
                 $system->addError(HEURIST_REQUEST_DENIED, 'Registration is not allowed for current database');
 
-            }elseif($is_registration || $system->has_access($recID)) {
+            }elseif($is_registration || $system->hasAccess($recID)) {
 
                 //do not allow registration if approvement mail cannot be sent
                 if($is_registration){
@@ -834,7 +834,7 @@
                         $record['ugr_Enabled'] = "y";
                     }else{
 
-                        if($system->get_user_id()<1){ //not logged in - always disabled
+                        if($system->getUserId()<1){ //not logged in - always disabled
                             $record['ugr_Enabled'] = "n";
                         }
                         if("n"!=@$record['ugr_Enabled']){
@@ -852,7 +852,7 @@
                     //actions on complete
                     if($rectype=='user'){
                         $rv = true;
-                        if($recID<1 && $system->get_user_id()<1){
+                        if($recID<1 && $system->getUserId()<1){
                             $rv = user_EmailAboutNewUser($system, $new_recID, false, $is_guest_registration);
                         }elseif($recID<1 || $is_approvement){
                             $rv = user_EmailApproval($system, $new_recID, $tmp_password, $is_approvement);
@@ -937,8 +937,8 @@
     */
     function user_SyncCommonCredentials($system, $userID, $is_approvement){
 
-        $dbname_full = $system->dbname_full();
-        $mysqli = $system->get_mysqli();
+        $dbname_full = $system->dbnameFull();
+        $mysqli = $system->getMysqli();
         //1. find sys_UGrpsDatabase in this database
         $linked_dbs = mysql__select_value($mysqli, 'select sys_UGrpsDatabase from sysIdentification');
         if($linked_dbs)
@@ -1007,7 +1007,7 @@
     */
     function user_EmailAboutNewUser($system, $recID, $fromImport = false, $is_guest_registration=false){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $dbowner_Email = user_getDbOwner($mysqli, 'ugr_eMail');
         //$systemAdmin_Email = HEURIST_MAIL_TO_ADMIN;
@@ -1057,7 +1057,7 @@
     */
     function user_EmailApproval($system, $recID, $tmp_password, $is_approvement){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $dbowner_Email = user_getDbOwner($mysqli, 'ugr_eMail');
         $user = user_getById($mysqli, $recID);//find user
@@ -1242,12 +1242,12 @@
         }
 
 
-        if($system->is_admin()){
+        if($system->isAdmin()){
             // be sure to include the generic everybody workgroup
             array_push($wg_ids, 0);
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         //prepare services - group by group/user ids
         $prepared = array();
@@ -1401,7 +1401,7 @@
 
         $result = null;
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $res = $mysqli->query($query);//ugr_Type
 
         if(!$res){
@@ -1461,7 +1461,7 @@
                     .' ORDER BY ugr_Type DESC';
 
 
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
             $res = $mysqli->query($query);//ugr_Type
 
             //2. loop and parse preferences
@@ -1509,16 +1509,16 @@ function userCheckAccess($system, $level=0){
     $message = ''; // Initialize empty message
 
     // Check access based on the user level
-    if ($level == 2 && !$system->is_dbowner()) {
+    if ($level == 2 && !$system->isDbOwner()) {
         // Level 2: Only Database Owners allowed
         $message = $login_warning . ' as Database Owner';
-    } elseif ($level == 1 && !$system->is_admin()) {
+    } elseif ($level == 1 && !$system->isAdmin()) {
         // Level 1: Only Administrators allowed
         $message = $login_warning . ' as Administrator of group \'Database Managers\'';
-    } elseif ($level > 2 && !$system->has_access($level)) {
+    } elseif ($level > 2 && !$system->hasAccess($level)) {
         // Levels greater than 2: Check specific access level
         $message = $login_warning . ' as Administrator of group #' . $level;
-    } elseif ($level == 0 && !$system->has_access()) {
+    } elseif ($level == 0 && !$system->hasAccess()) {
         // Default check for access without specific level (just logged in)
         $message = $login_warning;
     } else {
@@ -1555,9 +1555,9 @@ function userCheckPermissions($system, $action, $level=0){
         return false;
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
-    $user_query = 'SELECT ugr_Enabled FROM sysUGrps WHERE ugr_ID=' . intval($system->get_user_id());
+    $user_query = 'SELECT ugr_Enabled FROM sysUGrps WHERE ugr_ID=' . intval($system->getUserId());
 
     //'y','n','y_no_add','y_no_delete','y_no_add_delete'
     $permissions = mysql__select_value($mysqli, $user_query);
@@ -1599,7 +1599,7 @@ function userCheckPermissions($system, $action, $level=0){
     if($permissions == 'n'){
 
         // Guest users are allowed to add records, but have a daily limit
-        if(!($action == 'add' && $system->is_guest_user())){
+        if(!($action == 'add' && $system->isGuestUser())){
             $system->addError(HEURIST_ACTION_BLOCKED, 'Only enabled accounts can ' . $action_msg . ' records.');
             return false;
         }

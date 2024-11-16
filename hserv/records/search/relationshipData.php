@@ -46,7 +46,7 @@ function fetch_relation_details($system, $recID, $i_am_primary) {
     //global $system, $relTypDT, $relSrcDT, $relTrgDT, $intrpDT, $notesDT, $startDT, $endDT, $titleDT;
 
     /* get recDetails for the given linked resource and extract all the necessary values */
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $res = $mysqli->query('select * from recDetails where dtl_RecID = ' . intval($recID));
 
     $bd = array('recID' => $recID);
@@ -124,7 +124,7 @@ function reltype_inverse($system, $relTermID) { //saw Enum change - find inverse
 
     global $inverses;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     if (!$relTermID) {return;}
     if (!isset($inverses)) {

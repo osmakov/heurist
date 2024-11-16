@@ -258,7 +258,7 @@ own"0","viewable",NULL,NULL,NULL,NULL
 
         global $useNewTemporalFormatInRecDetails;
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         /**
          * Retrieve field value, raw value for comparison

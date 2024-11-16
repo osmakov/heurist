@@ -73,7 +73,7 @@
     $test_optfields = (@$_REQUEST['optfields']==1);
     $test_recfields = (@$_REQUEST['recfields']==1);
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
 
     $filter = @$_REQUEST['filter_exact'];

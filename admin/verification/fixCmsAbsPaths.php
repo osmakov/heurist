@@ -40,7 +40,7 @@ require_once dirname(__FILE__).'/../../hserv/records/edit/recordsBatch.php';
     <p>Fix absolute paths in web page content</p>
 <?php
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 //find all database
 $databases = mysql__getdatabases4($mysqli, false);

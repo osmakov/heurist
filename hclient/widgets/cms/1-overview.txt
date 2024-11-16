@@ -40,42 +40,76 @@ Updated:     06 Nov 2024
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-development plan:
+Development plan for CMS and CEO
 
-1. editCMS2.js - to CmsEditor class
 
-2. hLayoutMgr.js - to HLayoutMgr class
-        save in new format: json configuration in header + html content (to avoid encoding/escaping issues)
+ISSUES:
+Relative path to images becomes wrong if it uses short url like https://heurist.huma-num.fr/Corpus_Sathma/web/
+It is finally corrected (for user), but for googlebot it is wrong: https://heurist.huma-num.fr/Corpus_Sathma/web/?db=Corpus_Sathma&file=f43e9333434b584bdb463b63a1444b8560909c0d&fancybox=1 
+Solution. Replace links to absolute on time of page generation on server
+Set correct lang in <html lang=”en”> on page generation
+Prevent name database with reserver words:  heurist*, h6-*, startup, databases, help, documentation,website|web|tpl|hml|view|edit|adm,api
+Add rewrite rule: MyDatabase/file/[ulf_ObfuscationID]
+
+
+CMS
+1. editCMS2.js - to CmsEditor class (last turn)
+
+
+2. hLayoutMgr.js - to core/HLayoutMgr class (replace old layout.js)
+        save cms content in new format: json configuration in header + html content (to avoid encoding/escaping issues)
         on init it a) loads html b) applies styles c) inits widgets
         
-
-3. websiteRecord.php  to CmsExectue.php - invocation via FrontController.php
+3. websiteRecord.php  to CmsExectue.php  (invocation via FrontController.php?)
         a) finds home page
         b) loads values from home record: for header and footer elements (title, logos, banner, languages)
-        c) custom css
-        d) main menu content as ul/li 
-        e) loads template file
-        f) outputs either to client or into file
-        e) outputs sitemap
+        c) includes custom css and scripts
+        d) main menu content, generates as ul/li, all links are explicit/crawlable 
+        e) loads/includes template file
+                     f)    loads content of particular page
+        g) outputs either to client or into html file (to /generated-web)
+        h) generates sitemap
         
-4. websiteScriptAndStyles.php  to CmsScripts.php - include required scripts and styles 
-                                  CmsScripts.js  - class to manage (load pages, init widgets) 
+4. websiteScriptAndStyles.php  split to CmsScripts.php - include required scripts and styles and  CmsScripts.js  - class to manage/interact page (load pages, init widgets, fix relative links) 
                                   
 5. ~10~20 sample templates
                                   
-6.  CEO
+ CEO
 
-1) Sitemap for heurist (main) and published websites        
+
+1) +Sitemap for heurist (main) and published websites        
     a) use Google API to submit
-    b) include into robots:    Sitemap: https://heurist.huma-num.fr/main_sitemap.xml
-2) META noindex, nofollow for Admin UI
-3) Disallow in robots.txt Admin UI folders
-4) Does not include to index recordView for particular records
+    +b) include into robots:    Sitemap: https://heurist.huma-num.fr/main_sitemap.xml
+2) +META noindex, nofollow for admin ui
+3) +Disallow in robots.txt all folders except  /(root), /startup, /databases
+4) +Does not include to index recordView for particular records
 
-5) Create published/generated version of websites
-    https://heurist.huma-num.fr/MyDatabase/web/92/page_name.html - generated version form HEURIST_FILESTORE/MyDatabase/generated-web
+
+5) Create published/generated version of websites. Use name of page instead of record id. Use dashes for spaces and utf8 encoding
+
+
+    https://heurist.huma-num.fr/MyDatabase/web/92/page-name.html - generated version form HEURIST_FILESTORE/MyDatabase/generated-web
     https://heurist.huma-num.fr/MyDatabase/web/92/342 - dynamic version
 
+
+6) OPTIONAL: Country-specific subdirectory with gTLD (instead of param) 
+
+
+   https://heurist.huma-num.fr/MyDatabase/web/92/342/fre
+        
+7) !!!! Make all links crawlable
+
+        
+--------
+
+
+1. startup/ Menu in header: about, startup, databases, websites
+2. database index (standard header and css)  with search and featured/selected
+3. database pages (standard header and css)
+4. minified core scripts (modules)
+5. loads widgets code on demand
+      
+        
         
 
 // refer CMS: WordPress, Wix, Blogger        

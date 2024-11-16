@@ -265,7 +265,7 @@ class ReportController
             return $result_report;
         }
 
-        $res = $this->system->get_mysqli()->query($query);
+        $res = $this->system->getMysqli()->query($query);
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $format = $this->req_params['mode'] ?? @$row['rps_URL'];

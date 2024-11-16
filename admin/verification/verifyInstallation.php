@@ -129,12 +129,12 @@ if($system->verifyActionPassword( $sysadmin_pwd, $passwordForServerFunctions) ){
             $mysqli = mysql__connection(HEURIST_DBSERVER_NAME, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, HEURIST_DB_PORT);
             if ( is_array($mysqli) ){
                 //connection to server failed
-                print error_Div($mysqli[1]);
+                print errorDiv($mysqli[1]);
             }else{
                 $version = $mysqli->server_info;
                 $vers = explode('.',$version);
                 $vers = ($vers[0]>=5 && ($vers[0]>5 || $vers[1]>=5))?' OK'
-                    :error_Div('it must be at least 5.5');
+                    :errorDiv('it must be at least 5.5');
                 printf("<br>Connection OK. Server version: %s\n", $version.$vers);
             }
             ?>

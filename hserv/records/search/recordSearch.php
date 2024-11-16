@@ -66,7 +66,7 @@ define('SQL_RELMARKER_CONSTR', 'SELECT dty_ID, dty_JsonTermIDTree, dty_PtrTarget
 */
 function recordSearchDistinctValue($system, $params){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $all_records_for_rty = false; //if false - search for given set of record ids
 
     //0 unique, 1 -both, 2 - all values
@@ -185,7 +185,7 @@ function recordSearchMatchedValues($system, $params){
 
     if(intval(@$params['dty_src'])>0 &&  //intval(@$params['rty_src'])>0 &&
     intval(@$params['rty_trg'])>0 && intval(@$params['dty_trg'])>0){
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
 
         $need_nonmatches = (@$params['nonmatch']==1); //non-match report
@@ -301,7 +301,7 @@ function recordSearchMinMax($system, $params){
 
     if(intval(@$params['rt'])>0 && intval(@$params['dt'])>0){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         //$currentUser = $system->getCurrentUser();
 
         $query = 'SELECT MIN(CAST(dtl_Value as decimal)) as MIN, MAX(CAST(dtl_Value as decimal)) AS MAX '
@@ -312,7 +312,7 @@ function recordSearchMinMax($system, $params){
         .predicateId('dtl_DetailTypeID',$params['dt'])
         ." AND dtl_Value is not null AND dtl_Value!=''";
 
-        $currUserID = $system->get_user_id();
+        $currUserID = $system->getUserId();
         if( $currUserID > 0 ) {
             $q2 = 'select wss_RecID from usrWorkingSubsets where wss_OwnerUGrpID='.$currUserID.' LIMIT 1';
             if(mysql__select_value($mysqli, $q2)>0){
@@ -386,7 +386,7 @@ function recordSearchFacets($system, $params){
     $ft_List = 2;
     $ft_Column = 3;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //set savedSearchName for error messages
     $savedSearchName = '';
@@ -440,7 +440,7 @@ function recordSearchFacets($system, $params){
             return $system->addError(HEURIST_INVALID_REQUEST, $savedSearchName."Facet query search request. Missing query parameter");
         }
 
-        if( $system->get_user_id() > 0 ) {
+        if( $system->getUserId() > 0 ) {
             //use subset for initial search only
             $params['use_user_wss'] = @$params['step']==0;
         } else {
@@ -817,7 +817,7 @@ function __assignFacetValue($params, $subs){
 //
 function getDateHistogramData($system, $range, $interval, $rec_ids, $dty_id, $format="year", $is_between=true){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $date_int = null;
     $intervals = array();
@@ -1096,7 +1096,7 @@ function getDateHistogramData($system, $range, $interval, $rec_ids, $dty_id, $fo
 //
 function getRecordIds($system, $ptr_record_ids, $search_values){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $rec_ids = array();
 
     if(!is_array($ptr_record_ids) || count($ptr_record_ids) <= 0){
@@ -1207,7 +1207,7 @@ function recordSearchRelatedIds($system, &$ids, $direction=0, $no_relationships=
         $direction = 0;
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $res1 = null; $res2 = null;
 
@@ -1346,7 +1346,7 @@ function recordSearchRelated($system, $ids, $direction=0, $need_headers=true, $l
     $direct_ids = array();//sources
     $reverse_ids = array();//targets
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //query to find start and end date for relationship
     $system->defineConstant('DT_START_DATE');
@@ -1503,7 +1503,7 @@ function recordLinkedCount($system, $source_rty_ID, $target_rty_ID, $dty_ID){
     AND rl_DetailTypeID=955
     group by rl_TargetID
     */
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $list = mysql__select_assoc2($mysqli, $query);
 
@@ -1529,7 +1529,7 @@ function recordSearchPermissions($system, $ids){
     $ids = prepareIds($ids);
 
     $permissions = array();
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $query = 'SELECT rcp_RecID, rcp_UGrpID, rcp_Level FROM usrRecPermissions '
     .' WHERE rcp_RecID IN ('.implode(",", $ids).')';
@@ -1569,7 +1569,7 @@ function recordGetOwnerVisibility($system, $ugrID){
         $where2 = '(rec_NonOwnerVisibility="public")';// in ("public","pending")
 
         if($ugrID>0){ //logged in
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
             $wg_ids = user_getWorkgroups($this->mysqli, $ugrID);
             array_push($wg_ids, $ugrID);
             array_push($wg_ids, 0);// be sure to include the generic everybody workgroup
@@ -1592,7 +1592,7 @@ function recordGetOwnerVisibility($system, $ugrID){
 //
 function recordGetRelationshipType($system, $sourceID, $targetID ){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //find all target related records
     $query = 'SELECT rl_RelationTypeID FROM recLinks '
@@ -1614,7 +1614,7 @@ function recordGetRelationshipType($system, $sourceID, $targetID ){
 //
 function recordGetLinkedRecords($system, $recordID){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $query = 'SELECT DISTINCT rl_TargetID, rec_RecTypeID FROM recLinks, Records WHERE rl_TargetID=rec_ID  AND rl_SourceID='.$recordID;
     $ids1 = mysql__select_assoc2($mysqli, $query);
     if($ids1===null){
@@ -1654,7 +1654,7 @@ function recordGetLinkedRecords($system, $recordID){
 //
 function recordGetRelationship($system, $sourceID, $targetID, $search_request=null){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //find all target related records
     $query = 'SELECT rl_RelationID FROM recLinks WHERE rl_RelationID IS NOT NULL';
@@ -1699,7 +1699,7 @@ function recordGetRelationship($system, $sourceID, $targetID, $search_request=nu
 function recordSearchFindParent($system, $rec_ID, $target_recTypeID, $allowedDetails, $level=0){
 
     $query = 'SELECT rec_RecTypeID from Records WHERE rec_ID='.$rec_ID;
-    $rtype = mysql__select_value($system->get_mysqli(), $query);
+    $rtype = mysql__select_value($system->getMysqli(), $query);
 
     if($rtype==$target_recTypeID){
         return $rec_ID;
@@ -1713,7 +1713,7 @@ function recordSearchFindParent($system, $rec_ID, $target_recTypeID, $allowedDet
         $query = $query.' AND rl_DetailTypeID IS NOT NULL';
     }
 
-    $parents = mysql__select_list2($system->get_mysqli(), $query);
+    $parents = mysql__select_list2($system->getMysqli(), $query);
     if(!isEmptyArray($parents)){
         if($level>5){
             $system->addError(HEURIST_ERROR, 'Cannot find parent CMS Home record. It appears that menu items refers recursively');
@@ -1822,7 +1822,7 @@ function recordSearchMenuItems($system, $menuitems, &$result, $find_root_menu=fa
         .implode(',',$rec_IDs).') AND (rl_DetailTypeID='.DT_CMS_MENU
         .' OR rl_DetailTypeID='.DT_CMS_TOP_MENU.')';
 
-        $menuitems2 = mysql__select_list2($system->get_mysqli(), $query);
+        $menuitems2 = mysql__select_list2($system->getMysqli(), $query);
 
         $menuitems2 = prepareIds( $menuitems2 );
 
@@ -1900,7 +1900,7 @@ function recordSearch($system, $params, $relation_query=null)
     //if $params['q'] has svsID it means search by saved filter - all parameters will be taken from saved filter
     // {"svs":5}
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $return_h3_format = false;
 
@@ -1994,7 +1994,7 @@ function recordSearch($system, $params, $relation_query=null)
     $needThumbField = false;
     $needThumbBackground = false;
     $needCompleteInformation = false; //if true - get all header fields, relations, full file info
-    $needTags = (@$params['tags']>0)?$system->get_user_id():0;
+    $needTags = (@$params['tags']>0)?$system->getUserId():0;
     $checkFields = (@$params['checkFields'] == 1);// check validity of certain field types
 
     $relations = null;
@@ -2065,7 +2065,7 @@ function recordSearch($system, $params, $relation_query=null)
         //find places linked to result records for geo field
         if(@$params['suppres_derivemaplocation']!=1){ //for production sites - such as USyd Book of Remembrance Online or Digital Harlem
             $find_places_for_geo = !empty($rectypes_as_place) &&
-            ($system->user_GetPreference('deriveMapLocation', 1)==1);
+            ($system->userGetPreference('deriveMapLocation', 1)==1);
         }
 
     }elseif(  !in_array($params['detail'], array('count','count_by_rty','ids','header','timemap','detail','structure')) ){ //list of specific detailtypes
@@ -2136,7 +2136,7 @@ function recordSearch($system, $params, $relation_query=null)
 
     $currentUser = $system->getCurrentUser();
 
-    if ( $system->get_user_id()<1 ) {
+    if ( $system->getUserId()<1 ) {
         $params['w'] = 'all';//does not allow to search bookmarks if not logged in
     }
 
@@ -2569,13 +2569,13 @@ function recordSearch($system, $params, $relation_query=null)
             return $system->addError(HEURIST_ERROR, 'Invalid search request; unable to construct valid SQL query', null);
         }
 
-        if($is_count_only || ($is_ids_only && @$params['needall']) || !$system->has_access() ){ //not logged in
+        if($is_count_only || ($is_ids_only && @$params['needall']) || !$system->hasAccess() ){ //not logged in
             $search_detail_limit = PHP_INT_MAX;
             $aquery['limit'] = '';
             if($is_count_only) {$aquery['sort'] = '';}
             $aquery['offset'] = '';
         }else{
-            $search_detail_limit = $system->user_GetPreference('search_detail_limit');//limit for map/timemap output
+            $search_detail_limit = $system->userGetPreference('search_detail_limit');//limit for map/timemap output
         }
         if($is_count_by_rty){
             $aquery['sort'] = ' GROUP BY rec_RecTypeID';
@@ -3230,7 +3230,7 @@ function recordTemplateByRecTypeID($system, $id){
         'rec_URLErrorMessage'=>'',
         'rec_AddedByUGrpID'=>2);
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $fields = mysql__select_assoc($mysqli, 'select dty_ID, dty_Type, dty_JsonTermIDTree, dty_PtrTargetRectypeIDs '
         .'from defRecStructure, defDetailTypes where dty_ID = rst_DetailTypeID '
         .'and rst_RecTypeID = '.$id);
@@ -3332,7 +3332,7 @@ function recordSearchByID($system, $id, $need_details = true, $fields = null)
         rec_FlagTemporary";
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $record = mysql__select_row_assoc( $mysqli,
         "select $fields from Records where rec_ID = $id");
     if ($need_details !== false && $record) {
@@ -3378,7 +3378,7 @@ for geo   geo => array(type=> , wkt=> )
 */
 function recordSearchDetails($system, &$record, $detail_types) {
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $recID = $record['rec_ID'];
 
@@ -3421,16 +3421,16 @@ function recordSearchDetails($system, &$record, $detail_types) {
 
     if($rec_type!=null && $rec_type>0){
 
-        $usr_groups = $system->get_user_group_ids();
+        $usr_groups = $system->getUserGroupIds();
         if(!is_array($usr_groups)) {$usr_groups = array();}
         array_push($usr_groups, 0);//everyone
 
-        if($system->has_access() && in_array($rec_owner, $usr_groups)){
+        if($system->hasAccess() && in_array($rec_owner, $usr_groups)){
             //owner of record can see any field
             $detail_visibility_conditions = ' AND (IFNULL(rst_RequirementType,"")!="forbidden")';//ifnull needed for non-standard fields
         }else{
             $detail_visibility_conditions = array('(rst_NonOwnerVisibility IS NULL)');//not standard field
-            if($system->has_access()){
+            if($system->hasAccess()){
                 //logged in user can see viewable
                 $detail_visibility_conditions[] = '(rst_NonOwnerVisibility="viewable")';
             }
@@ -3551,7 +3551,7 @@ function recordSearchDetails($system, &$record, $detail_types) {
 //
 function recordSearchDetailsRelations($system, &$record, $detail_types) {
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $recID = $record['rec_ID'];
 
@@ -3632,7 +3632,7 @@ function recordSearchDetailsRaw($system, $rec_ID) {
     "select dtl_ID,dtl_DetailTypeID,dtl_Value,ST_asWKT(dtl_Geo) as dtl_Geo,dtl_UploadedFileID"
     ." from recDetails where dtl_RecID = $rec_ID";
 
-    return mysql__select_assoc($system->get_mysqli(), $query);
+    return mysql__select_assoc($system->getMysqli(), $query);
 }
 
 //
@@ -3690,7 +3690,7 @@ function recordSearchGeoDetails($system, $recID, $find_geo_by_linked_rty, $find_
 
     $squery = $squery.' ORDER BY rl_ID';
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $res = $mysqli->query($squery);
     if(!$res){
         return $details;
@@ -3803,9 +3803,9 @@ function recordSearchDetailsForRecIds($system, $recIDs, $dty_IDs) {
 //
 function recordSearchPersonalTags($system, $rec_ID) {
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     return mysql__select_list2($mysqli,
         'SELECT tag_Text FROM usrRecTagLinks, usrTags WHERE '
-        ."tag_ID = rtl_TagID and tag_UGrpID= ".$system->get_user_id()." and rtl_RecID = $rec_ID order by rtl_Order");
+        ."tag_ID = rtl_TagID and tag_UGrpID= ".$system->getUserId()." and rtl_RecID = $rec_ID order by rtl_Order");
 }

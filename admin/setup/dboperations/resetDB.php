@@ -38,7 +38,7 @@ $isSystemInited = $system->init(DEMO_DB);
 
 if($isSystemInited){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $user_record = user_getById($mysqli, 2);
 
     $res = DbUtils::databaseDrop(false, DEMO_DB, false);

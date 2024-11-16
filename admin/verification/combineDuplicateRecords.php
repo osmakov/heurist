@@ -43,7 +43,7 @@ require_once dirname(__FILE__).'/../../hserv/records/edit/recordTitleMask.php';
 
 
 global $mysqli;
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $do_merge_details = false;
 $finished_merge = false;

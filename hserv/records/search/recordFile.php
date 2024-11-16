@@ -113,8 +113,8 @@ function fileGetByObfuscatedId($system, $ulf_ObfuscatedFileID){
 
     if(!$ulf_ObfuscatedFileID || strlen($ulf_ObfuscatedFileID)<1) {return null;}
 
-    $res = mysql__select_value($system->get_mysqli(), 'select ulf_ID from recUploadedFiles where ulf_ObfuscatedFileID="'.
-        $system->get_mysqli()->real_escape_string($ulf_ObfuscatedFileID).'"');
+    $res = mysql__select_value($system->getMysqli(), 'select ulf_ID from recUploadedFiles where ulf_ObfuscatedFileID="'.
+        $system->getMysqli()->real_escape_string($ulf_ObfuscatedFileID).'"');
 
     return $res;
 }
@@ -137,7 +137,7 @@ function fileGetByFileName($system, $fullname){
 
     // get relative path to db root folder
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $query = 'select ulf_ID from recUploadedFiles '
         .'where ulf_FileName = "'.$mysqli->real_escape_string($filename).'"';
@@ -160,7 +160,7 @@ function fileGetByFileName($system, $fullname){
 */
 function fileGetByOriginalFileName($system, $orig_name){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $fileinfo = mysql__select_row_assoc($mysqli, 'select * from recUploadedFiles '
             .'where ulf_OrigFileName = "'.$mysqli->real_escape_string($orig_name).'"');
@@ -187,7 +187,7 @@ function fileRenameToOriginal($system, $orig_name, $new_name=null){
                 //rename file to original (without prefix ulf_xxx_) and update in database
                 rename($reg_name, $file_fullpath);
 
-                $mysqli = $system->get_mysqli();
+                $mysqli = $system->getMysqli();
                 $new_name = $mysqli->real_escape_string($new_name);
 
                 $qupdate = 'UPDATE recUploadedFiles set ulf_FilePath="file_uploads/", '
@@ -225,7 +225,7 @@ function fileGetFullInfo($system, $file_ids, $all_fields=false){
 
     if(!isEmptyArray($file_ids)){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
 
         foreach ($file_ids as $idx=>$testcase) {
@@ -339,7 +339,7 @@ function fileGetThumbnailURL($system, $recID, $get_bgcolor, $check_linked_media 
 
     // at first - try to find image that are marked as thumbnail in dedicated field
     if($system->defineConstant('DT_THUMBNAIL') & DT_THUMBNAIL>0){
-        $fileid = mysql__select_value($system->get_mysqli(), $query
+        $fileid = mysql__select_value($system->getMysqli(), $query
                 .' and dtl_DetailTypeID='.DT_THUMBNAIL.' limit 1');
     }
     // if special thumbnail not found - try to find image or resource with thumbail (youtube ot iiif)
@@ -349,7 +349,7 @@ function fileGetThumbnailURL($system, $recID, $get_bgcolor, $check_linked_media 
             ." and (fxm_MimeType like 'image%' OR fxm_MimeType='video/youtube' OR fxm_MimeType='video/vimeo' OR fxm_MimeType='audio/soundcloud' "
             ." OR ulf_OrigFileName LIKE '".ULF_IIIF."%' OR ulf_PreferredSource LIKE 'iiif%')" // ORDER BY dtl_DetailTypeID, dtl_ID
             .' LIMIT 1';
-        $fileid = mysql__select_value($system->get_mysqli(), $query);
+        $fileid = mysql__select_value($system->getMysqli(), $query);
     }
 
     // Check linked record types
@@ -357,7 +357,7 @@ function fileGetThumbnailURL($system, $recID, $get_bgcolor, $check_linked_media 
         $system->defineConstant('RT_MEDIA_RECORD') && RT_MEDIA_RECORD > 0){
 
         $query = "SELECT rec_ID FROM Records LEFT JOIN recLinks ON rl_TargetID = rec_ID WHERE rl_SourceID = $recID AND rec_RecTypeID = " . RT_MEDIA_RECORD;
-        $linked_rec_ids = mysql__select_list2($system->get_mysqli(), $query);
+        $linked_rec_ids = mysql__select_list2($system->getMysqli(), $query);
 
         while(!empty($linked_rec_ids)){
 
@@ -651,7 +651,7 @@ function downloadFileWithMetadata($system, $fileinfo, $rec_ID){
 
     $zip = new ZipArchive();
     if (!$zip->open($file_zip_full, ZIPARCHIVE::CREATE)) {
-        $system->error_exit_api("Cannot create zip $file_zip_full");
+        $system->errorExitApi("Cannot create zip $file_zip_full");
     }elseif(file_exists($filepath)) {
         $zip->addFile($filepath, $originalFileName);
     }
@@ -1436,7 +1436,7 @@ function filestoreGetUsageByFolders($system){
 */
 function filestoreGetUsageByDb($system){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $res =  mysql__select_value($mysqli, 'SELECT SUM(ulf_FileSizeKB) FROM recUploadedFiles');
 
     return $res;

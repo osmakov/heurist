@@ -65,7 +65,7 @@ class ImportAnnotations{
     */
     private function findRegisteredManifests(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $query = 'SELECT ulf_ID, ulf_ExternalFileReference FROM recUploadedFiles WHERE ulf_OrigFileName="'.ULF_IIIF.'"';
 
         if(!empty($this->ulfIDs)){
@@ -160,7 +160,7 @@ class ImportAnnotations{
     private function prepareExecution(){
 
         //must be database manager
-        if(!$this->system->is_admin()){
+        if(!$this->system->isAdmin()){
             $this->system->addError(HEURIST_REQUEST_DENIED, 'To perform this action you must be logged in as Administrator of group \'Database Managers\'');
             return false;
         }

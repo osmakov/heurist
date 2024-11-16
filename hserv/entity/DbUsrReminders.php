@@ -51,7 +51,7 @@ class DbUsrReminders extends DbEntityBase
     public function search(){
 
         if(!@$this->data['rem_OwnerUGrpID']){
-            $this->data['rem_OwnerUGrpID'] = $this->system->get_user_id();
+            $this->data['rem_OwnerUGrpID'] = $this->system->getUserId();
         }
 
         if(parent::search()===false){
@@ -95,11 +95,11 @@ class DbUsrReminders extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_dbowner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
+        if(!$this->system->isDbOwner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
 
-            $ugrID = $this->system->get_user_id();
+            $ugrID = $this->system->getUserId();
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_norights = mysql__select_list($mysqli, $this->config['tableName'], $this->primaryField,
                     'rem_ID in ('.implode(',', $this->recordIDs).') AND rem_OwnerUGrpID!='.$ugrID);
@@ -133,7 +133,7 @@ class DbUsrReminders extends DbEntityBase
             $isinsert = ($rec_ID<1);
             if($isinsert){
                 if(!($this->records[$idx]['rem_OwnerUGrpID']>0)){
-                    $this->records[$idx]['rem_OwnerUGrpID'] = $this->system->get_user_id();
+                    $this->records[$idx]['rem_OwnerUGrpID'] = $this->system->getUserId();
                 }
                 $this->records[$idx]['rem_Nonce'] = dechex(random_int(1,99));
                 $this->fields['rem_Nonce'] = array();//to pass data to save
@@ -146,7 +146,7 @@ class DbUsrReminders extends DbEntityBase
     }
 
     public function setmysql($mysqli){
-        $this->system->set_mysqli($mysqli);
+        $this->system->setMysqli($mysqli);
     }
 
     //
@@ -166,7 +166,7 @@ class DbUsrReminders extends DbEntityBase
         if( (!empty($rec_IDs)) || (@$this->data['fields']['rem_RecID']>0) )
         {
             //sends emails for given set of records
-            $ugrID = $this->system->get_user_id();
+            $ugrID = $this->system->getUserId();
             if(!($ugrID>0)){
                 $this->system->addError(HEURIST_REQUEST_DENIED,
                     'You have to be logged in to send notification'
@@ -213,7 +213,7 @@ class DbUsrReminders extends DbEntityBase
 
         $report = array();
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 /*
         if(!$mysqli){
 echo 'Database connection not established '.spl_object_id($this->system).'   '.isset($mysqli).'>>>'."\n";
@@ -424,7 +424,7 @@ exit;
         if(is_numeric(@$this->data['rem_ID']) && $this->data['rem_ID']>0 && $this->data['h']){
 
             //find reminder
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             $query = 'SELECT rem_ID FROM '.$this->config['tableName'].' WHERE rem_ID='.$this->data['rem_ID']
                 .' and rem_Nonce="'.$mysqli->real_escape_string($this->data['h']).'"';
 

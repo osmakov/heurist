@@ -129,7 +129,7 @@ abstract class ExportRecords {
 
         global $system;
         $this->system = $system;
-        $this->mysqli = $system->get_mysqli();
+        $this->mysqli = $system->getMysqli();
         $this->initialized = true;
     }
 
@@ -140,7 +140,7 @@ abstract class ExportRecords {
      */
     public function setSession($system) {
         $this->system = $system;
-        $this->mysqli = $system->get_mysqli();
+        $this->mysqli = $system->getMysqli();
         $this->initialized = true;
     }
 
@@ -509,7 +509,7 @@ abstract class ExportRecords {
         $query = 'select rty_ID,rty_Name,'
         ."if(rty_OriginatingDBID, concat(cast(rty_OriginatingDBID as char(5)),'-',cast(rty_IDInOriginatingDB as char(5))), concat('$dbID-',cast(rty_ID as char(5)))) as rty_ConceptID"
         .' from defRecTypes where rty_ID in ('.implode(',',array_keys($this->rt_counts)).')';
-        $rectypes = mysql__select_all($this->system->get_mysqli(),$query,1);
+        $rectypes = mysql__select_all($this->system->getMysqli(),$query,1);
 
         foreach($this->rt_counts as $rtid => $cnt){
             //include record types that are in output - name, ccode and count

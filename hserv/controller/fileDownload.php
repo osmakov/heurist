@@ -192,7 +192,7 @@ if(mysql__check_dbname($db)==null){
                     $is_download = (@$req_params['download']==1);
 
                     $is_image = (strpos($mimeType, DIR_IMAGE)===0);
-                    $get_blurred_image = $is_image && !$all_can_view && !$system->has_access();
+                    $get_blurred_image = $is_image && !$all_can_view && !$system->hasAccess();
 
                     if(!$is_download && isset($allowWebAccessUploadedFiles) && $allowWebAccessUploadedFiles)
                     { //&& strpos($fileinfo['fullPath'],'file_uploads/')===0

@@ -31,7 +31,7 @@ use hserv\structure\ConceptCode;
 
     function updateDatabseTo_v1_3_16($system, $dbname=null){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         if($dbname){
             mysql__usedatabase($mysqli, $dbname);

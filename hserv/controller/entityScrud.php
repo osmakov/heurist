@@ -107,7 +107,7 @@ if (@$argv) {
                 }else{
                     //check file time and last update time of definitions
                     if($system->init($dbname)){
-                        $dbdef_mod = getDefinitionsModTime($system->get_mysqli());//see utils_db
+                        $dbdef_mod = getDefinitionsModTime($system->getMysqli());//see utils_db
 
                         if($dbdef_mod!=null){
                             $db_time  = $dbdef_mod->getTimestamp();
@@ -163,7 +163,7 @@ if (@$argv) {
     $need_config = false;
 
     if( (!$system_init_failed)  //system can be inited beforehand for getDefinitionsModTime
-        && ($system->is_inited() || $system->init($dbname)))
+        && ($system->isInited() || $system->init($dbname)))
     {
 
         //USanitize::sanitizeRequest($req_params); it brokes json strings
@@ -204,7 +204,7 @@ if (@$argv) {
 
         if( is_bool($res) && !$res ){
 
-            $system->error_exit_api();
+            $system->errorExitApi();
 
         }else{
             header(HEADER_CORS_POLICY);

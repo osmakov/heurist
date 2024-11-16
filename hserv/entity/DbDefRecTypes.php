@@ -95,7 +95,7 @@ class DbDefRecTypes extends DbEntityBase
 
             $needCount = false; //now we calculate counts beforehand and use $calculatedFields to add column rty_RecCount
 
-            $usr_ID = $this->system->get_user_id();
+            $usr_ID = $this->system->getUserId();
 
             $this->where_for_count = array();
             if(($usr_ID>0) || ($usr_ID===0)){
@@ -108,7 +108,7 @@ class DbDefRecTypes extends DbEntityBase
             }
 
             $query2 = 'SELECT rec_RecTypeID,count(*) FROM Records WHERE (not rec_FlagTemporary) GROUP BY rec_RecTypeID';
-            $this->rty_counts = mysql__select_assoc2($this->system->get_mysqli(), $query2);
+            $this->rty_counts = mysql__select_assoc2($this->system->getMysqli(), $query2);
 
 
             $calculatedFields = function ($fields, $row=null) {
@@ -171,7 +171,7 @@ class DbDefRecTypes extends DbEntityBase
             $query2 = 'SELECT count(r0.rec_ID) from Records r0 ';
             $where2 = ' WHERE (r0.rec_RecTypeID=rty_ID) ';
 
-            $usr_ID = $this->system->get_user_id();
+            $usr_ID = $this->system->getUserId();
 
             if(($usr_ID>0) || ($usr_ID===0)){
                 $conds = $this->_getRecordOwnerConditions($usr_ID);
@@ -221,7 +221,7 @@ class DbDefRecTypes extends DbEntityBase
 
         $rtyID = $this->recordIDs[0];
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $query = 'SELECT dty_ID, dty_Name FROM defDetailTypes where FIND_IN_SET('.$rtyID.', dty_PtrTargetRectypeIDs)>0';
 
@@ -300,7 +300,7 @@ class DbDefRecTypes extends DbEntityBase
 
         $ret = parent::prepareRecords();
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //add specific field values
         foreach($this->records as $idx=>$record){
@@ -378,7 +378,7 @@ class DbDefRecTypes extends DbEntityBase
         $dbID = $dbID > 0 ? $dbID : 0;
 
         // Get MySQLi instance
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         // Loop through each record and process accordingly
         foreach ($this->records as $idx => $record) {
@@ -473,7 +473,7 @@ class DbDefRecTypes extends DbEntityBase
     //
     public function batch_action(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $this->need_transaction = false;
         $keep_autocommit = mysql__begin_transaction($mysqli);
@@ -585,7 +585,7 @@ class DbDefRecTypes extends DbEntityBase
                             $wg_ids = array_keys($currentUser['ugr_Groups']);
                             array_push($wg_ids, $ugr_ID);
                         }else{
-                            $wg_ids = $this->system->get_user_group_ids();
+                            $wg_ids = $this->system->getUserGroupIds();
                         }
                     }
 
@@ -649,7 +649,7 @@ class DbDefRecTypes extends DbEntityBase
 
             $query = $query . SQL_WHERE.$where . ' GROUP BY r0.rec_RecTypeID';// ORDER BY cnt DESC
 
-            $res = mysql__select_assoc2($this->system->get_mysqli(), $query);
+            $res = mysql__select_assoc2($this->system->getMysqli(), $query);
 
             return $res;
     }
@@ -673,20 +673,20 @@ class DbDefRecTypes extends DbEntityBase
                 $conds = array('', ' AND (not r0.rec_FlagTemporary)');
             }
 
-            $res = mysql__select_value($this->system->get_mysqli(), $query.$conds[0].$where.$conds[1]);//total count
+            $res = mysql__select_value($this->system->getMysqli(), $query.$conds[0].$where.$conds[1]);//total count
 
             $query = 'SELECT r0.rec_ID FROM Records r0 ';
             $where = 'WHERE (r0.rec_NonOwnerVisibility!="public") '
                                 .'AND (r0.rec_RecTypeID='.RT_CMS_HOME.')';
 
-            $res2 = mysql__select_list2($this->system->get_mysqli(), $query.$conds[0].$where.$conds[1]);
+            $res2 = mysql__select_list2($this->system->getMysqli(), $query.$conds[0].$where.$conds[1]);
             if($res2==null) {$res2 = array();}
 
             $query = 'SELECT r0.rec_ID FROM Records r0 ';
             $where = 'WHERE (r0.rec_NonOwnerVisibility!="public") '
                                 .'AND (r0.rec_RecTypeID='.RT_CMS_MENU.')';
 
-            $res3 = mysql__select_list2($this->system->get_mysqli(), $query.$conds[0].$where.$conds[1]);
+            $res3 = mysql__select_list2($this->system->getMysqli(), $query.$conds[0].$where.$conds[1]);
             if($res3==null) {$res3 = array();}
 
             $res = array('all'=>$res, 'private_home'=>count($res2), 'private_menu'=>count($res3),

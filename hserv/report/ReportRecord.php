@@ -38,7 +38,7 @@ class ReportRecord
     public function __construct($system)
     {
         $this->system = $system;
-        $this->rtyNames = dbs_GetRectypeNames($system->get_mysqli());
+        $this->rtyNames = dbs_GetRectypeNames($system->getMysqli());
         $this->dtyTypes = dbs_GetDetailTypes($system, null, 4);
         $this->recordsCache = array(); // Cache for loaded records
         $this->translations = array('trm' => array());
@@ -83,14 +83,14 @@ class ReportRecord
     public function getSysInfo($param)
     {
         $res = null;
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if ($param == 'db_total_records') {
             $res = mysql__select_value($mysqli, 'SELECT count(*) FROM Records WHERE not rec_FlagTemporary');
         } elseif ($param == 'db_rty_counts') {
             $res = mysql__select_assoc2($mysqli, 'SELECT rec_RecTypeID, count(*) FROM Records WHERE not rec_FlagTemporary GROUP BY rec_RecTypeID');
         } elseif ($param == 'lang') {
-            $res = $_REQUEST['lang'] ?? $this->system->user_GetPreference('layout_language', '');
+            $res = $_REQUEST['lang'] ?? $this->system->userGetPreference('layout_language', '');
             $res = getLangCode3($res);
         } elseif ($param == 'dbname') {
             $res = $this->system->dbname();
@@ -200,11 +200,11 @@ class ReportRecord
         if ($rec['rec_NonOwnerVisibility'] == 'hidden') {
             $res = false;
         } elseif ($currentUser['ugr_ID'] > 0 && $rec['rec_NonOwnerVisibility'] == 'viewable') {
-            $wg_ids = @$currentUser['ugr_Groups'] ? array_keys($currentUser['ugr_Groups']) : $this->system->get_user_group_ids();
+            $wg_ids = @$currentUser['ugr_Groups'] ? array_keys($currentUser['ugr_Groups']) : $this->system->getUserGroupIds();
             array_push($wg_ids, 0); // Include generic everybody workgroup
 
             if (!isEmptyArray($wg_ids) && !in_array($rec['rec_OwnerUGrpID'], $wg_ids)) {
-                $allowed_groups = mysql__select_list2($this->system->get_mysqli(), 'SELECT rcp_UGrpID FROM usrRecPermissions WHERE rcp_RecID=' . $rec['rec_ID']);
+                $allowed_groups = mysql__select_list2($this->system->getMysqli(), 'SELECT rcp_UGrpID FROM usrRecPermissions WHERE rcp_RecID=' . $rec['rec_ID']);
                 if (empty($allowed_groups) && count(array_intersect($allowed_groups, $wg_ids)) > 0) {
                     $res = false;
                 }
@@ -236,7 +236,7 @@ class ReportRecord
              return $res;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $from_res = $mysqli->query('SELECT rl_RelationID as dtl_RecID FROM recLinks WHERE rl_RelationID IS NOT NULL AND rl_SourceID=' . $rec_ID);
         $to_res = $mysqli->query('SELECT rl_RelationID as dtl_RecID FROM recLinks WHERE rl_RelationID IS NOT NULL AND rl_TargetID=' . $rec_ID);
 
@@ -293,7 +293,7 @@ class ReportRecord
             $where = ', Records WHERE linkID=rec_ID ' . $predicateRty . SQL_AND;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $to_records = array();
         $from_records = array();
 
@@ -727,7 +727,7 @@ class ReportRecord
         }
 
         $query = 'SELECT ' . implode(',', $select) . ' FROM ' . implode(' ', $from) . ' WHERE rec_ID IN (' . implode(',', $ids) . ')';
-        $res = mysql__select_row($this->system->get_mysqli(), $query);
+        $res = mysql__select_row($this->system->getMysqli(), $query);
 
         if ($res == null) {
                return null;
@@ -800,7 +800,7 @@ class ReportRecord
                 $def_values = $this->fillTermNames($ids, $field);
             }
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             $query = "SELECT trn_Code, trn_Translation FROM defTranslations WHERE trn_Source = '$field' AND trn_LanguageCode = '$language_code' $id_clause";
             $res = mysql__select_assoc2($mysqli, $query);
 
@@ -846,7 +846,7 @@ class ReportRecord
      */
     public function getFileField($file_details, $field = 'name')
     {
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $fields_map = [
             'desc' => 'ulf_Description',
             'description' => 'ulf_Description',

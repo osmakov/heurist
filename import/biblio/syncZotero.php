@@ -478,7 +478,7 @@ if($step=="1"){  //first step - info about current status
 
     $is_echo = false;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //$tmp_destination = HEURIST_SCRATCH_DIR.'zotero.xml';
     //$fd = fopen($tmp_destination, 'w');//less than 1MB in memory otherwise as temp file
@@ -749,7 +749,7 @@ if($step=="1"){  //first step - info about current status
 
                 if($is_empty_zotero_entry){
 
-                    print error_Div('Warning: zotero id '.htmlspecialchars($zotero_itemid)
+                    print errorDiv('Warning: zotero id '.htmlspecialchars($zotero_itemid)
                         .': no data recorded in Zotero for this entry');
 
                 }elseif(empty($details)){

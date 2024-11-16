@@ -109,7 +109,7 @@ if(strpos($base_url, HEURIST_DEF_DIR) === false){
     $base_url = rtrim($base_url, '/') . HEURIST_DEF_DIR;
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 $path_to_function = $base_url . "export/dbbackup/exportMyDataPopup.php?db=";

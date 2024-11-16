@@ -83,7 +83,7 @@ class FrontController
     public function run()
     {
         // Detect controller class
-        if (!(isset($this->system) && $this->system->is_inited())) {
+        if (!(isset($this->system) && $this->system->isInited())) {
             return;
         }
 

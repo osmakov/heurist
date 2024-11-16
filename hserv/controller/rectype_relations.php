@@ -65,7 +65,7 @@
 
         // Select all rectype ids, names and count the occurence in the Record table. The defRectypes table is used to retrieve all record types in a certain database an the Records table is used to determine the occurence.
         $query = "SELECT d.rty_ID as id, d.rty_Name as name, sum(if(r.rec_FlagTemporary!=1, 1, 0)) as count FROM defRecTypes d LEFT JOIN Records r ON d.rty_ID=r.rec_RecTypeID GROUP BY id";
-        $res = $system->get_mysqli()->query($query);
+        $res = $system->getMysqli()->query($query);
         while($row = $res->fetch_assoc()) {
             $rectype = new stdClass();
             $rectype->id = intval($row["id"]);
@@ -100,7 +100,7 @@
         ."GROUP BY rst.rst_DetailTypeID;";
 
 
-        $res = $system->get_mysqli()->query($query);
+        $res = $system->getMysqli()->query($query);
         while($row = $res->fetch_assoc()) {
             $relation = new stdClass();
             $relation->id = intval($row["id"]);//detail type id
@@ -153,7 +153,7 @@
                 . " AND r1.rec_RecTypeID=" .$rectype->id. " AND r2.rec_RecTypeID=".$id;
             }
 
-            if($res = $system->get_mysqli()->query($query)) {
+            if($res = $system->getMysqli()->query($query)) {
                 if($row = $res->fetch_assoc()) {
                     $target = new stdClass();
                     $target->id = intval($id);

@@ -59,14 +59,14 @@ class DbUsrSavedSearches extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_admin() &&
+        if(!$this->system->isAdmin() &&
             (!isEmptyArray($this->recordIDs)
             || !isEmptyArray($this->records))){ //there are records to update/delete
 
 
-            $grpIDs = $this->system->get_user_group_ids('admin');
+            $grpIDs = $this->system->getUserGroupIds('admin');
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $cnt = mysql__select_value($mysqli, 'SELECT count(svs_ID) FROM '.$this->config['tableName']
             .' WHERE svs_ID in ('.implode(',', $this->recordIDs).' AND svs_UGrpID not in ('.implode(',', $grpIDs).')');
@@ -100,7 +100,7 @@ class DbUsrSavedSearches extends DbEntityBase
             $tbl = $this->config['tableName'];
 
             //validate duplication
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             $res = mysql__select_value($mysqli,
                     "SELECT svs_ID FROM $tbl  WHERE svs_UGrpID="
                     .$this->records[$idx]['svs_UGrpID']

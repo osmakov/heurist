@@ -51,7 +51,6 @@ use hserv\structure\ConceptCode;
     *  checkMaxLength - check max length for TEXT field
     *  getDefinitionsModTime - returns timestamp of last update of db denitions
     *
-    *  updateDatabaseToLatest - make changes in database structure according to the latest version
     *  recreateRecLinks
     *  recreateRecDetailsDateIndex
     *  hasTable - Returns true if table exists in database
@@ -1133,7 +1132,7 @@ $mysqli->kill($thread_id);
     function recreateRecLinks($system, $is_forced)
     {
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $res = true;
         $is_table_exist = hasTable($mysqli, 'recLinks');
@@ -1174,7 +1173,7 @@ $mysqli->kill($thread_id);
     //
     function recreateRecDetailsDateIndex($system, $need_populate, $json_for_record_details, $offset=0, $progress_report_step=-1){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $dbVerSubSub = $system->settings->get('sys_dbSubSubVersion');
 
@@ -1409,7 +1408,7 @@ $mysqli->kill($thread_id);
                         // file_put_contents($log_file, $dtl_ID.';'.$dtl_Value.';'.$dtl_NewValue.';'.$error."\n", FILE_APPEND )
                         if(!$is_date_simple) {$cnt_to_json++;}
                         if($error){
-                            $error = error_Div($error);
+                            $error = errorDiv($error);
                             $cnt_err++;
                         }
 
@@ -1821,25 +1820,6 @@ $mysqli->kill($thread_id);
         return $res;
     }
 
-    //
-    // For Subversion update see DBUpgrade_1.2.0_to_1.3.0.php
-    //
-    // This method updates from 1.3.14 to 1.3.xxxx
-    //
-    function updateDatabaseToLatest($system){
-
-        $sysValues = $system->settings->get(null, true);
-        /*
-        $dbVer = $system->settings->get('sys_dbVersion');
-        $dbVerSub = $system->settings->get('sys_dbSubVersion');
-        $dbVerSubSub = $system->settings->get('sys_dbSubSubVersion');
-
-        if($dbVer==1 && $dbVerSub==3 && $dbVerSubSub>16){
-
-        }
-        */
-        return true;
-    }
 
     /**
     * Validates the present of all tables in given or current database
@@ -1901,7 +1881,7 @@ $mysqli->kill($thread_id);
 
     function createTable($system, $table_name, $query, $recreate = false){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         if($recreate || !hasTable($mysqli, $table_name)){
 
@@ -1922,7 +1902,7 @@ $mysqli->kill($thread_id);
 
     function alterTable($system, $table_name, $field_name, $query, $modify_if_exists = false){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $column_exists = hasColumn($mysqli, $table_name, $field_name);
 
@@ -2022,7 +2002,7 @@ $mysqli->kill($thread_id);
             $db_source = HEURIST_DBNAME_FULL;
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         // Check that sysUGrps.ugr_Enabled has y_no_add, y_no_delete, y_no_add_delete
         $validate_query = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '". $db_source ."' AND TABLE_NAME = 'sysUGrps' AND COLUMN_NAME = 'ugr_Enabled'";

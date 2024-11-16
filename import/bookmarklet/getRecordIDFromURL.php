@@ -46,7 +46,7 @@ ini_set("zlib.output_compression_level", '5');
 ob_start();
 
 $url = $_REQUEST["url"];
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 if (substr($url, -1) == "/") {$url = substr($url, 0, strlen($url)-1);}
 
@@ -62,7 +62,7 @@ if ($rec_id>0) {
     print "HEURIST_url_bib_id = ".intval($rec_id).";\n\n";
 
     //find bookmark for this record for current user
-    $query = 'select bkm_ID from usrBookmarks where bkm_recID='.intval($rec_id).' and bkm_UGrpID='.$system->get_user_id();
+    $query = 'select bkm_ID from usrBookmarks where bkm_recID='.intval($rec_id).' and bkm_UGrpID='.$system->getUserId();
     $bkm_id = mysql__select_value($mysqli, $query);
 
 } else {

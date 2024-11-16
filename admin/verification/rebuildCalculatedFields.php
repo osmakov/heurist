@@ -194,11 +194,11 @@ if($init_client){
     }
 }else{
     if( is_bool($res) && !$res ){
-        print error_Div(htmlspecialchars($system->getErrorMsg()));
+        print errorDiv(htmlspecialchars($system->getErrorMsg()));
         print '</div></body></html>';
         exit;
     }elseif($res['message']){
-        print error_Div(htmlspecialchars($system->getErrorMsg()));
+        print errorDiv(htmlspecialchars($system->getErrorMsg()));
     }
 
     if($res['q_updates']){

@@ -58,18 +58,18 @@
     $input_format = null;
 
     if(!(@$params['recID']>0)){
-        $system->error_exit_api('recID parameter value is missing or invalid');//exit from script
+        $system->errorExitApi('recID parameter value is missing or invalid');//exit from script
     }
 
     if( ! $system->init(@$params['db']) ){
         //get error and response
-        $system->error_exit_api();//exit from script
+        $system->errorExitApi();//exit from script
     }
     $system->defineConstants();
 
     /*
     if(!(defined('DT_KML') && defined('DT_KML_FILE'))){
-        $system->error_exit_api('Database '.$params['db'].' does not have field definitions for KML/CSV snipppet and file');//exit from script
+        $system->errorExitApi('Database '.$params['db'].' does not have field definitions for KML/CSV snipppet and file');//exit from script
     }*/
 
     $record = array("rec_ID"=>intval($params['recID']));
@@ -109,7 +109,7 @@
                 if($url){
                     $file_content = loadRemoteURLContent($url, true);//load remote KML into temp file
                     if($file_content===false){
-                      $system->error_exit_api('Cannot load remote file '.$url, HEURIST_ERROR);
+                      $system->errorExitApi('Cannot load remote file '.$url, HEURIST_ERROR);
                     }
 
                     $ext = strtolower(substr($url,-4,4));
@@ -137,7 +137,7 @@
                             //check if scratch folder exists
                             $res = folderExistsVerbose(HEURIST_SCRATCH_DIR, true, 'scratch');
                             if($res!==true){
-                                $system->error_exit_api('Cannot extract kmz data to "scratch" folder. '.$res, HEURIST_ERROR);
+                                $system->errorExitApi('Cannot extract kmz data to "scratch" folder. '.$res, HEURIST_ERROR);
                             }
 
                             $files = UArchive::unzipFlat($filepath, HEURIST_SCRATCH_DIR);
@@ -260,7 +260,7 @@
                     try{
                         $geom = geoPHP::load($file_content, 'kml');
                     }catch(Exception $e){
-                        $system->error_exit_api('Cannot process kml: '.$e->getMessage(), HEURIST_ERROR);
+                        $system->errorExitApi('Cannot process kml: '.$e->getMessage(), HEURIST_ERROR);
                     }
                     if($geom!==false && !$geom->isEmpty()){
 
@@ -303,7 +303,7 @@
                             header(CONTENT_LENGTH . strlen($json));
                             exit($json);
                     }else{
-                        $system->error_exit_api('No coordinates retrieved from kml file', HEURIST_ERROR);
+                        $system->errorExitApi('No coordinates retrieved from kml file', HEURIST_ERROR);
                     }
                 }
 
@@ -325,7 +325,7 @@
                     $file_zip_full = tempnam(HEURIST_SCRATCHSPACE_DIR, "arc");
                     $zip = new ZipArchive();
                     if (!$zip->open($file_zip_full, ZIPARCHIVE::CREATE)) {
-                        $system->error_exit_api("Cannot create zip $file_zip_full");
+                        $system->errorExitApi("Cannot create zip $file_zip_full");
                     }else{
                         $zip->addFile($tmp_destination, $originalFileName.'.'.$input_format);
                     }
@@ -367,7 +367,7 @@
 
             }
     }else{
-        $system->error_exit_api('Database '
+        $system->errorExitApi('Database '
                 .htmlspecialchars($params['db']).'. Record '
                 .intval($params['recID']).' does not have data for KML/CSV snipppet or file');
     }

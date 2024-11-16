@@ -182,9 +182,9 @@ class DbSysUsers extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        $ugrID = $this->system->get_user_id();
+        $ugrID = $this->system->getUserId();
 
-        if(!$this->system->is_admin() &&
+        if(!$this->system->isAdmin() &&
             ( !isEmptyArray($this->recordIDs)
                 || !isEmptyArray($this->records))){ //there are records to update/delete
 
@@ -261,7 +261,7 @@ class DbSysUsers extends DbEntityBase
             if(!@$this->records[$idx]['ugr_Name']){
                 $this->records[$idx]['ugr_Name'] = $this->records[$idx]['ugr_eMail'];
             }
-            if(!$this->system->is_admin() && (!@$this->records[$idx]['ugr_ID'] || $this->records[$idx]['ugr_Type']<0)){
+            if(!$this->system->isAdmin() && (!@$this->records[$idx]['ugr_ID'] || $this->records[$idx]['ugr_Type']<0)){
                 $this->records[$idx]['ugr_Enabled'] = 'n';
             }elseif(array_key_exists('ugr_Enabled', $this->records[$idx])){
 
@@ -281,8 +281,8 @@ class DbSysUsers extends DbEntityBase
             }
 
             //find records to be approved and new ones
-            if($this->system->is_admin() && "y"==@$this->records[$idx]['ugr_Enabled'] && @$this->records[$idx]['ugr_ID']>0){
-                $mysqli = $this->system->get_mysqli();
+            if($this->system->isAdmin() && "y"==@$this->records[$idx]['ugr_Enabled'] && @$this->records[$idx]['ugr_ID']>0){
+                $mysqli = $this->system->getMysqli();
                 $res = mysql__select_value($mysqli,
                     'SELECT ugr_Enabled FROM sysUGrps WHERE ugr_LoginCount=0 AND ugr_Type="user" AND ugr_ID='
                     .$this->records[$idx]['ugr_ID']);
@@ -326,7 +326,7 @@ class DbSysUsers extends DbEntityBase
                         $group_role['ugl_UserID'] = $ugr_ID;
                         $group_role['ugl_Role'] = 'member';
 
-                        $res = mysql__insertupdate($this->system->get_mysqli(), 'sysUsrGrpLinks', 'ugl', $group_role);
+                        $res = mysql__insertupdate($this->system->getMysqli(), 'sysUsrGrpLinks', 'ugl', $group_role);
 
                         //$fname = HEURIST_FILESTORE_DIR.$ugr_ID;   //save special semaphore file to trigger user refresh for other users
                         //fileSave('X',$fname);//add to group ???
@@ -336,7 +336,7 @@ class DbSysUsers extends DbEntityBase
                     $rv = true;
                     $is_new = (@$this->records[$idx]['is_new']===true);
                     $is_approvement = (@$this->records[$idx]['is_approvement']===true);
-                    if($is_new && $this->system->get_user_id()<1){ //this is independent registration of new user
+                    if($is_new && $this->system->getUserId()<1){ //this is independent registration of new user
                         $rv = user_EmailAboutNewUser($this->system, $ugr_ID);
                     }elseif($is_new || $is_approvement){ //this is approvement or registration FOR user
                         $rv = user_EmailApproval($this->system, $ugr_ID, @$this->records[$idx]['tmp_password'], $is_approvement);
@@ -372,7 +372,7 @@ class DbSysUsers extends DbEntityBase
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //check for last admin
         foreach($this->recordIDs as $usrID){
@@ -446,11 +446,11 @@ class DbSysUsers extends DbEntityBase
     */
     private function transferOwner($disable_foreign_checks = false)
     {
-        $mysqli = $this->system->get_mysqli(); // MySQL connection
+        $mysqli = $this->system->getMysqli(); // MySQL connection
         $return = true; // Control variable
         $recID = $this->data['ugr_ID']; // Selected User ID
 
-        $current_userid = $this->system->get_user_id();
+        $current_userid = $this->system->getUserId();
         if ($current_userid != 2) {
             $this->system->addError(HEURIST_ACTION_BLOCKED, 'Only the current database owner can transfer database ownership.');
             return false;
@@ -538,7 +538,7 @@ class DbSysUsers extends DbEntityBase
     private function _updateDbTable($query, $errorMsg)
     {
         if ($this->transaction) {
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             $mysqli->query($query);
 
             if ($mysqli->error || $mysqli->affected_rows < 0) {
@@ -564,7 +564,7 @@ class DbSysUsers extends DbEntityBase
         $provided_pwd = $this->data['check_password'];
         $import_from_login = !empty($provided_pwd);
 
-        if(!$import_from_login && !$ignore_permissions && !$this->system->is_admin()){
+        if(!$import_from_login && !$ignore_permissions && !$this->system->isAdmin()){
             $this->system->addError(HEURIST_REQUEST_DENIED,
                 'You are not admin and can\'t add/edit other users. Insufficient rights (logout/in to refresh) for this operation');
             return false;
@@ -581,14 +581,6 @@ class DbSysUsers extends DbEntityBase
         if(!$sytem_source->init($this->data['sourceDB'], true, false)){
             return false;
         }
-
-        /* @todo
-        if(!$sytem_source->is_admin()){
-        $this->system->addError(HEURIST_REQUEST_DENIED,
-        'You are not admin in source database '.$sytem_source->dbname_full().'. Insufficient rights (logout/in to refresh) for this operation');
-        return false;
-        }
-        */
 
         //user ids
         $userIDs = prepareIds(@$this->data['userIDs']);
@@ -610,11 +602,11 @@ class DbSysUsers extends DbEntityBase
 
         $exit_if_exists = (@$this->data['exit_if_exists']!=0);//proceed even user already exists
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //find users that are already in this database
         $query = 'SELECT distinct src.ugr_ID, dest.ugr_ID from '
-        .$sytem_source->dbname_full().'.sysUGrps as src, sysUGrps as dest'
+        .$sytem_source->dbnameFull().'.sysUGrps as src, sysUGrps as dest'
         .' where src.ugr_ID in ('.implode(',',$userIDs)
         .') and ((src.ugr_eMail = dest.ugr_eMail) OR (src.ugr_Name=dest.ugr_Name))';
 
@@ -636,7 +628,7 @@ class DbSysUsers extends DbEntityBase
 
             $usr_id = $userIDs[0];
 
-            $usr_pwd = mysql__select_value($sytem_source->get_mysqli(), "SELECT ugr_Password FROM sysUGrps WHERE ugr_ID = $usr_id");
+            $usr_pwd = mysql__select_value($sytem_source->getMysqli(), "SELECT ugr_Password FROM sysUGrps WHERE ugr_ID = $usr_id");
 
             if(!$usr_pwd || !hash_equals(crypt($provided_pwd, $usr_pwd), $usr_pwd)){
 
@@ -660,7 +652,7 @@ class DbSysUsers extends DbEntityBase
 
         $query1 = "insert into sysUGrps ($fields) ".
         "SELECT $fields ".
-        "FROM ".$sytem_source->dbname_full().".sysUGrps where ugr_ID=";
+        "FROM ".$sytem_source->dbnameFull().".sysUGrps where ugr_ID=";
 
 
         $newUserIDs = array();

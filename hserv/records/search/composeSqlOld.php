@@ -140,7 +140,7 @@ function get_sql_query_clauses($db, $params, $currentUser=null) {
     if(@$params['stype']) {$sortType = @$params['stype'];}
 
     // 1. DETECT CURRENT USER AND ITS GROUPS, if not logged search only all records (no bookmarks) ----------------------
-    $wg_ids = array();//may be better use $system->get_user_group_ids() ???
+    $wg_ids = array();//may be better use $system->getUserGroupIds() ???
     if($currentUser && @$currentUser['ugr_ID']>0){
         if(@$currentUser['ugr_Groups']){
             $wg_ids = array_keys($currentUser['ugr_Groups']);

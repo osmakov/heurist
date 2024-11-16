@@ -45,14 +45,14 @@ if(!$system->init(@$req_params['db'])){
 }
 
 
-if (!$system->is_dbowner()) {
+if (!$system->isDbOwner()) {
     $response = $system->addError(HEURIST_REQUEST_DENIED,
                  'To perform this action you must be logged in as Database Owner');
     print json_encode($response);
     return;
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 
 $data = null;

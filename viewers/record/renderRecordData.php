@@ -71,7 +71,7 @@ if(array_key_exists('hideImages', $_REQUEST)){
 }
 
 // How to handle fields set to hidden
-$show_hidden_fields = $is_production || $is_map_popup ? -1 : $system->user_GetPreference('recordData_HiddenFields', 0);
+$show_hidden_fields = $is_production || $is_map_popup ? -1 : $system->userGetPreference('recordData_HiddenFields', 0);
 
 $rectypesStructure = dbs_GetRectypeStructures($system);//getAllRectypeStructures();//get all rectype names
 
@@ -79,7 +79,7 @@ $defTerms = dbs_GetTerms($system);
 $defTerms = new DbsTerms($system, $defTerms);
 
 
-$ACCESSABLE_OWNER_IDS = $system->get_user_group_ids();//all groups current user is a member
+$ACCESSABLE_OWNER_IDS = $system->getUserGroupIds();//all groups current user is a member
 if(!is_array($ACCESSABLE_OWNER_IDS)) {$ACCESSABLE_OWNER_IDS = array();}
 array_push($ACCESSABLE_OWNER_IDS, 0);//everyone
 
@@ -88,7 +88,7 @@ $ACCESS_CONDITION = 'rec_OwnerUGrpID '.
                                      : 'in ('.join(',', $ACCESSABLE_OWNER_IDS).')');
 
 $ACCESS_CONDITION = '(rec_NonOwnerVisibility = "public"'
-        .($system->has_access()?' OR (rec_NonOwnerVisibility!="hidden" OR '.$ACCESS_CONDITION.'))':')');
+        .($system->hasAccess()?' OR (rec_NonOwnerVisibility!="hidden" OR '.$ACCESS_CONDITION.'))':')');
 
 
 $relRT = ($system->defineConstant('RT_RELATION')?RT_RELATION:0);
@@ -145,9 +145,9 @@ $import_webfonts = $system->settings->getWebFontsLinks();
 // if we get a record id then see if there is a personal bookmark for it.
 if ($rec_id>0 && !@$_REQUEST['bkmk_id'])
 {
-    $bkm_ID = mysql__select_value($system->get_mysqli(),
+    $bkm_ID = mysql__select_value($system->getMysqli(),
                     'select bkm_ID from usrBookmarks where bkm_recID = '
-                        .$rec_id.' and bkm_UGrpID = '.$system->get_user_id());
+                        .$rec_id.' and bkm_UGrpID = '.$system->getUserId());
 }else{
     $bkm_ID = intval(@$_REQUEST['bkmk_id']);
 }
@@ -1128,14 +1128,14 @@ elseif(!$is_map_popup){
 if ($bkm_ID>0 || $rec_id>0) {
 
         if ($bkm_ID>0) {
-            $bibInfo = mysql__select_row_assoc($system->get_mysqli(),
+            $bibInfo = mysql__select_row_assoc($system->getMysqli(),
             'select * from usrBookmarks left join Records on bkm_recID=rec_ID '
             .'left join defRecTypes on rec_RecTypeID=rty_ID where bkm_ID='
-            .$bkm_ID.' and bkm_UGrpID='.$system->get_user_id()
+            .$bkm_ID.' and bkm_UGrpID='.$system->getUserId()
             .' and (not rec_FlagTemporary or rec_FlagTemporary is null)');
 
         } elseif($rec_id>0) {
-            $bibInfo = mysql__select_row_assoc($system->get_mysqli(),
+            $bibInfo = mysql__select_row_assoc($system->getMysqli(),
             'select * from Records left join defRecTypes on rec_RecTypeID=rty_ID where rec_ID='
             .$rec_id.' and not rec_FlagTemporary');
         }
@@ -1156,7 +1156,7 @@ if ($bkm_ID>0 || $rec_id>0) {
                     $id = intval($id);
                     if(!($id>0)) {continue;}
 
-                    $bibInfo = mysql__select_row_assoc($system->get_mysqli(),
+                    $bibInfo = mysql__select_row_assoc($system->getMysqli(),
                             'select * from Records left join defRecTypes on rec_RecTypeID=rty_ID'
                             .' where rec_ID='.$id.' and not rec_FlagTemporary');
 
@@ -1226,7 +1226,7 @@ function print_details($bib) {
     $rec_visibility = $bib['rec_NonOwnerVisibility'];
     $rec_owner  = $bib['rec_OwnerUGrpID'];
     $hasAccess = ($rec_visibility=='public') ||
-                                    ($system->has_access() &&  //logged in
+                                    ($system->hasAccess() &&  //logged in
                                     ($rec_visibility!='hidden' || in_array($rec_owner, $ACCESSABLE_OWNER_IDS)));//viewable or owner
     if($hasAccess){
 
@@ -1252,7 +1252,7 @@ function print_details($bib) {
             //print_text_details($bib);
         }
 
-        $system->user_LogActivity('viewRec', $bib['rec_ID']);// log action
+        $system->userLogActivity('viewRec', $bib['rec_ID']);// log action
     }else{
 
         print 'Sorry, your group membership does not allow you to view the content of this record';
@@ -1271,7 +1271,7 @@ function print_header_line($bib) {
     $wfs_details = array();
     if(defined('DT_WORKFLOW_STAGE')){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $res = $mysqli->query('SELECT trm_ID, trm_Label FROM defTerms INNER JOIN recDetails ON dtl_Value = trm_ID WHERE dtl_DetailTypeID = ' . DT_WORKFLOW_STAGE . ' AND dtl_RecID = ' . $rec_id);
 
         if($res && $res->num_rows > 0){
@@ -1289,7 +1289,7 @@ function print_header_line($bib) {
                     .HEURIST_RTY_ICON.$bib['rty_ID'].")' title='".htmlspecialchars($bib['rty_Description'])."'" ?> >
             &nbsp;<?= '<strong>'. htmlspecialchars($bib['rty_Name']) .'</strong>: id '. htmlspecialchars($bib['rec_ID']) ?>
 
-        <?php if($system->has_access()){ ?>
+        <?php if($system->hasAccess()){ ?>
 
             <span class="link"><a id=edit-link class="normal"
                 onClick="return sane_link_opener(this);"
@@ -1342,7 +1342,7 @@ function print_private_details($bib) {
 
         }else{
 
-            $row = mysql__select_row($system->get_mysqli(),
+            $row = mysql__select_row($system->getMysqli(),
                 'select grp.ugr_Name,grp.ugr_Type,concat(grp.ugr_FirstName," ",grp.ugr_LastName) from Records, '
                     .'sysUGrps grp where grp.ugr_ID=rec_OwnerUGrpID and rec_ID='.$bib['rec_ID']);
 
@@ -1355,10 +1355,10 @@ function print_private_details($bib) {
     }
 
     // check for workgroup tags
-    $kwds = mysql__select_all($system->get_mysqli(),
+    $kwds = mysql__select_all($system->getMysqli(),
         'select grp.ugr_Name, tag_Text from usrRecTagLinks left join usrTags on rtl_TagID=tag_ID left join '
         .'sysUGrps grp on tag_UGrpID=grp.ugr_ID left join sysUsrGrpLinks on ugl_GroupID=ugr_ID and ugl_UserID='
-        .$system->get_user_id().' where rtl_RecID='.$bib['rec_ID']
+        .$system->getUserId().' where rtl_RecID='.$bib['rec_ID']
         .' and tag_UGrpID is not null and ugl_ID is not null order by rtl_Order',0,0);
 
     //show or hide private details depends on preferences
@@ -1522,7 +1522,7 @@ function print_personal_details($bkmk) {
     $query = 'select tag_Text from usrRecTagLinks, usrTags '
         .'WHERE rtl_TagID=tag_ID and rtl_RecID='.$rec_ID.' and tag_UGrpID = '.
         $bkmk['bkm_UGrpID'].' order by rtl_Order';
-    $tags = mysql__select_list2($system->get_mysqli(), $query);
+    $tags = mysql__select_list2($system->getMysqli(), $query);
     ?>
     <div class=detailRow>
         <div class=detailType>Personal Tags</div>
@@ -1557,7 +1557,7 @@ function print_public_details($bib) {
 
     $has_thumbs = false;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $query = 'select rst_DisplayOrder, dtl_RecID, dtl_ID, dty_ID,
         IF(rdr.rst_DisplayName is NULL OR rdr.rst_DisplayName=\'\', dty_Name, rdr.rst_DisplayName) as name,
@@ -1577,12 +1577,12 @@ function print_public_details($bib) {
 
     $rec_visibility = $bib['rec_NonOwnerVisibility'];
     $rec_owner  = $bib['rec_OwnerUGrpID'];
-    if($system->has_access() && in_array($rec_owner, $ACCESSABLE_OWNER_IDS)){
+    if($system->hasAccess() && in_array($rec_owner, $ACCESSABLE_OWNER_IDS)){
         //owner of record can see any field
         $detail_visibility_conditions = '';
     }else{
         $detail_visibility_conditions = array();
-        if($system->has_access()){
+        if($system->hasAccess()){
             //logged in user can see viewable
             $detail_visibility_conditions[] = '(rst_NonOwnerVisibility="viewable")';
         }
@@ -1593,7 +1593,7 @@ function print_public_details($bib) {
 
     if($is_production || $is_map_popup){ // hide hidden fields in publication and map popups
         $detail_visibility_conditions .= ' AND IFNULL(rst_NonOwnerVisibility,"")!="hidden" AND IFNULL(rst_RequirementType,"")!="forbidden" AND IFNULL(dtl_HideFromPublic, 0)!=1';
-    }elseif(!$system->is_admin() && !in_array($rec_owner, $ACCESSABLE_OWNER_IDS)){
+    }elseif(!$system->isAdmin() && !in_array($rec_owner, $ACCESSABLE_OWNER_IDS)){
         // hide forbidden fields from all except owners an admins
         $detail_visibility_conditions .= ' AND IFNULL(rst_RequirementType,"")!="forbidden"';//ifnull needed for non-standard fields
     }
@@ -1729,7 +1729,7 @@ function print_public_details($bib) {
                     $rec_owner = $row[2];
 
                     $hasAccess = ($rec_visibility=='public') ||
-                                    ($system->has_access() &&  //logged in
+                                    ($system->hasAccess() &&  //logged in
                                     ($rec_visibility!='hidden' || in_array($rec_owner, $ACCESSABLE_OWNER_IDS)));//viewable or owner
 
 
@@ -2150,7 +2150,7 @@ function print_public_details($bib) {
         $url = 'https://' . $url;
     }
     /*
-    $webIcon = mysql__select_value($system->get_mysqli(),
+    $webIcon = mysql__select_value($system->getMysqli(),
                     'select dtl_Value from recDetails where dtl_RecID='
                     .$bib['rec_ID'].' and dtl_DetailTypeID=347');//DT_WEBSITE_ICON);
     if ($webIcon) {print "<img id=website-icon src='" . $webIcon . "'>";}
@@ -2170,7 +2170,7 @@ function print_public_details($bib) {
         $always_visible_dt[] = DT_GEO_OBJECT;
     }
 
-    $usr_font_size = $system->user_GetPreference('userFontSize', 0);
+    $usr_font_size = $system->userGetPreference('userFontSize', 0);
     $font_size = '';
     if(!$is_map_popup && $usr_font_size != 0){
         $usr_font_size = ($usr_font_size < 8) ? 8
@@ -2284,7 +2284,7 @@ function print_relation_details($bib) {
         $ACCESSABLE_OWNER_IDS, $ACCESS_CONDITION,
         $is_map_popup, $is_production, $rectypesStructure, $defTerms;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $from_res = $mysqli->query('select recDetails.*
         from recDetails
@@ -2325,7 +2325,7 @@ function print_relation_details($bib) {
 
     $extra_styling = (!$is_map_popup) ? 'style="max-width: max-content;"' : '';
 
-    $usr_font_size = $system->user_GetPreference('userFontSize', 0);
+    $usr_font_size = $system->userGetPreference('userFontSize', 0);
     $font_size = '';
     if(!$is_map_popup && $usr_font_size != 0){
         $usr_font_size = ($usr_font_size < 8) ? 8
@@ -2555,7 +2555,7 @@ function print_linked_details($bib, $link_cnt)
         $ignored_ids = ' AND rl_SourceID NOT IN ('.implode(',', $already_linked_ids).')';
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $query = 'SELECT rec_ID, rec_RecTypeID, rec_Title FROM recLinks, Records '
                 .'where rl_TargetID = '.intval($bib['rec_ID'])
@@ -2570,7 +2570,7 @@ function print_linked_details($bib, $link_cnt)
 
     print_linked_details_header($bib);
 
-    $usr_font_size = $system->user_GetPreference('userFontSize', 0);
+    $usr_font_size = $system->userGetPreference('userFontSize', 0);
     $font_size = '';
     if(!$is_map_popup && $usr_font_size != 0){
         $usr_font_size = max(8, min(18, $usr_font_size));

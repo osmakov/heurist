@@ -26,7 +26,7 @@ use hserv\SystemSettings;
 require_once dirname(__FILE__).'/structure/dbsUsersGroups.php';
 require_once dirname(__FILE__).'/structure/import/dbsImport.php';
 
-set_error_handler('boot_error_handler');
+set_error_handler('bootErrorHandler');   //see const.php
 
 /**
 *  Class that contains mysqli (dbconnection), current user and system settings
@@ -46,30 +46,25 @@ set_error_handler('boot_error_handler');
 class System {
 
     private $mysqli = null;
-    private $dbname_full = null;
+    private $dbnameFull = null;
     private $dbname = null;
-    private $session_refix = null;
 
     private $errors = array();
 
-    private $is_inited = false;
+    private $isInited = false;
 
-    //???
-    //private $guest_User = array('ugr_ID'=>0,'ugr_FullName'=>'Guest');
-    private $current_User = null;
+    private $currentUser = null;
 
     //do not check session folder, loads only basic user info
     private $needFullSessionCheck = false;
-    
-    //instance of SystemSettings class
-    public $settings;  
 
-    private $system_settings = null; //from sysIdentification
-    
+    //instance of SystemSettings class
+    public $settings;
+
     /*
 
     init
-    set_dbname_full
+    setDbnameFull
     init_db_connection - connect to server and select database (move to db_utils?)
     initPathConstants  - set path constants
     loginVerify  - load user info from session or reloads from database
@@ -84,7 +79,7 @@ class System {
     public function __construct( $full_check=false ) {
 
         $this->needFullSessionCheck = $full_check;
-        
+
         $this->settings = new SystemSettings($this);
     }
 
@@ -100,11 +95,11 @@ class System {
     */
     public function init($db, $dbrequired=true, $init_session_and_constants=true){
 
-        if( !$this->set_dbname_full($db, $dbrequired) ){
+        if( !$this->setDbnameFull($db, $dbrequired) ){
             return false;
         }
 
-        $res = mysql__init($this->dbname_full);
+        $res = mysql__init($this->dbnameFull);
         if (is_a($res, 'mysqli')){
             //connection OK
             $this->mysqli = $res;
@@ -115,44 +110,40 @@ class System {
         }
 
 
-        if($this->dbname_full && !defined('HEURIST_DBNAME')){
+        if($this->dbnameFull && !defined('HEURIST_DBNAME')){
             //init once for first system - preferable use methods
             define('HEURIST_DBNAME', $this->dbname);
-            define('HEURIST_DBNAME_FULL', $this->dbname_full);
+            define('HEURIST_DBNAME_FULL', $this->dbnameFull);
         }
 
-        if(!$init_session_and_constants){
-            $this->is_inited = true;
-            return true;
-        }
+        if($init_session_and_constants){
 
-        if(!$this->start_my_session( $this->needFullSessionCheck )){
-            return false;
-        }
+            if($this->startMySession( $this->needFullSessionCheck )
+                && $this->dbnameFull
+                && $this->initPathConstants()){
 
-        if($this->dbname_full){
+                if($this->needFullSessionCheck){
+                    USystem::executeScriptOncePerDay();
+                }
 
-            if(!$this->initPathConstants()){
-                return false;
+                $this->loginVerify( false );//load user info from session on system init
+                if($this->getUserId()>0){
+                    //set current user for stored procedures (log purposes)
+                    $this->mysqli->query('set @logged_in_user_id = '.intval($this->getUserId()));
+                }
+
+                //ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO
+                $this->mysqli->query('SET GLOBAL sql_mode = \'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\'');
+
+                $this->isInited = true;
             }
 
-            if($this->needFullSessionCheck){
-                USystem::executeScriptOncePerDay();
-            }
-
-            $this->loginVerify( false );//load user info from session on system init
-            if($this->get_user_id()>0){
-                //set current user for stored procedures (log purposes)
-                $this->mysqli->query('set @logged_in_user_id = '.intval($this->get_user_id()));
-            }
-
-            //ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO
-            $this->mysqli->query('SET GLOBAL sql_mode = \'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\'');
+        }else{
+            $this->isInited = true;
         }
 
 
-        $this->is_inited = true;
-        return true;
+        return $this->isInited;
 
     }
 
@@ -195,7 +186,7 @@ class System {
         global $trmDefines;
         foreach ($trmDefines as $str => $id){
             if(!defined($str)){
-                $this->defineTermLocalMagic($str, $id[1], $id[0], $reset);
+                $this->defineTermLocalMagic($str, $id[1], $id[0]);
             }
         }
 
@@ -234,7 +225,7 @@ class System {
             }elseif(@$dtDefines[$const_name]){
                 $this->defineDTLocalMagic($const_name, $dtDefines[$const_name][1], $dtDefines[$const_name][0], $reset);
             }elseif(@$trmDefines[$const_name]){
-                $this->defineTermLocalMagic($const_name, $trmDefines[$const_name][1], $trmDefines[$const_name][0], $reset);
+                $this->defineTermLocalMagic($const_name, $trmDefines[$const_name][1], $trmDefines[$const_name][0]);
             }
             return defined($const_name);
         }
@@ -261,7 +252,7 @@ class System {
 
         $config_res = array();
 
-        foreach($config as $idx=>$cfg){
+        foreach($config as $cfg){
 
             $rty_ID = ConceptCode::getRecTypeLocalID($cfg['rty_ID']);
 
@@ -342,11 +333,7 @@ class System {
         $id = $this->rectypeLocalIDLookup($rtID, $dbID, $reset);
 
         if ($id) {
-            //echo "\nRT DEFINING \"" . $defString . "\" AS " . $id;
             define($defString, $id);
-        } else {
-            //echo "\nRT DEFINING \"" . $defString . "\" AS " . $rtID;
-            // define($defString, $rtID);
         }
     }
 
@@ -354,45 +341,39 @@ class System {
     /**
     * lookup local id for a given rectype concept id pair
     * @global    type description of global variable usage in a function
-    * @staticvar array [$RTIDs] lookup array of local ids
+    * @staticvar array [$rtyIDs] lookup array of local ids
     * @param     int [$rtID] origin rectype id
     * @param     int [$dbID] origin database id (default to 2 which is reserved for coreDefinition)
     * @return    int local rectype ID or null if not found
     */
     private function rectypeLocalIDLookup($rtID, $dbID = 2, $reset=false) {
-        static $RTIDs;
+        static $rtyIDs;
 
-        if (!$RTIDs || $reset) {
+        if (!$rtyIDs || $reset) {
             $res = $this->mysqli->query('select rty_ID as localID,
             rty_OriginatingDBID as dbID, rty_IDInOriginatingDB as id from defRecTypes order by dbID');
             if (!$res) {
                 $this->addError(HEURIST_DB_ERROR, 'Unable to build internal record-type lookup table', $this->mysqli->error);
-                /*
-                echo 'Unable to build internal record-type lookup table. Please '
-                . CONTACT_SYSADMIN.' for assistance. MySQL error: '
-                . $this->mysqli->error;
-                */
                 exit;
             }
 
             $regID = $this->settings->get('sys_dbRegisteredID');
 
-            $RTIDs = array();
+            $rtyIDs = array();
             while ($row = $res->fetch_assoc()) {
 
-                if( !($row['dbID']>0) && $regID>0){
+                if( !isPositiveInt($row['dbID']) && $regID>0){
                     $row['dbID'] = $regID;
                     $row['id'] = $row['localID'];
                 }
 
-                if (!@$RTIDs[$row['dbID']]) {
-                    $RTIDs[$row['dbID']] = array();
+                if (!@$rtyIDs[$row['dbID']]) {
+                    $rtyIDs[$row['dbID']] = array();
                 }
-                $RTIDs[$row['dbID']][$row['id']] = $row['localID'];
+                $rtyIDs[$row['dbID']][$row['id']] = $row['localID'];
             }
-            //print_r(@$RTIDs);
         }
-        return @$RTIDs[$dbID][$rtID] ? $RTIDs[$dbID][$rtID] : null;
+        return @$rtyIDs[$dbID][$rtID] ? $rtyIDs[$dbID][$rtID] : null;
     }
 
 
@@ -405,11 +386,7 @@ class System {
     private function defineDTLocalMagic($defString, $dtID, $dbID, $reset=false) {
         $id = $this->detailtypeLocalIDLookup($dtID, $dbID, $reset);
         if ($id) {
-            //echo "\nDT DEFINING \"" . $defString . "\" AS " . $id;
             define($defString, $id);
-        } else {
-            //echo "\nDT DEFINING \"" . $defString . "\" AS " . $dtID;
-            // define($defString, $dtID);
         }
     }
 
@@ -417,15 +394,15 @@ class System {
     /**
     * lookup local id for a given detailtype concept id pair
     * @global    type description of global variable usage in a function
-    * @staticvar array [$RTIDs] lookup array of local ids
+    * @staticvar array [$rtyIDs] lookup array of local ids
     * @param     int [$dtID] origin detailtype id
     * @param     int [$dbID] origin database id (default to 2 which is reserved for coreDefinition)
     * @return    int local detailtype ID or null if not found
     */
     private function detailtypeLocalIDLookup($dtID, $dbID = 2, $reset=false) {
-        static $DTIDs;
+        static $dtyIDs;
 
-        if (!$DTIDs || $reset) {
+        if (!$dtyIDs || $reset) {
             $res = $this->mysqli->query('select dty_ID as localID,dty_OriginatingDBID as dbID,dty_IDInOriginatingDB as id from defDetailTypes order by dbID');
             if (!$res) {
                 echo "Unable to build internal field-type lookup table. Please ".CONTACT_SYSADMIN
@@ -433,24 +410,23 @@ class System {
                 exit;
             }
 
-
             $regID = $this->settings->get('sys_dbRegisteredID');
 
-            $DTIDs = array();
+            $dtyIDs = array();
             while ($row = $res->fetch_assoc()) {
 
-                if( !($row['dbID']>0) && $regID>0){
+                if( !isPositiveInt($row['dbID']) && $regID>0){
                     $row['dbID'] = $regID;
                     $row['id'] = $row['localID'];
                 }
 
-                if (!@$DTIDs[$row['dbID']]) {
-                    $DTIDs[$row['dbID']] = array();
+                if (!@$dtyIDs[$row['dbID']]) {
+                    $dtyIDs[$row['dbID']] = array();
                 }
-                $DTIDs[$row['dbID']][$row['id']] = $row['localID'];
+                $dtyIDs[$row['dbID']][$row['id']] = $row['localID'];
             }
         }
-        return @$DTIDs[$dbID][$dtID] ? $DTIDs[$dbID][$dtID] : null;
+        return @$dtyIDs[$dbID][$dtID] ? $dtyIDs[$dbID][$dtID] : null;
     }
 
     /**
@@ -459,14 +435,11 @@ class System {
     * @param    int [$trmID] origin term id
     * @param    int [$dbID] origin database id
     */
-    private function defineTermLocalMagic($defString, $trmID, $dbID, $reset=false) {
+    private function defineTermLocalMagic($defString, $trmID, $dbID) {
 
         $id = ConceptCode::getTermLocalID($dbID.'-'.$trmID);
-
         if ($id) {
-            //echo "\nTERM DEFINING \"" . $defString . "\" AS " . $id;
             define($defString, $id);
-        } else {
         }
     }
 
@@ -554,10 +527,10 @@ class System {
     // $is_for_backup - 0 no, 1 - archive backup, 2 - delete backup
     // returns ar
     //
-    
+
     /**
     * Returns array of ALL database folders
-    * 
+    *
     * @param mixed $database_name - if null for current database
     */
     public function getSystemFolders($database_name=null){
@@ -600,17 +573,17 @@ class System {
     public function getSysUrl($folder_name=null, $database_name=null){
         return $this->getSysFolderRes('url', $folder_name, $database_name);
     }
-    
+
     /**
     * Get system folder resouce - path or url
-    * 
+    *
     * @param mixed $type - path ot url
     * @param mixed $folder_name - subfolder of database upload folder
     * @param mixed $database_name - if null it takes current database
     */
     private function getSysFolderRes($type, $folder_name=null, $database_name=null){
         global $defaultRootFileUploadURL;
-        
+
         if($type=='url'){
             $db_root = $defaultRootFileUploadURL;
         }else{
@@ -671,7 +644,6 @@ class System {
         $this->defineConstant2('HEURIST_FILESTORE_ROOT', $upload_root);
         $this->defineConstant2('HEURIST_FILESTORE_DIR', $upload_root . $dbname . '/');
 
-
         $check = folderExists(HEURIST_FILESTORE_DIR, true);
         if($check<0){
 
@@ -728,26 +700,26 @@ class System {
     /**
     * Returns true if system is inited ccorretly and db connection is established
     */
-    public function is_inited(){
-        return $this->is_inited;
+    public function isInited(){
+        return $this->isInited;
     }
 
     /**
     * Get database connection object
     */
-    public function get_mysqli(){
+    public function getMysqli(){
         return $this->mysqli;
     }
 
-    public function set_mysqli($mysqli){
+    public function setMysqli($mysqli){
         $this->mysqli = $mysqli;
     }
 
     /**
     * Get full name of database
     */
-    public function dbname_full(){
-        return $this->dbname_full;
+    public function dbnameFull(){
+        return $this->dbnameFull;
     }
 
     public function dbname(){
@@ -755,19 +727,19 @@ class System {
     }
 
     /**
-    * set dbname and dbname_full properties
+    * set dbname and dbnameFull properties
     *
     * @param mixed $db
     */
-    public function set_dbname_full($db, $dbrequired=true){
+    public function setDbnameFull($db, $dbrequired=true){
 
         $error = mysql__check_dbname($db);
 
         if($error==null && preg_match('/[A-Za-z0-9_\$]/', $db)){ //additional validatate database name for sonarcloud
-            list($this->dbname_full, $this->dbname ) = mysql__get_names( $db );
+            list($this->dbnameFull, $this->dbname ) = mysql__get_names( $db );
         }else{
             $this->dbname = null;
-            $this->dbname_full = null;
+            $this->dbnameFull = null;
 
             if($dbrequired){
                 $this->addErrorArr($error);
@@ -785,7 +757,7 @@ class System {
     *
     * @param mixed $message
     */
-    public function error_exit( $message, $error_code=null) {
+    public function errorExit( $message, $error_code=null) {
 
         $this->dbclose();
 
@@ -805,7 +777,7 @@ class System {
     //
     //
     //
-    public function error_exit_api( $message=null, $error_code=null, $is_api=true) {
+    public function errorExitApi( $message=null, $error_code=null, $is_api=true) {
 
         $this->dbclose();
 
@@ -879,17 +851,17 @@ class System {
     //
     //
     //
-    private function _treatSeriousError($status, $message, $sysmsg, $title) {
+    private function treatSeriousError($status, $message, $sysmsg, $title) {
 
         $now = getNow();
         $curr_logfile = 'errors_'.$now->format('Y-m-d').'.log';
 
         //3. write error into current error log
-        $Title = 'db: '.preg_replace(REGEX_EOL, ' ', $this->dbname())
+        $sTitle = 'db: '.preg_replace(REGEX_EOL, ' ', $this->dbname())
         ."\nerr-type: ".preg_replace(REGEX_EOL, ' ', $status)
-        ."\nuser: ".$this->get_user_id()
-        .' '.@$this->current_User['ugr_FullName']
-        .' <'.@$this->current_User['ugr_eMail'].'>';
+        ."\nuser: ".$this->getUserId()
+        .' '.@$this->currentUser['ugr_FullName']
+        .' <'.@$this->currentUser['ugr_eMail'].'>';
 
         //clear sensetive info
         $sensetive = array('pwd','','chpwd','create_pwd','usrPassword','password');
@@ -907,7 +879,7 @@ class System {
 
         if(defined('HEURIST_FILESTORE_ROOT')){
             $root_folder = HEURIST_FILESTORE_ROOT;
-            fileAdd($Title.'  '.$sMsg, $root_folder.$curr_logfile);
+            fileAdd($sTitle.'  '.$sMsg, $root_folder.$curr_logfile);
         }
 
         $mysql_gone_away_error = $this->mysqli && $this->mysqli->errno==2006;
@@ -933,12 +905,12 @@ class System {
     public function addError($status, $message='', $sysmsg=null, $title=null) {
 
         if($status==HEURIST_REQUEST_DENIED && $sysmsg==null){
-            $sysmsg = $this->get_user_id();
+            $sysmsg = $this->getUserId();
         }
 
         if($status!=HEURIST_INVALID_REQUEST && $status!=HEURIST_NOT_FOUND &&
         $status!=HEURIST_REQUEST_DENIED && $status!=HEURIST_ACTION_BLOCKED){
-            $this->_treatSeriousError($status, $message, $sysmsg, $title);
+            $this->treatSeriousError($status, $message, $sysmsg, $title);
         }else{
             $this->errors = array("status"=>$status, "message"=>$message, "sysmsg"=>$sysmsg, 'error_title'=>$title);
         }
@@ -954,8 +926,7 @@ class System {
     }
 
     public function getErrorMsg(){
-        $ret = $this->errors['message'] ?? '';
-        return $ret;
+        return $this->errors['message'] ?? '';
     }
 
     public function clearError(){
@@ -979,7 +950,7 @@ class System {
         $db_total_records = mysql__select_value($this->mysqli, 'SELECT count(*) FROM Records WHERE not rec_FlagTemporary');
         $db_total_records = ($db_total_records>0)?$db_total_records:0;
 
-        if($this->has_access())
+        if($this->hasAccess())
         {
             $query = 'select count(*) from sysDashboard where dsh_Enabled="y"';
             if($db_total_records<1){
@@ -988,7 +959,7 @@ class System {
             $db_has_active_dashboard = mysql__select_value($this->mysqli, $query);
             $db_has_active_dashboard = ($db_has_active_dashboard>0)?$db_has_active_dashboard:0;
 
-            $curr_user_id = $this->get_user_id();
+            $curr_user_id = $this->getUserId();
             if($curr_user_id>0){
                 $query = 'select count(*) from usrWorkingSubsets where wss_OwnerUGrpID='.$curr_user_id;
                 $db_workset_count = mysql__select_value($this->mysqli, $query);
@@ -1064,13 +1035,13 @@ class System {
             $dbowner = user_getDbOwner($this->mysqli);//info about user #2
 
             //list of databases recently logged in
-            $dbrecent = USystem::sessionRecentDatabases($this->current_User);
+            $dbrecent = USystem::sessionRecentDatabases($this->currentUser);
 
             //retrieve lastest code version (cached in localfile and refreshed from main index server daily)
             $lastCode_VersionOnServer = USystem::getLastCodeAndDbVersion();
 
             $res = array(
-                "currentUser"=>$this->current_User,
+                "currentUser"=>$this->currentUser,
                 "sysinfo"=>array(
                     "registration_allowed"=>$this->settings->get('sys_AllowRegistration'), //allow new user registration
                     "db_registeredid"=>$this->settings->get('sys_dbRegisteredID'),
@@ -1081,7 +1052,7 @@ class System {
                     "version"=>HEURIST_VERSION,
                     "version_new"=>$lastCode_VersionOnServer, //version on main index database server
                     //db version
-                    "db_version"=>getDbVersion($this->get_mysqli()),
+                    "db_version"=>getDbVersion($this->getMysqli()),
                     "db_version_req"=>HEURIST_MIN_DBVERSION,
 
                     "dbowner_name"=>@$dbowner['ugr_FirstName'].' '.@$dbowner['ugr_LastName'],
@@ -1153,8 +1124,7 @@ class System {
     * Get current user info
     */
     public function getCurrentUser(){
-        // $this->current_User['ismaster'] = $system->is_admin();
-        return $this->current_User; // ?$this->current_User :$this->$guest_User;
+        return $this->currentUser;
     }
 
     /**
@@ -1163,7 +1133,7 @@ class System {
     * @param mixed $user
     */
     public function setCurrentUser($user){
-        $this->current_User = $user;
+        $this->currentUser = $user;
     }
 
 
@@ -1172,8 +1142,8 @@ class System {
     * Get if of current user, if not looged in returns zero
     *
     */
-    public function get_user_id(){
-        return $this->current_User? intval($this->current_User['ugr_ID']) :0;
+    public function getUserId(){
+        return $this->currentUser? intval($this->currentUser['ugr_ID']) :0;
     }
 
 
@@ -1182,18 +1152,18 @@ class System {
     * Returns array of ID of all groups for current user plus current user ID
     * $level - admin/memeber
     */
-    public function get_user_group_ids($level=null, $refresh=false){
+    public function getUserGroupIds($level=null, $refresh=false){
 
-        $ugrID = $this->get_user_id();
+        $ugrID = $this->getUserId();
 
         if($ugrID>0){
-            $groups = @$this->current_User['ugr_Groups'];
+            $groups = @$this->currentUser['ugr_Groups'];
             if($refresh || !is_array($groups)){
-                $groups = $this->current_User['ugr_Groups'] = user_getWorkgroups($this->mysqli, $ugrID);
+                $groups = $this->currentUser['ugr_Groups'] = user_getWorkgroups($this->mysqli, $ugrID);
             }
             if($level!=null){
                 $groups = array();
-                foreach($this->current_User['ugr_Groups'] as $grpid=>$lvl){
+                foreach($this->currentUser['ugr_Groups'] as $grpid=>$lvl){
                     if($lvl==$level){
                         $groups[] = $grpid;
                     }
@@ -1218,13 +1188,13 @@ class System {
     *
     * @param mixed $ug - user ID to check
     */
-    public function is_member($ugs){
+    public function isMember($ugs){
 
         if($ugs==0 || isEmptyArray($ugs)){
             return true;
         }
 
-        $current_user_grps = $this->get_user_group_ids();
+        $current_user_grps = $this->getUserGroupIds();
         $ugs = prepareIds($ugs, true);//include zero
         foreach ($ugs as $ug){
             if ($ug==0 || (is_array($current_user_grps) && in_array($ug, $current_user_grps)) ){
@@ -1232,7 +1202,6 @@ class System {
             }
         }
         return false;
-        //return  $ug==0 || $ug==null || in_array($ug, $this->get_user_group_ids()) ;
     }
 
     /**
@@ -1240,8 +1209,8 @@ class System {
     * used to manage any recThereadedComments, recUploadedFiles, Reminders, Bookmarks, UsrTags
     * otherwise only direct owners can modify them or members of workgroup tags
     */
-    public function is_dbowner(){
-        return $this->get_user_id()==2;
+    public function isDbOwner(){
+        return $this->getUserId()==2;
     }
 
     /**
@@ -1250,15 +1219,14 @@ class System {
     * @param mixed $ugrID
     * @return mixed
     */
-    public function is_admin(){
-        $ret = ($this->get_user_id()>0 &&
-            ($this->get_user_id()==2 ||
-                $this->has_access( $this->settings->get('sys_OwnerGroupID') ) ));
-        return $ret;
+    public function isAdmin(){
+       return ($this->getUserId()>0 &&
+            ($this->getUserId()==2 ||
+                $this->hasAccess( $this->settings->get('sys_OwnerGroupID') ) ));
     }
 
-    public function is_guest_user(){
-        $user = $this->current_User;
+    public function isGuestUser(){
+        $user = $this->currentUser;
         return $user!=null && @$user['ugr_Permissions']['guest_user'];
     }
 
@@ -1266,9 +1234,9 @@ class System {
     /**
     * check if current user is system administrator
     */
-    public function is_system_admin(){
-        if ($this->get_user_id()>0){
-            $user = user_getById($this->mysqli, $this->get_user_id());
+    public function isSystemAdmin(){
+        if ($this->getUserId()>0){
+            $user = user_getById($this->mysqli, $this->getUserId());
             return defined('HEURIST_MAIL_TO_ADMIN') && (@$user['ugr_eMail']==HEURIST_MAIL_TO_ADMIN);
         }else{
             return false;
@@ -1284,9 +1252,9 @@ class System {
     * 2 - db owner
     * n - admin of given group
     */
-    public function has_access( $requiredLevel=null ) {
+    public function hasAccess( $requiredLevel=null ) {
 
-        $ugrID = $this->get_user_id();
+        $ugrID = $this->getUserId();
 
         if(!$requiredLevel || $requiredLevel<1){
             return $ugrID>0;//just logged in
@@ -1298,7 +1266,7 @@ class System {
             return true;
         }else{
             //@$this->current_User['ugr_Groups'][$requiredLevel]=='admin');//admin of given group
-            $current_user_grps = $this->get_user_group_ids('admin');
+            $current_user_grps = $this->getUserGroupIds('admin');
             return is_array($current_user_grps) && in_array($requiredLevel, $current_user_grps);
         }
     }
@@ -1307,7 +1275,7 @@ class System {
     * Restore session by cookie id, or start new session
     * Refreshes cookie
     */
-    private function start_my_session($check_session_folder=true){
+    private function startMySession($check_session_folder=true){
 
         if(headers_sent()) {return true;}
 
@@ -1322,22 +1290,18 @@ class System {
             session_name('heurist-sessionid');//set session name
             session_cache_limiter('none');
 
-            /*
-            if (@$_COOKIE['heurist-sessionid']) { //get session id from cookes
-            session_id($_COOKIE['heurist-sessionid']);
-            }
-            */
-
             @session_start();
         }
 
-        if (session_status() != PHP_SESSION_ACTIVE) {
-            return false;
-        }
+        $result = false;
 
-        if (@$_SESSION[$this->dbname_full]['keepalive'] && !USystem::sessionUpdateCookies())
+        if (session_status() == PHP_SESSION_ACTIVE)
         {
-            USanitize::errorLog('CANNOT UPDATE COOKIE '.session_id().'   '.$this->dbname_full);
+            if (@$_SESSION[$this->dbnameFull]['keepalive'] && !USystem::sessionUpdateCookies())
+            {
+                USanitize::errorLog('CANNOT UPDATE COOKIE '.session_id().'   '.$this->dbnameFull);
+            }
+            $result = true;
         }
 
         return true;
@@ -1348,10 +1312,10 @@ class System {
     * Verifies session only (without database connection and system initialization)
     * return current user id or false
     */
-    public function verify_credentials($db){
+    public function verifyCredentials($db){
 
-        if( $this->set_dbname_full($db) && $this->start_my_session(false) ){
-            return @$_SESSION[$this->dbname_full]['ugr_ID'];
+        if( $this->setDbnameFull($db) && $this->startMySession(false) ){
+            return @$_SESSION[$this->dbnameFull]['ugr_ID'];
         }else{
             return false;
         }
@@ -1378,9 +1342,9 @@ class System {
             $userID = $user['ugr_ID'];
         }else{
 
-            $reload_user_from_db = ($user==true);//reload user unconditionally
+            $reload_user_from_db = ($user===true);//reload user unconditionally
 
-            $userID = @$_SESSION[$this->dbname_full]['ugr_ID'];
+            $userID = @$_SESSION[$this->dbnameFull]['ugr_ID'];
         }
 
         if($userID == null){
@@ -1400,15 +1364,15 @@ class System {
             return false;
         }
 
-        if(@$_SESSION[$this->dbname_full]['need_refresh']) {
-            unset($_SESSION[$this->dbname_full]['need_refresh']);
+        if(@$_SESSION[$this->dbnameFull]['need_refresh']) {
+            unset($_SESSION[$this->dbnameFull]['need_refresh']);
         }
 
         $fname = HEURIST_FILESTORE_DIR.basename($userID);
         if(file_exists($fname)){  //user info was updated by someone else
             unlink($fname);
             //marker for usr_info.verify_credentials to be sure that client side is also up to date
-            if($user!==true) {$_SESSION[$this->dbname_full]['need_refresh'] = 1;}
+            if($user!==true) {$_SESSION[$this->dbnameFull]['need_refresh'] = 1;}
             $reload_user_from_db = true;
         }
 
@@ -1418,28 +1382,28 @@ class System {
                 return false; //not logged in
             }
 
-            if($is_guest_allowed && @$_SESSION[$this->dbname_full]['ugr_Permissions']['disabled']){
-                $_SESSION[$this->dbname_full]['ugr_Permissions']['disabled'] = false;
-                $_SESSION[$this->dbname_full]['ugr_Permissions']['guest_user'] = true;
+            if($is_guest_allowed && @$_SESSION[$this->dbnameFull]['ugr_Permissions']['disabled']){
+                $_SESSION[$this->dbnameFull]['ugr_Permissions']['disabled'] = false;
+                $_SESSION[$this->dbnameFull]['ugr_Permissions']['guest_user'] = true;
             }
 
             //always restore from db
-            $this->current_User = ['ugr_ID' => intval($userID)]; // set user ID to avoid resetting preferences
-            $_SESSION[$this->dbname_full]['ugr_Preferences'] = user_getPreferences( $this );
+            $this->currentUser = ['ugr_ID' => intval($userID)]; // set user ID to avoid resetting preferences
+            $_SESSION[$this->dbnameFull]['ugr_Preferences'] = user_getPreferences( $this );
         }//$reload_user_from_db from db
 
-        $this->current_User = array('ugr_ID'=>intval($userID),
-            'ugr_Name'        => @$_SESSION[$this->dbname_full]['ugr_Name'],
-            'ugr_FullName'    => $_SESSION[$this->dbname_full]['ugr_FullName'],
-            'ugr_Groups'      => $_SESSION[$this->dbname_full]['ugr_Groups'],
-            'ugr_Permissions' => $_SESSION[$this->dbname_full]['ugr_Permissions']);
+        $this->currentUser = array('ugr_ID'=>intval($userID),
+            'ugr_Name'        => @$_SESSION[$this->dbnameFull]['ugr_Name'],
+            'ugr_FullName'    => $_SESSION[$this->dbnameFull]['ugr_FullName'],
+            'ugr_Groups'      => $_SESSION[$this->dbnameFull]['ugr_Groups'],
+            'ugr_Permissions' => $_SESSION[$this->dbnameFull]['ugr_Permissions']);
 
-        $this->current_User['ugr_Preferences'] = $_SESSION[$this->dbname_full]['ugr_Preferences'];
+        $this->currentUser['ugr_Preferences'] = $_SESSION[$this->dbnameFull]['ugr_Preferences'];
 
         //remove credentials for remote repositories
-        if(@$this->current_User['ugr_Preferences']['externalRepositories']){
-            $this->current_User['ugr_Preferences']['externalRepositories'] = null;
-            unset($this->current_User['ugr_Preferences']['externalRepositories']);
+        if(@$this->currentUser['ugr_Preferences']['externalRepositories']){
+            $this->currentUser['ugr_Preferences']['externalRepositories'] = null;
+            unset($this->currentUser['ugr_Preferences']['externalRepositories']);
         }
 
 
@@ -1458,14 +1422,14 @@ class System {
             return false; //not logged in
         }
 
-        $_SESSION[$this->dbname_full]['ugr_ID'] = $userID;
-        $_SESSION[$this->dbname_full]['ugr_Groups']   = user_getWorkgroups( $this->mysqli, $userID );
-        $_SESSION[$this->dbname_full]['ugr_Name']     = $user['ugr_Name'];
-        $_SESSION[$this->dbname_full]['ugr_FullName'] = $user['ugr_FirstName'] . ' ' . $user['ugr_LastName'];
-        $_SESSION[$this->dbname_full]['ugr_Enabled']  = $user['ugr_Enabled'];
+        $_SESSION[$this->dbnameFull]['ugr_ID'] = $userID;
+        $_SESSION[$this->dbnameFull]['ugr_Groups']   = user_getWorkgroups( $this->mysqli, $userID );
+        $_SESSION[$this->dbnameFull]['ugr_Name']     = $user['ugr_Name'];
+        $_SESSION[$this->dbnameFull]['ugr_FullName'] = $user['ugr_FirstName'] . ' ' . $user['ugr_LastName'];
+        $_SESSION[$this->dbnameFull]['ugr_Enabled']  = $user['ugr_Enabled'];
 
         $is_disabled = $user['ugr_Enabled'] == 'n';
-        $_SESSION[$this->dbname_full]['ugr_Permissions'] = array(
+        $_SESSION[$this->dbnameFull]['ugr_Permissions'] = array(
             'disabled' => $is_disabled,
             'add' => strpos($user['ugr_Enabled'], 'add') === false && !$is_disabled,
             'delete' => strpos($user['ugr_Enabled'], 'del') === false && !$is_disabled);
@@ -1506,7 +1470,7 @@ class System {
                         if(strpos($ldb2, HEURIST_DB_PREFIX)!==0){
                             $ldb2 = HEURIST_DB_PREFIX.$ldb2;
                         }
-                        if( strcasecmp($this->dbname_full, $ldb2)==0 ){
+                        if( strcasecmp($this->dbnameFull, $ldb2)==0 ){
                             //yes database is mutually linked
                             //4. find user email in linked database
                             $userEmail_in_linkedDB = mysql__select_value($this->mysqli, 'select ugr_eMail from '
@@ -1514,7 +1478,7 @@ class System {
 
                             //5. find user by email in this database
                             if($userEmail_in_linkedDB){
-                                $user = user_getByField($this->get_mysqli(), 'ugr_eMail', $userEmail_in_linkedDB);
+                                $user = user_getByField($this->getMysqli(), 'ugr_eMail', $userEmail_in_linkedDB);
                                 if(null != $user && $user['ugr_Type']=='user' && $user['ugr_Enabled']!='n') {
                                     //6. success - establed new session
                                     $this->doLoginSession($user['ugr_ID'], 'public');
@@ -1584,19 +1548,17 @@ class System {
     //
     private function doLoginSession($userID, $session_type){
 
-        $time = 0;
-        if($session_type == 'public'){
-            $lifetime = 0;
-        }elseif($session_type == 'shared'){
+        $lifetime = 0;
+        if($session_type == 'shared'){
             $lifetime = time() + 24*60*60;     //day
         }elseif($session_type == 'remember') {
             $lifetime = time() + 30*24*60*60;  //30 days
-            $_SESSION[$this->dbname_full]['keepalive'] = true; //refresh time on next entry
+            $_SESSION[$this->dbnameFull]['keepalive'] = true; //refresh time on next entry
         }
 
         USystem::sessionUpdateCookies($lifetime);
 
-        $_SESSION[$this->dbname_full]['ugr_ID'] = $userID;
+        $_SESSION[$this->dbnameFull]['ugr_ID'] = $userID;
 
         //update login time in database
         user_updateLoginTime($this->mysqli, $userID);
@@ -1608,22 +1570,22 @@ class System {
     */
     public function doLogout(){
 
-        $this->start_my_session(false);
+        $this->startMySession(false);
 
-        unset($_SESSION[$this->dbname_full]['ugr_ID']);
-        unset($_SESSION[$this->dbname_full]['ugr_Name']);
-        unset($_SESSION[$this->dbname_full]['ugr_FullName']);
-        if(@$_SESSION[$this->dbname_full]['ugr_Groups']) {unset($_SESSION[$this->dbname_full]['ugr_Groups']);}
-        if(@$_SESSION[$this->dbname_full]['ugr_Permissions']) {unset($_SESSION[$this->dbname_full]['ugr_Permissions']);}
-        if(@$_SESSION[$this->dbname_full]['ugr_GuestUser']!=null) {unset($_SESSION[$this->dbname_full]['ugr_GuestUser']);}
+        unset($_SESSION[$this->dbnameFull]['ugr_ID']);
+        unset($_SESSION[$this->dbnameFull]['ugr_Name']);
+        unset($_SESSION[$this->dbnameFull]['ugr_FullName']);
+        if(@$_SESSION[$this->dbnameFull]['ugr_Groups']) {unset($_SESSION[$this->dbnameFull]['ugr_Groups']);}
+        if(@$_SESSION[$this->dbnameFull]['ugr_Permissions']) {unset($_SESSION[$this->dbnameFull]['ugr_Permissions']);}
+        if(@$_SESSION[$this->dbnameFull]['ugr_GuestUser']!=null) {unset($_SESSION[$this->dbnameFull]['ugr_GuestUser']);}
 
         // clear
         // even if user is logged to different databases he has the only session per browser
         // it means logout exits all databases
         $is_https = (@$_SERVER['HTTPS']!=null && $_SERVER['HTTPS']!='');
-        //$session_id = session_id();
-        $cres = setcookie('heurist-sessionid', '', time() - 3600, '/', '', $is_https, true);//logout
-        $this->current_User = null;
+
+        setcookie('heurist-sessionid', '', time() - 3600, '/', '', $is_https, true);//logout
+        $this->currentUser = null;
         session_destroy();
 
         session_write_close();
@@ -1634,11 +1596,11 @@ class System {
     // Returns individual property from SESSION
     // To load the entire set of preferences from database use user_getPreferences
     //
-    public function user_GetPreference($property, $def=null){
+    public function userGetPreference($property, $def=null){
 
-        $res = @$_SESSION[$this->dbname_full]["ugr_Preferences"][$property];
+        $res = @$_SESSION[$this->dbnameFull]["ugr_Preferences"][$property];
 
-        // TODO: redundancy: this duplicates same in hapi.js
+        // POSSIBLE redundancy: this duplicates same in hapi.js
         if('search_detail_limit'==$property){
             if(!$res || $res<500 ) {$res = 500;}
             elseif($res>5000 ) {$res = 5000;}
@@ -1652,21 +1614,20 @@ class System {
     //
     //
     //
-    public function user_LogActivity($action, $suplementary = '', $user_id=null){
+    public function userLogActivity($action, $suplementary = '', $user_id=null){
 
         if($user_id==null){
             $this->loginVerify( false );
-            $user_id = $this->get_user_id();
+            $user_id = $this->getUserId();
         }
 
         $now = new \DateTime();
 
         $user_agent = USystem::getUserAgent();
 
-        $IPv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
-        $IPv4 = empty($IPv4) ? 'Unknown' : $IPv4;
+        $addr_IPv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)??'Unknown';
 
-        $info = array($user_id, $action, $now->format(DATE_8601), $user_agent['os'], $user_agent['browser'], $IPv4);
+        $info = array($user_id, $action, $now->format(DATE_8601), $user_agent['os'], $user_agent['browser'], $addr_IPv4);
 
         if(is_array($suplementary)){
             $info = array_merge($info, $suplementary);
@@ -1679,13 +1640,13 @@ class System {
     }
 
     /**
-    * Returns link to given record. Either to standard record view html renderer 
+    * Returns link to given record. Either to standard record view html renderer
     * or to smarty template
-    * 
-    * It returns link with url parametrers 
-    * of as url path (if global $useRewriteRulesForRecordLink is true)   
-    * databasename/tpl/templatename/id  or databasename/view/id 
-    * 
+    *
+    * It returns link with url parametrers
+    * of as url path (if global $useRewriteRulesForRecordLink is true)
+    * databasename/tpl/templatename/id  or databasename/view/id
+    *
     * @param mixed $rec_id
     */
     public function recordLink($rec_id){
@@ -1695,7 +1656,6 @@ class System {
         $template = '';
         if(preg_match('/(\d+)\/(.+\.tpl)/', $rec_id, $matches)){ //strpos($rec_id, "/") !== false
 
-            //$parts = explode("/", $rec_id);
             $rec_id = intval($matches[1]);
             $template = urldecode($matches[2]);
 
@@ -1712,9 +1672,8 @@ class System {
         $base_url = HEURIST_BASE_URL_PRO;
 
         if(!$use_rewrite){
-            $url = empty($template) ? $base_url.'?recID='.$rec_id.'&fmt=html&db='.$this->dbname
+            return empty($template) ? $base_url.'?recID='.$rec_id.'&fmt=html&db='.$this->dbname
             : $base_url . '?db='.$this->dbname.'&q=ids:'.$rec_id.'&template='.$template;
-            return $url;
         }
 
         if(strpos($base_url, "/HEURIST/") !== false){
@@ -1722,10 +1681,8 @@ class System {
             $base_url = $parts[ count($parts) - 1 ] == 'HEURIST' ? $base_url : str_replace('/HEURIST', '', $base_url);
         }
 
-        $url = empty($template) ? $base_url.$this->dbname.'/view/'.$rec_id
+        return empty($template) ? $base_url.$this->dbname.'/view/'.$rec_id
         : $base_url.$this->dbname.'/tpl/'.$template.'/'.$rec_id;
-
-        return $url;
     }
 
 
@@ -1784,7 +1741,7 @@ class System {
             header('Content-type: '.$content_type);
         }
     }
-    
+
 
     /**
     * Remove database definition cache file
@@ -1792,7 +1749,7 @@ class System {
     public function cleanDefCache(){
         fileDelete($this->getSysDir('entity') . 'db.json');//old name
         fileDelete($this->getSysDir('entity') . 'dbdef_cache.json');
-    }    
+    }
 
     /**
     * Validates that db defintions cache is up to date with client side version

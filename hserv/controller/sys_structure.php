@@ -103,8 +103,8 @@
     }else{
 
         if(@$req_params["import"]){ //this is import
-            if(!$system->is_admin()){
-                $system->error_exit('To perform this action you must be logged in as '
+            if(!$system->isAdmin()){
+                $system->errorExit('To perform this action you must be logged in as '
                         .'Administrator of group \'Database Managers\'',
                         HEURIST_REQUEST_DENIED);
             }
@@ -131,7 +131,7 @@ ini_set('max_execution_time', 0);
             }
 
             if(!$isOK){
-                $system->error_exit(null);//produce json output and exit script
+                $system->errorExit(null);//produce json output and exit script
             }
             $response = $importDef->getReport(true);//with updated definitions and sysinfo
 
@@ -216,7 +216,7 @@ ini_set('max_execution_time', 0);
                     }
     */
             }else{
-                $data["db_version"] = getDbVersion($system->get_mysqli());
+                $data["db_version"] = getDbVersion($system->getMysqli());
                 $response = array("status"=>HEURIST_OK, "data"=> $data );
             }
 

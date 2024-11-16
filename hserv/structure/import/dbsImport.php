@@ -497,7 +497,7 @@ class DbsImport {
 
         $this->system->addError(HEURIST_ERROR, $msg);
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $mysqli->rollback();
         $mysqli->close();
 
@@ -510,7 +510,7 @@ class DbsImport {
     public function doImport( ){
 
         global $mysqli;
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $mysqli->autocommit(false);
 
         $this->broken_terms = array();
@@ -973,7 +973,7 @@ foreach ($this->imp_recordtypes as $rtyID){
     $res = updateTitleMask( $target_ID, $mask);//see saveStructureLib
     if(!is_numeric($res)){
         //$this->error_exit2($res);
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $mysqli->rollback();
         $mysqli->close();
         return true;
@@ -1695,7 +1695,7 @@ $mysqli->commit();
                             array_push($all_terms_in_vocab, $new_term_id);
                         }else{
                             //add as reference
-                            $res = addTermReference($parent_id, $new_term_id, $this->system->get_mysqli());//see saveStructureLib
+                            $res = addTermReference($parent_id, $new_term_id, $this->system->getMysqli());//see saveStructureLib
                             if($res!==false){
                                 array_push($all_terms_in_vocab, $new_term_id);
                                 $this->targetTerms->addNewTermRef($parent_id, $new_term_id);//add in memory
@@ -1751,7 +1751,7 @@ $mysqli->commit();
                     $term_import[$idx_vocab_group_id] = 0;
                 }
 
-                $res = updateTerms($columnNames, null, $term_import, $this->system->get_mysqli());//see saveStructureLib
+                $res = updateTerms($columnNames, null, $term_import, $this->system->getMysqli());//see saveStructureLib
 
                 if(is_numeric($res)){
                     $new_term_id = $res;
@@ -1826,7 +1826,7 @@ $mysqli->commit();
         $idx_vcg_grp = @$this->source_defs['terms']['fieldNamesToIndex']['trm_VocabularyGroupID'];
         $idx_parent = $this->source_defs['terms']['fieldNamesToIndex']['trm_ParentTermID'];
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $is_old_db_version = false;
         if(!($idx_vcg_grp>0) || @$this->source_defs['terms']['groups']==null){
@@ -2378,7 +2378,7 @@ $mysqli->commit();
 
     private function _handleTranslations($def, $translations){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $delete_stmt = $mysqli->prepare('DELETE FROM defTranslations where trn_Source=? AND trn_Code=?');
 
@@ -2418,7 +2418,7 @@ $mysqli->commit();
             return true;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $idx_inverseid = intval($this->target_defs['terms']['fieldNamesToIndex']["trm_InverseTermID"]);
 
         foreach($this->inverse_term_pairs as $org_trm_id => $org_inv_id){

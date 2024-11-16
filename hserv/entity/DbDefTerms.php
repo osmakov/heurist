@@ -194,7 +194,7 @@ class DbDefTerms extends DbEntityBase
 
         $matches = array();
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $dbVer = $this->system->settings->get('sys_dbVersion');
         $dbVerSub = $this->system->settings->get('sys_dbSubVersion');
@@ -340,7 +340,7 @@ class DbDefTerms extends DbEntityBase
         //reset array of record for save
         $this->records = array();
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //fill records array
         foreach($tree as $label => $children)
@@ -428,7 +428,7 @@ class DbDefTerms extends DbEntityBase
         foreach($this->records as $idx=>$record){
 
             //validate duplication on the same level
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             if(@$this->records[$idx]['trm_Label']!=null && $this->records[$idx]['trm_Label']!=''){
 
@@ -547,7 +547,7 @@ class DbDefTerms extends DbEntityBase
     //
     public function save(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $is_full = (@$this->data['isfull']!=0);
 
@@ -652,7 +652,7 @@ class DbDefTerms extends DbEntityBase
     //
     public function batch_action(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if(!@$this->data['get_translations']){
             $this->need_transaction = false;
@@ -929,7 +929,7 @@ class DbDefTerms extends DbEntityBase
     //
     private function _getTermTranslations($label_only = true, $trm_ids = null){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $fields = array('trn_ID', 'trn_Code', 'trn_Source', 'trn_LanguageCode', 'trn_Translation');
         $records = array();
@@ -996,7 +996,7 @@ class DbDefTerms extends DbEntityBase
             $cnt_updated = 0;
             $cnt_error = 0;
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $stmt_select = $mysqli->prepare('SELECT trm_ID FROM defTerms WHERE trm_Label=?');
             $stmt_update = $mysqli->prepare('UPDATE defTranslations SET trn_Translation=? WHERE trn_Code=? AND trn_Source=? AND trn_LanguageCode=?');
@@ -1093,7 +1093,7 @@ class DbDefTerms extends DbEntityBase
     protected function _validatePermission()
     {
 
-        if(!$this->system->is_admin()){ //there are records to update/delete
+        if(!$this->system->isAdmin()){ //there are records to update/delete
 
             $this->system->addError(HEURIST_REQUEST_DENIED,
                 'You are not admin and can\'t edit vocabulary and terms. Insufficient rights (logout/in to refresh) for this operation');
@@ -1136,7 +1136,7 @@ class DbDefTerms extends DbEntityBase
     //
     private function getFieldsThatUseVocabulary($trm_ID){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $query = 'SELECT dty_ID FROM defDetailTypes WHERE '
         .'(dty_JsonTermIDTree='.$trm_ID.') '
@@ -1156,7 +1156,7 @@ class DbDefTerms extends DbEntityBase
     //
     private function isTermNotInUse($trm_ID, $infield, $indetails){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $ret = array('children'=>0, 'detailtypes'=>array(), 'reccount'=>0);
 
@@ -1188,7 +1188,7 @@ class DbDefTerms extends DbEntityBase
     // $all_levels - false return direct children only
     //
     private function getChildren($parent_ids, $all_levels=true){
-        return getTermChildrenAll($this->system->get_mysqli(),$parent_ids, $all_levels);
+        return getTermChildrenAll($this->system->getMysqli(),$parent_ids, $all_levels);
     }
 
     //
@@ -1203,7 +1203,7 @@ class DbDefTerms extends DbEntityBase
             $query = 'SELECT trm_ID, trm_Label, trm_Code FROM '
             .$this->config['tableName'].SQL_WHERE.predicateId('trm_ID', $children);
             //finds labels and codes
-            return mysql__select_assoc($this->system->get_mysqli(), $query);
+            return mysql__select_assoc($this->system->getMysqli(), $query);
         }
         return null;
     }
@@ -1221,7 +1221,7 @@ class DbDefTerms extends DbEntityBase
 
         $s = predicateId('dtl_Value', $children, SQL_AND);
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if(isEmptyArray($check_dty_IDs)){
             $real_vocab_id = getTermTopMostParent($mysqli, $trm_ID);
@@ -1279,7 +1279,7 @@ class DbDefTerms extends DbEntityBase
     //
     public function counts(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $res = null;
 
         if(@$this->data['mode'] == 'term_usage'){

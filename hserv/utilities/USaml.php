@@ -33,7 +33,7 @@ if(file_exists($saml_script)){
 function samlLogout($system, $sp, $back_url)
 {
     if($system->doLogout()){ //destroy session
-        $system->user_LogActivity('Logout');
+        $system->userLogActivity('Logout');
         $as = new \SimpleSAML\Auth\Simple($sp);
         //$as = new SimpleSAML_Auth_Simple($sp);
         $as->logout(["ReturnTo" => $back_url]);
@@ -77,15 +77,15 @@ function samlLogin($system, $sp, $dbname, $require_auth, $noframe=false){
     //$nameId = $as->getAuthData('saml:sp:NameID')['Value'];
 
     //find user in sysUGrps by email and/or uid
-    if(!isEmptyArray($attr) && ($system->is_inited() || $system->init( $dbname )) ){
+    if(!isEmptyArray($attr) && ($system->isInited() || $system->init( $dbname )) ){
 
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
 
             $attr_mail = @$attr['mail'][0]?$attr['mail'][0]:@$attr['urn:oid:0.9.2342.19200300.100.1.3'][0];
             $attr_uid = @$attr['uid'][0]?$attr['uid'][0]:@$attr['urn:oid:0.9.2342.19200300.100.1.1'][0];
 
             $query = 'SELECT ugr_ID,ugr_eMail,usr_ExternalAuthentication FROM sysUGrps where usr_ExternalAuthentication is not null';
-            $res = $system->get_mysqli()->query($query);
+            $res = $system->getMysqli()->query($query);
             if ($res){
                 while ($row = $res->fetch_row()){
                     $prm = json_decode($row[2],true);
@@ -106,7 +106,7 @@ $query = 'SELECT ugr_ID FROM sysUGrps where usr_ExternalAuthentication is not nu
 .' and  (usr_ExternalAuthentication->\'$."'.$spe.'".uid\'="" OR usr_ExternalAuthentication->\'$."'.$spe.'".uid\'="'.$mysqli->real_escape_string($attr['uid'][0]).'")'
 .' and  (usr_ExternalAuthentication->\'$."'.$spe.'".mail\'="n" OR ugr_eMail="'.$mysqli->real_escape_string($attr['mail'][0]).'")';
 
-            $user_id = mysql__select_value($system->get_mysqli(), $query);
+            $user_id = mysql__select_value($system->getMysqli(), $query);
             */
 
             //DEBUG  $user_id = 0;
@@ -157,7 +157,7 @@ $query = 'SELECT ugr_ID FROM sysUGrps where usr_ExternalAuthentication is not nu
 
             /*
             REGISTER
-            $user_id = mysql__select_value($system->get_mysqli(),'SELECT ugr_ID FROM sysUGrps WHERE ugr_eMail="'
+            $user_id = mysql__select_value($system->getMysqli(),'SELECT ugr_ID FROM sysUGrps WHERE ugr_eMail="'
                 .$attr['mail'][0].'"');
             if(false && !($user_id>0)){
                 //add new user

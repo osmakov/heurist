@@ -80,7 +80,7 @@ class ElasticSearch {
         if (self::$initialized)  {return;}
 
         global $system;
-        self::$mysqli = $system->get_mysqli();
+        self::$mysqli = $system->getMysqli();
         self::$initialized = true;
     }
 

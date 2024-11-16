@@ -36,7 +36,7 @@ $approvedDefsOnly=@$_REQUEST["approvedDefsOnly"];// returns null if not set
 $isHTML = (@$_REQUEST["plain"]!=1);//no html
 // TO DO: filter for reserved and approved definitions only if this is set
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $db_version = getDbVersion($mysqli);
 
@@ -177,7 +177,7 @@ if (!$includeUgrps) {
     return;
 }
 
-if (! $system->is_admin() ) {
+if (! $system->isAdmin() ) {
     print "<html><body><p>You do not have sufficient privileges to list users</p><p><a href=".HEURIST_BASE_URL.">Return to Heurist</a></p></body></html>";
     return;
 }

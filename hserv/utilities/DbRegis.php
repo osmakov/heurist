@@ -70,7 +70,7 @@ class DbRegis {
             //connect
             self::$system = new System();
             if(self::$system->init(HEURIST_INDEX_DATABASE, true, false)){ //init without paths and consts
-                self::$mysqli = self::$system->get_mysqli();
+                self::$mysqli = self::$system->getMysqli();
             }else{
                 self::addError();
                 return false;
@@ -423,7 +423,7 @@ class DbRegis {
             $database_id = intval(@$params['dbID']);
 
             $sys = self::$system;
-            $mysqli = $sys->get_mysqli();
+            $mysqli = $sys->getMysqli();
 
             ConceptCode::setSystem($sys);
             $rty_ID_registered_database = ConceptCode::getRecTypeLocalID(HEURIST_INDEX_DBREC);
@@ -609,7 +609,7 @@ class DbRegis {
 
             $dbID = mysql__insertupdate($mysqli, 'Records', 'rec_', $record, true);
 
-            $mysqli->query('set @logged_in_user_id = '.$sys->get_user_id());
+            $mysqli->query('set @logged_in_user_id = '.$sys->getUserId());
 
             if($dbID>0){
                 if($dbTitle){
@@ -688,7 +688,7 @@ class DbRegis {
 
         $dty_ID = ConceptCode::getDetailTypeLocalID($conceptCode);
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $dtl_ID = -1;
         if($is_exist){

@@ -68,7 +68,7 @@ if($is_included){
         <?php
         exit;
         }
-    }elseif(!$system->is_admin()){ //  $system->is_dbowner()
+    }elseif(!$system->isAdmin()){ //  $system->isDbOwner()
         print '<span>You must be logged in as Database Administrator to perform this operation</span>';
         exit;
     }
@@ -89,7 +89,7 @@ if($is_included){
 <?php
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $is_all_databases = false;
 if(@$_REQUEST['all']==1){

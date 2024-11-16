@@ -53,7 +53,7 @@ if(!@$_REQUEST['mail']){
     $_REQUEST['dbs'] = null; //reset - only report
 }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     //1. find all database
     $databases = mysql__getdatabases4($mysqli, false);
 

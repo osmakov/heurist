@@ -283,10 +283,10 @@ $failed_exts = array();
                     $real_path = isPathInHeuristUploadFolder($dir, true);
                     if($real_path==null){
                         //does not exist - ignore
-                        print error_Div(htmlspecialchars($dir).' is ignored. Folder does not exist.');
+                        print errorDiv(htmlspecialchars($dir).' is ignored. Folder does not exist.');
                         continue;
                     }elseif(!$real_path){
-                        print error_Div(htmlspecialchars($dir).' is ignored. Folder must be in Heurist filestore directory.');
+                        print errorDiv(htmlspecialchars($dir).' is ignored. Folder must be in Heurist filestore directory.');
                         continue;
                     }
 
@@ -310,7 +310,7 @@ $failed_exts = array();
                     }
 
                     if(!$dir || !( substr($dir, 0, strlen(HEURIST_FILESTORE_DIR)) === HEURIST_FILESTORE_DIR )){
-                    print error_Div(htmlspecialchars($orig).' is ignored. Folder must be in Heurist filestore directory');
+                    print errorDiv(htmlspecialchars($orig).' is ignored. Folder must be in Heurist filestore directory');
                     continue;
                     }
                     }
@@ -324,7 +324,7 @@ $failed_exts = array();
 
                 if(in_array($dir, $system_folders)){
 
-                    print error_Div('Files are not scanned in system folder '.htmlspecialchars($dir));
+                    print errorDiv('Files are not scanned in system folder '.htmlspecialchars($dir));
 
                 }elseif($dir && file_exists($dir) && is_dir($dir))
                 {
@@ -346,7 +346,7 @@ $failed_exts = array();
                                 }elseif($isfirst){ //if($filename == "fieldhelper.xml"){
                                     $isfirst = false;
                                     if($dir == HEURIST_FILESTORE_DIR){
-                                        print error_Div('Files are not scanned in root upload folder '.htmlspecialchars($dir));
+                                        print errorDiv('Files are not scanned in root upload folder '.htmlspecialchars($dir));
                                     }else{
                                         $rep_counter = $rep_counter + doHarvestInDir($dir);
                                     }
@@ -360,7 +360,7 @@ $failed_exts = array();
                         }
                     }
                 }elseif($dir) {
-                    print error_Div('Folder was not found: '.htmlspecialchars($dir));
+                    print errorDiv('Folder was not found: '.htmlspecialchars($dir));
                 }
             }
         }
@@ -545,7 +545,7 @@ $failed_exts = array();
                             if(!empty($recordIds)){ //veify that this record exists
                                 foreach($recordIds as $recId){
                                     $query2 = 'SELECT rec_ID FROM Records WHERE rec_ID='.$recId;
-                                    $res = mysql__select_value($system->get_mysqli(),$query2);
+                                    $res = mysql__select_value($system->getMysqli(),$query2);
                                     if (!($res>0)) {
                                         $notFoundMessage = "<div>File: <i>$filename_base</i> was indexed as rec# $recId. ".
                                         "This record was not found. File will be reindexed</div>";
@@ -614,7 +614,7 @@ $failed_exts = array();
                                 }
 
                                 $query2 = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID='.$file_id;
-                                $new_recordID = mysql__select_value($system->get_mysqli(),$query2);
+                                $new_recordID = mysql__select_value($system->getMysqli(),$query2);
                                 if ($new_recordID>0) {
                                     //int "<div>File: <i>$filename_base</i> <span>".
                                     //ile is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
@@ -633,7 +633,7 @@ $failed_exts = array();
                                     $out = recordSave($system, $record);//see recordModify.php
 
                                     if ( @$out['status'] != HEURIST_OK ) {
-                                        print error_Div('File: <i>'.htmlspecialchars($filename_base).'</i> Error: '.
+                                        print errorDiv('File: <i>'.htmlspecialchars($filename_base).'</i> Error: '.
                                             htmlspecialchars($out["message"]));
 
                                     }else{
@@ -819,7 +819,7 @@ XML;
                     $f_item->addChild("filesize", filesize($filename));
 
                     $query2 = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID='.$file_id;
-                    $new_recordID = mysql__select_value($system->get_mysqli(),$query2);
+                    $new_recordID = mysql__select_value($system->getMysqli(),$query2);
                     if ($new_recordID>0) {
                         //print "<div>File: <i>$filename_base</i> <span>".
                         //"File is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
@@ -838,7 +838,7 @@ XML;
                         $out = recordSave($system, $record);//see recordModify.php
 
                         if ( @$out['status'] != HEURIST_OK ) {
-                            print error_Div('File: <i>'.htmlspecialchars($filename_base).' Error: '.htmlspecialchars($out["message"]));
+                            print errorDiv('File: <i>'.htmlspecialchars($filename_base).' Error: '.htmlspecialchars($out["message"]));
                         }else{
                             $new_recordID = intval($out['data']);
                             $cnt_added++;

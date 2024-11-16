@@ -66,12 +66,12 @@ class DbUsrBookmarks extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_dbowner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
+        if(!$this->system->isDbOwner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
 
-            //$ugrs = $this->system->get_user_group_ids();
-            $ugrID = $this->system->get_user_id();
+            //$ugrs = $this->system->getUserGroupIds();
+            $ugrID = $this->system->getUserId();
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_norights = mysql__select_list($mysqli, $this->config['tableName'], $this->primaryField,
                     'bkm_ID in ('.implode(',', $this->recordIDs).') AND bkm_UGrpID!='.$ugrID);
@@ -104,7 +104,7 @@ class DbUsrBookmarks extends DbEntityBase
             $rec_ID = intval(@$record[$this->primaryField]);
             $isinsert = ($rec_ID<1);
             if($isinsert && !($this->records[$idx]['bkm_UGrpID']>0)){
-                $this->records[$idx]['bkm_UGrpID'] = $this->system->get_user_id();
+                $this->records[$idx]['bkm_UGrpID'] = $this->system->getUserId();
             }
             if($isinsert || !$this->records[$idx]['bkm_Added']){
                 $this->records[$idx]['bkm_Added'] = date('Y/m/d H:i:s');
@@ -126,7 +126,7 @@ class DbUsrBookmarks extends DbEntityBase
 
         $this->foreignChecks = array(
                     array('SELECT count(tag_ID) FROM usrBookmarks, usrTags, usrRecTagLinks '
-                    .'WHERE tag_ID=rtl_TagID AND tag_UGrpID='.$this->system->get_user_id()
+                    .'WHERE tag_ID=rtl_TagID AND tag_UGrpID='.$this->system->getUserId()
                     .' AND rtl_RecID=bkm_RecID AND bkm_ID',
                     'It is not possible to remove bookmark. Bookmarked record has personal tags')
                 );
@@ -150,7 +150,7 @@ class DbUsrBookmarks extends DbEntityBase
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //bookmarks id not defined - find them by record ids
         if(empty($bkm_IDs)){
@@ -165,7 +165,7 @@ class DbUsrBookmarks extends DbEntityBase
 
             //get bookmarks
             $query = 'select bkm_ID from usrBookmarks '.$query
-                    . ' and bkm_UGrpID = ' . $this->system->get_user_id();
+                    . ' and bkm_UGrpID = ' . $this->system->getUserId();
 
             $bkm_IDs = mysql__select_list2($mysqli, $query);
             $bkm_IDs = prepareIds( $bkm_IDs );
@@ -180,7 +180,7 @@ class DbUsrBookmarks extends DbEntityBase
                 $keep_autocommit = mysql__begin_transaction($mysqli);
 
                 $query = 'DELETE usrRecTagLinks FROM usrBookmarks LEFT JOIN usrRecTagLinks ON rtl_RecID=bkm_RecID '
-                .' WHERE bkm_ID IN ('.implode(',', $bkm_IDs).') AND bkm_UGrpID=' .$this->system->get_user_id();
+                .' WHERE bkm_ID IN ('.implode(',', $bkm_IDs).') AND bkm_UGrpID=' .$this->system->getUserId();
                 $res = $mysqli->query($query);
                 if(!$res){
                     $mysqli->rollback();
@@ -192,7 +192,7 @@ class DbUsrBookmarks extends DbEntityBase
                 $res_tag_removed = $mysqli->affected_rows;
 
                 $query = 'DELETE FROM usrBookmarks '
-                .' WHERE bkm_ID in ('.implode(',', $bkm_IDs).') and bkm_UGrpID=' .$this->system->get_user_id();
+                .' WHERE bkm_ID in ('.implode(',', $bkm_IDs).') and bkm_UGrpID=' .$this->system->getUserId();
                 $res = $mysqli->query($query);
                 if(!$res){
                     $mysqli->rollback();
@@ -229,7 +229,7 @@ class DbUsrBookmarks extends DbEntityBase
                 $query =  'bkm_ID in (' . join(',', $bkm_IDs).')';
 
                 $query =  'update usrBookmarks set bkm_Rating = ' . $rating . SQL_WHERE.$query
-                        .' and bkm_UGrpID = ' . $this->system->get_user_id();
+                        .' and bkm_UGrpID = ' . $this->system->getUserId();
 
                 $res = $mysqli->query($query);
                 if(!$res){

@@ -453,7 +453,7 @@ function get_sql_query_clauses_NEW($db, $params, $currentUser=null){
     }
 
     // 1. DETECT CURRENT USER AND ITS GROUPS, if not logged search only all records (no bookmarks) ----------------------
-    $wg_ids = array();//may be better use $system->get_user_group_ids() ???
+    $wg_ids = array();//may be better use $system->getUserGroupIds() ???
     if($currentUser && @$currentUser['ugr_ID']>0){
         if(@$currentUser['ugr_Groups']){
             $wg_ids = array_keys($currentUser['ugr_Groups']);
@@ -474,8 +474,6 @@ function get_sql_query_clauses_NEW($db, $params, $currentUser=null){
     // set is_admin
     $is_admin = true; //2023-11-28 TEMPORARY DISABLE field visibility check  $is_admin = $currUserID == 2
     if(!$is_admin && $currUserID > 0){
-        //$system->is_admin()
-
         // Check if user is part of db admin group
         $db_admin_id = mysql__select_value($mysqli, 'SELECT sys_OwnerGroupID FROM sysIdentification');
         $db_admin_id = !$db_admin_id || !intval($db_admin_id) < 1 ? 1 : intval($db_admin_id);
@@ -497,7 +495,7 @@ function get_sql_query_clauses_NEW($db, $params, $currentUser=null){
         $search_domain = "a";
     }
 
-    //$system->is_dbowner()
+    //$system->isDbOwner()
     //for database owner we will search records of any workgroup and view access
     //@todo UNLESS parameter owner is not defined explicitely
     if($currUserID==2 && $search_domain != BOOKMARK){

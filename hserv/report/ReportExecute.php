@@ -119,7 +119,7 @@ class ReportExecute
         $result = false;
 
         // Check if the system is initialized
-        if (!isset($this->system) || !$this->system->is_inited()) {
+        if (!isset($this->system) || !$this->system->isInited()) {
             $this->outputError();
         } elseif (!isset($this->params)) {
             // Check if parameters are defined
@@ -243,7 +243,7 @@ class ReportExecute
     {
         if (!isset($this->params["limit"])) {
             if ($this->publishmode == 0) {
-                $limit_for_interface = intval($this->system->user_GetPreference('smarty-output-limit'));
+                $limit_for_interface = intval($this->system->userGetPreference('smarty-output-limit'));
                 if (!$limit_for_interface || $limit_for_interface < 1) {
                     $limit_for_interface = 50; // Default limit
                 }
@@ -639,7 +639,7 @@ class ReportExecute
             return $tpl_source;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $query = "SELECT trn_Translation FROM defTranslations WHERE trn_Code={id} AND trn_Source='trm_Label' AND trn_LanguageCode='{lang}'";
         $to_replace = array('{id}', '{lang}');

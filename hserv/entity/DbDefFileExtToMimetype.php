@@ -154,7 +154,7 @@ class DbDefFileExtToMimetype extends DbEntityBase
 
         $query = SQL_DELETE.$this->config['tableName'].SQL_WHERE.$this->primaryField." = '".$rec_ID."'";
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $res = $mysqli->query($query);
 
         if(!$res){

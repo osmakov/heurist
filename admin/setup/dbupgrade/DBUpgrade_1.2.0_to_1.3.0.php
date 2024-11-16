@@ -15,7 +15,7 @@ require_once dirname(__FILE__).'/../../verification/verifyFieldTypes.php';
 //
 function updateDatabseTo_v3($system, $dbname=null){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         if($dbname){
             mysql__usedatabase($mysqli, $dbname);

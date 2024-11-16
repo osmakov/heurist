@@ -23,9 +23,6 @@ use \hserv\utilities\USystem;
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-// TODO: Rationalise the duplication of constants across /php/consts.php and /common/connect/initialise.php
-//       in particualr this duplication of HEURIST_MIN_DB_VERSION and any other explicit constants
-
 define('HEURIST_VERSION', $version);//code version is defined congigIni.php
 define('HEURIST_MIN_DBVERSION', "1.3.16");//minimal version of db for current version of code
 
@@ -37,7 +34,7 @@ if(!@$heuristReferenceServer){
     //$heuristReferenceServer = 'https://HeuristRef.Net';
 }
 
-define('HEURIST_DEF_DIR', '/heurist/'); //default Heurist folder 
+define('HEURIST_DEF_DIR', '/heurist/'); //default Heurist folder
 define('HEURIST_MAIN_SERVER', $heuristReferenceServer);
 define('HEURIST_INDEX_BASE_URL', $heuristReferenceServer.HEURIST_DEF_DIR);//central index and template databases url
 define('HEURIST_INDEX_DBREC', '1-22');//concept code for record type "Registered Database" in Heurist Reference Index (HEURIST_INDEX_DATABASE)
@@ -67,7 +64,7 @@ if (!@$mailDomain) {
 define('HEURIST_SERVER_URL', $host_params['server_url']);
 define('HEURIST_SERVER_NAME', @$host_params['server_name']);// server host name for the configured name, eg. myheurist.net
 
-if(!defined('HEURIST_DIR'))  { define('HEURIST_DIR', $host_params['heurist_dir']); } 
+if(!defined('HEURIST_DIR'))  { define('HEURIST_DIR', $host_params['heurist_dir']); }
 
 define('HEURIST_BASE_URL', $host_params['baseURL'] );// eg. https://myheurist.net/h6-alpha/
 define('HEURIST_BASE_URL_PRO', $host_params['baseURL_pro'] );// production url eg. https://myheurist.net/heurist/
@@ -126,33 +123,6 @@ define("HEURIST_UNKNOWN_ERROR", "unknown");// 500 A request could not be process
 define("HEURIST_DB_ERROR", "database");// 500 A request could not be processed due to a server database error. Most probably this is BUG. Contact developers
 define("HEURIST_SYSTEM_CONFIG", "syscfg");// 500 System not-fatal configuration error. Contact system admin
 define("HEURIST_SYSTEM_FATAL", "system");// 500 System fatal configuration error. Contact system admin
-/*
-$usrTags = array(
-"rty_ID"=>"i",
-"rty_Name"=>"s",
-"rty_OrderInGroup"=>"i",
-"rty_Description"=>"s",
-"rty_TitleMask"=>"s",
-"rty_CanonicalTitleMask"=>"s",
-"rty_Plural"=>"s",
-"rty_Status"=>"s",
-"rty_OriginatingDBID"=>"i",
-"rty_NameInOriginatingDB"=>"s",
-"rty_IDInOriginatingDB"=>"i",
-"rty_NonOwnerVisibility"=>"s",
-"rty_ShowInLists"=>"i",
-"rty_RecTypeGroupID"=>"i",
-"rty_RecTypeModelsIDs"=>"s",
-"rty_FlagAsFieldset"=>"i",
-"rty_ReferenceURL"=>"s",
-"rty_AlternativeRecEditor"=>"s",
-"rty_Type"=>"s",
-"rty_ShowURLOnEditForm" =>"i",
-"rty_ShowDescriptionOnEditForm" =>"i",
-"rty_Modified"=>"i",
-"rty_LocallyModified"=>"i"
-);
-*/
 
 //---------------------------------
 // set up email defines
@@ -353,7 +323,6 @@ $dtDefines = array('DT_NAME' => array(2, 1),
     'DT_GIVEN_NAMES' => array(2, 18),
     'DT_GENDER' => array(2, 20),
     'DT_EMAIL' => array(2, 23),
-    'DT_LOCATION' => array(2, 27), // TODO : change DT_PLACE_NAME with new update.
     'DT_GEO_OBJECT' => array(2, 28),
     'DT_MIME_TYPE' => array(2, 29),
     'DT_IMAGE_TYPE' => array(2, 30),
@@ -404,16 +373,12 @@ $dtDefines = array('DT_NAME' => array(2, 1),
     'DT_FILE_MD5' => array(2, 68),
     'DT_PARENT_ENTITY' => array(2, 247),
     'DT_EDITOR' => array(3, 1013),
-    'DT_OTHER_FILE' => array(3, 62), //TODO: remove from code
-    'DT_LOGO_IMAGE' => array(3, 222), //TODO: remove from code
-    'DT_IMAGES' => array(3, 224), //TODO: remove from code
     'DT_DOI' => array(3, 1003),
-    'DT_WEBSITE_ICON' => array(3, 347), //TODO: remove from code
+    'DT_WEBSITE_ICON' => array(3, 347), //remove from code
     'DT_ISBN' => array(3, 1011),
     'DT_ISSN' => array(3, 1032),
     'DT_JOURNAL_REFERENCE' => array(3, 1034),
     'DT_MEDIA_REFERENCE' => array(3, 508), //*******************ERROR  THIS IS MISSING
-    'DT_TEI_DOCUMENT_REFERENCE' => array(3, 1045), //TODO : change DT_XML_DOCUMENT_REFERENCE with new update.
 
     'DT_EXTERNAL_ID' => array(2, 581), //external non heurist record id
     // Spatial & mapping
@@ -469,7 +434,7 @@ $dtDefines = array('DT_NAME' => array(2, 1),
 
     'DT_WORKFLOW_STAGE' => array(2, 1080)
 
-);//TODO: add email magic numbers
+);
 
 
 $trmDefines = array(
@@ -493,34 +458,23 @@ $trmDefines = array(
 
 //---------------------------------
 
-function boot_error_handler($errno, $errstr, $errfile, $errline){
-    if($errno==E_WARNING){ //E_PARSE E_NOTICE
-            if(strpos($errstr,'Input variables')>0){
-
+function bootErrorHandler($errno, $errstr, $errfile, $errline){
+    if($errno==E_WARNING && strpos($errstr,'Input variables')>0){ //E_PARSE E_NOTICE
                 $message = "$errstr $errfile:$errline";
                 error_log('Large INPUT: '.htmlspecialchars($message));
                 error_log(print_r(array_slice($_REQUEST, 0, 100),true));
                 error_log(print_r($_SERVER, true));
-            /*
-            if(class_exists('Log')){
-                Log::write($message, 'warning', true);
-            }
-            if(ENV != ENV_PROD){
-                echo $message;
-            }
-            */
-            }
     }
 }
 
 //
 // Common functions
 //
-function error_WrongParam($param){
+function errorWrongParam($param){
     return $param.' parameter is not defined or wrong';
 }
 
-function error_Div($text){
+function errorDiv($text){
     return '<div class="error" style="color:red">'.$text.DIV_E;
 }
 
@@ -561,7 +515,6 @@ function findInArray(array $arr, string $key, $keyvalue): ?int {
 }
 
 function isPositiveInt($val){
-    //return isset($val) && is_numeric($val) && $val>0;
     return isset($val) && (is_int($val) || ctype_digit($val)) && (int)$val>0;
 }
 

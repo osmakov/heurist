@@ -39,7 +39,7 @@ if(@$_REQUEST['annotationId'] || @$_REQUEST['a']){
 
     $uuid = (@$_REQUEST['annotationId'])?$_REQUEST['annotationId']:$_REQUEST['a'];
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $res = mysql__select_row($mysqli, 'select dtl_RecID from recDetails '
         .' WHERE dtl_DetailTypeID='.DT_ORIGINAL_RECORD_ID .' AND dtl_Value="'.$mysqli->real_escape_string($uuid).'"');
@@ -64,11 +64,11 @@ if(@$_REQUEST['annotationId'] || @$_REQUEST['a']){
     if (! preg_match('!^[a-z]+:!i', $url)) {$url = 'https://' . $url;}
     if (substr($url, -1) == '/') {$url = substr($url, 0, strlen($url)-1);}
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     // look up the user's bookmark (usrBookmarks) table, see if they've already got this URL bookmarked -- if so, just edit it
     $res = mysql__select_row($mysqli, 'select bkm_ID, rec_ID from usrBookmarks left join Records on rec_ID=bkm_recID '
-                .'where bkm_UGrpID="'.$system->get_user_id().'" '
+                .'where bkm_UGrpID="'.$system->getUserId().'" '
                 .' and (rec_URL="'.$mysqli->real_escape_string($url).'" or rec_URL="'.$mysqli->real_escape_string($url).'/")');
 
     if ($res && $res[1] > 0) { //already bookmarked

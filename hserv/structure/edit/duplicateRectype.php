@@ -25,7 +25,7 @@ $res = false;
 $system = new hserv\System();
 if( $system->init(@$_REQUEST['db']) ){
 
-    if(!$system->is_admin()){
+    if(!$system->isAdmin()){
         $system->addError(HEURIST_REQUEST_DENIED,
             'To perform this action you must be logged in as Administrator of group \'Database Managers\'');
     }elseif(!@$_REQUEST['rtyID']){
@@ -46,7 +46,7 @@ if( $system->init(@$_REQUEST['db']) ){
 
         define('HEURIST_DBID', $system->settings->get('sys_dbRegisteredID'));
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $res = $mysqli->query($query);
         $new_rt_id = $mysqli->insert_id;
 

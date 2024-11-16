@@ -140,7 +140,7 @@ class DbDefRecStructure extends DbEntityBase
         foreach($this->records as $idx=>$record){
 
             //find real rst_ID
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $row = mysql__select_row_assoc($mysqli,
                 'SELECT rst_ID, rst_OriginatingDBID FROM '.$this->config['tableName']
@@ -194,7 +194,7 @@ class DbDefRecStructure extends DbEntityBase
 
     public function delete($disable_foreign_checks = false){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if(@$this->data['recID'] && strpos($this->data['recID'],'.')){
             list($rty_ID, $dty_ID) = explode('.', $this->data['recID']);
@@ -273,7 +273,7 @@ class DbDefRecStructure extends DbEntityBase
         }
 
         $ret = true;
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $keep_autocommit = mysql__begin_transaction($mysqli);
 
         foreach ($this->recordIDs as $idx => $dty_ID){
@@ -386,7 +386,7 @@ class DbDefRecStructure extends DbEntityBase
      * @return bool - Returns true if default fields are added, false otherwise.
      */
     private function addDefaultFields($rty_ID) {
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $fieldCount = mysql__select_value(
             $mysqli,
@@ -409,7 +409,7 @@ class DbDefRecStructure extends DbEntityBase
     //
     public function counts(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $res = null;
 
         if(@$this->data['mode'] == 'rectype_field_usage'){

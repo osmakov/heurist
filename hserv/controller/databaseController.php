@@ -60,9 +60,9 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
     $response = $system->getError();
 }else{
 
-   $isNewUserRegistration = ($action=='create' && !$system->has_access());
+   $isNewUserRegistration = ($action=='create' && !$system->hasAccess());
 
-   if(!($isNewUserRegistration || $system->has_access())){
+   if(!($isNewUserRegistration || $system->hasAccess())){
         $response = $system->addError(HEURIST_REQUEST_DENIED, 'You must be logged in');
         //@todo !!!!!  check for $passwordForDatabaseCreation
    }else{
@@ -74,7 +74,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
             DbUtils::setSessionId($session_id);//start progress session
         }
 
-        $mysqli =  $system->get_mysqli();
+        $mysqli =  $system->getMysqli();
 
         if($action=='list'){
             //get list of available databases
@@ -144,7 +144,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
                         }
 
                     }else{
-                        $ugr_ID = $system->get_user_id();
+                        $ugr_ID = $system->getUserId();
                         $usr_owner = user_getById($mysqli, $ugr_ID);
                     }
 
@@ -216,7 +216,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
 
                 if($is_current_db) {
 
-                    if($system->is_dbowner() || $allow_action){
+                    if($system->isDbOwner() || $allow_action){
 
                         $challenge_word = ($action=='clear')?'CLEAR ALL RECORDS':'DELETE MY DATABASE';
                         $allow_action = !$system->verifyActionPassword($challenge_pwd, $challenge_word);
@@ -300,7 +300,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
                         $sourceRegID = mysql__select_value($mysqli, 'select sys_dbRegisteredID from `'.$db_source_full.'`.sysIdentification where 1');
 
                         if($is_current_db){
-                            if(!$system->is_admin()){
+                            if(!$system->isAdmin()){
                                 $system->addError(HEURIST_REQUEST_DENIED,
 'To perform this action you must be logged in as Administrator of group \'Database Managers\' or as Database Owner');
                             }else{
@@ -376,7 +376,7 @@ $sErrorMsg = "Sorry, the database $db_source must be registered with an ID less 
         elseif($action=='verify')
         {
 
-            if(!$system->is_admin()){
+            if(!$system->isAdmin()){
                 $system->addError(HEURIST_REQUEST_DENIED,
 'To perform this action you must be logged in as Administrator of group \'Database Managers\' or as Database Owner');
             }else{

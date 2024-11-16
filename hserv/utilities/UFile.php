@@ -1617,7 +1617,7 @@ function uploadFileToNakala($system, $params) {
     $NAKALA_BASE_URL_API = @$params['use_test_url'] == 1 ? 'https://apitest.nakala.fr/datas/' : 'https://api.nakala.fr/datas/';
 
     $missing_key = '<br><br>Your Nakala API key is either missing or invalid, please ';
-    $missing_key .= $system->is_admin() ? 'ask a database administrator to setup the key within' : 'ensure you\'ve set it in';
+    $missing_key .= $system->isAdmin() ? 'ask a database administrator to setup the key within' : 'ensure you\'ve set it in';
     $missing_key .= ' Database properties';
 
     $unknow_error_msg = 'An unknown response was receiveed from Nakala after uploading the selected file.<br>Please contact the Heurist team if this persists.';

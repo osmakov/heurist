@@ -85,7 +85,7 @@ if( $system->verifyActionPassword($sysadmin_pwd, $passwordForServerFunctions) ){
         $type_2 = 'tiled';
     }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //1. find all database
     $databases = mysql__getdatabases4($mysqli, true);

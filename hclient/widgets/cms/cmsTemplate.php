@@ -175,13 +175,13 @@ if($isWebPage){ //set in websiteRecord.php
     if($showWarnAboutPublic){
         print '<div style="top:0;height:20px;position:absolute;text-align:center;width:100%;color:red;">Web page record is not public. It will not be visible to the public</div>';
     }
-    if(!$edit_OldEditor && $system->has_access()){
+    if(!$edit_OldEditor && $system->hasAccess()){
         print '<a href="'.HEURIST_BASE_URL.'?db='.$system->dbname().'" id="btn_editor" target="_blank" '
         .'style="position:absolute;left:95px; top:5px;color:blue !important;z-index:1;" class="cms-button">database</a>'
         .'<a href="#" id="btnOpenCMSeditor" onclick="_openCMSeditor(event); return false;" '
         .'style="position:absolute;left:5px;top:5px;color:blue !important;z-index:1;" class="cms-button">website editor</a>';
     }
-    if(!$edit_OldEditor && $system->get_user_id() == 0 && $show_login_button){
+    if(!$edit_OldEditor && $system->getUserId() == 0 && $show_login_button){
         print '<a href="#" id="btn_signin" style="position:absolute;right:5px; top:5px;color:blue !important;" class="cms-button">login</a>';// login link
     }
 ?>
@@ -225,13 +225,13 @@ if($isWebPage){ //set in websiteRecord.php
 <?php
     }//header
 
-    if(!$edit_OldEditor && $system->has_access()){
+    if(!$edit_OldEditor && $system->hasAccess()){
         print '<a href="'.HEURIST_BASE_URL.'?db='.$system->dbname().'" id="btn_editor" target="_blank" '
         .'style="position:absolute;left:95px; top:5px;color:blue !important;" class="cms-button">database</a>'
         .'<a href="#" id="btnOpenCMSeditor" onclick="_openCMSeditor(event); return false;" '
         .'style="position:absolute;left:5px;top:5px;color:blue !important;" class="cms-button">website editor</a>';
     }
-    if(!$edit_OldEditor && $system->get_user_id() == 0 && $show_login_button){
+    if(!$edit_OldEditor && $system->getUserId() == 0 && $show_login_button){
         print '<a href="#" id="btn_signin" style="position:absolute;right:5px; top:5px;color:blue !important;font-weight: normal;" class="cms-button">login</a>';// login link
     }
     ?>

@@ -165,7 +165,7 @@ protected function _outputFooter(){
 //
 public static function getIiifResource($system, $record, $iiif_version, $ulf_ObfuscatedFileID, $type_resource='Canvas'){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $canvas = '';
     $comma = '';

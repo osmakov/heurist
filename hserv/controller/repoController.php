@@ -97,7 +97,7 @@ if(!$system->init(@$_REQUEST['db'])){
     $response = $system->getError();
 }else{
 
-   if(!$system->get_user_id()>0){
+   if(!$system->getUserId()>0){
         $response = $system->addError(HEURIST_REQUEST_DENIED, 'You must be logged in');
         // 'Administrator permissions are required');
    }else{
@@ -105,7 +105,7 @@ if(!$system->init(@$_REQUEST['db'])){
         //for kml step2,step3,set_primary_rectype,step3
         $action = @$_REQUEST["a"];
         $res = false;
-        $ugr_ID = $system->get_user_id();
+        $ugr_ID = $system->getUserId();
 
         if($action=='list'){
             //get list of available repositories for given user (including for database and groups)

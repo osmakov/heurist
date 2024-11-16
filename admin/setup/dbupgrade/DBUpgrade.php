@@ -6,7 +6,7 @@ function doUpgradeDatabase($system, $dbname, $trg_maj, $trg_min, $verbose=false)
 
     $dir = HEURIST_DIR.'admin/setup/dbupgrade/';
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //select database
     if($dbname){
@@ -61,7 +61,7 @@ function doUpgradeDatabase($system, $dbname, $trg_maj, $trg_min, $verbose=false)
             }else{
                 $error = $system->getError();
                 if($verbose && $error){
-                    print error_Div($error['message'].BR.@$error['sysmsg']);
+                    print errorDiv($error['message'].BR.@$error['sysmsg']);
                 }
 
                 $upgrade_success = false;

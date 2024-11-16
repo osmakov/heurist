@@ -39,7 +39,7 @@ if( ! $system->init(@$_REQUEST['db']) ){
     print $system->getErrorMsg();
     return;
 }
-if(!$system->is_admin()){ //  $system->is_dbowner()
+if(!$system->isAdmin()){ //  $system->isDbOwner()
     print '<span>You must be logged in as Database Administrator to perform this operation</span>';
 }
 ?>
@@ -60,7 +60,7 @@ if(!$system->is_admin()){ //  $system->is_dbowner()
 
 
 $isHeuristReferenceIndex = (strcasecmp(HEURIST_DBNAME,'Heurist_Reference_Index')==0);
-$checker = new URLChecker($system->get_mysqli(), HEURIST_SERVER_URL, $isHeuristReferenceIndex);
+$checker = new URLChecker($system->getMysqli(), HEURIST_SERVER_URL, $isHeuristReferenceIndex);
 $results = $checker->checkURLs(true, $list_only);
 
 /* heurist instances

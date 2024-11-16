@@ -109,11 +109,11 @@ class RecordsBatch
 
        $this->session_id = @$this->data['session'];
        if($this->session_id!=null){
-            mysql__update_progress($system->get_mysqli(), $this->session_id, true, '0,1');
+            mysql__update_progress($system->getMysqli(), $this->session_id, true, '0,1');
        }
 
        //refresh list of current user groups
-       $this->system->get_user_group_ids(null, true);
+       $this->system->getUserGroupIds(null, true);
     }
 
     //
@@ -181,9 +181,9 @@ class RecordsBatch
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
-        if($this->system->is_admin() && $this->data['recIDs']=='ALL'){
+        if($this->system->isAdmin() && $this->data['recIDs']=='ALL'){
 
             $query = 'select count(*) from Records';
 
@@ -224,12 +224,12 @@ class RecordsBatch
                 }
                 if($passedRecIDCnt>0){
                     //exclude records if user has no right to edit
-                    if($this->system->is_admin()){ //admin of database managers
+                    if($this->system->isAdmin()){ //admin of database managers
                         $this->recIDs = $recIDs;
                     }else{
                         $this->recIDs = mysql__select_list($mysqli,'Records','rec_ID',"rec_ID in ("
                             .implode(",",$recIDs).") and rec_OwnerUGrpID in (0,"
-                            .join(",",$this->system->get_user_group_ids()).")");
+                            .join(",",$this->system->getUserGroupIds()).")");
                         $this->recIDs = prepareIds($this->recIDs);//redundant for snyk
                     }
 
@@ -264,7 +264,7 @@ class RecordsBatch
     //
     //
     private function getDetailType($dty_ID){
-        return mysql__select_value($this->system->get_mysqli(),
+        return mysql__select_value($this->system->getMysqli(),
                  'select dty_Type from defDetailTypes where dty_ID = '.$dty_ID);
     }
 
@@ -289,7 +289,7 @@ class RecordsBatch
     public function addRevercePointerForChild(){
 
 
-        if (! $this->system->is_admin() ) {
+        if (! $this->system->isAdmin() ) {
             $this->system->addError(HEURIST_REQUEST_DENIED);
             return false;
         }
@@ -305,7 +305,7 @@ class RecordsBatch
 
         $allow_multi_parent = ($this->data['allow_multi_parent']==true);
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //1. find resource (child) records for given record type and detail
         $query = 'SELECT dtl_RecID as parent_id, d.dtl_Value as child_id, child.rec_OwnerUGrpID, child.rec_RecTypeID, child.rec_Title '
@@ -326,7 +326,7 @@ class RecordsBatch
 
                 $toProcess = array();
 
-                $groups = $this->system->get_user_group_ids();
+                $groups = $this->system->getUserGroupIds();
                 array_push($groups, 0);
 
                 while ($row = $res->fetch_row()){
@@ -479,7 +479,7 @@ class RecordsBatch
         $dtyID = $this->data['dtyID'];
         $dtyName = (@$this->data['dtyName'] ? "'".$this->data['dtyName']."'" : "id:".$this->data['dtyID']."");
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //get array of max allowed values per record type
         $query = "SELECT rst_RecTypeID,rst_MaxValues FROM defRecStructure WHERE rst_DetailTypeID = $dtyID and rst_RecTypeID in ("
@@ -613,7 +613,7 @@ class RecordsBatch
 
         $main_data = $this->data['actions'];
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $keep_autocommit = mysql__begin_transaction($mysqli);
 
         foreach ($main_data as $action_data) {
@@ -694,7 +694,7 @@ class RecordsBatch
         $dtyName = (@$this->data['dtyName'] ? "'".$this->data['dtyName']."'" : "id:".$this->data['dtyID']);
         $insert_new_value = false;
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $rval = $mysqli->real_escape_string($this->data['rVal']);
 
@@ -1054,7 +1054,7 @@ class RecordsBatch
         $partialRemove = @$this->data['subs'] == 1 || @$this->data['substr'] == 1;
         $wholeRemove = @$this->data['wholeval'] == 1;
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if($isDeleteAll){
             $searchClause = '1=1';
@@ -1323,7 +1323,7 @@ class RecordsBatch
         $rtyID_new = $this->data['rtyID_new'];
         $rtyName = (@$this->data['rtyName'] ? "'".$this->data['rtyName']."'" : "id:".$this->data['rtyID_new']);
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $processedRecIDs = array();//success
         $sqlErrors = array();
@@ -1385,7 +1385,7 @@ class RecordsBatch
             return $this->result_data;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $tot_count = count($this->recIDs);
 
@@ -1597,7 +1597,7 @@ class RecordsBatch
             return $this->result_data;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $date_mode = date(DATE_8601);
 
@@ -1702,7 +1702,7 @@ class RecordsBatch
     private function _updateUploadedFileIDs($ulf_ID_new, $dtl_IDs, $date_mode){
 
         if($ulf_ID_new>0 && !empty($dtl_IDs)){
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
             //6. Replace ulf_ID in dtl_UploadedFileID
             $query2 = 'UPDATE recDetails SET dtl_Modified="'.$date_mode
                 .'", dtl_UploadedFileID='.intval($ulf_ID_new).' WHERE dtl_ID in ('.implode(',',$dtl_IDs).')';
@@ -1731,7 +1731,7 @@ class RecordsBatch
             return $this->result_data;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //1. find external urls for field values
         $query = 'SELECT ulf_ObfuscatedFileID FROM recUploadedFiles, recDetails '
@@ -1761,7 +1761,7 @@ class RecordsBatch
     //
     public function removeSession(){
         if($this->session_id!=null){
-            mysql__update_progress($this->system->get_mysqli(), $this->session_id, false, 'REMOVE');
+            mysql__update_progress($this->system->getMysqli(), $this->session_id, false, 'REMOVE');
         }
     }
 
@@ -1836,9 +1836,9 @@ public methods
 
         $system = $this->system;
 
-        if($ugrID<1) {$ugrID = $system->get_user_id();}
+        if($ugrID<1) {$ugrID = $system->getUserId();}
 
-        if (!$system->has_access($ugrID)) {
+        if (!$system->hasAccess($ugrID)) {
             $system->addError(HEURIST_REQUEST_DENIED);
             return false;
         }else{
@@ -1862,7 +1862,7 @@ public methods
                 return false;
             }
 
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
 
             $record_ids = prepareIds($record_ids);//for snyk
             $tag_ids    = prepareIds($tag_ids);//for snyk
@@ -1887,7 +1887,7 @@ public methods
 
             //if $ugrID is not a group - create bookmarks
             $bookmarks_added = 0;
-            if ($ugrID==$system->get_user_id() ||
+            if ($ugrID==$system->getUserId() ||
                 mysql__select_value($mysqli, 'select ugr_Type from sysUGrps where ugr_ID ='.$ugrID)=='user')
             { //not bookmarked yet
                 $query = 'insert into usrBookmarks '
@@ -1922,7 +1922,7 @@ public methods
         $system = $this->system;
 
         if (!$ugrID) {
-            $ugrID = $system->get_user_id();
+            $ugrID = $system->getUserId();
         }
         if(!$ugrID) {return null;}
 
@@ -1935,8 +1935,8 @@ public methods
             $tag_name = preg_replace('/\\s+/', ' ', trim($tag_name));
             if(strlen($tag_name)>0){
 
-                $res = mysql__select_value($system->get_mysqli(), 'select tag_ID from usrTags where lower(tag_Text)=lower("'.
-                    $system->get_mysqli()->real_escape_string($tag_name).'") and tag_UGrpID='.$ugrID);
+                $res = mysql__select_value($system->getMysqli(), 'select tag_ID from usrTags where lower(tag_Text)=lower("'.
+                    $system->getMysqli()->real_escape_string($tag_name).'") and tag_UGrpID='.$ugrID);
                 if($res){
                     array_push($tag_ids, $res);
                 }elseif($isadd){
@@ -1969,7 +1969,7 @@ public methods
             return false;
         }
 
-        if (!$system->has_access(@$tag['tag_UGrpID'])) {
+        if (!$system->hasAccess(@$tag['tag_UGrpID'])) {
             $system->addError(HEURIST_REQUEST_DENIED);
             return false;
         }else{
@@ -1982,7 +1982,7 @@ public methods
                 }
             }
 
-            $res = mysql__insertupdate($system->get_mysqli(), "usrTags", "tag", $tag);
+            $res = mysql__insertupdate($system->getMysqli(), "usrTags", "tag", $tag);
             if(is_numeric($res) && $res>0){
                 return $res; //returns affected record id
             }else{
@@ -2003,13 +2003,13 @@ public methods
     public function createSubRecords(){
 
         // Can only be used by an administrator
-        if(!$this->system->is_admin()){
+        if(!$this->system->isAdmin()){
             $this->system->addError(HEURIST_ACTION_BLOCKED, 'Only database administrators can create sub records');
             return false;
         }
 
         $system = $this->system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $system->defineConstant('DT_PARENT_ENTITY');
         if(!defined('DT_PARENT_ENTITY')){
@@ -2248,7 +2248,7 @@ public methods
             return $this->result_data;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $date_mode = date(DATE_8601);// for tags, rec_modified and dtl_modified
 
         $operation = intval($this->data['op']);// number corresponding to an operation below
@@ -2457,7 +2457,7 @@ public methods
             return $this->result_data;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $date_mode = date(DATE_8601);// for tags, rec_modified and dtl_modified
 
         // Field details
@@ -2622,7 +2622,7 @@ public methods
             return $this->result_data;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $date_mode = date(DATE_8601);
 
         $dtyID = $this->data['dtyID'];
@@ -2906,13 +2906,13 @@ public methods
     public function createRecordLinksByMatching(){
 
         // Can only be used by an administrator
-        if(!$this->system->is_admin()){
+        if(!$this->system->isAdmin()){
             $this->system->addError(HEURIST_ACTION_BLOCKED, 'Only database administrators can add multiple links');
             return false;
         }
 
         $system = $this->system;
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $data = $this->data;
 

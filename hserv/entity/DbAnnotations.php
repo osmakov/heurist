@@ -122,7 +122,7 @@ class DbAnnotations extends DbEntityBase
             .'d1.dtl_DetailTypeID='.DT_URL .' AND d1.dtl_Value="'.$canvasUri.'"'
             .' AND d1.dtl_RecID=d2.dtl_RecID'
             .' AND d2.dtl_DetailTypeID='.$this->dtyAnnotationInfo;
-            return mysql__select_list2($this->system->get_mysqli(), $query);
+            return mysql__select_list2($this->system->getMysqli(), $query);
         }else{
             return array();
         }
@@ -137,7 +137,7 @@ class DbAnnotations extends DbEntityBase
             .'d1.dtl_DetailTypeID='.DT_ORIGINAL_RECORD_ID .' AND d1.dtl_Value="'.$uuid.'"'
             .' AND d1.dtl_RecID=d2.dtl_RecID'
             .' AND d2.dtl_DetailTypeID='.$this->dtyAnnotationInfo;
-            return mysql__select_value($this->system->get_mysqli(), $query);
+            return mysql__select_value($this->system->getMysqli(), $query);
         }else{
             return array();
         }
@@ -149,7 +149,7 @@ class DbAnnotations extends DbEntityBase
     private function findRecIDbyUUID($uuid){
         if(defined('DT_ORIGINAL_RECORD_ID')){
             $query = 'SELECT dtl_RecID FROM recDetails WHERE dtl_DetailTypeID='.DT_ORIGINAL_RECORD_ID.' AND dtl_Value="'.$uuid.'"';
-            $recordId = mysql__select_value($this->system->get_mysqli(), $query);
+            $recordId = mysql__select_value($this->system->getMysqli(), $query);
         }
         if(!$recordId){
             $recordId = 0;
@@ -256,7 +256,7 @@ class DbAnnotations extends DbEntityBase
         }
 
         $query = "SELECT dtl_Id, dtl_DetailTypeID, dtl_Value, ST_asWKT(dtl_Geo), dtl_UploadedFileID FROM recDetails WHERE dtl_RecID=$recordId ORDER BY dtl_DetailTypeID";
-        $dets = mysql__select_all($this->system->get_mysqli(), $query);
+        $dets = mysql__select_all($this->system->getMysqli(), $query);
         if(!$dets){
             return;
         }

@@ -78,12 +78,12 @@ class DbDefDetailTypes extends DbEntityBase
         $dtyID = $this->recordIDs[0];
 
         $query = 'select dtl_RecID from recDetails where dtl_DetailTypeID='.$dtyID;
-        $rec_IDs = mysql__select_list2($this->system->get_mysqli(), $query);
+        $rec_IDs = mysql__select_list2($this->system->getMysqli(), $query);
 
         if(is_array($rec_IDs) && !empty($rec_IDs)){
 
             $query = 'select dty_Name from defDetailTypes where dty_ID='.$dtyID;
-            $fld_name = mysql__select_value($this->system->get_mysqli(), $query);
+            $fld_name = mysql__select_value($this->system->getMysqli(), $query);
 
             $this->system->addError(HEURIST_ACTION_BLOCKED,
                 'You cannot delete field <strong>'. $fld_name .'</strong> as it is used <strong>'. count($rec_IDs) .'</strong> times in record data.<br><br>'
@@ -102,7 +102,7 @@ class DbDefDetailTypes extends DbEntityBase
 
         $ret = parent::prepareRecords();
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         //add specific field values
         foreach($this->records as $idx=>$record){
 
@@ -197,7 +197,7 @@ class DbDefDetailTypes extends DbEntityBase
             $dbID = $this->system->settings->get('sys_dbRegisteredID');
             if(!($dbID>0)) {$dbID = 0;}
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             foreach($this->records as $idx=>$record){
                 $dty_ID = @$record['dty_ID'];
@@ -229,7 +229,7 @@ class DbDefDetailTypes extends DbEntityBase
     //
     public function batch_action(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $this->need_transaction = false;
         $keep_autocommit = mysql__begin_transaction($mysqli);
@@ -482,7 +482,7 @@ class DbDefDetailTypes extends DbEntityBase
     //
     public function counts(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
         $res = null;
 
         if(@$this->data['mode'] == 'record_usage'){

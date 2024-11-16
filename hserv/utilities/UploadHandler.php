@@ -261,7 +261,7 @@ class UploadHandler
         }
 
         $system = new System();
-        $res = $system->verify_credentials($heurist_db);
+        $res = $system->verifyCredentials($heurist_db);
         if(!($res>0)){
             //not logged in
             $this->header(HEADER_403);
@@ -340,14 +340,14 @@ class UploadHandler
             substr($_SERVER['SCRIPT_NAME'],0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
     }
 
-    protected function get_user_id() {
+    protected function getSessionId() {
         @session_start();
         return session_id();
     }
 
     protected function get_user_path() {
         if ($this->options['user_dirs']) {
-            return $this->get_user_id().'/';
+            return $this->getSessionId().'/';
         }
         return '';
     }

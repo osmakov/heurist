@@ -91,7 +91,7 @@ if( !$system->init(null, false,false) ){
     exit("Cannot establish connection to sql server\n");
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 if($arg_database=='all'){

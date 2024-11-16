@@ -33,7 +33,7 @@ if( @$_REQUEST['isalive']==1){
     $system = new hserv\System();
     $is_inited = $system->init(@$_REQUEST['db'], true, false);
     if($is_inited){
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $mysqli->close();
         print 'ok';
     }else{

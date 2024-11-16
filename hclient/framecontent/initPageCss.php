@@ -43,7 +43,7 @@ Scrollbar tracks and thumbs  rgba(0,0,0,0.3)/#bac4cb
     if($lt!='H5Default'){
 
 //special webfont for database
-if(isset($system) && $system->is_inited()){
+if(isset($system) && $system->isInited()){
     $font_styles = $system->settings->getWebFontsLinks('ui-sans-serif');
     if(!isEmptyStr($font_styles)){
          echo "<style> $font_styles </style>";

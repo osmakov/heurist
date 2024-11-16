@@ -31,7 +31,7 @@ class DbSysImportFiles extends DbEntityBase
 
         $this->requireAdminRights = false;
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $this->is_table_exists = hasTable($mysqli, 'sysImportFiles');
 
@@ -197,7 +197,7 @@ class DbSysImportFiles extends DbEntityBase
             $delete_all_import_tables = true;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $res = mysql__select_all($mysqli,
                 "select sif_ID, sif_ProcessingInfo  from sysImportFiles".$where, 1);

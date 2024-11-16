@@ -33,10 +33,10 @@ $is_delete_allowed = (strlen(@$passwordForDatabaseDeletion) > 14);
 
 set_time_limit(0);//no limit
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 $dbs = mysql__getdatabases4($mysqli, true, $starts_with);
 
-$sysadmin = $system->is_system_admin();
+$sysadmin = $system->isSystemAdmin();
 
 /**
 * Selects the value after a query

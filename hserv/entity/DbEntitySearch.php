@@ -384,7 +384,7 @@ class DbEntitySearch
 
             if($value=='') {continue;}
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             if($between){
                 $values = explode('<>', $value);
@@ -511,7 +511,7 @@ class DbEntitySearch
     //
     public function execute($query, $is_ids_only, $entityName=null, $calculatedFields=null, $multiLangs=null){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $res = $mysqli->query($query);
         if (!$res){

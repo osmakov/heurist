@@ -43,7 +43,7 @@ $rv = array('num'=>$_REQUEST['num']);
 $system = new hserv\System();
 if(!$system->init(@$_REQUEST['db'])){
     print json_encode( $system->getError() );
-}elseif(!$system->has_access() ){
+}elseif(!$system->hasAccess() ){
     print json_encode( $system->addError(HEURIST_REQUEST_DENIED) );
 }elseif ( !$url  ||  (!intval($_REQUEST['num'])  &&  $_REQUEST['num'] != 'popup')) {
     print json_encode( $system->addError(HEURIST_INVALID_REQUEST), 'URL is not defined' );

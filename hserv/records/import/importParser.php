@@ -144,7 +144,7 @@ public static function encodeAndGetPreview($upload_file_name, $params)
 private static function validateUploadedFile($upload_file_name, $contact_team)
 {
     if (!$upload_file_name) {
-        $error = error_WrongParam('File') . '<br><br>' . $contact_team;
+        $error = errorWrongParam('File') . '<br><br>' . $contact_team;
     } elseif (!file_exists($upload_file_name)) {
         $error = ' does not exist.<br><br>Please clear your browser cache and try again. ' . $contact_team;
     } elseif (!is_readable($upload_file_name)) {
@@ -806,7 +806,7 @@ private static function _saveEncodedFilename($encoded_filename)
         return false;
     }
 
-    $mysqli = self::$system->get_mysqli();
+    $mysqli = self::$system->getMysqli();
 
     // Check if the session table exists
     $is_exist = hasTable($mysqli, 'import_tmp_file');
@@ -850,7 +850,7 @@ private static function _saveEncodedFilename($encoded_filename)
 }
 
 private static function _getEncodedFilename($encoded_filename_id){
-    $mysqli = self::$system->get_mysqli();
+    $mysqli = self::$system->getMysqli();
     $encoded_filename = mysql__select_value($mysqli,
         'SELECT imp_filename FROM `import_tmp_file` WHERE imp_ID='.intval($encoded_filename_id));
 
@@ -858,7 +858,7 @@ private static function _getEncodedFilename($encoded_filename_id){
 }
 
 private static function _deleteEncodedFilename($encoded_filename_id){
-    $mysqli = self::$system->get_mysqli();
+    $mysqli = self::$system->getMysqli();
     $query = 'DELETE FROM `import_tmp_file` WHERE imp_ID='.intval($encoded_filename_id);
     $mysqli->query($query);
 }
@@ -1095,7 +1095,7 @@ private static function saveToDatabase($preproc, $prepared_filename=null){
     $columns = substr($columns,0,-1);
     $counts = $counts." count(*) ";
 
-    $mysqli = self::$system->get_mysqli();
+    $mysqli = self::$system->getMysqli();
 
     if (!$mysqli->query($query)) {
         self::$system->addError(HEURIST_DB_ERROR, "Cannot create import table", $mysqli->error);

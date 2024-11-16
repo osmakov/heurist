@@ -35,7 +35,7 @@ loads main page for logo, icon, banner, style
 */
 
 $system->defineConstants();
-$hasAccess = ($system->is_admin());
+$hasAccess = ($system->isAdmin());
 ?>
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">

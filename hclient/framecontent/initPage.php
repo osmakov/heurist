@@ -57,7 +57,7 @@ if(!$isSystemInited){
 if(defined('IS_INDEX_PAGE')){
 
     //verify database version against minimal required
-    $current_db_version = getDbVersion($system->get_mysqli());
+    $current_db_version = getDbVersion($system->getMysqli());
     
     if(!$current_db_version){
         $message = 'Cannnot obtain current database version';
@@ -72,7 +72,7 @@ if(defined('IS_INDEX_PAGE')){
     }
 
     //check for missed tables
-    $missed = hasAllTables($system->get_mysqli());
+    $missed = hasAllTables($system->getMysqli());
 
     if(is_array($missed)){
         if(!empty($missed)){
@@ -99,11 +99,11 @@ if(defined('IS_INDEX_PAGE')){
     }
 }
 
-if(!$system->has_access() && !empty(@$_REQUEST['user']) && !empty(@$_REQUEST['pwd'])){ // attempt login with provided creds
+if(!$system->hasAccess() && !empty(@$_REQUEST['user']) && !empty(@$_REQUEST['pwd'])){ // attempt login with provided creds
 
     $user_pwd = USanitize::getAdminPwd();
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $ugr_ID = is_numeric($_REQUEST["user"]) && $_REQUEST["user"] > 0 ? intval($_REQUEST["user"]) : null;
     $username = "";
 
@@ -143,12 +143,12 @@ if(!$system->has_access() && !empty(@$_REQUEST['user']) && !empty(@$_REQUEST['pw
 $login_warning = 'To perform this action you must be logged in';
 $invalid_access = true;
 
-$is_admin = $system->is_admin();
+$is_admin = $system->isAdmin();
 
 //
 // to limit access to particular page
 //
-if(defined('LOGIN_REQUIRED') && !$system->has_access()){
+if(defined('LOGIN_REQUIRED') && !$system->hasAccess()){
     //No Need to show error message when login is required, login popup will be shown
     //$message = $login_warning
 
@@ -157,7 +157,7 @@ if(defined('LOGIN_REQUIRED') && !$system->has_access()){
     $message = $login_warning.' as Administrator of group \'Database Managers\'';
     include_once ERROR_REDIR;
     exit;
-}elseif(defined('OWNER_REQUIRED') && !$system->is_dbowner()){
+}elseif(defined('OWNER_REQUIRED') && !$system->isDbOwner()){
     $message = $login_warning.' as Database Owner';
     include_once ERROR_REDIR;
     exit;

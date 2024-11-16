@@ -38,7 +38,7 @@ require_once dirname(__FILE__).'/../setup/dbupgrade/DBUpgrade_1.3.0_to_1.3.14.ph
 
 global $mysqli, $databases;
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 //find all database
 $databases = mysql__getdatabases4($mysqli, false);
@@ -94,7 +94,7 @@ function checkVersionDatabase(){
                         if(!$rep){
                             $error = $system->getError();
                             if($error){
-                                print error_Div($error['message'].BR.@$error['sysmsg']);
+                                print errorDiv($error['message'].BR.@$error['sysmsg']);
                             }
                             break;
                         }
@@ -127,7 +127,7 @@ function verifySpatialVocab($sName,$f_code,$v_code){
                 .$db_name.'.defDetailTypes WHERE  dty_OriginatingDBID='.intval($f_code[0]).' AND dty_IDInOriginatingDB='.intval($f_code[1]);
             $fields = mysql__select_row($mysqli, $query);
             if($fields){
-                print error_Div('FIELD HAS DIFFERENT NAME '.htmlspecialchars($fields[1]));
+                print errorDiv('FIELD HAS DIFFERENT NAME '.htmlspecialchars($fields[1]));
             }
             return;
         }
@@ -139,14 +139,14 @@ function verifySpatialVocab($sName,$f_code,$v_code){
 
             if(!($fields[3]==$f_code[0] && $fields[4]==$f_code[1])){
                 //need change ccode for field
-                print error_Div('NEED CHANGE FIELD CCODES');
+                print errorDiv('NEED CHANGE FIELD CCODES');
             }
 
             $query = 'select trm_ID, trm_Label, trm_OriginatingDBID, trm_IDInOriginatingDB from '
                 .$db_name.'.defTerms where trm_ID='.intval($fields[2]);
             $vocab = mysql__select_row($mysqli, $query);
             if(!$vocab){
-                 print error_Div('VOCAB NOT DEFINED');
+                 print errorDiv('VOCAB NOT DEFINED');
                  return;
             }
 
@@ -160,7 +160,7 @@ function verifySpatialVocab($sName,$f_code,$v_code){
                             .' where trm_ID='.intval($fields[2]);
                         $mysqli->query($query);
                         if($mysqli->error){
-                            print error_Div($mysqli->error);
+                            print errorDiv($mysqli->error);
                             exit;
                         }
                     }
@@ -212,7 +212,7 @@ function findWrongChars(){
                     }catch(Exception $exception) {
                         $isOK = false;
                         $wrong_string = $exception->getMessage();
-                        print error_Div($db_name.' rtyID='.$id.'. invalid: '.$wrong_string);
+                        print errorDiv($db_name.' rtyID='.$id.'. invalid: '.$wrong_string);
                     }
                 }//foreach
 
@@ -710,7 +710,7 @@ AMP =>TS_AMP,
                 if(! $res33 )
                 {
                     $isOK = false;
-                    print error_Div('Record #'.$row[3].'. Cannot replace value in record details. SQL error: '.$mysqli->error);
+                    print errorDiv('Record #'.$row[3].'. Cannot replace value in record details. SQL error: '.$mysqli->error);
                     $mysqli->rollback();
                     break;
                 }

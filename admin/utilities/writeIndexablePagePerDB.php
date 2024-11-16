@@ -118,7 +118,7 @@ if(substr($base_url, -1, 1) != '/'){
     $base_url .= '/';
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 // Consider to use setting for web root in configIni.php

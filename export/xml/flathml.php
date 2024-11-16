@@ -196,7 +196,7 @@ $relSrcDT = ($system->defineConstant('DT_PRIMARY_RESOURCE')?DT_PRIMARY_RESOURCE:
 $relTrgDT = ($system->defineConstant('DT_TARGET_RESOURCE')?DT_TARGET_RESOURCE:0);
 $relTypDT = ($system->defineConstant('DT_RELATION_TYPE') ? DT_RELATION_TYPE : 0);
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 // Get database registration ID
 $dbID = $system->settings->get('sys_dbRegisteredID');
@@ -370,7 +370,7 @@ $INCLUDE_FILE_CONTENT = (@$_REQUEST['fc'] && $_REQUEST['fc'] == - 1
 $SUPRESS_LOOPBACKS = (@$_REQUEST['slb'] && $_REQUEST['slb'] == 0 ? false : true);// default to supress loopbacks or gives oneside of a relationship record  ARTEM:NOT USED ANYMORE
 $FRESH = (@$_REQUEST['f'] && $_REQUEST['f'] == 1 ? true : false);
 //$PUBONLY = (((@$_REQUEST['pub_ID'] && is_numeric($_REQUEST['pub_ID'])) ||
-$PUBONLY = ((@$_REQUEST['pubonly'] && $_REQUEST['pubonly'] > 0) ? true : (!$system->has_access() ? true : false));
+$PUBONLY = ((@$_REQUEST['pubonly'] && $_REQUEST['pubonly'] > 0) ? true : (!$system->hasAccess() ? true : false));
 
 $filterString = (@$_REQUEST['rtfilters'] ? $_REQUEST['rtfilters'] : null);
 if ($filterString && preg_match(REGEX_JSON_CHECK, $filterString)) {
@@ -453,11 +453,11 @@ if (array_key_exists('q', $_REQUEST)) {
 
 $ACCESSABLE_OWNER_IDS = mysql__select_list($mysqli,
     'sysUsrGrpLinks left join sysUGrps grp on grp.ugr_ID=ugl_GroupID', 'ugl_GroupID', 'ugl_UserID='
-    . $system->get_user_id() . ' and grp.ugr_Type != "user" order by ugl_GroupID');
+    . $system->getUserId() . ' and grp.ugr_Type != "user" order by ugl_GroupID');
 
 
-if ($system->has_access()) { //logged in
-    array_push($ACCESSABLE_OWNER_IDS, $system->get_user_id());
+if ($system->hasAccess()) { //logged in
+    array_push($ACCESSABLE_OWNER_IDS, $system->getUserId());
     if (!in_array(0, $ACCESSABLE_OWNER_IDS)) {
         array_push($ACCESSABLE_OWNER_IDS, 0);
     }
@@ -479,7 +479,7 @@ function predicateRecordVisibility($dst='trg'){
     return  (!empty($ACCESSABLE_OWNER_IDS) && !$PUBONLY
             ? '('.$dst.'.rec_OwnerUGrpID in (' .join(',', prepareIds($ACCESSABLE_OWNER_IDS, true)) . ') OR '
             : '(') .
-    (($system->has_access() && !$PUBONLY) ? 'NOT '.$dst.'.rec_NonOwnerVisibility = "hidden")' : $dst.'.rec_NonOwnerVisibility = "public")');
+    (($system->hasAccess() && !$PUBONLY) ? 'NOT '.$dst.'.rec_NonOwnerVisibility = "hidden")' : $dst.'.rec_NonOwnerVisibility = "public")');
 
 }
 
@@ -1882,7 +1882,7 @@ $params['needall'] = 1; //to avoid search_detail_limit limit
 $error_msg  = null;
 
 if($rectype_templates){
-    $result = dbs_GetRectypeIDs($system->get_mysqli(), $rectype_templates);
+    $result = dbs_GetRectypeIDs($system->getMysqli(), $rectype_templates);
     $result['records'] = $result;
     $result['reccount'] = count($result['records']);
 }else{

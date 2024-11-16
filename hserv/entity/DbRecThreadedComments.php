@@ -38,7 +38,7 @@ class DbRecThreadedComments extends DbEntityBase
     public function search(){
 
         if(!@$this->data['cmt_OwnerUgrpID']){
-            $this->data['cmt_OwnerUgrpID'] = $this->system->get_user_id();
+            $this->data['cmt_OwnerUgrpID'] = $this->system->getUserId();
         }
 
         if(parent::search()===false){
@@ -88,11 +88,11 @@ class DbRecThreadedComments extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_dbowner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
+        if(!$this->system->isDbOwner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
 
-            $ugrID = $this->system->get_user_id();
+            $ugrID = $this->system->getUserId();
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_norights = mysql__select_list($mysqli, $this->config['tableName'], $this->primaryField,
                     'cmt_ID in ('.implode(',', $this->recordIDs).') AND cmt_OwnerUgrpID!='.$ugrID);
@@ -126,7 +126,7 @@ class DbRecThreadedComments extends DbEntityBase
             $isinsert = ($rec_ID<1);
             if($isinsert){
                 if(!($this->records[$idx]['cmt_OwnerUgrpID']>0)){
-                    $this->records[$idx]['cmt_OwnerUgrpID'] = $this->system->get_user_id();
+                    $this->records[$idx]['cmt_OwnerUgrpID'] = $this->system->getUserId();
                 }
             }
             $this->records[$idx]['cmt_Modified'] = date(DATE_8601);//reset
@@ -151,7 +151,7 @@ class DbRecThreadedComments extends DbEntityBase
                 return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         foreach($this->records as $record){
 

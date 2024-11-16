@@ -123,7 +123,7 @@ $edit_OldEditor = (@$_REQUEST['edit']==1);
 
 $system->defineConstants();
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $isEmptyHomePage = false;
 $open_page_or_record_on_init = 0;
@@ -181,10 +181,10 @@ if($rec==null){
 }
 
 $hasAccess = (($rec['rec_NonOwnerVisibility'] == 'public') ||
-               $system->is_admin() ||
-    ( ($system->get_user_id()>0) &&
+               $system->isAdmin() ||
+    ( ($system->getUserId()>0) &&
             ($rec['rec_NonOwnerVisibility'] !== 'hidden' ||    //visible for logged
-             $system->is_member($rec['rec_OwnerUGrpID']) )) );//owner
+             $system->isMember($rec['rec_OwnerUGrpID']) )) );//owner
 
 if(!$hasAccess){
 
@@ -199,7 +199,7 @@ if(!$hasAccess){
 
 $showWarnAboutPublic = !$edit_OldEditor && ($rec['rec_NonOwnerVisibility'] != 'public');
 
-$hasAccess = ($system->is_admin() || $system->is_member($rec['rec_OwnerUGrpID']));
+$hasAccess = ($system->isAdmin() || $system->isMember($rec['rec_OwnerUGrpID']));
 
 $site_owner = user_getDbOwner($mysqli);//info about user #2
 

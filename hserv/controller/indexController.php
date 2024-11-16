@@ -46,7 +46,7 @@ require_once dirname(__FILE__).'/../../autoload.php';
         $allow_action = false;
         if($system->init($req_params['db'])){
 
-            if($system->is_dbowner()){
+            if($system->isDbOwner()){
                 $allow_action = true;
             }else{
                 //sysadmin protection
@@ -55,7 +55,7 @@ require_once dirname(__FILE__).'/../../autoload.php';
 
             if($allow_action){
                 //get database owner credentials
-                $dbowner = user_getByField($system->get_mysqli(), 'ugr_ID', 2);
+                $dbowner = user_getByField($system->getMysqli(), 'ugr_ID', 2);
 
                 $req_params['usrPassword'] = $dbowner['ugr_Password'];
                 $req_params['usrEmail']    = $dbowner['ugr_eMail'];

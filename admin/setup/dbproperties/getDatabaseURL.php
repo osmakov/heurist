@@ -79,7 +79,7 @@ if($isOutSideRequest){ //this is request from outside - redirect to master index
         ConceptCode::setSystem($system2);
         $rty_ID_registered_database = ConceptCode::getRecTypeLocalID(HEURIST_INDEX_DBREC);
 
-        $rec = mysql__select_row_assoc($system2->get_mysqli(),
+        $rec = mysql__select_row_assoc($system2->getMysqli(),
             'select rec_Title, rec_URL from Records where rec_RecTypeID='
             .$rty_ID_registered_database.' and rec_ID='  //1-22
             .$database_id);
@@ -91,7 +91,7 @@ if($isOutSideRequest){ //this is request from outside - redirect to master index
             }
 
         }else{
-            $err = $system2->get_mysqli()->error;
+            $err = $system2->getMysqli()->error;
             if(err){
                 $error_msg = 'Heurist Reference Index database is not accessible at the moment. Please try later';
             }else{

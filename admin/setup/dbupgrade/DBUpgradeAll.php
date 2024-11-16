@@ -38,7 +38,7 @@ require_once dirname(__FILE__).'/../../../admin/setup/dbupgrade/DBUpgrade.php';
 print '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px">';
 
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
     //1. find all database
     $query = 'show databases';
@@ -79,11 +79,11 @@ $mysqli = $system->get_mysqli();
             $res = doUpgradeDatabase($system, $db_name, 1, 3, false);
             if(!$res){
 
-                print error_Div('Error: Unable upgrade '.htmlspecialchars($db_name));
+                print errorDiv('Error: Unable upgrade '.htmlspecialchars($db_name));
 
                 $error = $system->getError();
                 if($error){
-                    print error_Div($error['message'].BR.@$error['sysmsg']);
+                    print errorDiv($error['message'].BR.@$error['sysmsg']);
                 }
                 break;
             }

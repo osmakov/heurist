@@ -51,8 +51,8 @@ class DbSysDatabases extends DbEntityBase
         $where = array();
         $current_user_email = null;
 
-        $mysqli = $this->system->get_mysqli();
-        $user = user_getById($mysqli, $this->system->get_user_id());
+        $mysqli = $this->system->getMysqli();
+        $user = user_getById($mysqli, $this->system->getUserId());
         if($user){
             $current_user_email = $user['ugr_eMail'];
         }
@@ -61,7 +61,7 @@ class DbSysDatabases extends DbEntityBase
         $records = array();
 
         $query = "show databases where `database` like '".HEURIST_DB_PREFIX."%'";
-        $res = $this->system->get_mysqli()->query($query);
+        $res = $this->system->getMysqli()->query($query);
 
         $query = array();
         while ($row = $res->fetch_row()) {

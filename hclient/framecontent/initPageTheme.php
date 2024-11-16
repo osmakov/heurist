@@ -55,7 +55,7 @@ if(isset($site_colors) && $site_colors!=null){
             $system->init(@$_REQUEST['db']);
         }
     }
-    if($system->is_inited()){
+    if($system->isInited()){
         $user = $system->getCurrentUser();
         $ut = @$user['ugr_Preferences']['custom_theme'];
         if($ut!=null){

@@ -29,18 +29,18 @@ if(!isset($system)){
     $system = new hserv\System();
 }
 
-if(!$system->is_inited()){
+if(!$system->isInited()){
     $system->init(@$_REQUEST['db'], false);//init wihout db
 }
 
-if( !$system->is_inited() ){  //cannot init system (apparently connection to Database Server is wrong or server is down)
+if( !$system->isInited() ){  //cannot init system (apparently connection to Database Server is wrong or server is down)
     $err = $system->getError();
     $error_msg = @$err['message'];
 }
 
-if($system->get_mysqli()!=null) { //server is connected
+if($system->getMysqli()!=null) { //server is connected
 
-    $list =  mysql__getdatabases4($system->get_mysqli());
+    $list =  mysql__getdatabases4($system->getMysqli());
     if(!$is_json && empty($list)){
         //redirect to create database
         redirectURL(HEURIST_BASE_URL . 'startup/index.php');

@@ -28,7 +28,7 @@ class DbUsrRecPermissions extends DbEntityBase
 
     public function init(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $this->is_table_exists = hasTable($mysqli, 'sysImportFiles');
 
@@ -143,7 +143,7 @@ class DbUsrRecPermissions extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if($this->system->is_admin()){  //admin can always change any record
+        if($this->system->isAdmin()){  //admin can always change any record
             return true;
         }else{
             $recids = array();
@@ -151,7 +151,7 @@ class DbUsrRecPermissions extends DbEntityBase
                 $recids[] = $record['rcp_RecID'];
             }
             $recids = array_unique($recids);
-            $grp_ids = $this->system->get_user_group_ids();//current user groups ids + itself
+            $grp_ids = $this->system->getUserGroupIds();//current user groups ids + itself
 
             //verify that current owner is "everyone" or current user is member of owner group
             $query = 'SELECT count(rec_OwnerUGrpID) FROM Records WHERE '
@@ -160,7 +160,7 @@ class DbUsrRecPermissions extends DbEntityBase
                 .'(rec_OwnerUGrpID=0 OR '
                 .predicateId('rec_OwnerUGrpID',$grp_ids).')';
 
-            $cnt = mysql__select_value($this->system->get_mysqli(), $query);
+            $cnt = mysql__select_value($this->system->getMysqli(), $query);
             if($cnt<count($recids)){
 
                 if(count($recids)==1){
@@ -220,7 +220,7 @@ class DbUsrRecPermissions extends DbEntityBase
         $results = array();
 
         //start transaction
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $keep_autocommit = mysql__begin_transaction($mysqli);
 
@@ -265,7 +265,7 @@ class DbUsrRecPermissions extends DbEntityBase
     public function delete($disable_foreign_checks = false){
 
         //extract records from $_REQUEST data
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if(!@$this->data['rcp_RecID']){ //array of record ids
 
@@ -295,7 +295,7 @@ class DbUsrRecPermissions extends DbEntityBase
             $group_ids_to_delete = prepareIds($this->data['rcp_UGrpID']);
 
             //current user must be a member of all provided groups
-            $grp_ids = $this->system->get_user_group_ids();//current user groups ids + itself
+            $grp_ids = $this->system->getUserGroupIds();//current user groups ids + itself
 
             foreach ($group_ids_to_delete as $id){
                 if(!in_array($id, $grp_ids)){

@@ -39,7 +39,7 @@ class DbVerify {
 
     public function __construct($system) {
        $this->system = $system;
-       $this->mysqli = $system->get_mysqli();
+       $this->mysqli = $system->getMysqli();
     }
 
     //
@@ -641,7 +641,7 @@ class DbVerify {
             $res = $mysqli->query( $query );
             if(! $res )
             {
-                $resMsg = error_Div('Cannot delete invalid pointers from Records');
+                $resMsg = errorDiv('Cannot delete invalid pointers from Records');
                 $resStatus = false;
             }else{
                 $wasdeleted = $mysqli->affected_rows;
@@ -768,7 +768,7 @@ class DbVerify {
             $res = $mysqli->query( $query );
             if(! $res )
             {
-                $resMsg = error_Div($error_msg);
+                $resMsg = errorDiv($error_msg);
                 $resStatus = false;
             }else{
                 $wasdeleted1 = $mysqli->affected_rows;
@@ -875,7 +875,7 @@ ORDER BY child.dtl_RecID";
             $res = $mysqli->query( $query );
             if(! $res )
             {
-                $resMsg .= error_Div($error_msg);
+                $resMsg .= errorDiv($error_msg);
                 $resStatus = false;
             }else{
                 $wasdeleted2 = $mysqli->affected_rows;
@@ -1867,7 +1867,7 @@ HEADER;
                                 list($r_type, $r_value) = prepareGeoValue($mysqli, $r_value);
                                 if($r_type===false){
                                     $isOK = false;
-                                    $resMsg .=  error_Div('Record #'.$row['rec_ID'].'. '.$r_value);
+                                    $resMsg .=  errorDiv('Record #'.$row['rec_ID'].'. '.$r_value);
                                     $mysqli->rollback();
                                     break;
                                 }
@@ -1877,7 +1877,7 @@ HEADER;
                                 if(! $res33 )
                                 {
                                     $isOK = false;
-                                    $resMsg .=  error_Div('Record #'.$row['rec_ID'].'. Cannot replace geo in record details. SQL error: '.$mysqli->error);
+                                    $resMsg .=  errorDiv('Record #'.$row['rec_ID'].'. Cannot replace geo in record details. SQL error: '.$mysqli->error);
                                     $mysqli->rollback();
                                     break;
                                 }
@@ -2300,7 +2300,7 @@ HEADER;
                                 if(!$update_res)
                                 {
                                     $resStatus = false;
-                                    $resMsg = error_Div('Cannot replace terms in record details. Query :'
+                                    $resMsg = errorDiv('Cannot replace terms in record details. Query :'
                                             .$update_query.'  SQL error: '.$mysqli->error);
                                     $mysqli->rollback();
                                     fclose($this->out);

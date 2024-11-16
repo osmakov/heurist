@@ -36,7 +36,7 @@ $system = new hserv\System();
 $sysadmin_pwd = USanitize::getAdminPwd();
 
 if($sysadmin_pwd==null){
-    $system->addError(HEURIST_INVALID_REQUEST, error_WrongParam('Password'));
+    $system->addError(HEURIST_INVALID_REQUEST, errorWrongParam('Password'));
 }else{
 
     $database_to_delete = filter_var(@$_REQUEST['database'], FILTER_SANITIZE_STRING);
@@ -76,17 +76,17 @@ if($sysadmin_pwd==null){
 
                     if($is_delete_current_db){
 
-                        $user = user_getById($system->get_mysqli(), $system->get_user_id());//user in current db
+                        $user = user_getById($system->getMysqli(), $system->getUserId());//user in current db
 
                         $allow_deletion = false;
                         //find the same user in database to be deleted
                         //find user by email
-                        $usr = user_getByField($system->get_mysqli(), 'ugr_eMail', $user['ugr_eMail'], $dbname_full);
+                        $usr = user_getByField($system->getMysqli(), 'ugr_eMail', $user['ugr_eMail'], $dbname_full);
                         if(@$usr['ugr_ID']==2){ //database owner
                             $allow_deletion = true;
                         }else{
                             //allowed if user is database admnistrator
-                            $groups = user_getWorkgroups($system->get_mysqli(), $usr['ugr_ID'], false, $dbname_full);
+                            $groups = user_getWorkgroups($system->getMysqli(), $usr['ugr_ID'], false, $dbname_full);
                             $allow_deletion = (@$groups[1]=='admin');
                         }
                     }
@@ -98,7 +98,7 @@ if($sysadmin_pwd==null){
                 }else{
                     list($dbname_full, $dbname ) = mysql__get_names( $_REQUEST['database'] );
                     //find user by email
-                    $usr = user_getByField($system->get_mysqli(), 'ugr_eMail', $user['ugr_eMail'], $dbname_full);
+                    $usr = user_getByField($system->getMysqli(), 'ugr_eMail', $user['ugr_eMail'], $dbname_full);
                     if(@$usr['ugr_ID']==2){ //database owner
                         $allow_deletion = true;
                     }
@@ -107,7 +107,7 @@ if($sysadmin_pwd==null){
                     if($allow_deletion)
                     {
                         //find owner of database
-                        $usr_owner = user_getByField($system->get_mysqli(), 'ugr_ID', 2, $dbname_full);
+                        $usr_owner = user_getByField($system->getMysqli(), 'ugr_ID', 2, $dbname_full);
 
                         //not verbose
                         $res = DbUtils::databaseDrop(false, $database_to_delete, $create_arc);

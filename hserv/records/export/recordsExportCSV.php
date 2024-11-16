@@ -60,7 +60,7 @@ private static function initialize()
 
     global $system;
     self::$system  = $system;
-    self::$mysqli = $system->get_mysqli();
+    self::$mysqli = $system->getMysqli();
     self::$initialized = true;
     self::$version = 3;
 }
@@ -70,7 +70,7 @@ private static function initialize()
 //
 public static function setSession($system){
     self::$system  = $system;
-    self::$mysqli = $system->get_mysqli();
+    self::$mysqli = $system->getMysqli();
     self::$initialized = true;
 }
 
@@ -506,7 +506,7 @@ public static function output($data, $params){
                 // create a temporary file
                 $fd = fopen(TEMP_MEMORY, 'w');//less than 1MB in memory otherwise as temp file
                 if (false === $fd) {
-                    self::$system->error_exit_api('Failed to create temporary file for csv output');
+                    self::$system->errorExitApi('Failed to create temporary file for csv output');
                 }
                 $streams[$rty_ID] = $fd;
 
@@ -819,7 +819,7 @@ public static function output($data, $params){
                     if($cnt>2000){
 
                         if(strlen(implode(',',$record_row))*$cnt*1.5>$memory_limit){
-                            self::$system->error_exit_api('Sorry, this export exceeds the limit set for this server. Please reduce the number of records or the number of fields selected');
+                            self::$system->errorExitApi('Sorry, this export exceeds the limit set for this server. Please reduce the number of records or the number of fields selected');
                         }
 
                     }

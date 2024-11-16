@@ -112,7 +112,7 @@ if(!defined('PDIR')){
 
                 <?php
 
-                    if($system->is_admin() && @$_REQUEST['mode']=='action' && $src_maj==$trg_maj){ //upgrade minor versions
+                    if($system->isAdmin() && @$_REQUEST['mode']=='action' && $src_maj==$trg_maj){ //upgrade minor versions
                     //2d iteration ACTION!!!
                         $upgrade_success = true;
                         $keep_minver = $src_min;
@@ -173,7 +173,7 @@ if(!defined('PDIR')){
                                 }else{
                                     $error = $system->getError();
                                     if($error){
-                                        print error_Div($error['message'].BR.@$error['sysmsg']);
+                                        print errorDiv($error['message'].BR.@$error['sysmsg']);
                                     }
 
                                     $upgrade_success = false;
@@ -189,7 +189,7 @@ if(!defined('PDIR')){
                         }
 
                         if( (!($trg_min==3 && $trg_sub>0)) && $src_min>$keep_minver){ //update database - set version up to date
-                            $mysqli = $system->get_mysqli();
+                            $mysqli = $system->getMysqli();
                             mysql__usedatabase($mysqli, HEURIST_DBNAME);
                             $query1 = "update sysIdentification set sys_dbSubVersion=$src_min, sys_dbSubSubVersion=0 where 1";
                             $res1 = $mysqli->query($query1);
@@ -217,7 +217,7 @@ if(!defined('PDIR')){
 
                     <?php
 
-                        if($system->is_admin()){
+                        if($system->isAdmin()){
 
                             if($src_maj!=$trg_maj){
                                 print '<p style="font-weight:bold">Automatic upgrade applies to minor version updates only (ie. within database version 1, 2 etc.).'.CONTACT_HEURIST_TEAM_PLEASE.' to upgrade major version (1 => 2, 2 => 3)</p>';
@@ -349,7 +349,7 @@ $description = 'Modify tables:  defRecStructure(rst_SemanticReferenceURL,rst_Ter
                     Please check whether this file is valid. <?php echo CONTACT_HEURIST_TEAM_PLEASE;?> if needed<br>
                 </div>
 <?php
-                if(!$system->is_admin()){
+                if(!$system->isAdmin()){
                 ?>
         <div class="ui-state-error" style="width:90%;margin:auto;margin-top:10px;padding:10px;">
             <span class="ui-icon ui-icon-alert" style="float: left; margin: .3em;"></span>

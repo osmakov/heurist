@@ -248,11 +248,11 @@ class DbRecUploadedFiles extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_dbowner() && !isEmptyArray($this->recordIDs)){
+        if(!$this->system->isDbOwner() && !isEmptyArray($this->recordIDs)){
 
-            $ugr_ID = $this->system->get_user_id();
+            $ugr_ID = $this->system->getUserId();
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_norights = mysql__select_list($mysqli, $this->config['tableName'], $this->primaryField,
                     $this->primaryField.' in ('.implode(',', $this->recordIDs).') AND ulf_UploaderUGrpID != '.$ugr_ID.')');
@@ -297,7 +297,7 @@ class DbRecUploadedFiles extends DbEntityBase
             */
 
             $mimetypeExt = strtolower($fieldvalues['ulf_MimeExt']);
-            $mimeType = mysql__select_value($this->system->get_mysqli(),
+            $mimeType = mysql__select_value($this->system->getMysqli(),
                     'select fxm_Mimetype from defFileExtToMimetype where fxm_Extension="'.addslashes($mimetypeExt).'"');
 
             if(!$mimeType){
@@ -416,7 +416,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             }
 
             if($isinsert){
-                $this->records[$idx]['ulf_UploaderUGrpID'] = $this->system->get_user_id();
+                $this->records[$idx]['ulf_UploaderUGrpID'] = $this->system->getUserId();
                 $this->records[$idx]['ulf_Added'] = date(DATE_8601);
             }else{
                 //do not change these params on update
@@ -440,7 +440,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             }
             if(strpos($mimeType,'/')>0){ //this is mimetype - find extension
 
-                $mysqli = $this->system->get_mysqli();
+                $mysqli = $this->system->getMysqli();
 
                 $query = 'select fxm_Extension from defFileExtToMimetype where fxm_Mimetype="'.
                 $mysqli->real_escape_string($mimeType).'"';
@@ -559,7 +559,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                         $file2['ulf_FileName'] = $this->records[$rec_idx]['ulf_FileName'];
                     }
 
-                    $res = mysql__insertupdate($this->system->get_mysqli(), $this->config['tableName'], 'ulf', $file2);
+                    $res = mysql__insertupdate($this->system->getMysqli(), $this->config['tableName'], 'ulf', $file2);
 
                     if($res>0){
                         $this->records[$rec_idx]['ulf_ObfuscatedFileID'] = $nonce;
@@ -650,7 +650,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                             $file2['ulf_ID'] = $ulf_ID;
                             $file2['ulf_FileSizeKB'] = $size/1024;
 
-                            mysql__insertupdate($this->system->get_mysqli(), $this->config['tableName'], 'ulf', $file2);
+                            mysql__insertupdate($this->system->getMysqli(), $this->config['tableName'], 'ulf', $file2);
 
 
                         }else{
@@ -710,7 +710,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
     //    import_data
     public function batch_action(){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $this->need_transaction = false;
         $keep_autocommit = mysql__begin_transaction($mysqli);
@@ -1159,7 +1159,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
 
                     $file_details['ulf_ID'] = $ulf_row['ulf_ID'];
 
-                    $res = mysql__insertupdate($this->system->get_mysqli(), 'recUploadedFiles', 'ulf', $file_details);
+                    $res = mysql__insertupdate($this->system->getMysqli(), 'recUploadedFiles', 'ulf', $file_details);
 
                     $res = $res != $ulf_row['ulf_ID'] ? 'An error occurred while attempting to update file record #' . intval($ulf_row['ulf_ID'])
                                                       : 'File details updated';
@@ -1194,7 +1194,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if($check_referencing){
 
@@ -1476,7 +1476,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
         if($orig_name){
             if($validate_same_file>0){
                 //check filename
-                $mysqli = $this->system->get_mysqli();
+                $mysqli = $this->system->getMysqli();
                 $query2 = 'SELECT ulf_ID, concat(ulf_FilePath,ulf_FileName) as fullPath FROM recUploadedFiles '
                 .'WHERE ulf_OrigFileName="'.$mysqli->real_escape_string($orig_name).'"';
                 $fileinfo = mysql__select_row($mysqli, $query2);
@@ -1548,7 +1548,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
            if($tiledImageStack){
                 $fields['ulf_MimeExt'] = 'png';
            }else{
-               $ext = recognizeMimeTypeFromURL($this->system->get_mysqli(), $url);
+               $ext = recognizeMimeTypeFromURL($this->system->getMysqli(), $url);
                if(@$ext['extension']){
                    $fields['ulf_MimeExt'] = $ext['extension'];
                }else{
@@ -1556,7 +1556,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                }
            }
        }
-       $fields['ulf_UploaderUGrpID'] = $this->system->get_user_id();
+       $fields['ulf_UploaderUGrpID'] = $this->system->getUserId();
 
        $fileinfo = array('entity'=>'recUploadedFiles', 'fields'=>$fields);
 
@@ -1571,7 +1571,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
                $query2 = 'update recDetails set dtl_Value=null, `dtl_UploadedFileID`='.intval($ulf_ID)
                                             .' where dtl_ID='.intval($dtl_ID);
 
-               $this->system->get_mysqli()->query($query2);
+               $this->system->getMysqli()->query($query2);
 
                //get full file info
                $ulf_ID = fileGetFullInfo($this->system, $ulf_ID);
@@ -1587,7 +1587,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
     //
     private function mergeDuplicatesFields($fieldName, $ulf_ID, $dup_IDs, $is_concatenate=false){
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $ulf_ID = intval($ulf_ID);
 
@@ -1635,7 +1635,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
 
             $ret = true;
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $session_id = intval(@$this->data['session']);
             if($session_id>0){
@@ -2116,7 +2116,7 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
 
             if($rty_id > 0 && $dty_file > 0 && $dty_title > 0){
 
-                $mysqli = $this->system->get_mysqli();
+                $mysqli = $this->system->getMysqli();
 
                 $rec_search = 'SELECT count(DISTINCT rec_ID) AS cnt '
                             . 'FROM Records, recDetails '
@@ -2133,7 +2133,7 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
                     'no_validation' => true,
                     'URL' => '',
                     'ScratchPad' => null,
-                    'AddedByUGrpID' => $this->system->get_user_id(), //ulf_UploaderUGrpID
+                    'AddedByUGrpID' => $this->system->getUserId(), //ulf_UploaderUGrpID
                     'details' => array()
                 );
                 foreach ($ids as $ulf_id) {
@@ -2238,7 +2238,7 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
         }
 
         $where_clause = '';
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         if($search_mode!='text_fields'){
 
@@ -2368,7 +2368,7 @@ if($is_verbose) {echo 'Thumnails DONE<br>';}
 
             if(!empty($ids)){
 
-                $mysqli = $this->system->get_mysqli();
+                $mysqli = $this->system->getMysqli();
 
                 //, ulf_ObfuscatedFileID
                 $query = 'SELECT DISTINCT ulf_ID, ulf_OrigFileName as filename, ulf_ExternalFileReference as urls FROM '

@@ -66,21 +66,21 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
         }
     }
     if($response==null){
-        if ( !$system->has_access() ) { //not logged in
+        if ( !$system->hasAccess() ) { //not logged in
                 $response = $system->addError(HEURIST_REQUEST_DENIED);
         }elseif($entity_name=='sysGroups' || $entity_name=='sysUsers') {
-                if(!$system->has_access($recID)){ //only user or group admin
+                if(!$system->hasAccess($recID)){ //only user or group admin
                   $response = $system->addError(HEURIST_REQUEST_DENIED);
                 }
         }elseif(!($entity_name=='recUploadedFiles' || $entity_name=='sysBugreport'))
         { //for all other entities other than recUploadedFile must be admin of dbowners group
-                if(!$system->is_admin()){
+                if(!$system->isAdmin()){
                   $response = $syfstem->addError(HEURIST_REQUEST_DENIED);
                 }
         }
     }
     if($entity_name==null){
-        $response = $system->addError(HEURIST_INVALID_REQUEST, error_WrongParam('"entity"'));
+        $response = $system->addError(HEURIST_INVALID_REQUEST, errorWrongParam('"entity"'));
     }
 
     if(!$response){
@@ -219,7 +219,7 @@ if($response!=null){
         */
         $options['accept_file_types'] = 'zip|mbtiles';
     }else{
-        $allowed_exts = mysql__select_list2($system->get_mysqli(), 'select fxm_Extension from defFileExtToMimetype');
+        $allowed_exts = mysql__select_list2($system->getMysqli(), 'select fxm_Extension from defFileExtToMimetype');
         $options['accept_file_types'] = implode('|', $allowed_exts);
     }
 

@@ -111,7 +111,7 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
     if(array_key_exists('workGroups', $_REQUEST) && $_REQUEST['workGroups'] != ''){
         $query = 'SELECT DISTINCT ugl_UserID FROM sysUsrGrpLinks WHERE ugl_GroupID IN ('. $_REQUEST['workGroups'] .')';
 
-        $users = mysql__select_list2($system->get_mysqli(), $query);
+        $users = mysql__select_list2($system->getMysqli(), $query);
     }
 
     // Prepare date period filtering

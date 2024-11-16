@@ -53,7 +53,7 @@ class VerifyValue {
 
         global $system;
         self::$system = $system;
-        self::$mysqli = $system->get_mysqli();
+        self::$mysqli = $system->getMysqli();
 
         self::$initialized = true;
     }

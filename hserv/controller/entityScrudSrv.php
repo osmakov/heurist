@@ -62,7 +62,7 @@
             }
 
             //load definitions for particular record type only
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
             if(@$search_params['recID']>0 || @$search_params['rty_ID']){
                 $rec_ID = @$search_params['recID'];
 

@@ -37,7 +37,7 @@ class ImportDefinitions {
         if($mysqli){
             $this->mysqli = $mysqli;
         }else{
-            $this->mysqli = $system->get_mysqli();
+            $this->mysqli = $system->getMysqli();
         }
 
         define('START_TOKEN', '>>StartData>>');

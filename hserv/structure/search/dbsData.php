@@ -102,7 +102,7 @@
             $imode = 0;
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $dbID = $system->settings->get('sys_dbRegisteredID');
 
         /*ARTEM $cacheKey = DATABASE . ":AllRecTypeInfo";
@@ -468,7 +468,7 @@ function dbs_GetRectypeConstraint($system) {
     rcs_TargetRectypeID is null,
     rcs_TargetRectypeID";
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $res = $mysqli->query($query);
     $cnstrnts = array();
@@ -529,7 +529,7 @@ function dbs_GetRectypeConstraint($system) {
             return array('response' => 'data is in wrong format');
         }
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $search_query = 'SELECT trn_ID, trn_Source, trn_Code, trn_LanguageCode, trn_Translation, trn_Modified '
             . 'FROM defTranslations '
             . 'WHERE trn_Source {def_source} AND trn_Code={def_id}';
@@ -603,7 +603,7 @@ function dbs_GetRectypeConstraint($system) {
     */
     function dbs_GetTerms($system){ //$useCachedData = false) {
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $dbID = $system->settings->get('sys_dbRegisteredID');
 
 
@@ -817,7 +817,7 @@ function dbs_GetRectypeConstraint($system) {
     */
     function getTermChildren($parentID, $system, $firstlevel_only){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $children = array();
 
         $query = 'select trm_ID from defTerms where trm_ParentTermID = ' . intval($parentID);
@@ -1175,7 +1175,7 @@ function dbs_GetRectypeConstraint($system) {
                                 .'. Cannot add term '.$gChildID;
                         USanitize::errorLog($sMsg);
                         if(!$emailsent){
-                            $dbowner = user_getDbOwner($system->get_mysqli());//info about user #2
+                            $dbowner = user_getDbOwner($system->getMysqli());//info about user #2
                             $emailsent = true;
 
                             sendEmail(HEURIST_MAIL_TO_ADMIN, 'CORRUPTED DATABASE '.$dbname,
@@ -1203,7 +1203,7 @@ function dbs_GetRectypeConstraint($system) {
     * @uses      __attachChild()
     */
     function __getTermTree($system, $termDomain, $matching = 'exact') { // termDomain can be empty, 'reltype' or 'enum' or any future term use domain defined in the trm_Domain enum
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         if($termDomain=='enum' && HEURIST_UNITED_TERMS){
             $whereClause = '1=1';
@@ -1332,7 +1332,7 @@ function dbs_GetRectypeConstraint($system) {
     */
     function dbs_GetDetailTypes($system, $dettypeids=null, $imode=2){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
         $dbID = $system->settings->get('sys_dbRegisteredID');
 
         /*  ARTEM

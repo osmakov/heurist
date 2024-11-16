@@ -578,7 +578,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
 
                //load hml output into string file and save it
                if(@$_REQUEST['allrecs']!="1"){
-                   $userid = $system->get_user_id();
+                   $userid = $system->getUserId();
                    $q = "owner:$userid";//user:$userid OR
 
                    $hml_url = $hml_url.'&depth=5';
@@ -594,7 +594,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
 
                //load hml output into string file and save it
                if(@$_REQUEST['allrecs']!="1"){
-                   $userid = $system->get_user_id();
+                   $userid = $system->getUserId();
                    $q = "owner:$userid";//user:$userid OR
                    $_REQUEST['depth'] = '5';
                }else{
@@ -626,7 +626,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
 
                 require_once dirname(__FILE__).'/../../hserv/records/export/recordsExportCSV.php';
 
-                $mysqli = $system->get_mysqli();
+                $mysqli = $system->getMysqli();
 
                 // Export tables
                 $skip_tables = [
@@ -789,7 +789,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
            saveURLasFile($url, FOLDER_BACKUP."/Database_Structure.xml");//save to HEURIST_FILESTORE_DIR.DIR_BACKUP.HEURIST_DBNAME
 
 
-           if($system->is_admin()){
+           if($system->isAdmin()){
                 // Do an SQL dump of the whole database
                 echo_flush2("Exporting SQL dump of the whole database (several minutes for large databases)<br>");
 

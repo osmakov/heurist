@@ -164,7 +164,7 @@ class URLChecker {
 
         if (!$res) {
             if($this->isVerbose || $this->listOnly){
-                print error_Div('Cant retrieve records with URLs: '.$this->mysqli->error);
+                print errorDiv('Cant retrieve records with URLs: '.$this->mysqli->error);
             }
             return;
         }
@@ -234,7 +234,7 @@ class URLChecker {
             $data = strpos($data, 'timeout') !== false ? 'Timeout occurred' : $data;
             $data = strpos($data, 'does not exist') !== false ? 'Database does not exist' : $data;
 
-            print error_Div(htmlspecialchars($data));
+            print errorDiv(htmlspecialchars($data));
         }else{
             $this->passedRecIds[] = $recId;
             if (count($this->passedRecIds) > 1000) {
@@ -261,7 +261,7 @@ class URLChecker {
 
         if (!$res) {
             if($this->isVerbose || $this->listOnly){
-                print error_Div('Cant retrieve records with URLs in text fields: '.$this->mysqli->error);
+                print errorDiv('Cant retrieve records with URLs in text fields: '.$this->mysqli->error);
             }
             return;
         }
@@ -310,7 +310,7 @@ class URLChecker {
 
         if (!$res) {
             if($this->isVerbose){
-                print error_Div('Cant retrieve records with URLs in text fields: '.$this->mysqli->error);
+                print errorDiv('Cant retrieve records with URLs in text fields: '.$this->mysqli->error);
             }
             return;
         }
@@ -342,7 +342,7 @@ class URLChecker {
         if(!$exists){
             if ($glb_curl_code == HEURIST_SYSTEM_FATAL) {
                 if ($this->isVerbose) {
-                    echo error_Div( htmlspecialchars($glb_curl_error) );
+                    echo errorDiv( htmlspecialchars($glb_curl_error) );
                 }
                 $results[3] = $glb_curl_error;
                 $glb_curl_error = 'Fatal curl error '.$glb_curl_error;

@@ -113,7 +113,7 @@ if(!defined('HEURIST_SERVER_NAME')) {define('HEURIST_SERVER_NAME', 'heurist.huma
 
 print 'Mail: '.HEURIST_MAIL_DOMAIN.'   Domain: '.HEURIST_SERVER_NAME."\n";
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 if($arg_database){
     echo "database: ".$arg_database."\n";
@@ -178,8 +178,8 @@ foreach ($databases as $idx=>$db_name){
         }
     }
 
-    $system->set_mysqli($mysqli);
-    $system->set_dbname_full($db_name);
+    $system->setMysqli($mysqli);
+    $system->setDbnameFull($db_name);
 
     if($do_reports){
 

@@ -45,7 +45,7 @@ class DbUsrTags extends DbEntityBase
 
         //if usergroup is not defined search for user groups of current user
         if(!@$this->data['tag_UGrpID']){
-            $this->data['tag_UGrpID'] = $this->system->get_user_group_ids();
+            $this->data['tag_UGrpID'] = $this->system->getUserGroupIds();
         }
 
         if(parent::search()===false){
@@ -90,11 +90,11 @@ class DbUsrTags extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_dbowner() && !isEmptyArray($this->recordIDs)){ //there are tags to update/delete
+        if(!$this->system->isDbOwner() && !isEmptyArray($this->recordIDs)){ //there are tags to update/delete
 
-            $ugrs = $this->system->get_user_group_ids();
+            $ugrs = $this->system->getUserGroupIds();
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_norights = mysql__select_list($mysqli, $this->config['tableName'], $this->primaryField,
                     'tag_ID in ('.implode(',', $this->recordIDs).') AND tag_UGrpID not in ('.implode(',',$ugrs).')');
@@ -127,7 +127,7 @@ class DbUsrTags extends DbEntityBase
             $rec_ID = intval(@$record[$this->primaryField]);
             $isinsert = ($rec_ID<1);
             if($isinsert && !($this->records[$idx]['tag_UGrpID']>0)){
-                $this->records[$idx]['tag_UGrpID'] = $this->system->get_user_id();
+                $this->records[$idx]['tag_UGrpID'] = $this->system->getUserId();
             }
             $this->records[$idx]['tag_Modified'] = date(DATE_8601);//reset
         }
@@ -149,7 +149,7 @@ class DbUsrTags extends DbEntityBase
 
         if(!empty($this->recordIDs)){
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_inuse = mysql__select_list2($mysqli, 'SELECT DISTINCT rtl_RecID '
                         .'FROM usrRecTagLinks WHERE rtl_TagID='.intval($this->recordIDs[0]));
@@ -190,7 +190,7 @@ class DbUsrTags extends DbEntityBase
             $update_query = 'UPDATE IGNORE usrRecTagLinks set rtl_TagID = '.$newTagID.' WHERE rtl_TagID in ('
                  . implode(',', $this->recordIDs) . ')';
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $res = $mysqli->query($update_query);
             if(!$res){
@@ -255,7 +255,7 @@ class DbUsrTags extends DbEntityBase
         $res_tag_removed = 0; //tags removed
         $res_bookmarks = 0; //new bookmarks
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         //narrow by record type
         $rec_RecTypeID = @$this->data['rec_RecTypeID'];
@@ -330,7 +330,7 @@ class DbUsrTags extends DbEntityBase
 
             //if at least one tag is private
             //add bookmarks if tags are private and record is not bookmarked yet
-            $ugrID = $this->system->get_user_id();
+            $ugrID = $this->system->getUserId();
 
             if(null != mysql__select_value($mysqli, 'SELECT tag_ID from usrTags where tag_ID in ('
                 . implode(',', $this->recordIDs) . ') AND tag_UGrpID ='.$ugrID.' LIMIT 1')){

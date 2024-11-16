@@ -158,10 +158,10 @@ $params = $_REQUEST;
 $is_debug = (@$params['dbg']==1);
 
 if(!$valid_service){
-    $system->error_exit_api('The provided look up details are invalid', HEURIST_INVALID_REQUEST);//exit from script
+    $system->errorExitApi('The provided look up details are invalid', HEURIST_INVALID_REQUEST);//exit from script
 }
 if($cur_type == 'geonames' && empty($accessToken_GeonamesAPI)){
-    $system->error_exit_api('Unable to use the geonames API, API key is missing from configuration file', HEURIST_ACTION_BLOCKED);
+    $system->errorExitApi('Unable to use the geonames API, API key is missing from configuration file', HEURIST_ACTION_BLOCKED);
 }
 
 $remote_data = false;
@@ -243,7 +243,7 @@ if($is_estc){
 
                 $params2 = array(
                     'dbg' => ($is_debug?1:0),
-                    'owner_id' => $system->get_user_id(),
+                    'owner_id' => $system->getUserId(),
                     'mapping_defs' => @$params['mapping']
                 );
 
@@ -290,9 +290,9 @@ if($is_estc){
 
 if( !$system->init(@$params['db']) ){  //@todo - we don't need db connection here - it is enough check the session
     //get error and response
-    $system->error_exit_api();//exit from script
-}elseif ( $system->get_user_id()<1 ) {
-    $system->error_exit_api('You must be logged in to use the external lookup services', HEURIST_REQUEST_DENIED);
+    $system->errorExitApi();//exit from script
+}elseif ( $system->getUserId()<1 ) {
+    $system->errorExitApi('You must be logged in to use the external lookup services', HEURIST_REQUEST_DENIED);
     //$response = $system->addError(HEURIST_REQUEST_DENIED);
 }
 
@@ -392,7 +392,7 @@ if($url !== false && !empty($url)){
 }
 
 if($url === false || empty($url)){
-    $system->error_exit_api('Heurist was unable to process the url provided for the given external service<br>If this problem persists, please file a bug report.', HEURIST_INVALID_REQUEST);
+    $system->errorExitApi('Heurist was unable to process the url provided for the given external service<br>If this problem persists, please file a bug report.', HEURIST_INVALID_REQUEST);
 }
 
 // Perform external lookup / API request
@@ -425,7 +425,7 @@ if($remote_data===false){
             $heurist_err_type = HEURIST_ACTION_BLOCKED;
         }
 
-        $system->error_exit_api($err_msg, $heurist_err_type);
+        $system->errorExitApi($err_msg, $heurist_err_type);
     }
 }
 
@@ -459,12 +459,12 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
             }
 
             if(!$hasGeo){
-                $system->error_exit_api('Service did not return data in an appropriate format', HEURIST_ACTION_BLOCKED);
+                $system->errorExitApi('Service did not return data in an appropriate format', HEURIST_ACTION_BLOCKED);
             }
         }elseif(is_array($remote_data) && count($remote_data)==1){
-            $system->error_exit_api('No records match the search criteria', HEURIST_NOT_FOUND);
+            $system->errorExitApi('No records match the search criteria', HEURIST_NOT_FOUND);
         }else{
-            $system->error_exit_api('Service did not return any data', HEURIST_ERROR);
+            $system->errorExitApi('Service did not return any data', HEURIST_ERROR);
         }
 
         $remote_data = json_encode($remote_data);
@@ -1010,11 +1010,11 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
 
         $remote_data = json_encode($results);
     }else{
-        $system->error_exit_api('Service did not return data in an handled format', HEURIST_ERROR);
+        $system->errorExitApi('Service did not return data in an handled format', HEURIST_ERROR);
     }
 }elseif(@$params['serviceType'] == 'opentheso'){
 
-    $def_lang = $system->user_GetPreference('layout_language', 'fr');
+    $def_lang = $system->userGetPreference('layout_language', 'fr');
     $def_lang = getLangCode2($def_lang);
     $def_lang = !$def_lang ? 'fr' : strtolower($def_lang);
 
@@ -1073,7 +1073,7 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
             $results[] = ['term_label' => $label, 'term_desc' => $desc, 'term_code' => $code, 'term_uri' => $uri, 'term_translations' => $translated_labels, 'editor_notes' => $notes, 'geopoint' => $geopoint];
         }
     }else{
-        $system->error_exit_api('An error occurred while attempting to process the search results from Opentheso', HEURIST_UNKNOWN_ERROR);
+        $system->errorExitApi('An error occurred while attempting to process the search results from Opentheso', HEURIST_UNKNOWN_ERROR);
     }
 
     $remote_data = json_encode($results);
@@ -1111,7 +1111,7 @@ function getOpenthesoThesauruses($system, $params){
 
         if(json_last_error() !== JSON_ERROR_NONE || !is_array($data) || $data['last_update'] < date('Y-m-d')){
             if($already_updated){
-                $system->error_exit_api('Unable to retrieve Opentheso thesauruses due to unknown error.', HEURIST_ACTION_BLOCKED);
+                $system->errorExitApi('Unable to retrieve Opentheso thesauruses due to unknown error.', HEURIST_ACTION_BLOCKED);
                 exit;
             }
             $data = updateOpenthesoThesauruses($system, $params);
@@ -1346,7 +1346,7 @@ function getNakalaMetadata($system, $type){
 
         if(json_last_error() !== JSON_ERROR_NONE || !is_array($data) || $data['last_update'] < date('Y-m-d')){
             if($already_updated){
-                $system->error_exit_api('Unable to retrieve Nakala metadata due to unknown error.', HEURIST_UNKNOWN_ERROR);
+                $system->errorExitApi('Unable to retrieve Nakala metadata due to unknown error.', HEURIST_UNKNOWN_ERROR);
             }
             $data = updateNakalaMetadata($system);
         }
@@ -1400,7 +1400,7 @@ function updateNakalaMetadata($system){
         $results = loadRemoteURLContentWithRange('https://api.nakala.fr/search?fq=scope%3Ddata&order=relevance&page='.$page.'&size=1000', null, true, 60);
 
         if($results === false){
-            $system->error_exit_api('Unable to retrieve metadata values from Nakala', HEURIST_ACTION_BLOCKED);
+            $system->errorExitApi('Unable to retrieve metadata values from Nakala', HEURIST_ACTION_BLOCKED);
             exit;
         }
 
@@ -1482,7 +1482,7 @@ function updateNakalaMetadata($system){
                 }
             }
         }else{
-            $system->error_exit_api('Unable to retrieve metadata values from Nakala, receieved a response not in a JSON format', HEURIST_ERROR);
+            $system->errorExitApi('Unable to retrieve metadata values from Nakala, receieved a response not in a JSON format', HEURIST_ERROR);
             exit;
         }
 

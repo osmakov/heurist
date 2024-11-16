@@ -75,7 +75,7 @@ protected function _outputPrepare($data, $params){
 
         $this->find_geo_by_pointer_rty =  @$params['geofields'] ||
                ((@$params['suppress_linked_places']!=1)
-               && ($this->system->user_GetPreference('deriveMapLocation', 1)==1));
+               && ($this->system->userGetPreference('deriveMapLocation', 1)==1));
 
         if($this->find_geo_by_pointer_rty){ //true
 

@@ -30,7 +30,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 require_once dirname(__FILE__).'/../../hserv/records/search/recordFile.php';
 require_once dirname(__FILE__).'/../../import/fieldhelper/harvestLib.php';
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 ?>
 <!DOCTYPE html>

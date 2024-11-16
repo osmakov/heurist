@@ -45,7 +45,7 @@ if(!$system->init(@$_REQUEST['db'])){
 ini_set("zlib.output_compression_level", '5');
 //ob_start('ob_gzhandler');
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 header(CTYPE_JSON);
 

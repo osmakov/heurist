@@ -33,9 +33,9 @@
 
     }else{
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
-        if ( $system->get_user_id()<1 && !(@$_REQUEST['a']=='s' && @$_REQUEST['Captcha']) ) {
+        if ( $system->getUserId()<1 && !(@$_REQUEST['a']=='s' && @$_REQUEST['Captcha']) ) {
 
             $response = $system->addError(HEURIST_REQUEST_DENIED);
 
@@ -106,7 +106,7 @@
             } elseif($action=="duplicate" && @$_REQUEST['id']) {
 
 
-                $mysqli = $system->get_mysqli();
+                $mysqli = $system->getMysqli();
                 $keep_autocommit = mysql__begin_transaction($mysqli);
 
                 $response = recordDuplicate($system, $_REQUEST['id']);

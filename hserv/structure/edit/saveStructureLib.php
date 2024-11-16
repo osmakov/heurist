@@ -909,7 +909,7 @@ function deleteRecStructure($rtyID, $dtyID) {
 function createRectypeGroups($columnNames, $rt) {
     global $system, $rtgColumnNames;
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     $rtg_Name = null;
     $ret = array();
@@ -1444,7 +1444,7 @@ function addTermReference( $parentID, $trmID, $ext_db) {
     global $system;
 
     if($ext_db==null){
-        $ext_db = $system->get_mysqli();
+        $ext_db = $system->getMysqli();
     }
 
     $ret = $ext_db->query(
@@ -1476,7 +1476,7 @@ function updateTerms( $colNames, $trmID, $values, $ext_db) {
     global $system, $trmColumnNames;
 
     if($ext_db==null){
-        $ext_db = $system->get_mysqli();
+        $ext_db = $system->getMysqli();
     }
 
     $ret = null;

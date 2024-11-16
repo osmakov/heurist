@@ -36,7 +36,7 @@
 
             if (!empty($rec_ids)) {
 
-                $mysqli = $system->get_mysqli();
+                $mysqli = $system->getMysqli();
                 $query = 'SELECT svs_ID, svs_Name, svs_Query, svs_UGrpID FROM usrSavedSearches WHERE svs_ID in ('
                         .implode(',', $rec_ids).')';
 
@@ -72,19 +72,19 @@
     */
     function svsGetByUser($system, $ugrID=null, $keep_order=false){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         //user id is not defined - take current user
         if (!$ugrID) {
-            $ugrID = $system->get_user_id();
+            $ugrID = $system->getUserId();
 
-            $ugr_groups = $system->get_user_group_ids(null, true);//always get latest
+            $ugr_groups = $system->getUserGroupIds(null, true);//always get latest
 
             $current_User = $system->getCurrentUser();
             if($current_User && @$current_User['ugr_Groups'] && count(array_keys($current_User['ugr_Groups']))>0 ){
                 $ugrID = implode(',', array_keys($current_User['ugr_Groups'])).','.$ugrID;
             }
-            if($system->is_admin()){ //returns guest searches for admin
+            if($system->isAdmin()){ //returns guest searches for admin
                 $ugrID = $ugrID.',0';
             }
 
@@ -168,8 +168,8 @@
         }else{
 
             //refresh groups
-            $system->get_user_group_ids(null, true);
-            $mysqli = $system->get_mysqli();
+            $system->getUserGroupIds(null, true);
+            $mysqli = $system->getMysqli();
 
             $row = mysql__select_row_assoc($mysqli,
                     'select svs_UGrpID, svs_Name, svs_Query FROM usrSavedSearches WHERE svs_ID='.$record['svs_ID']);
@@ -177,7 +177,7 @@
             if (!$row) {
                 $system->addError(HEURIST_NOT_FOUND,
                     'Cannot duplicate filter criteria. Original filter not found');
-            }elseif (!$system->is_member($row['svs_UGrpID'])) { //was has_access
+            }elseif (!$system->isMember($row['svs_UGrpID'])) { //was has_access
                 $system->addError(HEURIST_REQUEST_DENIED,
                     'Cannot duplicate filter criteria. Current user must be member for group');
             }else{
@@ -223,9 +223,9 @@
         }else{
 
             //refresh groups
-            $system->get_user_group_ids(null, true);
+            $system->getUserGroupIds(null, true);
 
-            if (!$system->is_member(@$record['svs_UGrpID'])) { //was has_access
+            if (!$system->isMember(@$record['svs_UGrpID'])) { //was has_access
                 $system->addError(HEURIST_REQUEST_DENIED,
                     'Cannot update filter ' .$record['svs_Name']. '.<br>You must be a member of the ' .$record['svs_UGrpID']. ' group to edit this filter.<br><br>'
                     .'Please ask your database owner to add you to the group.');
@@ -245,7 +245,7 @@
                 if(array_key_exists('svs_UGrpID', $record) && !($record['svs_UGrpID']>0)) //not defined or all|bookmark
                 {
                     if($is_new){
-                        $record['svs_UGrpID'] = $system->get_user_id();
+                        $record['svs_UGrpID'] = $system->getUserId();
                     }else{
                         unset($record['svs_UGrpID']);
                     }
@@ -255,7 +255,7 @@
 
                 foreach($rec_IDs as $svs_ID){
                     $record['svs_ID'] = $svs_ID;
-                    $res = mysql__insertupdate($system->get_mysqli(), 'usrSavedSearches', 'svs', $record);
+                    $res = mysql__insertupdate($system->getMysqli(), 'usrSavedSearches', 'svs', $record);
                     if(is_numeric($res)>0){
                         return $res; //returns affected record id
                     }else{
@@ -278,14 +278,14 @@
     function svsDelete($system, $rec_ids, $ugrID=null){
 
         //verify that current user can delete
-        if (!$system->has_access($ugrID)) {
+        if (!$system->hasAccess($ugrID)) {
             $system->addError(HEURIST_REQUEST_DENIED,
                 'Cannot delete filter criteria. Current user must be an administrator for group');
             return false;
         }
 
             if(!$ugrID>0){
-                $ugrID = $system->get_user_id();
+                $ugrID = $system->getUserId();
             }
 
             $rec_ids = prepareIds($rec_ids);
@@ -297,7 +297,7 @@
 
                 $query = 'delete from usrSavedSearches where svs_ID in ('. join(', ', $rec_ids) .') and svs_UGrpID='.$ugrID;
 
-                $mysqli = $system->get_mysqli();
+                $mysqli = $system->getMysqli();
                 $res = $mysqli->query($query);
 
                 if(!$res){
@@ -319,14 +319,14 @@
     */
     function svsSaveTreeData($system, $data){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
         $groups = json_decode($data, true);
 
         $personal_data = array();
 
-        $ugrID = $system->get_user_id();
-        $ugr_groups = $system->get_user_group_ids(null, true);//always get latest
+        $ugrID = $system->getUserId();
+        $ugr_groups = $system->getUserGroupIds(null, true);//always get latest
         $lastID = null;
 
         foreach($groups as $id=>$treedata){
@@ -376,15 +376,15 @@
     //
     function svsGetTreeData($system, $grpID=null){
 
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
-        $ugrID = $system->get_user_id();
+        $ugrID = $system->getUserId();
 
         if($grpID!=null){
             $groups = prepareIds($grpID, true);
         }else{
             //load personal treeviews - rules, my filters (all) and bookmarks
-            $groups = $system->get_user_group_ids();
+            $groups = $system->getUserGroupIds();
         }
 
         // 5 - websearch

@@ -133,7 +133,7 @@ class DbDefVocabularyGroups extends DbEntityBase
         foreach($this->records as $idx=>$record){
 
             //validate duplication
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             if(@$this->records[$idx]['vcg_Name']){
                 $res = mysql__select_value($mysqli,

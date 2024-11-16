@@ -65,10 +65,10 @@ global $is_api;
 
     if( ! $system->init(@$params['db']) ){
         //get error and response
-        $system->error_exit_api(null, null, $is_api);//exit from script
+        $system->errorExitApi(null, null, $is_api);//exit from script
     }
     if(!isPositiveInt(@$params['recID'])){
-        $system->error_exit_api('recID parameter value is missing or invalid', null, $is_api);//exit from script
+        $system->errorExitApi('recID parameter value is missing or invalid', null, $is_api);//exit from script
     }
 
     $need_simplify = (true || @$params['simplify']=='yes' || @$params['simplify']==1);
@@ -100,7 +100,7 @@ global $is_api;
 
 
     if( empty($fields) ){
-        $system->error_exit_api('Database '.$params['db']
+        $system->errorExitApi('Database '.$params['db']
                     .' does not have field definitions for shp, zip or simple resource file'
                     , HEURIST_SYSTEM_CONFIG, $is_api);//exit from script
     }
@@ -145,7 +145,7 @@ global $is_api;
                 $file_zip_full = tempnam(HEURIST_SCRATCHSPACE_DIR, "arc");
                 $zip = new ZipArchive();
                 if (!$zip->open($file_zip_full, ZIPARCHIVE::CREATE)) {
-                    $system->error_exit_api("Cannot create zip $file_zip_full", null, $is_api);
+                    $system->errorExitApi("Cannot create zip $file_zip_full", null, $is_api);
                 }else{
                     if(!$dbf_file){
                         $dbf_file = substr($shp_file,0,strlen($shp_file)-3).'dbf';
@@ -198,7 +198,7 @@ global $is_api;
                         //if provide only shapefile, it finds other automatically
                         $shapeFile = new ShapefileReader($shp_file, array(Shapefile::OPTION_IGNORE_FILE_SHX=>true, Shapefile::OPTION_IGNORE_FILE_DBF=>true));
                     }else{
-                        $system->error_exit_api('Cannot process shp file', HEURIST_ERROR, null);
+                        $system->errorExitApi('Cannot process shp file', HEURIST_ERROR, null);
                     }
 
                     //$json = array();
@@ -284,14 +284,14 @@ global $is_api;
 
                 } catch (ShapeFileException $e) {
                     // Print detailed error information
-                    $system->error_exit_api('Cannot process shp file: '.$e->getMessage(), HEURIST_ERROR, $is_api);
+                    $system->errorExitApi('Cannot process shp file: '.$e->getMessage(), HEURIST_ERROR, $is_api);
                 } catch (Exception $e) {
-                    $system->error_exit_api('Cannot init ShapeFile library: '.$e->getMessage(), HEURIST_ERROR, $is_api);
+                    $system->errorExitApi('Cannot init ShapeFile library: '.$e->getMessage(), HEURIST_ERROR, $is_api);
                 }
 
             }
     }else{
-        $system->error_exit_api(
+        $system->errorExitApi(
 'Cannot process shp file. Please ask the owner of the layer data source record (id:'
 .$params['recID']
 .') to check that the file exists, is readable and has not been corrupted.',
@@ -312,7 +312,7 @@ function checkWGS($system, $orig_points, $check_number_or_all=3){
         //if not integer and less than 180/90 this is wgs
         //!(($point[1]!=round($point[1])) || ($point[0]!=round($point[0]))
         if (!((abs($point[0])<200) && (abs($point[1])<90))){
-                $system->error_exit_api(
+                $system->errorExitApi(
 'Cannot process shp file. Heurist uses WGS84 (World Geographic System) '
 .'to support the plotting of maps worldwide. This shapefile is not in this format '
 .'and will not therefore display on maps. '

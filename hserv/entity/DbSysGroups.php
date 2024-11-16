@@ -161,11 +161,11 @@ class DbSysGroups extends DbEntityBase
     //
     protected function _validatePermission(){
 
-        if(!$this->system->is_dbowner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
+        if(!$this->system->isDbOwner() && !isEmptyArray($this->recordIDs)){ //there are records to update/delete
 
-            $ugrID = $this->system->get_user_id();
+            $ugrID = $this->system->getUserId();
 
-            $mysqli = $this->system->get_mysqli();
+            $mysqli = $this->system->getMysqli();
 
             $recIDs_norights = mysql__select_list($mysqli, $this->config['tableName'].',sysUsrGrpLinks',
                 $this->primaryField,
@@ -234,11 +234,11 @@ class DbSysGroups extends DbEntityBase
 
                         $admin_role = array();
                         $admin_role['ugl_GroupID'] = $group_ID;
-                        $admin_role['ugl_UserID'] = $this->system->get_user_id();
+                        $admin_role['ugl_UserID'] = $this->system->getUserId();
                         $admin_role['ugl_Role'] = 'admin';
-                        $res = mysql__insertupdate($this->system->get_mysqli(), 'sysUsrGrpLinks', 'ugl', $admin_role);
+                        $res = mysql__insertupdate($this->system->getMysqli(), 'sysUsrGrpLinks', 'ugl', $admin_role);
 
-                        //$fname = HEURIST_FILESTORE_DIR.$this->system->get_user_id();
+                        //$fname = HEURIST_FILESTORE_DIR.$this->system->getUserId();
                         //fileSave('X',$fname); on save
                     }
                 }
@@ -266,7 +266,7 @@ class DbSysGroups extends DbEntityBase
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $keep_autocommit = mysql__begin_transaction($mysqli);
 
@@ -311,7 +311,7 @@ class DbSysGroups extends DbEntityBase
             if(!isEmptyArray(@$affectedUserIds)){
                 foreach($affectedUserIds as $usrID)  //affected users
                 {
-                    if($usrID!=$this->system->get_user_id()){
+                    if($usrID!=$this->system->getUserId()){
                             $usrID = intval($usrID);
                             $fname = $this->getEntityImagePath($usrID);
                             if(file_exists($fname)){
@@ -359,7 +359,7 @@ class DbSysGroups extends DbEntityBase
             return false;
         }
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $ret = true;
 

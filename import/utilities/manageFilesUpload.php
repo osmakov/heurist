@@ -198,7 +198,7 @@ if(!($max_size>0)) {$max_size = 0;}
                 // The defined list of file extensions for FieldHelper indexing.
                 // For the moment keep this in as a restriction on file types which can be uploaded
                 // Unlike indexing, we add the user-defined set to the default set
-                $allowed_exts = mysql__select_list2($system->get_mysqli(), 'select fxm_Extension from defFileExtToMimetype');
+                $allowed_exts = mysql__select_list2($system->getMysqli(), 'select fxm_Extension from defFileExtToMimetype');
 
                 //$mediaExts = HEURIST_ALLOWED_EXT.','.$mediaExts; // default set to allow
                // $mediaExts = implode(',',array_unique(explode(',',$mediaExts)));

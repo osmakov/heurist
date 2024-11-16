@@ -35,7 +35,7 @@ define('PDIR','../../');//need for proper path to js and css
 
 require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 $woots = array();
 $res = $mysqli->query("select * from woots");

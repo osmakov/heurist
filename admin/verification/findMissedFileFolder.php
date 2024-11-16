@@ -50,7 +50,7 @@ if(!@$_REQUEST['mail']){
 <?php
 }
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
 
     //1. find all database
     $databases = mysql__getdatabases4($mysqli, false);

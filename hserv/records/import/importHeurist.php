@@ -58,7 +58,7 @@ class ImportHeurist {
 
         global $system;
         self::$system  = $system;
-        self::$mysqli = $system->get_mysqli();
+        self::$mysqli = $system->getMysqli();
         self::$initialized = true;
 
         if(!defined('HEURIST_DBID')){
@@ -459,7 +459,7 @@ class ImportHeurist {
             if(!$res){
                 /*$err = self::$system->getError();
                 if($err && $err['status']!=HEURIST_NOT_FOUND){
-                self::$system->error_exit(null);//produce json output and exit script
+                self::$system->errorExit(null);//produce json output and exit script
                 }*/
             }else{
                 //need to call refresh client side defintions
@@ -521,7 +521,7 @@ class ImportHeurist {
             'session' => @$params['session'],
             'is_cms_init' => 0,
             'make_public' => (@$params['make_public']!=0),
-            'owner_id' => self::$system->get_user_id(),
+            'owner_id' => self::$system->getUserId(),
             'mapping_defs' => @$params['mapping']
         );
 
@@ -531,7 +531,7 @@ class ImportHeurist {
         if(@$params['tlcmapshot'] && $res!==false){
             //find map document among imported records
             self::$system->defineConstant('RT_MAP_DOCUMENT');
-            $mysqli = self::$system->get_mysqli();
+            $mysqli = self::$system->getMysqli();
             $map_doc_rec_id = mysql__select_value($mysqli,
                 'select rec_ID from Records where rec_ID in ('
                 .implode(',',$res['ids']).') and rec_RecTypeID='.RT_MAP_DOCUMENT);
@@ -559,7 +559,7 @@ class ImportHeurist {
     public static function saveMapDocumentSnapShot($rec_ID, $tlcmapshot){
 
         if(($rec_ID>0) && self::$system->defineConstant('DT_THUMBNAIL')){
-            //$mysqli = self::$system->get_mysqli();
+            //$mysqli = self::$system->getMysqli();
 
             //2. save encoded image as file and register it
             $entity = new DbRecUploadedFiles(self::$system);
@@ -622,7 +622,7 @@ class ImportHeurist {
             $update_mode = @$params['update_mode'];
         }
 
-        $mysqli = self::$system->get_mysqli();
+        $mysqli = self::$system->getMysqli();
 
         //init progress
         mysql__update_progress($mysqli, $session_id, true, '0,1');
@@ -1579,7 +1579,7 @@ EOD;
 
             $parentID = $terms[0];
 
-            $mysqli = self::$system->get_mysqli();
+            $mysqli = self::$system->getMysqli();
 
             $query = 'select trm_ID from defTerms where trm_ParentTermID='
             .$parentID.' and trm_Label="'.$mysqli->real_escape_string($term_label).'"';

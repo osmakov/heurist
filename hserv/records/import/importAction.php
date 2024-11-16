@@ -70,7 +70,7 @@ private static function initialize($fields_correspondence=null)
 
     global $system;
     self::$system  = $system;
-    self::$mysqli = $system->get_mysqli();
+    self::$mysqli = $system->getMysqli();
     self::$initialized = true;
 }
 
@@ -853,7 +853,7 @@ public static function validateImport($params) {
     $cnt_update_rows = 0;
     $cnt_insert_rows = 0;
 
-    $mysqli = self::$system->get_mysqli();
+    $mysqli = self::$system->getMysqli();
 
     if($id_field!=null){
         $id_field = $mysqli->real_escape_string($id_field);
@@ -2996,7 +2996,7 @@ public static function performImport($params, $mode_output){
                                             $ulf_ID = mysql__insertupdate(self::$mysqli, 'recUploadedFiles', 'ulf',
                                                 array("ulf_ID"=>0,
                                                     'ulf_OrigFileName'=>ULF_REMOTE,
-                                                    'ulf_UploaderUGrpID'=> self::$system->get_user_id(),
+                                                    'ulf_UploaderUGrpID'=> self::$system->getUserId(),
                                                     //'ulf_ObfuscatedFileID'=>$nonce,
                                                     'ulf_ExternalFileReference'=>$r_value,
                                                     'ulf_MimeExt'=>$extension,

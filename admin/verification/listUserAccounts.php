@@ -31,7 +31,7 @@ if(!$system->init(null, false, false)){
     exit("Cannot establish connection to sql server\n");
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 $user_list = []; // 0 => DB Name, 1 => User ID, 2 => Record Owner Count, 3 => Is DB Admin, 4 => Is DB Owner, {key} => User Email

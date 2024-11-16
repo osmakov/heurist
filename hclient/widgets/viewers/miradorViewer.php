@@ -63,7 +63,7 @@ require_once dirname(__FILE__).'/../../../autoload.php';
     $system = new hserv\System();
     if( ! $system->init($_REQUEST['db'], true, false) ){
         //get error and response
-        $system->error_exit_api();//exit from script
+        $system->errorExitApi();//exit from script
     }
     //get baseURL
     $baseUrl = defined('HEURIST_SERVER_URL')?HEURIST_SERVER_URL:null;
@@ -73,7 +73,7 @@ require_once dirname(__FILE__).'/../../../autoload.php';
 
         $res = recordSearchByID($system, $rec_ID, false, 'rec_ID,rec_RecTypeID');
         $system->defineConstant('DT_URL');
-        $mysqli = $system->get_mysqli();
+        $mysqli = $system->getMysqli();
 
 
         if($res['rec_RecTypeID']==RT_MAP_ANNOTATION){

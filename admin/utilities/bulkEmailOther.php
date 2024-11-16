@@ -48,7 +48,7 @@ if(!$isSystemInited) {
     exit;
 }
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 
 if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title and Short Summary field for the selected id, id is for Email record */
 

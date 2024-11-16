@@ -195,7 +195,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
                                       GROUP BY id
                                       ORDER BY rtg_Order, title ASC";
                             // Put record types & counts in the table
-                            $res = $system->get_mysqli()->query($query);
+                            $res = $system->getMysqli()->query($query);
                             $count = 0;
                             $grp_name = null;
                             $first_grp  = 'first_grp';

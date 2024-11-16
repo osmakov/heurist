@@ -48,12 +48,12 @@ if(! $system->init(@$_REQUEST['db'], true) ){
         <div class="utility-content">
             <?php
 
-            if(!$system->is_admin()){
+            if(!$system->isAdmin()){
                 print "You must be logged in as database owner";
                 exit;
             }
 
-            $mysqli = $system->get_mysqli();
+            $mysqli = $system->getMysqli();
 
             print "<br><h4>HELLO! This is FAIMS sync</h4><br>";
 

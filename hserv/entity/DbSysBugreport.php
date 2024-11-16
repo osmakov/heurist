@@ -120,7 +120,7 @@ class DbSysBugreport extends DbEntityBase
 
         $record = $this->records[0];
 
-        $mysqli = $this->system->get_mysqli();
+        $mysqli = $this->system->getMysqli();
 
         $toEmailAddress = HEURIST_MAIL_TO_BUG;
 
@@ -170,7 +170,7 @@ class DbSysBugreport extends DbEntityBase
         //add current heurist information into message
         array_push($ext_info, "   Heurist url: ".HEURIST_BASE_URL.'?db='.HEURIST_DBNAME);
         array_push($ext_info, "   Heurist version: ".HEURIST_VERSION);
-        array_push($ext_info, "   Heurist dbversion: ".getDbVersion($system->get_mysqli()));
+        array_push($ext_info, "   Heurist dbversion: ".getDbVersion($mysqli));
 
         //extra information
         $types = array_key_exists('2-2', $record) ? $record['2-2'] : 'None provided';
@@ -339,15 +339,15 @@ class DbSysBugreport extends DbEntityBase
             $report_system = new System();
             $using_db = $report_system->init(HEURIST_BUGREPORT_DATABASE, true, false);
 
-            if($using_db && !$report_system->has_access()){
+            if($using_db && !$report_system->hasAccess()){
                 $using_db = $report_system->doLogin('extern', null, 'public', true);
                 !$using_db || $report_system->getCurrentUserAndSysInfo();
             }
         }
 
-        $report_system_ready = $report_system && $report_system->is_inited() && $report_system->has_access();
+        $report_system_ready = $report_system && $report_system->isInited() && $report_system->hasAccess();
         if($using_db !== true || !$report_system_ready){
-            $action = $report_system && !$report_system->has_access() ? 'access' : 'connect to';
+            $action = $report_system && !$report_system->hasAccess() ? 'access' : 'connect to';
             $this->system->addError(HEURIST_ACTION_BLOCKED, "Heurist was unable to $action the Job tracker database");
             return false;
         }
@@ -364,7 +364,7 @@ class DbSysBugreport extends DbEntityBase
             $record['details']['38'] = array_filter($record['details']['38']); // remove null/false values
         }
 
-        $mysqli = $report_system->get_mysqli();
+        $mysqli = $report_system->getMysqli();
         $guest_user = user_getByField($mysqli, 'ugr_Name', 'extern');// to update AddedBy value in new record
         $uid = is_array($guest_user) ? $guest_user['ugr_ID'] : 0;
 
@@ -459,7 +459,7 @@ class DbSysBugreport extends DbEntityBase
             $email_from_name = 'Bug Reporter';
         }
         if(!$email_to){
-            $email_to = user_getDbOwner($this->system->get_mysqli(), 'ugr_eMail');
+            $email_to = user_getDbOwner($this->system->getMysqli(), 'ugr_eMail');
         }
         if(!$email_title){
             $email_title = '"Contact us" form. ';

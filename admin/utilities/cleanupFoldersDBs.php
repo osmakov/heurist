@@ -114,7 +114,7 @@ if(!defined('HEURIST_SERVER_NAME')) {define('HEURIST_SERVER_NAME', 'heurist.huma
 
 
 
-$mysqli = $system->get_mysqli();
+$mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 $upload_root = $system->getFileStoreRootFolder();

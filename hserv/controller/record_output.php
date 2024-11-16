@@ -95,7 +95,7 @@
 
         if( ! $system->init(@$params['db']) ){
             //get error and response
-            $system->error_exit_api();//exit from script
+            $system->errorExitApi();//exit from script
         }
     }
 
@@ -170,7 +170,7 @@
 
             if(@$params['q']==null){
                 //restore query by id from session
-                $search_params['q'] = $system->user_GetPreference($dt_key);
+                $search_params['q'] = $system->userGetPreference($dt_key);
 
                 if($search_params['q']==null){
                     //query was removed
@@ -213,7 +213,7 @@
 
             }elseif(@$params['q']!=null){  //first request - save base filter
                 //remove all other "datatableXXX" keys from session
-                $dbname = $system->dbname_full();
+                $dbname = $system->dbnameFull();
                 if(@$_SESSION[$dbname]['ugr_Preferences']!=null){
                     $keys = array_keys($_SESSION[$dbname]['ugr_Preferences']);
                     if(is_array($keys)){
@@ -284,7 +284,7 @@
     }
 
     if(!$res) {
-        $system->error_exit_api();
+        $system->errorExitApi();
     }
 
     $system->dbclose();
@@ -325,7 +325,7 @@ function downloadFileReferences($system, $ids){
     $sep = "\t";
 
     // retrieve file details
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $file_query = 'SELECT ulf_ID, ulf_FileName, ulf_ExternalFileReference, ulf_ObfuscatedFileID, ulf_FilePath, ulf_Description, ulf_MimeExt, ulf_FileSizeKB,
                     ugr_Name, ulf_Added, ulf_Modified, ulf_OrigFileName, ulf_Caption, ulf_Copyright, ulf_Copyowner
                    FROM recUploadedFiles
