@@ -1776,7 +1776,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
             //B. owners to remove
             foreach($current_owner_groups as $grp){
                 if(array_search($grp, $owner_grps)===false){
-                    if(!$system->hasAccess$grp)){
+                    if(!$system->hasAccess($grp)){
                         $system->addError(HEURIST_REQUEST_DENIED,
                             'Cannot change ownership. User does not have ownership rights. '
                             .'User must be either database administrator, record owner or administrator or record\'s ownership group',

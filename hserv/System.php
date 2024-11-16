@@ -95,6 +95,8 @@ class System {
     */
     public function init($db, $dbrequired=true, $init_session_and_constants=true){
 
+        $this->isInited = false;
+        
         if( !$this->setDbnameFull($db, $dbrequired) ){
             return false;
         }
@@ -116,32 +118,27 @@ class System {
             define('HEURIST_DBNAME_FULL', $this->dbnameFull);
         }
 
-        if($init_session_and_constants){
+        if(!$init_session_and_constants){
+            $this->isInited = true;
+        }elseif($this->startMySession( $this->needFullSessionCheck )
+            && $this->dbnameFull
+            && $this->initPathConstants()){
 
-            if($this->startMySession( $this->needFullSessionCheck )
-                && $this->dbnameFull
-                && $this->initPathConstants()){
-
-                if($this->needFullSessionCheck){
-                    USystem::executeScriptOncePerDay();
-                }
-
-                $this->loginVerify( false );//load user info from session on system init
-                if($this->getUserId()>0){
-                    //set current user for stored procedures (log purposes)
-                    $this->mysqli->query('set @logged_in_user_id = '.intval($this->getUserId()));
-                }
-
-                //ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO
-                $this->mysqli->query('SET GLOBAL sql_mode = \'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\'');
-
-                $this->isInited = true;
+            if($this->needFullSessionCheck){
+                USystem::executeScriptOncePerDay();
             }
 
-        }else{
+            $this->loginVerify( false );//load user info from session on system init
+            if($this->getUserId()>0){
+                //set current user for stored procedures (log purposes)
+                $this->mysqli->query('set @logged_in_user_id = '.intval($this->getUserId()));
+            }
+
+            //ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO
+            $this->mysqli->query('SET GLOBAL sql_mode = \'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION\'');
+
             $this->isInited = true;
         }
-
 
         return $this->isInited;
 
@@ -1220,9 +1217,9 @@ class System {
     * @return mixed
     */
     public function isAdmin(){
-       return ($this->getUserId()>0 &&
+       return $this->getUserId()>0 &&
             ($this->getUserId()==2 ||
-                $this->hasAccess( $this->settings->get('sys_OwnerGroupID') ) ));
+                $this->hasAccess( $this->settings->get('sys_OwnerGroupID') ) );
     }
 
     public function isGuestUser(){
@@ -1304,7 +1301,7 @@ class System {
             $result = true;
         }
 
-        return true;
+        return $result;
     }
 
 
@@ -1331,7 +1328,6 @@ class System {
     *
     * ugr_Preferences are always loaded from database
     *
-    * @todo - load all user info if it is required only
     */
     private function loginVerify( $user, $is_guest_allowed=false ){
 
@@ -1635,7 +1631,6 @@ class System {
             array_push($info, $suplementary);
         }
 
-        //$info = array_map('htmlspecialchars', $info);
         file_put_contents ( $this->getSysDir().'userInteraction.log' , implode(',', $info)."\n", FILE_APPEND );
     }
 

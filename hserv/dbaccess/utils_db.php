@@ -85,7 +85,7 @@ use hserv\structure\ConceptCode;
         //connecction parameter defined in heuristConfigIni.php
         $mysqli = mysql__connection(HEURIST_DBSERVER_NAME, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, HEURIST_DB_PORT);
         
-        if (is_a($mysqli, 'mysqli')){
+        if (is_a($mysqli, 'mysqli') && $dbname){
             
             $res = mysql__usedatabase($mysqli, $dbname);
             if ( $res!==true ){
