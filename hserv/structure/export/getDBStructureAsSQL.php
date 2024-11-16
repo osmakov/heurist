@@ -36,14 +36,12 @@ $approvedDefsOnly=@$_REQUEST["approvedDefsOnly"];// returns null if not set
 $isHTML = (@$_REQUEST["plain"]!=1);//no html
 // TO DO: filter for reserved and approved definitions only if this is set
 
+$mysqli = $system->get_mysqli();
 
-$sysinfo = $system->settings->get();
-$db_version = $sysinfo['sys_dbVersion'].'.'.$sysinfo['sys_dbSubVersion'].'.'.$sysinfo['sys_dbSubSubVersion'];
+$db_version = getDbVersion($mysqli);
 
 define('HEURIST_DBID', $system->settings->get('sys_dbRegisteredID'));
 define('EOL',"<br>\n");
-
-$mysqli = $system->get_mysqli();
 
 // TODO: use HEURIST_DBVERSION TO SET THE VERSION HERE
 
@@ -67,7 +65,7 @@ if($isHTML){
 }
 print "-- Heurist Definitions Exchange File  generated: ".date("d M Y @ H:i").EOL;
 print "-- Installation = " . HEURIST_BASE_URL. EOL;
-print "-- Database = " . HEURIST_DBNAME . EOL;
+print "-- Database = " . $system->dbname() . EOL;
 print "-- Program Version: ".HEURIST_VERSION.EOL;
 print "-- Database Version: ".$db_version; // ** Do not change format of this line ** !!! it is checked to make sure vesions match
 if($isHTML) {print "<br><br>\n";}

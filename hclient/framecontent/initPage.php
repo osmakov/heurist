@@ -57,19 +57,16 @@ if(!$isSystemInited){
 if(defined('IS_INDEX_PAGE')){
 
     //verify database version against minimal required
-    $subsubVer = intval($system->settings->get('sys_dbSubSubVersion'));
-
-    if($subsubVer===null){
-        $message = $system->getErrorMsg();
+    $current_db_version = getDbVersion($system->get_mysqli());
+    
+    if(!$current_db_version){
+        $message = 'Cannnot obtain current database version';
         include_once ERROR_REDIR;
         exit;
     }
 
-    if (version_compare(HEURIST_MIN_DBVERSION,
-    $system->settings->get('sys_dbVersion').'.'
-    .$system->settings->get('sys_dbSubVersion').'.'
-    .$subsubVer)>0){
-
+    if (version_compare(HEURIST_MIN_DBVERSION, $current_db_version)>0){ 
+        //older then minimal - force update
         include_once 'admin/setup/dbupgrade/upgradeDatabase.php';
         exit;
     }

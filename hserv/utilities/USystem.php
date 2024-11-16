@@ -38,7 +38,7 @@ class USystem {
     *   domain      - server_name without port                            (heuristref.net)
     *   server_url  - full server url                                     (https://heuristref.net:80)
     *   heurist_dir - code folder, for cli from getcwd or $_SERVER["DOCUMENT_ROOT"]    (/var/www/html/HEURIST)
-    * 
+    *
     *   baseURL     - base url ( ie server url+optional folder (https://heuristref.net/h6-alpha/)
     *   baseURL_pro - url for production version  ( https://heuristref.net/heurist/ )
     */
@@ -83,7 +83,7 @@ class USystem {
                     break;
                 }
             }
-            
+
             $installDir_pro = '/heurist/';
             $host_params['heurist_dir'] = implode('/',$path).'/';
             $host_params['server_name'] = $serverName;
@@ -106,18 +106,18 @@ class USystem {
                     $host_params['server_name'] = $localhost;
                     $host_params['domain'] = $localhost;
                 }
-                
+
             }else{
                 $k = strpos($serverName,":");
                 $host_params['domain'] = ($k>0)?substr($serverName,0,$k-1):$serverName;
                 $host_params['server_name'] = $serverName;
             }
-           
+
             $dir = realpath(dirname(__FILE__).'/../../'); //@$_SERVER["DOCUMENT_ROOT"];
             $dir = str_replace('\\', '/', $dir);
             if( substr($dir, -1, 1) != '/' )  {
                 $dir .= '/';
-            }            
+            }
             $host_params['heurist_dir'] = $dir;
 
             $isSecure = false;
@@ -127,7 +127,7 @@ class USystem {
             elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on') {
                 $isSecure = true;
             }
-            
+
             if(!isset($heuristBaseURL)){
                 //try to detect installation and production folders
                 list($installDir, $installDir_pro) = USystem::detectInstalltionDir();
@@ -135,11 +135,11 @@ class USystem {
         }
 
         $serverUrl = ($isSecure ? 'https' : 'http') . "://" . $host_params['server_name'];
-        
+
         if(isset($heuristBaseURL)){
             $baseUrl = $heuristBaseURL;
             $baseUrl_pro = $heuristBaseURL_pro ?? $heuristBaseURL;
-            
+
             if(strpos($baseUrl, $serverUrl)===false){ //alpha version is on different domain
                 $baseUrl = $baseUrl_pro;
             }
@@ -149,25 +149,25 @@ class USystem {
             if( substr($baseUrl_pro, -1, 1) != '/' )  {
                 $baseUrl_pro .= '/';
             }
-            
+
         }else{
             //for auto detect both alpha and pro version must be on the same domain
             $baseUrl = $serverUrl . $installDir;
             $baseUrl_pro = $serverUrl . $installDir_pro;
         }
-        
+
         $host_params['server_url']  = $serverUrl;
         $host_params['baseURL']     = $baseUrl;
         $host_params['baseURL_pro'] = $baseUrl_pro;
-        
+
         return $host_params;
 
     }
 
-                
+
     /**
-    * if $heuristBaseURL is not defined in configuration detect installation folder and base url 
-    *                             
+    * if $heuristBaseURL is not defined in configuration detect installation folder and base url
+    *
     */
     private static function detectInstalltionDir(){
         $installDir = '/heurist';
@@ -244,7 +244,7 @@ class USystem {
                 $i++;
             }
         }
-        
+
         return array($installDir, $installDir_pro);
     }
 
@@ -488,6 +488,248 @@ class USystem {
     }
 
 
+    //======================= daily actions =================================
+    //
+    //
+    //
+    public static function executeScriptOncePerDay(){
 
+        $now = getNow();
+        $flag_file = HEURIST_FILESTORE_ROOT.'flag_'.$now->format('Y-m-d');
+
+        if(file_exists($flag_file)){
+            return;
+        }
+
+        file_put_contents($flag_file,'1');
+
+        //remove flag files for previous days
+        for($i=1;$i<10;$i++){
+            $d = getNow();
+            $yesterday = $d->sub(new \DateInterval('P'.sprintf('%02d', $i).'D'));
+            $arc_flagfile = HEURIST_FILESTORE_ROOT.'flag_'.$yesterday->format('Y-m-d');
+            //if yesterday log file exists
+            if(file_exists($arc_flagfile)){
+                unlink($arc_flagfile);
+            }
+        }
+
+        //add functions for other daily tasks
+        self::sendDailyErrorReport();
+        self::heuristVersionCheck();// Check if different local and server code versions are different
+        self::updateDeeplLanguages();// Get list of allowed target languages from Deepl API
+
+    }
+
+    //
+    //
+    //
+    private static function sendDailyErrorReport(){
+
+        $root_folder = HEURIST_FILESTORE_ROOT;
+        
+        $archiveFolder = $root_folder."AAA_LOGS/";
+        $logs_to_be_emailed = array();
+        $y1 = null;
+        $y2 = null;
+
+        //1. check if log files for previous 30 days exist
+        for($i=1;$i<31;$i++){
+            $now = getNow();
+            $yesterday = $now->sub(new \DateInterval('P'.sprintf('%02d', $i).'D'));
+            $arc_logfile = 'errors_'.$yesterday->format('Y-m-d').'.log';
+            //if yesterday log file exists
+            if(file_exists($root_folder.$arc_logfile)){
+                //2. copy to log archive folder
+                fileCopy($root_folder.$arc_logfile, $archiveFolder.$arc_logfile);
+                unlink($root_folder.$arc_logfile);
+
+                $logs_to_be_emailed[] = $archiveFolder.$arc_logfile;
+
+                $y2 = $yesterday->format('Y-m-d');
+                if($y1==null) {$y1 = $y2;}
+            }
+        }
+
+        if(!empty($logs_to_be_emailed)){
+
+            $msgTitle = 'Error report '.HEURIST_SERVER_NAME.' for '.$y1.($y2==$y1?'':(' ~ '.$y2));
+            $msg = $msgTitle;
+            foreach($logs_to_be_emailed as $log_file){
+                $msg = $msg.'<br>'.file_get_contents($log_file);
+            }
+            //'Bug reporter',
+            sendEmail(HEURIST_MAIL_TO_BUG, $msgTitle, $msg, true);
+        }
+
+
+    }
+
+    //
+    // Send email to system admin about available Heurist updates, daily tasks
+    //
+    private static function heuristVersionCheck(){
+
+        $local_ver = HEURIST_VERSION; // installed heurist version
+
+        // attempt to get release version
+        $server_ver = USystem::getLastCodeAndDbVersion();
+
+        if($server_ver == "unknown"){
+            error_log("Unable to retrieve Heurist server version, this maybe due to the main server being un-available. If this problem persists please contact the Heurist team.");
+            return;
+        }
+
+        $local_parts = explode('.', $local_ver);
+        $server_parts = explode('.', $server_ver);
+
+        for($i = 0; $i < count($server_parts); $i++){
+
+            if($server_parts[$i] == $local_parts[$i]){
+                continue;
+            }
+
+            if($server_parts[$i] > $local_parts[$i]){ // main release is newer than installed version, send email
+
+                $title = "Heurist version " . htmlspecialchars($local_ver)
+                . " at " . HEURIST_BASE_URL . " is behind Heurist home server";
+
+                $msg = 'Heurist on the referenced server is running version '
+                . " $local_ver which can be upgraded to the newer $server_ver<br><br>"
+                . 'Please check for an update package at <a href="https://heuristnetwork.org/installation/">https://heuristnetwork.org/installation/</a><br><br>'
+                . 'Update packages reflect the alpha version and install in parallel with existing versions'
+                . ' so you may test them before full adoption. We recommend use of the alpha package'
+                . ' by any confident user, as they bring bug-fixes, cosmetic improvements and new'
+                . ' features. They are safe to use and we will respond repidly to any reported bugs.';
+
+                //Update notification
+                sendEmail(HEURIST_MAIL_TO_ADMIN, $title, $msg, true);
+            }
+            //else main release is less than installed version, maybe missed alpha or developemental version
+
+            break;
+        }//for
+    }
+
+    /**
+    * Get and save list of available languages from Deepl API
+    * Saved to FILESTORE_ROOT/DEEPL_languages.json
+    */
+    private static function updateDeeplLanguages(){
+
+        global $accessToken_DeepLAPI;
+        if(empty($accessToken_DeepLAPI)){
+            return;
+        }
+
+        $target_url = 'https://api-free.deepl.com/v2/languages?type=target';
+
+        $language_file = HEURIST_FILESTORE_ROOT . 'DEEPL_languages.json';
+
+        $target_res = loadRemoteURLContentWithRange($target_url, false, true, 60, array('Authorization: DeepL-Auth-Key ' . $accessToken_DeepLAPI));
+
+        $target_languages = array();
+
+        if(!empty($target_res)){
+
+            $target_res = json_decode($target_res, true);
+            $target_res = json_last_error() !== JSON_ERROR_NONE ? array() : $target_res;
+
+            // Extra processing needed, some target languages have multiple versions; e.g. ENG-GB and ENG-US
+            foreach ($target_res as $lang) {
+
+                $lang_name = $lang['language'];
+                if(strpos($lang_name, '-') !== false){
+                    $lang_name = explode('-', $lang_name)[0];
+                }
+
+                if(array_search($lang_name, $target_languages) !== false){
+                    continue;
+                }
+
+                array_push($target_languages, $lang_name);
+            }
+        }
+
+        fileSave(json_encode($target_languages), $language_file);
+    }
+
+    /**
+    * Checks database version
+    * first check version in file lastAdviceSent, version stored in this file valid for 24 hrs
+    */
+    public static function getLastCodeAndDbVersion(){
+
+        $isAlpha = (preg_match("/h\d+\-alpha|alpha\//", HEURIST_BASE_URL) === 1) ? true :false;
+
+        $version_last_check = 'unknown';
+        $need_check_main_server = true;
+
+        $fname = HEURIST_FILESTORE_ROOT."lastAdviceSent.ini";
+
+        $release = ($isAlpha ? 'alpha' : 'stable');
+
+        if (file_exists($fname)){
+            //last check and version
+            list($date_last_check, $version_last_check, $release_last_check) = explode("|", file_get_contents($fname));
+
+            if($release_last_check && strncmp($release_last_check, $release, strlen($release)) == 0 
+                && $date_last_check && strtotime($date_last_check) ){
+                    $days = intval((time()-strtotime($date_last_check))/(3600*24));//days since last check
+
+                    if(intval($days)<1){
+                        $need_check_main_server = false;
+                    }
+            }
+        }//file exitst     
+        
+        if(!$need_check_main_server){
+            return $version_last_check;
+        }
+
+        $rawdata = null;
+
+        //send request to main server at HEURIST_INDEX_BASE_URL
+        // HEURIST_INDEX_DATABASE is the refernece standard for current database version
+        // Maybe this should be changed to Heurist_Sandpit?. Note: sandpit no longer needed, or used, from late 2015
+
+        if(strpos(strtolower(HEURIST_INDEX_BASE_URL), strtolower(HEURIST_SERVER_URL))===0){ //same domain
+
+            $mysql_indexdb = mysql__init(HEURIST_INDEX_DATABASE);
+            $db_version = getDbVersion($mysql_indexdb);
+            if($db_version){
+                $rawdata = HEURIST_VERSION."|".$db_version;    
+            }
+
+        }else{
+            $url = ($isAlpha
+                ? HEURIST_MAIN_SERVER . '/h6-alpha/'
+                : HEURIST_INDEX_BASE_URL)
+            . "admin/setup/dbproperties/getCurrentVersion.php?db=".HEURIST_INDEX_DATABASE."&check=1";
+            $rawdata = loadRemoteURLContentSpecial($url);//it returns HEURIST_VERSION."|".HEURIST_DBVERSION
+        }
+
+        if($rawdata){
+            $current_version = explode("|", $rawdata);
+
+            if (!empty($current_version))
+            {
+                $curver = explode(".", $current_version[0]);
+                if( count($curver)>=2
+                && intval($curver[0]) > 0
+                && is_numeric($curver[1])
+                && intval($curver[1])>=0 )
+                {
+                    $version_last_check = $current_version[0];
+                }
+            }
+        }
+
+        $version_in_session = date("Y-m-d").'|'.$version_last_check.'|'.$release;
+        fileSave($version_in_session, $fname);//save last version
+    
+
+        return $version_last_check;
+    }
 }
-?>
+

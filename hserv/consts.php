@@ -529,6 +529,11 @@ function redirectURL($url){
     header('Location: '.$url);
 }
 
+
+function getNow(){
+    return new \DateTime('now', new \DateTimeZone('UTC'));
+}
+
 function isEmptyStr($val){
     // !empty is analogous to isset($foo) && $foo
     return empty($val) || $val=='';

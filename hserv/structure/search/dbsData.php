@@ -619,12 +619,11 @@ function dbs_GetRectypeConstraint($system) {
         $query = str_replace('trm_ConceptID', '', $query);
 
         //in case database v1.2 there is not field trm_VocabularyGroupID
-        $dbVer = $system->settings->get('sys_dbVersion');
-        $dbVerSub = $system->settings->get('sys_dbSubVersion');
-        if($dbVer==1 && $dbVerSub<3){
+        $current_db_version = getDbVersion($mysqli);
+        if(version_compare('1.3.0', $current_db_version)>0){
             $query = str_replace('trm_VocabularyGroupID', '1 as trm_VocabularyGroupID', $query);
         }
-        if($dbVer==1 && $dbVerSub<4 && $system->settings->get('sys_dbSubSubVersion')<6){
+        if(version_compare('1.4.6', $current_db_version)>0){
             $query = str_replace('trm_OrderInBranch', '0 as trm_OrderInBranch', $query);
         }
 
@@ -667,7 +666,7 @@ function dbs_GetRectypeConstraint($system) {
         $matches_refs = array();
 
         //see dbDefTerms->getTermLinks
-        if($dbVer==1 && $dbVerSub>2){
+        if(version_compare($current_db_version, '1.2.0')>0){
             $query = 'SELECT trl_ParentID, trl_TermID FROM defTermsLinks ORDER BY trl_ParentID';
         }else{
             $query = 'SELECT trm_ParentTermID, trm_ID FROM defTerms ORDER BY trm_ParentTermID';
@@ -688,7 +687,7 @@ function dbs_GetRectypeConstraint($system) {
             $terms['trm_Links'] = $matches;
         }
 
-        if($dbVer==1 && $dbVerSub>2){
+        if(version_compare($current_db_version, '1.2.0')>0){
             //get vocabulary groups
             $query = 'SELECT vcg_ID, vcg_Name, vcg_Domain, vcg_Order, vcg_Description FROM defVocabularyGroups';
             $res = $mysqli->query($query);

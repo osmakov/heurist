@@ -76,30 +76,56 @@ use hserv\structure\ConceptCode;
     */
 
     /**
+    * Connect to database server and use given database
+    * 
+    * @param mixed $dbname
+    * @return a MySQL instance on success or array with code and error message on failure.
+    */
+    function mysql__init($dbname){
+        
+        //connecction parameter defined in heuristConfigIni.php
+        $mysqli = mysql__connection(HEURIST_DBSERVER_NAME, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, HEURIST_DB_PORT);
+        
+        if (is_a($mysqli, 'mysqli')){
+            
+            $res = mysql__usedatabase($mysqli, $dbname);
+            if ( $res!==true ){
+                //open of database failed
+                return $res;
+            }
+        }
+        
+        return $mysqli;  
+    }
+    
+    /**
     * Connect to db server
     *
     * @param mixed $dbHost
     * @param mixed $dbUsername
     * @param mixed $dbPassword
     *
-    * @return a MySQL link identifier on success or array with code and error message on failure.
+    * @return a MySQL instance on success or array with code and error message on failure.
     */
     function mysql__connection($dbHost, $dbUsername, $dbPassword, $dbPort=null){
 
         if(null==$dbHost || $dbHost==""){
             return array(HEURIST_SYSTEM_FATAL, "Database server is not defined. Check your configuration file");
         }
+        
+        $res = true;
 
         try{
             $mysqli = mysqli_init();
-            //debug mode mysqli_report(MYSQLI_REPORT_ALL);
-            mysqli_report(MYSQLI_REPORT_STRICT);//MYSQLI_REPORT_ERROR |
-            $mysqli->options(MYSQLI_OPT_LOCAL_INFILE, 1);
-            $mysqli->real_connect($dbHost, $dbUsername, $dbPassword, null, $dbPort);
-
+            if($mysqli){
+                //debug mode mysqli_report(MYSQLI_REPORT_ALL);
+                mysqli_report(MYSQLI_REPORT_STRICT);//MYSQLI_REPORT_ERROR |
+                $mysqli->options(MYSQLI_OPT_LOCAL_INFILE, 1);
+                $res = $mysqli->real_connect($dbHost, $dbUsername, $dbPassword, null, $dbPort);
+            }
         } catch (Exception $e)  {
         }
-        if(!$mysqli){
+        if(!($mysqli && $res)){
             return array(HEURIST_SYSTEM_FATAL, "Could not connect to database server, MySQL error: " . mysqli_connect_error());
         }
 
@@ -993,6 +1019,32 @@ $mysqli->kill($thread_id);
 
         return $res;
     }
+    
+    /**
+    * Return database version
+    * 
+    * @param mixed $mysqli
+    * @return version or null
+    */
+    function getDbVersion($mysqli){
+        
+        $db_version = null;
+        
+        if (is_a($mysqli, 'mysqli')){
+
+            $system_settings = getSysValues($mysqli);
+            if(is_array($system_settings)){
+
+                $db_version = $system_settings['sys_dbVersion'].'.'
+                              .$system_settings['sys_dbSubVersion'].'.'
+                              .$system_settings['sys_dbSubSubVersion'];
+            }
+        }        
+        
+        return $db_version;
+        
+    }
+    
 
     /**
     * Returns values from sysIdentification

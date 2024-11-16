@@ -30,12 +30,14 @@ header("Content-Type: application/xml");
 // Normally jsut outputs definitions, this will include users/groups
 $includeUgrps = @$_REQUEST["includeUgrps"];// returns null if not set
 
+$mysqli = $system->get_mysqli();
+
 $sysinfo = $system->settings->get();
-$db_version = $sysinfo['sys_dbVersion'].'.'.$sysinfo['sys_dbSubVersion'].'.'.$sysinfo['sys_dbSubSubVersion'];
+
+$db_version = getDbVersion($mysqli);
+
 
 define('HEURIST_DBID', $system->settings->get('sys_dbRegisteredID'));
-
-$mysqli = $system->get_mysqli();
 
 $rty_ID = @$_REQUEST["rty"];
 $dty_ID = @$_REQUEST["dty"];
@@ -69,7 +71,7 @@ print "\n\n<hml_structure>";
 // File headers to explain what the listing represents and for version checking
 print "\n\n<!--Heurist Definitions Exchange File, generated: ".date("d M Y @ H:i")."-->";
 print "\n<HeuristBaseURL>" . HEURIST_BASE_URL. "</HeuristBaseURL>";
-print "\n<HeuristDBName>" . HEURIST_DBNAME . "</HeuristDBName>";
+print "\n<HeuristDBName>" . $system->dbname() . "</HeuristDBName>";
 print "\n<HeuristProgVersion>".HEURIST_VERSION."</HeuristProgVersion>";
 
 // *** MOST IMPORTANT ***
@@ -77,9 +79,7 @@ print "\n<HeuristProgVersion>".HEURIST_VERSION."</HeuristProgVersion>";
 // However use of XML tags should allow import even if structure has evolved
 print "\n<HeuristDBVersion>".$db_version."</HeuristDBVersion>";
 
-
 // TODO: Also need to output general properties of the database set in Structure > Properties / dvanced Properties
-
 
 if(!$is_subset){
 // Output each of the definition tables in turn
@@ -261,7 +261,7 @@ function do_print_table2( $tname, $id=0 )
                 }
             }elseif(strpos($fld,'IDInOriginatingDB')!==false){
                 if(HEURIST_DBID>0 && !($val>0)){
-                    $val = $val[$id_field];
+                    $val = $row[$id_field];
                 }
             }
             print "<$fld>$val</$fld>";

@@ -981,7 +981,7 @@ class DbUtils {
                 folderDelete($database_folder);
             }else{
                 $path = realpath(dirname(__FILE__).'/../../../');
-                $now = self::$system->getNow();
+                $now = getNow();
                 fileAdd($database_name.' # restore '.$now->format('Y-m-d'),
                             $path.'/databases_not_to_purge.txt');
             }

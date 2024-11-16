@@ -29,21 +29,13 @@
 */
 require_once dirname(__FILE__).'/../../../autoload.php';
 
-$system = new hserv\System();
-
 $rawdata = '';
 
-if( $system->init(@$_REQUEST['db'],true,false) ){
-
-    $system_settings = getSysValues($system->get_mysqli());
-    if(is_array($system_settings)){
-
-        $db_version = $system_settings['sys_dbVersion'].'.'
-                .$system_settings['sys_dbSubVersion'].'.'
-                .$system_settings['sys_dbSubSubVersion'];
-
-        $rawdata = HEURIST_VERSION."|".$db_version;
-    }
+$mysqli = mysql__init(@$_REQUEST['db']);
+$db_version = getDbVersion($mysqli);
+if($db_version){
+    $rawdata = HEURIST_VERSION."|".$db_version;    
 }
+
 print $rawdata;
 ?>

@@ -216,11 +216,8 @@ ini_set('max_execution_time', 0);
                     }
     */
             }else{
-
-                    $data["db_version"] =  $system->settings->get('sys_dbVersion').'.'
-                                        .$system->settings->get('sys_dbSubVersion');
-
-                    $response = array("status"=>HEURIST_OK, "data"=> $data );
+                $data["db_version"] = getDbVersion($system->get_mysqli());
+                $response = array("status"=>HEURIST_OK, "data"=> $data );
             }
 
         }

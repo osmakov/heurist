@@ -58,18 +58,14 @@ function checkVersionDatabase(){
     foreach ($databases as $db_name){
 
         mysql__usedatabase($mysqli, $db_name);
+        
+        $current_db_version = getDbVersion($mysqli);
 
-        $query = 'SELECT sys_dbVersion, sys_dbSubVersion, sys_dbSubSubVersion from sysIdentification';
-        $ver = mysql__select_row_assoc($mysqli, $query);
-        if(!$ver){
-            print htmlspecialchars($db_name.'  >>> '.$mysqli->error);
+        if(!$current_db_version){
+            print htmlspecialchars($db_name.'  >>> cannot get db version '.$mysqli->error);
         }else{
 
-
-            $is_old_version = (version_compare($min_version,
-                    $ver['sys_dbVersion'].'.'
-                    .$ver['sys_dbSubVersion'].'.'
-                    .$ver['sys_dbSubSubVersion'])>0);
+            $is_old_version = (version_compare($min_version, $current_db_version)>0);
 
             $missed = hasAllTables($mysqli); //, 'hdb_'.$db_name
             $has_missed = (!isEmptyArray($missed));
@@ -78,16 +74,16 @@ function checkVersionDatabase(){
             }
 
             if($is_old_version || $has_missed){
-                print DIV_S.htmlspecialchars($db_name.'  >>> '.$ver['sys_dbVersion'].'.'.$ver['sys_dbSubVersion'].'.'.$ver['sys_dbSubSubVersion']);
+                print DIV_S.htmlspecialchars($db_name.'  >>> '.$current_db_version);
 
                 if($has_missed){
                     print '<br>Missed: '.implode(', ',$missed);
                 }
 
-                if(@$_REQUEST['upgrade'] && $is_old_version && $ver['sys_dbSubVersion']==3 && $ver['sys_dbSubSubVersion']>=0){
+                if(@$_REQUEST['upgrade'] && $is_old_version && version_compare($current_db_version, '1.3.0')>=0){
                         $rep = updateDatabseTo_v1_3_16($system);
 
-                        if($rep!==false && $ver['sys_dbSubSubVersion']<14){ //for db_utils.php
+                        if($rep!==false &&  version_compare('1.3.14', $current_db_version)>0){ //older than 1.3.14
                             $rep2 = recreateRecDetailsDateIndex($system, true, true);
                             if($rep2){
                                 $rep = array_merge($rep, $rep2);

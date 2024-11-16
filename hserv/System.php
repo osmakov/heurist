@@ -57,12 +57,9 @@ class System {
     //???
     //private $guest_User = array('ugr_ID'=>0,'ugr_FullName'=>'Guest');
     private $current_User = null;
-    private $send_email_on_error = 1; //set to 1 to send email for all severe errors
-
-    private $version_release = null;
 
     //do not check session folder, loads only basic user info
-    private $need_full_session_check = false;
+    private $needFullSessionCheck = false;
     
     //instance of SystemSettings class
     public $settings;  
@@ -86,7 +83,7 @@ class System {
 
     public function __construct( $full_check=false ) {
 
-        $this->need_full_session_check = $full_check;
+        $this->needFullSessionCheck = $full_check;
         
         $this->settings = new SystemSettings($this);
     }
@@ -107,13 +104,16 @@ class System {
             return false;
         }
 
-        //dbutils?
-        $connection_ok = $this->initDbConnection();
-        if(!$connection_ok){
+        $res = mysql__init($this->dbname_full);
+        if (is_a($res, 'mysqli')){
+            //connection OK
+            $this->mysqli = $res;
+        }else{
+            //connection failed
+            $this->addErrorArr($res);
             return false;
         }
 
-        //connection OK
 
         if($this->dbname_full && !defined('HEURIST_DBNAME')){
             //init once for first system - preferable use methods
@@ -126,7 +126,7 @@ class System {
             return true;
         }
 
-        if(!$this->start_my_session( $this->need_full_session_check )){
+        if(!$this->start_my_session( $this->needFullSessionCheck )){
             return false;
         }
 
@@ -136,13 +136,9 @@ class System {
                 return false;
             }
 
-            // attempt to get release version
-            $this->version_release = (preg_match("/h\d+\-alpha|alpha\//", HEURIST_BASE_URL) === 1) ? "alpha" : "stable";
-
-            if($this->need_full_session_check){
-                $this->_executeScriptOncePerDay();
+            if($this->needFullSessionCheck){
+                USystem::executeScriptOncePerDay();
             }
-
 
             $this->loginVerify( false );//load user info from session on system init
             if($this->get_user_id()>0){
@@ -158,35 +154,6 @@ class System {
         $this->is_inited = true;
         return true;
 
-    }
-
-    //
-    //
-    //
-    private function initDbConnection(){
-
-        $res = mysql__connection(HEURIST_DBSERVER_NAME, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, HEURIST_DB_PORT);
-        if ( is_array($res) ){
-            //connection to server failed
-            $this->addError($res[0], $res[1]);
-            $this->mysqli = null;
-            return false;
-        }else{
-            $this->mysqli = $res;
-        }
-
-        if($this->mysqli){
-            if($this->dbname_full)  //database is defined
-            {
-                $res = mysql__usedatabase($this->mysqli, $this->dbname_full);
-                if ( $res!==true ){
-                    //open of database failed
-                    $this->addErrorArr($res);
-                    return false;
-                }
-            }
-        }
-        return $res;
     }
 
     //
@@ -891,11 +858,6 @@ class System {
         }
     }
 
-    // NOT USED
-    public function setErrorEmail($val){
-        $this->send_email_on_error = $val;
-    }
-
     /**
     * keeps error message (for further use with getError)
     */
@@ -919,7 +881,7 @@ class System {
     //
     private function _treatSeriousError($status, $message, $sysmsg, $title) {
 
-        $now = $this->getNow();
+        $now = getNow();
         $curr_logfile = 'errors_'.$now->format('Y-m-d').'.log';
 
         //3. write error into current error log
@@ -1105,7 +1067,7 @@ class System {
             $dbrecent = USystem::sessionRecentDatabases($this->current_User);
 
             //retrieve lastest code version (cached in localfile and refreshed from main index server daily)
-            $lastCode_VersionOnServer = $this->get_last_code_and_db_version($this->version_release == "alpha" ? true : false);
+            $lastCode_VersionOnServer = USystem::getLastCodeAndDbVersion();
 
             $res = array(
                 "currentUser"=>$this->current_User,
@@ -1119,9 +1081,7 @@ class System {
                     "version"=>HEURIST_VERSION,
                     "version_new"=>$lastCode_VersionOnServer, //version on main index database server
                     //db version
-                    "db_version"=> $this->settings->get('sys_dbVersion').'.'
-                    .$this->settings->get('sys_dbSubVersion').'.'
-                    .$this->settings->get('sys_dbSubSubVersion'),
+                    "db_version"=>getDbVersion($this->get_mysqli()),
                     "db_version_req"=>HEURIST_MIN_DBVERSION,
 
                     "dbowner_name"=>@$dbowner['ugr_FirstName'].' '.@$dbowner['ugr_LastName'],
@@ -1352,7 +1312,7 @@ class System {
         if(headers_sent()) {return true;}
 
         //verify that session folder is writable
-        if($this->need_full_session_check && $check_session_folder && !USystem::sessionCheckFolder()){
+        if($this->needFullSessionCheck && $check_session_folder && !USystem::sessionCheckFolder()){
             $this->addError(HEURIST_SYSTEM_FATAL, "The sessions folder has become inaccessible. This is a minor, but annoying, problem for which we apologise. An email has been sent to your system administrator asking them to fix it - this may take up to a day, depending on time differences. Please try again later.");
             return false;
         }
@@ -1770,92 +1730,6 @@ class System {
 
 
     //
-    // check database version
-    // first check version in file lastAdviceSent, version stored in this file valid for 24 hrs
-    //
-    private function get_last_code_and_db_version($isAlpha=false){
-
-        $version_last_check = 'unknown';
-        $need_check_main_server = true;
-
-        $fname = HEURIST_FILESTORE_ROOT."lastAdviceSent.ini";
-
-        $release = ($isAlpha ? 'alpha' : 'stable');
-
-        if (file_exists($fname)){
-            //last check and version
-            list($date_last_check, $version_last_check, $release_last_check) = explode("|", file_get_contents($fname));
-
-            if($release_last_check && strncmp($release_last_check, $release, strlen($release)) == 0){
-
-                if($date_last_check && strtotime($date_last_check)){
-
-                    $days =intval((time()-strtotime($date_last_check))/(3600*24));//days since last check
-
-                    if(intval($days)<1){
-                        $need_check_main_server = false;
-                    }
-                }
-            }
-        }//file exitst
-
-        if($need_check_main_server){
-
-            $rawdata = null;
-
-            //send request to main server at HEURIST_INDEX_BASE_URL
-            // HEURIST_INDEX_DATABASE is the refernece standard for current database version
-            // Maybe this should be changed to Heurist_Sandpit?. Note: sandpit no longer needed, or used, from late 2015
-
-            if(strpos(strtolower(HEURIST_INDEX_BASE_URL), strtolower(HEURIST_SERVER_URL))===0){ //same domain
-
-                $mysql_indexdb = mysql__connection(HEURIST_DBSERVER_NAME, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, HEURIST_DB_PORT);
-                if ( !is_array($mysql_indexdb) && mysql__usedatabase($mysql_indexdb, HEURIST_INDEX_DATABASE)==true){
-
-                    $system_settings = getSysValues($mysql_indexdb);
-                    if(is_array($system_settings)){
-
-                        $db_version = $system_settings['sys_dbVersion'].'.'
-                        .$system_settings['sys_dbSubVersion'].'.'
-                        .$system_settings['sys_dbSubSubVersion'];
-
-                        $rawdata = HEURIST_VERSION."|".$db_version;
-                    }
-
-                }
-
-            }else{
-                $url = ($isAlpha
-                    ? HEURIST_MAIN_SERVER . '/h6-alpha/'
-                    : HEURIST_INDEX_BASE_URL)
-                . "admin/setup/dbproperties/getCurrentVersion.php?db=".HEURIST_INDEX_DATABASE."&check=1";
-                $rawdata = loadRemoteURLContentSpecial($url);//it returns HEURIST_VERSION."|".HEURIST_DBVERSION
-            }
-
-            if($rawdata){
-                $current_version = explode("|", $rawdata);
-
-                if (!empty($current_version))
-                {
-                    $curver = explode(".", $current_version[0]);
-                    if( count($curver)>=2
-                    && intval($curver[0]) > 0
-                    && is_numeric($curver[1])
-                    && intval($curver[1])>=0 )
-                    {
-                        $version_last_check = $current_version[0];
-                    }
-                }
-            }
-
-            $version_in_session = date("Y-m-d").'|'.$version_last_check.'|'.$release;
-            fileSave($version_in_session, $fname);//save last version
-        }
-
-        return $version_last_check;
-    }
-
-    //
     // returns true if password is wrong
     //
     public function verifyActionPassword($password_entered, $password_to_compare, $min_length=6)
@@ -1910,183 +1784,15 @@ class System {
             header('Content-type: '.$content_type);
         }
     }
-
-    //
-    //
-    //
-    private function _executeScriptOncePerDay(){
-
-        $now = $this->getNow();
-        $flag_file = HEURIST_FILESTORE_ROOT.'flag_'.$now->format('Y-m-d');
-
-        if(file_exists($flag_file)){
-            return;
-        }
-
-        file_put_contents($flag_file,'1');
-
-        //remove flag files for previous days
-        for($i=1;$i<10;$i++){
-            $d = $this->getNow();
-            $yesterday = $d->sub(new \DateInterval('P'.sprintf('%02d', $i).'D'));
-            $arc_flagfile = HEURIST_FILESTORE_ROOT.'flag_'.$yesterday->format('Y-m-d');
-            //if yesterday log file exists
-            if(file_exists($arc_flagfile)){
-                unlink($arc_flagfile);
-            }
-        }
-
-        //add functions for other daily tasks
-        $this->_sendDailyErrorReport();
-        $this->_heuristVersionCheck();// Check if different local and server code versions are different
-        $this->_getDeeplLanguages();// Get list of allowed target languages from Deepl API
-
-    }
-
-    public function getNow(){
-        return new \DateTime('now', new \DateTimeZone('UTC'));
-    }
-
-    //
-    //
-    //
-    private function _sendDailyErrorReport(){
-
-        $now = $this->getNow();
-        $root_folder = HEURIST_FILESTORE_ROOT;
-        $curr_logfile = 'errors_'.$now->format('Y-m-d').'.log';
-        $archiveFolder = $root_folder."AAA_LOGS/";
-        $logs_to_be_emailed = array();
-        $y1 = null;
-        $y2 = null;
-
-        //1. check if log files for previous 30 days exist
-        for($i=1;$i<31;$i++){
-            $now = $this->getNow();
-            $yesterday = $now->sub(new \DateInterval('P'.sprintf('%02d', $i).'D'));
-            $arc_logfile = 'errors_'.$yesterday->format('Y-m-d').'.log';
-            //if yesterday log file exists
-            if(file_exists($root_folder.$arc_logfile)){
-                //2. copy to log archive folder
-                fileCopy($root_folder.$arc_logfile, $archiveFolder.$arc_logfile);
-                unlink($root_folder.$arc_logfile);
-
-                $logs_to_be_emailed[] = $archiveFolder.$arc_logfile;
-
-                $y2 = $yesterday->format('Y-m-d');
-                if($y1==null) {$y1 = $y2;}
-            }
-        }
-
-        if($this->send_email_on_error==1 && !empty($logs_to_be_emailed)){
-
-            $msgTitle = 'Error report '.HEURIST_SERVER_NAME.' for '.$y1.($y2==$y1?'':(' ~ '.$y2));
-            $msg = $msgTitle;
-            foreach($logs_to_be_emailed as $log_file){
-                $msg = $msg.'<br>'.file_get_contents($log_file);
-            }
-            //'Bug reporter',
-            sendEmail(HEURIST_MAIL_TO_BUG, $msgTitle, $msg, true);
-        }
-
-
-    }
-
-    //
-    // Send email to system admin about available Heurist updates, daily tasks
-    //
-    private function _heuristVersionCheck(){
-
-        $local_ver = HEURIST_VERSION; // installed heurist version
-
-        $server_ver = $this->get_last_code_and_db_version($this->version_release == "alpha" ? true : false);
-
-        if($server_ver == "unknown"){
-            error_log("Unable to retrieve Heurist server version, this maybe due to the main server being un-available. If this problem persists please contact the Heurist team.");
-            return;
-        }
-
-        $local_parts = explode('.', $local_ver);
-        $server_parts = explode('.', $server_ver);
-
-        for($i = 0; $i < count($server_parts); $i++){
-
-            if($server_parts[$i] == $local_parts[$i]){
-                continue;
-            }
-
-            if($server_parts[$i] > $local_parts[$i]){ // main release is newer than installed version, send email
-
-                $title = "Heurist version " . htmlspecialchars($local_ver)
-                . " at " . HEURIST_BASE_URL . " is behind Heurist home server";
-
-                $msg = 'Heurist on the referenced server is running version '
-                . " $local_ver which can be upgraded to the newer $server_ver<br><br>"
-                . 'Please check for an update package at <a href="https://heuristnetwork.org/installation/">https://heuristnetwork.org/installation/</a><br><br>'
-                . 'Update packages reflect the alpha version and install in parallel with existing versions'
-                . ' so you may test them before full adoption. We recommend use of the alpha package'
-                . ' by any confident user, as they bring bug-fixes, cosmetic improvements and new'
-                . ' features. They are safe to use and we will respond repidly to any reported bugs.';
-
-                //Update notification
-                sendEmail(HEURIST_MAIL_TO_ADMIN, $title, $msg, true);
-            }
-            //else main release is less than installed version, maybe missed alpha or developemental version
-
-            break;
-        }//for
-    }
-
-    /**
-    * Get and save list of available languages from Deepl API
-    * Saved to FILESTORE_ROOT/DEEPL_languages.json
-    */
-    private function _getDeeplLanguages(){
-
-        global $accessToken_DeepLAPI;
-        if(empty($accessToken_DeepLAPI)){
-            return array();
-        }
-
-        $target_url = 'https://api-free.deepl.com/v2/languages?type=target';
-
-        $language_file = HEURIST_FILESTORE_ROOT . 'DEEPL_languages.json';
-
-        $target_res = loadRemoteURLContentWithRange($target_url, false, true, 60, array('Authorization: DeepL-Auth-Key ' . $accessToken_DeepLAPI));
-
-        $target_languages = array();
-
-        if(!empty($target_res)){
-
-            $target_res = json_decode($target_res, true);
-            $target_res = json_last_error() !== JSON_ERROR_NONE ? array() : $target_res;
-
-            // Extra processing needed, some target languages have multiple versions; e.g. ENG-GB and ENG-US
-            foreach ($target_res as $lang) {
-
-                $lang_name = $lang['language'];
-                if(strpos($lang_name, '-') !== false){
-                    $lang_name = explode('-', $lang_name)[0];
-                }
-
-                if(array_search($lang_name, $target_languages) !== false){
-                    continue;
-                }
-
-                array_push($target_languages, $lang_name);
-            }
-        }
-
-        fileSave(json_encode($target_languages), $language_file);
-    }
+    
 
     /**
     * Remove database definition cache file
     */
     public function cleanDefCache(){
-        fileDelete($this->getFileStoreRootFolder().$this->dbname().'/entity/db.json');//old name
-        fileDelete($this->getFileStoreRootFolder().$this->dbname().'/entity/dbdef_cache.json');
-    }
+        fileDelete($this->getSysDir('entity') . 'db.json');//old name
+        fileDelete($this->getSysDir('entity') . 'dbdef_cache.json');
+    }    
 
     /**
     * Validates that db defintions cache is up to date with client side version
