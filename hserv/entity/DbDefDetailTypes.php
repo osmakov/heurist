@@ -194,7 +194,7 @@ class DbDefDetailTypes extends DbEntityBase
 
         if($savedRecIds!==false){
 
-            $dbID = $this->system->get_system('sys_dbRegisteredID');
+            $dbID = $this->system->settings->get('sys_dbRegisteredID');
             if(!($dbID>0)) {$dbID = 0;}
 
             $mysqli = $this->system->get_mysqli();

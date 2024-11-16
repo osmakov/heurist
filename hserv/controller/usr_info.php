@@ -237,9 +237,9 @@
         $res = user_getNotifications($system);
     }elseif($action == 'get_tinymce_formats'){
 
-        $settings = $system->getDatabaseSetting('TinyMCE formats');
+        $settings = $system->settings->getDatabaseSetting('TinyMCE formats');
 
-        if(!is_array($settings) || array_key_exists('status', $settings)){
+        if(!$settings){
             $res = false;
         }elseif(empty($settings) || empty($settings['formats'])){
             $res = array(

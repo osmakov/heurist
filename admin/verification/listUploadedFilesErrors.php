@@ -79,7 +79,7 @@ $mysqli = $system->get_mysqli();
             <h2>Disk usage and quota</h2>
         </div>
 <?php
-        $quota = $system->getDiskQuota();//takes value from disk_quota_allowances.txt
+        $quota = $system->settings->getDiskQuota();//takes value from disk_quota_allowances.txt
         $quota_not_defined = (!isPositiveInt($quota));
         if($quota_not_defined){
             $quota = 1073741824; //1GB

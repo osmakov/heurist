@@ -1984,7 +1984,7 @@ function recordSearch($system, $params, $relation_query=null)
     $system->defineConstant('RT_CMS_MENU');
     $system->defineConstant('DT_EXTENDED_DESCRIPTION');
 
-    $useNewTemporalFormatInRecDetails = ($system->get_system('sys_dbSubSubVersion')>=14);
+    $useNewTemporalFormatInRecDetails = ($system->settings->get('sys_dbSubSubVersion')>=14);
 
     $fieldtypes_in_res = null;
     //search for geo and time fields and remove non timemap records - for rules we need all records
@@ -2032,7 +2032,7 @@ function recordSearch($system, $params, $relation_query=null)
         $system->defineConstant('DT_OPACITY');//outdated
 
         //list of rectypes that are sources for geo location
-        $rectypes_as_place = $system->get_system('sys_TreatAsPlaceRefForMapping');
+        $rectypes_as_place = $system->settings->get('sys_TreatAsPlaceRefForMapping');
         if($rectypes_as_place){
             $rectypes_as_place = prepareIds($rectypes_as_place);
         }else {
@@ -3648,7 +3648,7 @@ function recordLinksFileContent($system, $record){
 
     $url = HEURIST_SERVER_URL . HEURIST_DEF_DIR . '?db='.$system->dbname().'&recID='.$record['rec_ID'];
 
-    return 'Downloaded from: '.$system->get_system('sys_dbName', true)."\n"
+    return 'Downloaded from: '.$system->settings->get('sys_dbName', true)."\n"
     .'Dataset ID: '.$record['rec_ID']."\n"
     .(is_array(@$record['details'][DT_NAME])?'Dataset: '.array_values($record["details"][DT_NAME])[0]."\n":'')
     .'Full metadata (XML): '.$url."\n"

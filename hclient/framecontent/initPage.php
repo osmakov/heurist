@@ -57,7 +57,7 @@ if(!$isSystemInited){
 if(defined('IS_INDEX_PAGE')){
 
     //verify database version against minimal required
-    $subsubVer = intval($system->get_system('sys_dbSubSubVersion'));
+    $subsubVer = intval($system->settings->get('sys_dbSubSubVersion'));
 
     if($subsubVer===null){
         $message = $system->getErrorMsg();
@@ -66,8 +66,8 @@ if(defined('IS_INDEX_PAGE')){
     }
 
     if (version_compare(HEURIST_MIN_DBVERSION,
-    $system->get_system('sys_dbVersion').'.'
-    .$system->get_system('sys_dbSubVersion').'.'
+    $system->settings->get('sys_dbVersion').'.'
+    .$system->settings->get('sys_dbSubVersion').'.'
     .$subsubVer)>0){
 
         include_once 'admin/setup/dbupgrade/upgradeDatabase.php';

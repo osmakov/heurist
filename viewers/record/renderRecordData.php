@@ -119,7 +119,7 @@ $group_details = array();
 $font_styles = '';
 $font_families = array();
 
-$formats = $system->getDatabaseSetting('TinyMCE formats');
+$formats = $system->settings->getDatabaseSetting('TinyMCE formats');
 
 if(is_array($formats) && array_key_exists('formats', $formats)){
     foreach($formats['formats'] as $key => $format){
@@ -140,7 +140,7 @@ if(is_array($formats) && array_key_exists('formats', $formats)){
     }
 }
 
-$import_webfonts = $system->getWebFontsLinks();
+$import_webfonts = $system->settings->getWebFontsLinks();
 
 // if we get a record id then see if there is a personal bookmark for it.
 if ($rec_id>0 && !@$_REQUEST['bkmk_id'])

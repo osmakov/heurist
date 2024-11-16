@@ -37,10 +37,10 @@ use hserv\structure\ConceptCode;
             mysql__usedatabase($mysqli, $dbname);
         }
 
-        $sysValues = $system->get_system(null, true);//refresh
-        $dbVer = intval($system->get_system('sys_dbVersion'));
-        $dbVerSub = intval($system->get_system('sys_dbSubVersion'));
-        $dbVerSubSub = intval($system->get_system('sys_dbSubSubVersion'));
+        $sysValues = $system->settings->get(null, true);//refresh
+        $dbVer = intval($system->settings->get('sys_dbVersion'));
+        $dbVerSub = intval($system->settings->get('sys_dbSubVersion'));
+        $dbVerSubSub = intval($system->settings->get('sys_dbSubSubVersion'));
 
         $report = array();
 

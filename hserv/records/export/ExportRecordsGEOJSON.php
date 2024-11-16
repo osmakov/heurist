@@ -80,7 +80,7 @@ protected function _outputPrepare($data, $params){
         if($this->find_geo_by_pointer_rty){ //true
 
             //list of rectypes that are sources for geo location
-            $rectypes_as_place = $this->system->get_system('sys_TreatAsPlaceRefForMapping');
+            $rectypes_as_place = $this->system->settings->get('sys_TreatAsPlaceRefForMapping');
             if($rectypes_as_place){
                 $rectypes_as_place = prepareIds($rectypes_as_place);
             }else {

@@ -374,7 +374,7 @@ class DbDefRecTypes extends DbEntityBase
         }
 
         // Get the database ID
-        $dbID = $this->system->get_system('sys_dbRegisteredID');
+        $dbID = $this->system->settings->get('sys_dbRegisteredID');
         $dbID = $dbID > 0 ? $dbID : 0;
 
         // Get MySQLi instance

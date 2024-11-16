@@ -199,7 +199,7 @@ $relTypDT = ($system->defineConstant('DT_RELATION_TYPE') ? DT_RELATION_TYPE : 0)
 $mysqli = $system->get_mysqli();
 
 // Get database registration ID
-$dbID = $system->get_system('sys_dbRegisteredID');
+$dbID = $system->settings->get('sys_dbRegisteredID');
 
 //----------------------------------------------------------------------------//
 //  Tag construction helpers

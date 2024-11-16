@@ -113,7 +113,7 @@ $query = 'SELECT ugr_ID FROM sysUGrps where usr_ExternalAuthentication is not nu
 
             if(!($user_id>0)){
 
-                if($system->get_system('sys_AllowRegistration')){
+                if($system->settings->get('sys_AllowRegistration')){
                     //register new user
                     $givenName = @$attr['urn:oid:2.5.4.42'][0]?$attr['urn:oid:2.5.4.42'][0]:@$attr['givenName'][0];
                     $surName = @$attr['urn:oid:2.5.4.4'][0]?$attr['urn:oid:2.5.4.4'][0]:@$attr['sn'][0];

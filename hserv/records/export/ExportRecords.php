@@ -501,7 +501,7 @@ abstract class ExportRecords {
     protected function _getDatabaseInfo(){
 
         //add database information to be able to load definitions later
-        $dbID = $this->system->get_system('sys_dbRegisteredID');
+        $dbID = $this->system->settings->get('sys_dbRegisteredID');
         $database_info = array('id'=>$dbID,
                                 'url'=>HEURIST_BASE_URL,
                                 'db'=>$this->system->dbname());

@@ -103,7 +103,7 @@
         }
 
         $mysqli = $system->get_mysqli();
-        $dbID = $system->get_system('sys_dbRegisteredID');
+        $dbID = $system->settings->get('sys_dbRegisteredID');
 
         /*ARTEM $cacheKey = DATABASE . ":AllRecTypeInfo";
         if ($useCachedData) {
@@ -604,7 +604,7 @@ function dbs_GetRectypeConstraint($system) {
     function dbs_GetTerms($system){ //$useCachedData = false) {
 
         $mysqli = $system->get_mysqli();
-        $dbID = $system->get_system('sys_dbRegisteredID');
+        $dbID = $system->settings->get('sys_dbRegisteredID');
 
 
         /* ARTEM
@@ -619,12 +619,12 @@ function dbs_GetRectypeConstraint($system) {
         $query = str_replace('trm_ConceptID', '', $query);
 
         //in case database v1.2 there is not field trm_VocabularyGroupID
-        $dbVer = $system->get_system('sys_dbVersion');
-        $dbVerSub = $system->get_system('sys_dbSubVersion');
+        $dbVer = $system->settings->get('sys_dbVersion');
+        $dbVerSub = $system->settings->get('sys_dbSubVersion');
         if($dbVer==1 && $dbVerSub<3){
             $query = str_replace('trm_VocabularyGroupID', '1 as trm_VocabularyGroupID', $query);
         }
-        if($dbVer==1 && $dbVerSub<4 && $system->get_system('sys_dbSubSubVersion')<6){
+        if($dbVer==1 && $dbVerSub<4 && $system->settings->get('sys_dbSubSubVersion')<6){
             $query = str_replace('trm_OrderInBranch', '0 as trm_OrderInBranch', $query);
         }
 
@@ -1334,7 +1334,7 @@ function dbs_GetRectypeConstraint($system) {
     function dbs_GetDetailTypes($system, $dettypeids=null, $imode=2){
 
         $mysqli = $system->get_mysqli();
-        $dbID = $system->get_system('sys_dbRegisteredID');
+        $dbID = $system->settings->get('sys_dbRegisteredID');
 
         /*  ARTEM
         global $mysqli, $dbID;

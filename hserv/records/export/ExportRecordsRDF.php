@@ -65,7 +65,7 @@ protected function _outputPrepare($data, $params)
     $res = parent::_outputPrepare($data, $params);
     if($res){
         $this->serial_format = @$params['serial_format'];
-        $this->dbid = $this->system->get_system('sys_dbRegisteredID');
+        $this->dbid = $this->system->settings->get('sys_dbRegisteredID');
 
         if(!defined('HEURIST_REF')){
             define('HEURIST_REF','https://heuristref.net/');

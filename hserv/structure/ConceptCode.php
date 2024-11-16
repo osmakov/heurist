@@ -48,7 +48,7 @@ private static function initialize($init_system=null)
 
     self::$initialized = true;
 
-    self::$database_id = self::$system->get_system('sys_dbRegisteredID');
+    self::$database_id = self::$system->settings->get('sys_dbRegisteredID');
 }
 
 public static function setSystem($new_system){

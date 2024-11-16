@@ -188,7 +188,7 @@ class ReportExecute
 
         $this->isVoid = isset($params['void']) && $params['void'];  //fetch into file
 
-        $this->isJsAllowed = $this->system->isJavaScriptAllowed();
+        $this->isJsAllowed = $this->system->settings->isJavaScriptAllowed();
 
         $this->replevel = 0;
         if (@$params['template_body']){
@@ -727,7 +727,7 @@ class ReportExecute
 
         $font_styles = '';
 
-            $formats = $this->system->getDatabaseSetting('TinyMCE formats');
+            $formats = $this->system->settings->getDatabaseSetting('TinyMCE formats');
             if(is_array($formats) && array_key_exists('formats', $formats)){
                 foreach($formats['formats'] as $format){
 
@@ -1034,7 +1034,7 @@ class ReportExecute
                 return $this->removeHeadAndBodyTags($tpl_source);
             }
 
-            $font_styles = $this->system->getWebFontsLinks('ui-sans-serif');
+            $font_styles = $this->system->settings->getWebFontsLinks('ui-sans-serif');
             if(isEmptyStr($font_styles)){
                 $font_styles = '';
             }else{

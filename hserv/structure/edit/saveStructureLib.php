@@ -460,7 +460,7 @@ function createRectypes($commonNames, $rt, $isAddDefaultSetOfFields, $convertTit
         } else {
             $rtyID = $mysqli->insert_id;
 
-            $dbID = $system->get_system('sys_dbRegisteredID');
+            $dbID = $system->settings->get('sys_dbRegisteredID');
             if(!($dbID>0)){ $dbID = 0;}
 
             $query= 'UPDATE defRecTypes SET rty_OriginatingDBID='.intval($dbID)
@@ -564,11 +564,11 @@ function updateRectype($commonNames, $rtyID, $rt) {
             } else {
                 $ret = $rtyID;
 
-                if($system->get_system('sys_dbRegisteredID')>0){
+                if($system->settings->get('sys_dbRegisteredID')>0){
                     $query= 'UPDATE defRecTypes SET rty_NameInOriginatingDB=rty_Name '
                     .' WHERE rty_ID='.$rtyID
                     .' AND rty_IDInOriginatingDB='.$rtyID
-                    .' AND rty_OriginatingDBID='.$system->get_system('sys_dbRegisteredID');
+                    .' AND rty_OriginatingDBID='.$system->settings->get('sys_dbRegisteredID');
                     $res = $mysqli->query($query);
                 }
 
@@ -1302,7 +1302,7 @@ function createDetailTypes($commonNames, $dt) {
         } else {
             $dtyID = $mysqli->insert_id;
 
-            $dbID = $system->get_system('sys_dbRegisteredID');
+            $dbID = $system->settings->get('sys_dbRegisteredID');
             if(!($dbID>0)) {$dbID = 0;}
 
             $query= 'UPDATE defDetailTypes SET dty_OriginatingDBID='.$dbID
@@ -1610,7 +1610,7 @@ function updateTerms( $colNames, $trmID, $values, $ext_db) {
                 if($isInsert){
                     $trmID = $ext_db->insert_id;  // new id
 
-                    $dbID = $system->get_system('sys_dbRegisteredID');
+                    $dbID = $system->settings->get('sys_dbRegisteredID');
                     if(!($dbID>0)) {$dbID = 0;}
 
                     $query= 'UPDATE defTerms SET trm_OriginatingDBID='.$dbID

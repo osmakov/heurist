@@ -246,7 +246,7 @@ EXP;
         //update version
         $mysqli->query('UPDATE sysIdentification SET sys_dbVersion=1, sys_dbSubVersion=3, sys_dbSubSubVersion=0 WHERE 1');
 
-        $system->get_system(null, true);//reset system values - to update version
+        $system->settings->get(null, true);//reset system values - to update version
 
         //validate default values for record type structures
         $list = getInvalidDefaultValues($mysqli);

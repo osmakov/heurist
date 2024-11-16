@@ -196,8 +196,8 @@ class DbDefTerms extends DbEntityBase
 
         $mysqli = $this->system->get_mysqli();
 
-        $dbVer = $this->system->get_system('sys_dbVersion');
-        $dbVerSub = $this->system->get_system('sys_dbSubVersion');
+        $dbVer = $this->system->settings->get('sys_dbVersion');
+        $dbVerSub = $this->system->settings->get('sys_dbSubVersion');
 
         //compose query
         if($dbVer==1 && $dbVerSub>2){
@@ -575,7 +575,7 @@ class DbDefTerms extends DbEntityBase
         //treat thumbnail image and symmetrical inverse terms (the latter for new term only)
         if($ret!==false){
 
-            $dbID = $this->system->get_system('sys_dbRegisteredID');
+            $dbID = $this->system->settings->get('sys_dbRegisteredID');
             if(!($dbID>0)) {$dbID = 0;}
 
             foreach($this->records as $record){

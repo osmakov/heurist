@@ -62,7 +62,7 @@ class ImportHeurist {
         self::$initialized = true;
 
         if(!defined('HEURIST_DBID')){
-            define('HEURIST_DBID', $system->get_system('sys_dbRegisteredID'));
+            define('HEURIST_DBID', $system->settings->get('sys_dbRegisteredID'));
         }
     }
 

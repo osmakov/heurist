@@ -85,7 +85,7 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
 
     if(!$response){
 
-        $quota = $system->getDiskQuota();//takes value from disk_quota_allowances.txt
+        $quota = $system->settings->getDiskQuota();//takes value from disk_quota_allowances.txt
         $quota_not_defined = (!($quota>0));
         if($quota_not_defined){
             $quota = 1073741824; //1GB

@@ -520,7 +520,7 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
             }
 
             //custom user upload folders
-            $user_media_folders = $system->get_system('sys_MediaFolders');
+            $user_media_folders = $system->settings->get('sys_MediaFolders');
             $user_media_folders = explode(';', $user_media_folders);
             foreach($user_media_folders as $dir){
 

@@ -27,9 +27,9 @@ if(!defined('PDIR')){
     require_once dirname(__FILE__).'/../../../hserv/utilities/utils_db_load_script.php';
     require_once dirname(__FILE__).'/../../../hserv/structure/import/dbsImport.php';
 
-    $src_maj = intval( $system->get_system('sys_dbVersion') );
-    $src_min = intval( $system->get_system('sys_dbSubVersion') );
-    $src_sub = intval( $system->get_system('sys_dbSubSubVersion') );
+    $src_maj = intval( $system->settings->get('sys_dbVersion') );
+    $src_min = intval( $system->settings->get('sys_dbSubVersion') );
+    $src_sub = intval( $system->settings->get('sys_dbSubSubVersion') );
 
     $trg_ver = explode(".", HEURIST_MIN_DBVERSION);
     $trg_maj = intval($trg_ver[0]);
@@ -207,7 +207,7 @@ if(!defined('PDIR')){
                     ?>
 
                     <p>Your database <b> <?=HEURIST_DBNAME?> </b> currently uses database format version
-                        <b><?=$src_maj.'.'.$src_min.'.'.$system->get_system('sys_dbSubSubVersion')?> </b>
+                        <b><?=$src_maj.'.'.$src_min.'.'.$system->settings->get('sys_dbSubSubVersion')?> </b>
                         <br>(this is distinct from the program version # listed below)</p>
 
                     <p>This version of the software <b>(Vsn <?=HEURIST_VERSION?>)</b>

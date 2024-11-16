@@ -66,7 +66,7 @@ if($dt_SourceRecordID==0){ //this field is critical - need to download it from h
 
 }
 
-$HEURIST_ZOTEROSYNC = $system->get_system('sys_SyncDefsWithDB');
+$HEURIST_ZOTEROSYNC = $system->settings->get('sys_SyncDefsWithDB');
 /*
 if($HEURIST_ZOTEROSYNC==''){
 $system->addError(HEURIST_ERROR, 'Library key for Zotero synchronisation is not defined. '

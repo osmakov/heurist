@@ -338,7 +338,7 @@ class ReportTemplateMgr
      */
     public function exportTemplate($filename, $is_check_only, $template_body = null)
     {
-        $dbID = $this->system->get_system('sys_dbRegisteredID');
+        $dbID = $this->system->settings->get('sys_dbRegisteredID');
         if (!$dbID) {
             throw new \Exception('Database must be registered to allow translation of local template to global template');
         }

@@ -1,9 +1,4 @@
 <?php
-namespace hserv;
-use hserv\structure\ConceptCode;
-use hserv\utilities\USystem;
-use hserv\utilities\USanitize;
-
 /**
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org
@@ -21,7 +16,12 @@ use hserv\utilities\USanitize;
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-//declare(strict_types=1);
+namespace hserv;
+use hserv\structure\ConceptCode;
+use hserv\utilities\USystem;
+use hserv\utilities\USanitize;
+use hserv\SystemSettings;
+
 
 require_once dirname(__FILE__).'/structure/dbsUsersGroups.php';
 require_once dirname(__FILE__).'/structure/import/dbsImport.php';
@@ -57,16 +57,18 @@ class System {
     //???
     //private $guest_User = array('ugr_ID'=>0,'ugr_FullName'=>'Guest');
     private $current_User = null;
-    private $system_settings = null;
     private $send_email_on_error = 1; //set to 1 to send email for all severe errors
 
     private $version_release = null;
 
-    private $database_settings = array('TinyMCE formats' => 'text_styles.json', 'Webfonts' => 'webfonts.json');
-
     //do not check session folder, loads only basic user info
     private $need_full_session_check = false;
+    
+    //instance of SystemSettings class
+    public $settings;  
 
+    private $system_settings = null; //from sysIdentification
+    
     /*
 
     init
@@ -85,6 +87,8 @@ class System {
     public function __construct( $full_check=false ) {
 
         $this->need_full_session_check = $full_check;
+        
+        $this->settings = new SystemSettings($this);
     }
 
     /**
@@ -104,7 +108,7 @@ class System {
         }
 
         //dbutils?
-        $connection_ok = $this->init_db_connection();
+        $connection_ok = $this->initDbConnection();
         if(!$connection_ok){
             return false;
         }
@@ -159,7 +163,7 @@ class System {
     //
     //
     //
-    private function init_db_connection(){
+    private function initDbConnection(){
 
         $res = mysql__connection(HEURIST_DBSERVER_NAME, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, HEURIST_DB_PORT);
         if ( is_array($res) ){
@@ -404,7 +408,7 @@ class System {
                 exit;
             }
 
-            $regID = $this->get_system('sys_dbRegisteredID');
+            $regID = $this->settings->get('sys_dbRegisteredID');
 
             $RTIDs = array();
             while ($row = $res->fetch_assoc()) {
@@ -463,7 +467,7 @@ class System {
             }
 
 
-            $regID = $this->get_system('sys_dbRegisteredID');
+            $regID = $this->settings->get('sys_dbRegisteredID');
 
             $DTIDs = array();
             while ($row = $res->fetch_assoc()) {
@@ -581,18 +585,21 @@ class System {
 
     //
     // $is_for_backup - 0 no, 1 - archive backup, 2 - delete backup
+    // returns ar
     //
+    
+    /**
+    * Returns array of ALL database folders
+    * 
+    * @param mixed $database_name - if null for current database
+    */
     public function getSystemFolders($database_name=null){
 
         $folders = $this->getArrayOfSystemFolders();
 
         $system_folders = array();
 
-        $dbfolder = HEURIST_FILESTORE_ROOT;
-
-        if($database_name!=null){
-            $dbfolder = $dbfolder.$database_name.'/';
-        }
+        $dbfolder = getSysDir(null, $database_name);
 
         foreach ($folders as $folder_name=>$folder){
             $folder_name = $dbfolder.$folder_name;
@@ -609,17 +616,17 @@ class System {
 
     /**
     * Returns root upload folder of specified ($folder_name) subfolder
-    * 
+    *
     * @param mixed $folder_name - subfolder in database root upload dir
     * @param mixed $database_name
     */
     public function getSysDir($folder_name=null, $database_name=null){
         return $this->getSysFolderRes('path', $folder_name, $database_name);
     }
-    
+
     /**
     * Returns root upload URL of specified ($folder_name) suburl
-    * 
+    *
     * @param mixed $folder_name - subfolder in database root upload dir
     * @param mixed $database_name
     */
@@ -627,6 +634,13 @@ class System {
         return $this->getSysFolderRes('url', $folder_name, $database_name);
     }
     
+    /**
+    * Get system folder resouce - path or url
+    * 
+    * @param mixed $type - path ot url
+    * @param mixed $folder_name - subfolder of database upload folder
+    * @param mixed $database_name - if null it takes current database
+    */
     private function getSysFolderRes($type, $folder_name=null, $database_name=null){
         global $defaultRootFileUploadURL;
         
@@ -637,8 +651,8 @@ class System {
                             ?HEURIST_FILESTORE_ROOT
                             :$this->getFileStoreRootFolder();
         }
-        
-        $database_name = $database_name==null?$this->dbname:$database_name;
+
+        $database_name = $database_name??$this->dbname;
 
         if(preg_match('/[^A-Za-z0-9_\$]/', $database_name)){
             return null; //invalid database name
@@ -647,12 +661,12 @@ class System {
         $dbres = $db_root.$database_name.'/';
 
         if($folder_name!=null){
-            
+
             $dir = USanitize::sanitizePath($folder_name);
             if( substr($dir, -1, 1) != '/' )  {
                 $dir .= '/';
             }
-            
+
             $dbres .= $dir;
         }
 
@@ -662,7 +676,7 @@ class System {
     /**
     * Validates system config setting $defaultRootFileUploadPath
     * Check/creates system subfolders
-    * 
+    *
     * @param mixed $dbname - database shortname (without prefix)
     */
     public function initPathConstants($dbname=null){
@@ -1096,25 +1110,25 @@ class System {
             $res = array(
                 "currentUser"=>$this->current_User,
                 "sysinfo"=>array(
-                    "registration_allowed"=>$this->get_system('sys_AllowRegistration'), //allow new user registration
-                    "db_registeredid"=>$this->get_system('sys_dbRegisteredID'),
-                    "db_managers_groupid"=>($this->get_system('sys_OwnerGroupID')>0?$this->get_system('sys_OwnerGroupID'):1),
+                    "registration_allowed"=>$this->settings->get('sys_AllowRegistration'), //allow new user registration
+                    "db_registeredid"=>$this->settings->get('sys_dbRegisteredID'),
+                    "db_managers_groupid"=>($this->settings->get('sys_OwnerGroupID')>0?$this->settings->get('sys_OwnerGroupID'):1),
                     "help"=>HEURIST_HELP,
 
                     //code version from configIni.php
                     "version"=>HEURIST_VERSION,
                     "version_new"=>$lastCode_VersionOnServer, //version on main index database server
                     //db version
-                    "db_version"=> $this->get_system('sys_dbVersion').'.'
-                    .$this->get_system('sys_dbSubVersion').'.'
-                    .$this->get_system('sys_dbSubSubVersion'),
+                    "db_version"=> $this->settings->get('sys_dbVersion').'.'
+                    .$this->settings->get('sys_dbSubVersion').'.'
+                    .$this->settings->get('sys_dbSubSubVersion'),
                     "db_version_req"=>HEURIST_MIN_DBVERSION,
 
                     "dbowner_name"=>@$dbowner['ugr_FirstName'].' '.@$dbowner['ugr_LastName'],
                     "dbowner_org"=>@$dbowner['ugr_Organisation'],
                     "dbowner_email"=>@$dbowner['ugr_eMail'],
                     "sysadmin_email"=>HEURIST_MAIL_TO_ADMIN,
-                    "db_total_records"=>$this->get_system('sys_RecordCount'),
+                    "db_total_records"=>$this->settings->get('sys_RecordCount'),
                     "db_usergroups"=> user_getAllWorkgroups($this->mysqli), //all groups- to fast retrieve group name
                     "baseURL"=>HEURIST_BASE_URL,
                     'baseURL_pro'=>HEURIST_BASE_URL_PRO,
@@ -1122,30 +1136,30 @@ class System {
                     //"serverURL"=>HEURIST_SERVER_URL,
                     "referenceServerURL"=>HEURIST_INDEX_BASE_URL,
                     "dbconst"=>$this->getLocalConstants( $include_reccount_and_dashboard_count ), //some record and detail types constants with local values specific for current db
-                    "service_config"=>$this->get_system('sys_ExternalReferenceLookups'), //get 3d part web service mappings
+                    "service_config"=>$this->settings->get('sys_ExternalReferenceLookups'), //get 3d part web service mappings
                     "services_list"=>$this->getWebServiceConfigs(), //get list of all implemented lookup services
                     "dbrecent"=>$dbrecent,  //!!!!!!! need to store in preferences
                     "cms_allowed"=> $allowCMSCreation??1,
 
                     'max_post_size'=>USystem::getConfigBytes('post_max_size'),
                     'max_file_size'=>USystem::getConfigBytes('upload_max_filesize'),
-                    'is_file_multipart_upload'=>($this->getDiskQuota()>0)?1:0,
+                    'is_file_multipart_upload'=>($this->settings->getDiskQuota()>0)?1:0,
                     'host_logo'=>$host_logo,
                     'host_url'=>$host_url,
 
-                    'media_ext'=>HEURIST_ALLOWED_EXT, //$this->get_system('sys_MediaExtensions'),
-                    'rty_as_place'=>$this->get_system('sys_TreatAsPlaceRefForMapping'),
+                    'media_ext'=>HEURIST_ALLOWED_EXT, //$this->settings->get('sys_MediaExtensions'),
+                    'rty_as_place'=>$this->settings->get('sys_TreatAsPlaceRefForMapping'),
 
                     'need_encode'=>$needEncodeRecordDetails,
 
-                    'custom_js_allowed'=>$this->isJavaScriptAllowed(),
+                    'custom_js_allowed'=>$this->settings->isJavaScriptAllowed(),
 
                     'common_languages'=>$common_languages,
 
                     'saml_service_provides'=>$saml_service_provides,
                     'hideStandardLogin' => $hideStandardLogin,
 
-                    'nakala_api_key'=>$this->get_system('sys_NakalaKey'),
+                    'nakala_api_key'=>$this->settings->get('sys_NakalaKey'),
 
                     'pwd_DatabaseCreation'=> (strlen(@$passwordForDatabaseCreation)>6), //pwd to creaste new database
                     'pwd_DatabaseDeletion'=> (strlen(@$passwordForDatabaseDeletion)>15),//delete from db statistics
@@ -1279,7 +1293,7 @@ class System {
     public function is_admin(){
         $ret = ($this->get_user_id()>0 &&
             ($this->get_user_id()==2 ||
-                $this->has_access( $this->get_system('sys_OwnerGroupID') ) ));
+                $this->has_access( $this->settings->get('sys_OwnerGroupID') ) ));
         return $ret;
     }
 
@@ -1705,96 +1719,15 @@ class System {
     }
 
     /**
-    * Loads system settings (default values) from sysIdentification
+    * Returns link to given record. Either to standard record view html renderer 
+    * or to smarty template
+    * 
+    * It returns link with url parametrers 
+    * of as url path (if global $useRewriteRulesForRecordLink is true)   
+    * databasename/tpl/templatename/id  or databasename/view/id 
+    * 
+    * @param mixed $rec_id
     */
-    public function get_system( $fieldname=null, $need_reset = false ){
-
-        if(!$this->system_settings || $need_reset)
-        {
-            $check_updates = !$this->system_settings;
-
-            $mysqli = $this->mysqli;
-            $this->system_settings = getSysValues($mysqli);
-
-            if(!$this->system_settings){
-                //HEURIST_SYSTEM_FATAL
-                $this->addError(HEURIST_DB_ERROR, 'Unable to read sysIdentification', $mysqli->error);
-                return null;
-            }
-
-            if($check_updates){
-                //updateDatabaseToLatest($this);
-            }
-
-            // it is required for main page only - so call this request on index.php
-            //$this->system_settings['sys_RecordCount'] = mysql__select_value($mysqli, 'select count(*) from Records');
-        }
-        $ret = ($fieldname) ?@$this->system_settings[$fieldname] :$this->system_settings;
-        return $ret;
-    }
-
-    //
-    // Check if user's javascript is allowed in smarty reports
-    //
-    public function isJavaScriptAllowed(){
-
-        $is_allowed = false;
-        $fname = realpath(dirname(__FILE__)."/../../js_in_database_authorised.txt");
-        if($fname!==false && file_exists($fname)){
-            //ini_set('auto_detect_line_endings', 'true');
-            $handle = @fopen($fname, "r");
-            while (!feof($handle)) {
-                $line = trim(fgets($handle, 100));
-                if($line==$this->dbname){
-                    $is_allowed=true;
-                    break;
-                }
-            }
-            fclose($handle);
-            /*
-            $databases = file_get_contents($fname);
-            $databases = explode("\n", $databases);
-            $is_allowed = (array_search($this->dbname,$databases)>0);
-            */
-        }
-        return $is_allowed;
-    }
-
-    //
-    // Returns allowed disk quota (for file_uploads and uploaded_tilestacks)
-    //
-    public function getDiskQuota(){
-
-        $quota = 0;
-        $fname = realpath(dirname(__FILE__)."/../../disk_quota_allowances.txt");
-        if($fname!==false && file_exists($fname)){
-            //ini_set('auto_detect_line_endings', 'true');
-            $handle = @fopen($fname, "r");
-            while (!feof($handle)) {
-                $line = trim(fgets($handle, 100));
-                if(strpos($line,$this->dbname)===0){
-                    $quota = USystem::getConfigBytes(null, substr($line, strlen($this->dbname)));
-                    break;
-                }
-            }
-            fclose($handle);
-            /*
-            $databases = file_get_contents($fname);
-            $databases = explode("\n", $databases);
-            $is_allowed = (array_search($this->dbname,$databases)>0);
-            */
-        }
-
-        if(!isPositiveInt($quota)){
-            $quota = 0;
-            //$quota = 1073741824; //1GB
-        }
-        return $quota;
-    }
-
-    //
-    //  Retuns link for given record id
-    //
     public function recordLink($rec_id){
 
         global $useRewriteRulesForRecordLink;
@@ -2178,138 +2111,4 @@ class System {
     }
     */
 
-    /**
-    * Retrieve saved settings for current database from settings/
-    *
-    * @param string $setting_name - setting's name, matches a key in database_settings
-    *
-    * @return array - returns either error message, or array of settings
-    */
-    public function getDatabaseSetting($setting_name){
-
-        if(!defined('HEURIST_FILESTORE_DIR')){
-            return false;
-        }
-
-        if(!array_key_exists($setting_name, $this->database_settings)){
-            return $this->addError(HEURIST_INVALID_REQUEST, 'Invalid settings requested');
-        }
-
-        $setting_file = HEURIST_FILESTORE_DIR . "settings/" . $this->database_settings[$setting_name];
-
-        if(!file_exists($setting_file)){
-            return array();
-        }
-
-        $settings = file_get_contents($setting_file);
-        if($settings === false){
-            return $this->addError(HEURIST_ERROR, "An error occurred while attempting to read database settings for $setting_name");
-        }elseif(empty($settings)){
-            return array();
-        }
-
-        $settings = json_decode($settings, true);
-        if(json_last_error() !== JSON_ERROR_NONE){
-            return $this->addError(HEURIST_ERROR, "An error occurred while decoding the existing database settings for $setting_name");
-        }
-
-        return $settings !== null ? $settings : array();
-    }
-
-    /**
-    * Save settings for current database in settings/
-    *
-    * @param string $setting_name - setting's name, matches a key in database_settings
-    * @param array $settings - settings in JSON format
-    * @param int $replace_settings - how to handle the saving, 0 - completely replace; 1 - merge and replace existing; 2 - merge and retain existing
-    *
-    * @return true|array - returns true on success, returns array on error
-    */
-    public function setDatabaseSetting($setting_name, $settings, $replace_settings = 0){
-
-        if(!defined('HEURIST_FILESTORE_DIR')){
-            return false;
-        }
-
-        if(!array_key_exists($setting_name, $this->database_settings)){
-            return $this->addError(HEURIST_INVALID_REQUEST, 'Invalid settings requested');
-        }
-
-        if(!is_array($settings)){
-            return $this->addError(HEURIST_INVALID_REQUEST, 'Invalid settings format');
-        }
-
-        $setting_file = HEURIST_FILESTORE_DIR . "settings/" . $this->database_settings[$setting_name];
-        $existing_settings = '';
-
-        if(file_exists($setting_file) && $replace_settings != 0){
-            $existing_settings = file_get_contents($setting_file);
-        }
-
-        if(!isEmptyStr($existing_settings)){
-
-            $existing_settings = json_decode($existing_settings, true);
-            if(json_last_error() !== JSON_ERROR_NONE || !is_array($existing_settings)){
-                return $this->addError(HEURIST_ERROR, "An error occurred with retrieving the existing database settings for $setting_name");
-            }
-
-            if($replace_settings == 1){
-                $existing_settings = array_replace_recursive($existing_settings, $settings);
-            }else{
-                $existing_settings = array_replace_recursive($settings, $existing_settings);
-            }
-        }else{
-            $existing_settings = $settings;
-        }
-
-        $final_settings = json_encode($existing_settings);
-        if(json_last_error() !== JSON_ERROR_NONE){
-            return $this->addError(HEURIST_ACTION_BLOCKED, 'JSON ENCODE ERROR => ' . json_last_error_msg());
-        }
-
-        $res = fileSave($final_settings, $setting_file);
-
-        if($res == 0){
-            return $this->addError(HEURIST_ERROR, "An error occurred while attempting to save database settings for $setting_name");
-        }
-
-        return true;
-    }
-    
-    //
-    //
-    //
-    public function getWebFontsLinks($default_family=null){
-        
-        $webfonts = $this->getDatabaseSetting('Webfonts');
-        $settingsURL = $this->getSysUrl('settings');
-
-        $font_styles = '';
-        
-        if(!isEmptyArray($webfonts)){
-            $font_families = array();
-            
-            foreach($webfonts as $font_family => $src){
-                $src = str_replace("url('settings/", "url('".$settingsURL,$src);
-                if(strpos($src,'@import')===0){
-                    $font_styles = $font_styles . $src;
-                }else{
-                    $font_styles = $font_styles . ' @font-face {font-family:"'.$font_family.'";src:'.$src.';} ';
-                }
-                $font_families[] = $font_family;
-            }
-            
-            if(!empty($font_families)){
-                //add default family
-                if($default_family){
-                    $font_families[] = $default_family;    
-                }
-                $font_styles = 'body,.ui-widget,.ui-widget input,.ui-widget textarea,.ui-widget select{font-family: '
-                                .implode(',',$font_families).'} '.$font_styles;
-            }
-        }
-
-        return $font_styles;
-    }
-    
 }

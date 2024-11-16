@@ -200,7 +200,7 @@ $json .= "\n \t],";
 
 // Add database details
 $db_details = "\n \t\"database\":{"
-. "\n \t\t\"id\": \"". $system->get_system('sys_dbRegisteredID') ."\","
+. "\n \t\t\"id\": \"". $system->settings->get('sys_dbRegisteredID') ."\","
 . "\n \t\t\"db\": \"". htmlspecialchars($system->dbname()) ."\","
 . "\n \t\t\"url\": \"". HEURIST_BASE_URL ."\","
 . "\n \t\t\"rectypes\": {". $rectypes ."\n \t\t}"

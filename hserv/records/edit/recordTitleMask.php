@@ -89,7 +89,7 @@ class TitleMask {
         }
         
         self::$mysqli = self::$system->get_mysqli();
-        self::$db_regid = self::$system->get_system('sys_dbRegisteredID');
+        self::$db_regid = self::$system->settings->get('sys_dbRegisteredID');
         self::$initialized = true;
 
         self::$system->defineConstant('DT_PARENT_ENTITY');

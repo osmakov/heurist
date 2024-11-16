@@ -1405,7 +1405,7 @@ function filestoreGetUsageByScan($system){
 
 function filestoreGetUsageByFolders($system){
 
-    $mediaFolders = $system->get_system('sys_MediaFolders');
+    $mediaFolders = $system->settings->get('sys_MediaFolders');
     if($mediaFolders==null || $mediaFolders == ''){ //not defined
         $mediaFolders = 'uploaded_files';
     }

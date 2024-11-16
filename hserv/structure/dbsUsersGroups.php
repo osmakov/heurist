@@ -779,7 +779,7 @@
             }
 
 
-            if($is_registration && !$allow_registration && $system->get_system('sys_AllowRegistration')==0){
+            if($is_registration && !$allow_registration && $system->settings->get('sys_AllowRegistration')==0){
 
                 $system->addError(HEURIST_REQUEST_DENIED, 'Registration is not allowed for current database');
 

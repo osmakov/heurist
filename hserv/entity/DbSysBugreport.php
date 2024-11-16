@@ -170,9 +170,9 @@ class DbSysBugreport extends DbEntityBase
         //add current heurist information into message
         array_push($ext_info, "   Heurist url: ".HEURIST_BASE_URL.'?db='.HEURIST_DBNAME);
         array_push($ext_info, "   Heurist version: ".HEURIST_VERSION);
-        array_push($ext_info, "   Heurist dbversion: ".$this->system->get_system('sys_dbVersion').'.'
-                                                      .$this->system->get_system('sys_dbSubVersion').'.'
-                                                      .$this->system->get_system('sys_dbSubSubVersion'));
+        array_push($ext_info, "   Heurist dbversion: ".$this->system->settings->get('sys_dbVersion').'.'
+                                                      .$this->system->settings->get('sys_dbSubVersion').'.'
+                                                      .$this->system->settings->get('sys_dbSubSubVersion'));
 
         //extra information
         $types = array_key_exists('2-2', $record) ? $record['2-2'] : 'None provided';

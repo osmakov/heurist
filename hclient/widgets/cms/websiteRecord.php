@@ -1,7 +1,6 @@
 <?php
 use hserv\structure\ConceptCode;
 
-//print '<!DOCTYPE html>';
     /**
     *  Website generator based on CMS records 99-51,52,53
     *
@@ -128,29 +127,29 @@ $mysqli = $system->get_mysqli();
 
 $isEmptyHomePage = false;
 $open_page_or_record_on_init = 0;
-if(_isPositiveInt(@$_REQUEST['initid'])) {
+if(isPositiveInt(@$_REQUEST['initid'])) {
     $open_page_or_record_on_init = intval(@$_REQUEST['initid']);
-}elseif(_isPositiveInt(@$_REQUEST['pageid'])) {
+}elseif(isPositiveInt(@$_REQUEST['pageid'])) {
     $open_page_or_record_on_init = intval(@$_REQUEST['pageid']);
 }
 
 $rec_id = 0;
-if(_isPositiveInt(@$_REQUEST['recID'])) {
+if(isPositiveInt(@$_REQUEST['recID'])) {
     $rec_id = intval(@$_REQUEST['recID']);
-}elseif(_isPositiveInt(@$_REQUEST['recid'])) {
+}elseif(isPositiveInt(@$_REQUEST['recid'])) {
     $rec_id = intval(@$_REQUEST['recid']);
-}elseif(_isPositiveInt(@$_REQUEST['id'])) {
+}elseif(isPositiveInt(@$_REQUEST['id'])) {
     $rec_id = intval(@$_REQUEST['id']);
 }
 
-if(!($rec_id>0))
+if(!isPositiveInt($rec_id))
 {
     //if recID is not defined - find fist available "CMS home" record
 
     $res = recordSearch($system, array('q'=>array('t'=>RT_CMS_HOME), 'detail'=>'ids'));
     if(@$res['status']==HEURIST_OK){
         $rec_id = @$res['data']['records'][0];
-        if(!($rec_id>0)){
+        if(!isPositiveInt($rec_id)){
 
             $try_login = $system->getCurrentUser() == null;
             $message = 'Sorry, there are no publicly accessible websites defined for this database. '
@@ -187,26 +186,10 @@ $hasAccess = (($rec['rec_NonOwnerVisibility'] == 'public') ||
             ($rec['rec_NonOwnerVisibility'] !== 'hidden' ||    //visible for logged
              $system->is_member($rec['rec_OwnerUGrpID']) )) );//owner
 
-/*
-print $rec_id.'<br>';
-print $rec['rec_NonOwnerVisibility'].'<br>';
-print $system->get_user_id().'  >'.($system->is_admin()===true).'<br>';
-print $rec['rec_OwnerUGrpID'].'<br>';
-print $hasAccess.'<br>';
-print '--------<br>';
-print ($rec['rec_NonOwnerVisibility'] === 'public').'<br>';
-print ($system->is_admin()===true).'<br>';
-print ($system->get_user_id()>0).'<br>';
-print ($rec['rec_NonOwnerVisibility'] !== 'hidden').'<br>';
-print  $system->is_member($rec['rec_OwnerUGrpID']);
-exit;
-*/
-
 if(!$hasAccess){
 
     $try_login = $system->getCurrentUser() == null;
 
-//@todo The Heurist website at this address is not yet publicly accessible.
     $message = 'The Heurist website at this address is not yet publicly accessible. '
         . ($try_login ? '<br>Try <a class="login-link">logging in</a> to view this website.' : '');
 
@@ -322,15 +305,13 @@ if(!$isWebPage && __getValue($rec,DT_EXTENDED_DESCRIPTION)==''){
 $external_files = null;
 $website_custom_css = null;
 $website_custom_javascript = null;
-$website_custom_javascript_allowed = $system->isJavaScriptAllowed();
+$website_custom_javascript_allowed = $system->settings->isJavaScriptAllowed();
 if($website_custom_javascript_allowed)
 {
     if($system->defineConstant('DT_CMS_EXTFILES')){
         $external_files = @$rec['details'][DT_CMS_EXTFILES];
-        if($external_files!=null){
-            if(!is_array($external_files)){
+        if($external_files!=null && !is_array($external_files)){
                 $external_files = array($external_files);
-            }
         }
     }
     $website_custom_javascript = __getValue($rec, DT_CMS_SCRIPT);
@@ -506,9 +487,9 @@ $home_page_record_id = $rec_id;
 
 $websiteScriptAndStyles_php = HEURIST_DIR.'hclient/widgets/cms/websiteScriptAndStyles.php';
 
-$template = __getTemplate($custom_website_php_template); //defined CMS Home in field DT_CMS_TEMPLATE
+$template = getCmsTemplateFullPath($custom_website_php_template); //defined CMS Home in field DT_CMS_TEMPLATE
 if(!$template && $default_CMS_Template){  //defined in heuristConfigIni
-    $template = __getTemplate($default_CMS_Template);
+    $template = getCmsTemplateFullPath($default_CMS_Template);
 }
 
 if($template!==false){
@@ -531,7 +512,7 @@ if($template!==false){
 //
 // retuns path to cms template
 //
-function __getTemplate($template){
+function getCmsTemplateFullPath($template){
 
     if($template){
         if(substr( $template, -4 ) !== '.php'){
@@ -546,11 +527,5 @@ function __getTemplate($template){
     }
     return false;
 }
-
-//
-//
-//
-function _isPositiveInt($val){
-    return is_numeric($val) && (int)$val>0;
-}
 ?>
+

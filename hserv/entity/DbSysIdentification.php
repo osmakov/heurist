@@ -104,7 +104,7 @@ class DbSysIdentification extends DbEntityBase
 
 
         //add new field into sysIdentification
-        $sysValues = $this->system->get_system();
+        $sysValues = $this->system->settings->get();
         if(!array_key_exists('sys_ExternalReferenceLookups', $sysValues))
         {
             $query = "ALTER TABLE `sysIdentification` ADD COLUMN `sys_ExternalReferenceLookups` TEXT default NULL COMMENT 'Record type-function-field specifications for lookup to external reference sources such as GeoNames'";

@@ -112,13 +112,13 @@ if(!($max_size>0)) {$max_size = 0;}
 
                 // Find out which folders are allowable - the default scratch space plus any
                 // specified for FieldHelper indexing in Advanced Properties
-                $mediaFolders = $system->get_system('sys_MediaFolders');
+                $mediaFolders = $system->settings->get('sys_MediaFolders');
                 if($mediaFolders==null || $mediaFolders == ''){ //not defined
                     $mediaFolders = HEURIST_FILESTORE_DIR.'uploaded_files/';
                     folderCreate( $mediaFolders, true );
                     $mediaFolders = 'uploaded_files';
                 }
-                $mediaExts = $system->get_system('sys_MediaExtensions');//from preferences
+                $mediaExts = $system->settings->get('sys_MediaExtensions');//from preferences
                 if(!$mediaExts) {$mediaExts = '';}
 
                 // Get the set of directories defined in Advanced Properties as FieldHelper indexing directories

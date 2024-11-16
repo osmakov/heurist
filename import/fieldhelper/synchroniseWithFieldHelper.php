@@ -180,7 +180,7 @@ $failed_exts = array();
 
         if(!array_key_exists('mode', $_REQUEST)) {
 
-            if(false && !($system->get_system('sys_dbRegisteredID')>0)){ //is not registered
+            if(false && !($system->settings->get('sys_dbRegisteredID')>0)){ //is not registered
 
                 print "<div class='ui-state-error' style='padding:10px'>Note: Database must be registered with the Heurist master index to use this function<br>".
                 "Register the database using Database administration page > Database > Registration - ".
@@ -188,8 +188,8 @@ $failed_exts = array();
 
             }else{
 
-                $mediaFolders = $system->get_system('sys_MediaFolders');
-                $mediaExts = $system->get_system('sys_MediaExtensions');
+                $mediaFolders = $system->settings->get('sys_MediaFolders');
+                $mediaExts = $system->settings->get('sys_MediaExtensions');
 
                 if($mediaFolders==null || $mediaFolders==''){
                     $mediaFolders = HEURIST_FILESTORE_DIR.'uploaded_files/';

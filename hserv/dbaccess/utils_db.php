@@ -1124,7 +1124,7 @@ $mysqli->kill($thread_id);
 
         $mysqli = $system->get_mysqli();
 
-        $dbVerSubSub = $system->get_system('sys_dbSubSubVersion');
+        $dbVerSubSub = $system->settings->get('sys_dbSubSubVersion');
 
         $isok = true;
         $is_table_exist = hasTable($mysqli, 'recDetailsDateIndex');
@@ -1776,11 +1776,11 @@ $mysqli->kill($thread_id);
     //
     function updateDatabaseToLatest($system){
 
-        $sysValues = $system->get_system(null, true);
+        $sysValues = $system->settings->get(null, true);
         /*
-        $dbVer = $system->get_system('sys_dbVersion');
-        $dbVerSub = $system->get_system('sys_dbSubVersion');
-        $dbVerSubSub = $system->get_system('sys_dbSubSubVersion');
+        $dbVer = $system->settings->get('sys_dbVersion');
+        $dbVerSub = $system->settings->get('sys_dbSubVersion');
+        $dbVerSubSub = $system->settings->get('sys_dbSubSubVersion');
 
         if($dbVer==1 && $dbVerSub==3 && $dbVerSubSub>16){
 

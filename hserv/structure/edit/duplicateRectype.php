@@ -44,7 +44,7 @@ if( $system->init(@$_REQUEST['db']) ){
     ."rty_ReferenceURL, rty_AlternativeRecEditor, rty_Type, rty_ShowURLOnEditForm, rty_ShowDescriptionOnEditForm, rty_Modified, IFNULL(rty_LocallyModified,0) "
     ."FROM defRecTypes where rty_ID=$old_rt_id";
 
-        define('HEURIST_DBID', $system->get_system('sys_dbRegisteredID'));
+        define('HEURIST_DBID', $system->settings->get('sys_dbRegisteredID'));
 
         $mysqli = $system->get_mysqli();
         $res = $mysqli->query($query);

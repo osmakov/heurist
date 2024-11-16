@@ -132,7 +132,7 @@ function recordAddDefaultValues($system, $record=null){
         $ownerid = is_array($userDefaultOwnerGroupID)?$userDefaultOwnerGroupID:array($userDefaultOwnerGroupID);
     }
     if(!is_array($ownerid) || !($ownerid[0]>=0)){
-        if(!$sysvals) {$sysvals = $system->get_system();}
+        if(!$sysvals) {$sysvals = $system->settings->get();}
         $ownerid = @$sysvals['sys_NewRecOwnerGrpID'];//from database properties
     }
     if(!(is_array($ownerid) && !empty($ownerid)) || !($ownerid[0]>=0)){
@@ -149,7 +149,7 @@ function recordAddDefaultValues($system, $record=null){
         $access = $userDefaultAccess;
     }
     if(!$access){
-        $sysvals = $system->get_system();
+        $sysvals = $system->settings->get();
         $access = @$sysvals['sys_NewRecAccess'];//from db properties
     }
     if(!$access){
@@ -374,7 +374,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         }
     }
 
-    $useNewTemporalFormatInRecDetails = ($system->get_system('sys_dbSubSubVersion')>=14);
+    $useNewTemporalFormatInRecDetails = ($system->settings->get('sys_dbSubSubVersion')>=14);
 
 
     //0 normal, 1 import, 2 - faims or zotero import (add without recstructure check)
@@ -1793,7 +1793,7 @@ function recordCanChangeOwnerwhipAndAccess($system, $recID, &$owner_grps, &$acce
     //---------------------------
     //change public to pending in case db system preferences
     if($access=='public' && $record["rec_NonOwnerVisibility"]=='public'
-    && $system->get_system('sys_SetPublicToPendingOnEdit')==1){
+    && $system->settings->get('sys_SetPublicToPendingOnEdit')==1){
         $access='pending';
     }elseif(!$access){
         $access = $record["rec_NonOwnerVisibility"];
