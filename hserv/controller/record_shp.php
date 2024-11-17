@@ -201,7 +201,6 @@ global $is_api;
                         $system->errorExitApi('Cannot process shp file', HEURIST_ERROR, null);
                     }
 
-                    //$json = array();
                     $tmp_destination = tempnam(HEURIST_SCRATCHSPACE_DIR, "exp");
                     $fd = fopen($tmp_destination, 'w');//less than 1MB in memory otherwise as temp file
                     fwrite($fd, '[');
@@ -253,8 +252,6 @@ global $is_api;
                         }
 
 
-                        //$json[] = $feature;
-
                         if($rec_cnt>0) {fwrite($fd, ',');}
                         fwrite($fd, json_encode($feature));
                         $rec_cnt++;
@@ -275,7 +272,6 @@ global $is_api;
                     fclose($fd);
 
                     header( CTYPE_JSON);
-                    //header(CONTENT_LENGTH . strlen($output));
                     unlink($tmp_destination);
 
                     echo $output;

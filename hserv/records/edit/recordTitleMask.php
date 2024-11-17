@@ -1254,9 +1254,7 @@ private static function __replaceInCaseOfImport($dty_ID){
     if(strpos($dty_ID,"-")===false && is_numeric($dty_ID)){ //this is not concept code and numeric
 
         if(self::$fields_correspondence!=null && count(self::$fields_correspondence)>0 && @self::$fields_correspondence[$dty_ID]){
-            //print "<br>>>>was ".$dty_ID;
             $dty_ID = @self::$fields_correspondence[$dty_ID];
-            //print "<br>>>>replace to ".$dty_ID;
         }
     }
     return $dty_ID;

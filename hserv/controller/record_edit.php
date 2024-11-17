@@ -84,10 +84,9 @@
 
                     if($response['status'] == HEURIST_OK){
                         $response['data'] = $rec_ids;
-                        //unset($response['rec_Title']);
                     }
                 }else{
-                    // TODO: Improve message
+                    // to improve message
                     $response = array('status'=>HEURIST_ERROR, 'msg'=>'No records provided');
                 }
 

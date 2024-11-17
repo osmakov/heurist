@@ -560,7 +560,7 @@ $mysqli->kill($thread_id);
 
                 if($mode==1){
                     $rec_id = array_shift($row);
-                    $result[$rec_id] = $row;  //stripAccents(trim($row[1]));
+                    $result[$rec_id] = $row;
                 }else {
                     array_push($result, $row);
                 }
@@ -620,7 +620,6 @@ $mysqli->kill($thread_id);
         $columns3 = implode(',',$columns3);
         //
         $query = "INSERT INTO `$table` ($columns3) SELECT $columns2 FROM `$table`".$where;
-    //print $query.'<br>';
 
         $res = $mysqli->query($query);
         if(!$res){
@@ -1254,14 +1253,7 @@ $mysqli->kill($thread_id);
             if ($res){
 
                 if($json_for_record_details){
-                    $mysqli->query('DROP TABLE IF EXISTS bkpDetailsDateIndex');
-                /*
-                    $res3 = $mysqli->query('CREATE TABLE bkpDetailsDateIndex (
-                         bkp_ID int unsigned NOT NULL auto_increment,
-                         dtl_ID int unsigned NOT NULL,
-                         dtl_Value TEXT,
-                         PRIMARY KEY (bkp_ID))');
-                */
+                    $mysqli->query('DROP TABLE IF EXISTS bkpDetailsDateIndex'); //no used anymore
                 }
 
                 if($cnt_dates<150000){
@@ -1286,7 +1278,6 @@ $mysqli->kill($thread_id);
                         $query = 'insert into recDetailsDateIndex (rdi_RecID, rdi_DetailTypeID, rdi_DetailID, rdi_estMinDate, rdi_estMaxDate)'
 ." values ($dtl_RecID, $dtl_DetailTypeID, $dtl_ID, $iYear, $iYear)";
                         $res5 = $mysqli->query($query);
-//getEstDate('$dtl_NewValue',0), getEstDate('$dtl_NewValue',1)
 
                         if(!$res5){
                             //fails insert into recDetailsDateIndex
@@ -1321,8 +1312,8 @@ $mysqli->kill($thread_id);
                             }else{
 
             //3. Validate estMin and estMax from JSON
-                            $query = 'SELECT getEstDate(\''.$dtl_NewValue  //$mysqli->real_escape_string(
-                                    .'\',0) as minD, getEstDate(\''.$dtl_NewValue.'\',1) as maxD';//$mysqli->real_escape_string(
+                            $query = 'SELECT getEstDate(\''.$dtl_NewValue
+                                    .'\',0) as minD, getEstDate(\''.$dtl_NewValue.'\',1) as maxD';
                             try{
                                 $res2 = $mysqli->query($query);
                             }catch(Exception $e){
@@ -1336,18 +1327,7 @@ $mysqli->kill($thread_id);
                                     $error = 'Empty min, max dates. Min:"'.
                                         htmlspecialchars($row2[0].'" Max:"'.$row2[1]).'". Query:'.$query;
                                 }else{
-            //4. Keep old plain string temporal object in backup table
-                                    /*
-                                    if($json_for_record_details && strpos($dtl_Value,'|VER=1|')===0){ // !$is_date_simple
-                                        $query = 'INSERT INTO bkpDetailsDateIndex(dtl_ID,dtl_Value) VALUES('.$dtl_ID.',\''
-                                            .$mysqli->real_escape_string($dtl_Value).'\')';
-                                        $res4 = $mysqli->query($query);
-                                        if(!$res4){
-                                            $system->addError(HEURIST_DB_ERROR, $err_prefix.'Error on backup for query:'.$query, $mysqli->error);
-                                            $isok = false;
-                                            break;
-                                        }
-                                    }*/
+            //4. Keep old plain string temporal object in backup table - removed
             //5A. If simple date - retain value in recDetails
             //5B. If temporal object it saves JSON in recDetails
                                     if($dtl_Value != $dtl_NewValue_for_update){
@@ -1506,21 +1486,6 @@ $mysqli->kill($thread_id);
         return $translated;
     }
 
-/*
-    //override standard trim function to sanitize unicode white spaces
-    //Rename existing function
-    rename_function('trim', '__trim');
-    //Override function with another
-    override_function('trim', '$string', 'return override_trim($string);');
-
-    //new trim  function
-    function override_trim($string){
-        $str = preg_replace('/\xc2\xa0/', ' ', $str);//non breakable space
-        $str = preg_replace("/\xEF\xBB\xBF/", "", $str);// BOM
-        //$str = preg_replace("/\s+/u", ' ', $str);//any spaces
-        return __trim($str);
-    }
-*/
     //
     //
     //
@@ -1702,18 +1667,6 @@ $mysqli->kill($thread_id);
     function checkMaxLength($dty_Name, $dtl_Value){
 
         $lim = checkMaxLength2($dtl_Value);
-        /*
-        if($len>10000){
-            $stmt_size->bind_param('s', $dtl_Value);
-            if($stmt_size->execute()){
-                $stmt_size->bind_result($str_size);
-                $stmt_size->fetch();
-                if($str_size>65535){
-                    $len = $str_size;
-                }
-            }
-        }
-        */
         //number of bytes more than limit
         //limit: if number of bytes and chars is slightly different it takes 64KB
         // otherwise it is assumed utf and limit is 32KB
@@ -1832,7 +1785,6 @@ $mysqli->kill($thread_id);
 
         $query = '';
         if($db_name!=null){
-            //$db_name = HEURIST_DBNAME_FULL;
             $query = 'FROM `'.$db_name.'`';
         }
 
@@ -1946,7 +1898,6 @@ $mysqli->kill($thread_id);
 
             $query = '';
             if($db_name!=null){
-                //$db_name = HEURIST_DBNAME_FULL;
                 $query = 'FROM `'.$db_name.'`';
             }
 

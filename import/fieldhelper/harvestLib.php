@@ -32,7 +32,6 @@ function getMediaFolders($mysqli) {
 
     //sanitize folder names
     $dirs = array_map(array('hserv\utilities\USanitize', 'sanitizePath'), $dirs);
-    //$mediaFolders = implode(';', $dirs);
 
     // The defined list of file extensions for FieldHelper indexing.
     if($row1[1]==null){
@@ -44,8 +43,8 @@ function getMediaFolders($mysqli) {
     $mediaExts = explode(',', $mediaExts);
 
     if (empty($dirs)) {
+        //It seems that there are no media folders specified for this database
         $dirs = array(HEURIST_FILESTORE_DIR);// default to the data folder for this database
-        //print "<p><b>It seems that there are no media folders specified for this database</b>";
     }
 
     return array('dirs'=>$dirs, 'exts'=>$mediaExts);

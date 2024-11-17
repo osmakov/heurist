@@ -200,7 +200,6 @@ if(!$system->init(@$_REQUEST['db'])){
                 $header_flds = @$_REQUEST['header_flds'];
                 if($header_flds!=null && !is_array($header_flds)){
                     $header_flds = json_decode($header_flds, true);
-                    //$header_flds = explode(',',$header_flds);
                 }
                 if(!isEmptyArray($header_flds)){
                     $sz = $sz + fputcsv($fp, $header_flds, ',', '"');
@@ -232,7 +231,6 @@ if(!$system->init(@$_REQUEST['db'])){
             $filename = filter_var(basename(@$_REQUEST['filename']),FILTER_SANITIZE_STRING);
 
             $res = ImportHeurist::importDefintions($filename, @$_REQUEST['session']);
-            //$need_compress = true;
 
         }elseif($action=='import_records'){
 

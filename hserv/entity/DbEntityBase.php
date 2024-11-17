@@ -925,8 +925,6 @@ abstract class DbEntityBase
     //
     private function _readFields($fields){
 
-        //$this->multilangFields = array();
-
         foreach($fields as $field){
 
             if(!isEmptyArray(@$field['children'])){
@@ -1104,7 +1102,6 @@ abstract class DbEntityBase
             //number of keys equals to number of entries it means single record
             $this->records = array();
             $this->records[0] = $this->data['fields'];
-            //$this->recordIDs = $record[$this->primaryField];
         }else{
              //this is 2dim array
             $this->records = $this->data['fields'];

@@ -190,10 +190,6 @@ $rep_errors_only = true;
 // . HEURIST_DBNAME
 // ."&mode=properties2\"Database > Prxoperties</a>";
 
-
-//print "<div>Orignal ID detail:".$dt_SourceRecordID.DIV_E;
-
-
 $lib_keys = explode("|", $HEURIST_ZOTEROSYNC);
 
 if(!$step){
@@ -424,8 +420,6 @@ if($step=="1"){  //first step - info about current status
 
         //Responses for multi-object read requests will include a custom HTTP header, Total-Results
         $totalitems = $zotero->getTotalCount();
-
-        //print $items;
 
         print "<div>Count items in Zotero: $totalitems</div>";
         if($totalitems>0){
@@ -676,7 +670,6 @@ if($step=="1"){  //first step - info about current status
                     $resource_rt_id = null;
                     $resource_dt_id = null;
 
-                    //print '<br>'.$zkey.'  ->'.$key.'   '.$value;
                     if($key){
 
                         if(is_array($key)){ //reference to record pointer
@@ -851,7 +844,6 @@ if($step=="1"){  //first step - info about current status
     }
 
     if(!empty($unresolved_pointers)){
-        //print "<div><br>Create/update resource records</div>";//ij: need hide this info
         print "<br>";
 
     }

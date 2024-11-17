@@ -149,7 +149,6 @@ ini_set('max_execution_time', 0);
                     $sText .= ("\n".print_r($term, true));
                     $sText .= ("\n reason: ".$response['report']['broken_terms_reason'][$idx]);
                 }
-                //$sText .= ('</ul>');
 
                 sendEmail(HEURIST_MAIL_TO_BUG, 'Import terms report', $sText);
 
@@ -168,7 +167,6 @@ ini_set('max_execution_time', 0);
 
         }else{
 
-            //$currentUser = $system->getCurrentUser();
             $data = array();
 
             if (@$req_params['translations']){
@@ -207,14 +205,7 @@ ini_set('max_execution_time', 0);
                 }else{
                     $response = $data["rectypes"];
                 }
-    /* verify this piece after merging 25-Jul-18
-                if($mode==4 && @$req_params['lazyload']){
-                    if(count($data["rectypes"])==1){
-                        $response = $data["rectypes"][0]['children'];
-                    }else{
-                        $response = $data["rectypes"];
-                    }
-    */
+
             }else{
                 $data["db_version"] = getDbVersion($system->getMysqli());
                 $response = array("status"=>HEURIST_OK, "data"=> $data );
@@ -225,18 +216,6 @@ ini_set('max_execution_time', 0);
         $system->dbclose();
     }
 
-
-    /*
-    if ( extension_loaded('zlib') && (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) )
-    {
-            ob_start('ob_gzhandler');
-    }*/
-/*
-    ini_set("zlib.output_compression", '4096');
-    ini_set("zlib.output_compression_level", '6');
-    header(CTYPE_JS);
-    print json_encode($response);
-*/
 
 ob_start();
 echo json_encode($response);

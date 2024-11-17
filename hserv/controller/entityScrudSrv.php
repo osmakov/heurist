@@ -89,7 +89,6 @@
 
         }elseif($entities=='all' || $entities==null){
 
-            //set_time_limit(120);
             $entities = array('rty','dty','rst','trm','rtg','dtg','vcg','swf');
 
         }elseif(!is_array($entities)){

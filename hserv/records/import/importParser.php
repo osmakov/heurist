@@ -873,23 +873,7 @@ private static function prepareDateField($field, $csv_dateformat){
     if($t3!='Temporal' && $t3!=null){ //do not change if temporal
         $field = $t3;
     }
-    /*
-    if(is_numeric($field) && abs($field)<99999){ //year????
 
-    }else{
-        //$field = str_replace(".","-",$field);
-        if($csv_dateformat==1){
-            $field = str_replace("/","-",$field);
-        }
-
-        try{
-            $t2 = new DateTime($field);
-            $t3 = $t2->format(DATE_8601);
-            $field = $t3;
-        } catch (Exception  $e){
-            //print $field.' => NOT SUPPORTED<br>';
-        }
-    }*/
     return $field;
 }
 

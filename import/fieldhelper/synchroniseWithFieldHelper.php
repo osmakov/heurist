@@ -821,8 +821,7 @@ XML;
                     $query2 = 'SELECT dtl_RecID FROM recDetails WHERE dtl_UploadedFileID='.$file_id;
                     $new_recordID = mysql__select_value($system->getMysqli(),$query2);
                     if ($new_recordID>0) {
-                        //print "<div>File: <i>$filename_base</i> <span>".
-                        //"File is already referenced in system. Record ID:".$dtl_RecID."</span></div>";
+                        //File is already referenced in system. Record ID: $dtl_RecID
                         $rep_updated++;
 
                     }else{

@@ -143,8 +143,6 @@ class DbDefTerms extends DbEntityBase
             .',trm_OriginatingDBID,trm_IDInOriginatingDB, "" as trm_Parents';//trm_Modified
 
             $multiLangs = $this->multilangFields;
-            //$orderBy = ' ORDER BY trm_Label ';
-            //$this->data['details'] = implode(',', array_keys($this->fields) );
         }else {
             $needCheck = true;
         }
@@ -298,10 +296,6 @@ class DbDefTerms extends DbEntityBase
         if($trm_sep==null){
             $trm_sep = '.';
         }
-
-        //(!array_key_exists('term_separator', $this->data))
-        //                ? '.'
-        //                : ((empty($this->data['term_separator'])) ? false : $this->data['term_separator']);
 
         foreach ($input as $path) {
             $path = $path['trm_Label'];
@@ -933,7 +927,6 @@ class DbDefTerms extends DbEntityBase
 
         $fields = array('trn_ID', 'trn_Code', 'trn_Source', 'trn_LanguageCode', 'trn_Translation');
         $records = array();
-        //$order = array();
 
         $where_clause = $label_only ? 'trn_Source = "trm_Label"' : 'trn_Source LIKE "trm_%"';
 
@@ -960,7 +953,6 @@ class DbDefTerms extends DbEntityBase
 
             while($row = $res->fetch_row()){
                 $records[$row[0]] = $row;
-                //$order[] = $row[0];
             }
         }
 
@@ -1020,18 +1012,6 @@ class DbDefTerms extends DbEntityBase
                     }
 
                 }
-                //$trm_ID = array_search($ref_id, $all_labels, false);
-                /*
-                if(intval($id)>0){
-                $trm_ID = $id;
-                }else{
-                $stmt_select->bind_param('s', $ref_id);
-                if($stmt_select->execute()){
-                $result = $stmt_select->get_result();
-                $row = $result->fetch_row();
-                $trm_ID = $row[0];
-                }
-                }*/
 
                 if($trm_ID>0){
 
@@ -1302,7 +1282,6 @@ class DbDefTerms extends DbEntityBase
                 $trm_usage = mysql__select_assoc2($mysqli, $query);// [ trm_ID1 => count1, ... ]
                 if($trm_usage){
                     $res = $trm_usage;
-                    //return array($mysqli->error, $res, $query, $trm_usage, $trm_ID);
                 }elseif(empty($mysqli->error)){
                     $res = explode(',', $trm_ID);
                 }else{

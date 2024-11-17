@@ -23,28 +23,6 @@
     * See the License for the specific language governing permissions and limitations under the License.
     */
 
-/*
-if (@$argv) {
-    //php -f entityScrud.php -- -db xxx -entity usrReminders -a batch
-
-    // handle command-line
-    $ARGV = array();
-    for ($i = 0;$i < count($argv);++$i) {
-        if ($argv[$i][0] === '-') {  //pair: -param value
-            if (@$argv[$i + 1] && $argv[$i + 1][0] != '-') {
-                $ARGV[substr($argv[$i],1)] = $argv[$i + 1];
-                ++$i;
-            }
-        } else {
-            //array_push($ARGV, $argv[$i]);
-        }
-    }
-
-    $req_params = $ARGV;
-
-    define('HEURIST_DIR', getcwd().'/../../');
-}
-*/
     use hserv\utilities\USanitize;
     use hserv\utilities\USystem;
 
@@ -112,8 +90,6 @@ if (@$argv) {
                         if($dbdef_mod!=null){
                             $db_time  = $dbdef_mod->getTimestamp();
                             $file_time = filemtime($dbdef_cache);
-
-//error_log('DEBUG '.($db_time>$file_time).'  '.$dbdef_mod->format('Y-m-d h:i').' > '.date ('Y-m-d h:i UTC',$file_time).'  '.date_default_timezone_get());
 
                             if($db_time>$file_time){ //db def cache is outdated
                                   $req_params['entity'] = 'force_all';
@@ -210,7 +186,6 @@ if (@$argv) {
             header(HEADER_CORS_POLICY);
             header(CTYPE_JSON);
 
-            //$req = $entity->getData();
             $req = array();
 
             if(@$req['a'] == 'search' && empty($res)){
@@ -258,12 +233,6 @@ if (@$argv) {
                 $res = json_encode($response, JSON_INVALID_UTF8_IGNORE );
 
                 print $res;
-
-                /*
-                $system->addError(HEURIST_SYSTEM_CONFIG, 'Your data definitions (names, descriptions) contain invalid characters. '
-                .'Or system cannot convert them properly. '.$e->getMessage());
-                print json_encode( $system->getError() );
-                */
             }
 
         }else{
@@ -276,7 +245,6 @@ if (@$argv) {
                 $wrong_string = null;
                 try{
                     array_walk_recursive($response, 'find_invalid_string');
-                    //$response = array_map('find_invalid_string', $response);
 
                 }catch(Exception $exception) {
                        $wrong_string = $exception->getMessage();

@@ -117,7 +117,6 @@ class DbDefDetailTypes extends DbEntityBase
 
                 //validate duplication
                 if(!$this->doDuplicationCheck($idx, 'dty_Name', 'Field type cannot be saved. The provided name already exists')){
-//$this->system->addError(HEURIST_ACTION_BLOCKED, 'Field type cannot be saved. The provided name already exists', array('dty_id' => $res));
                         return false;
                 }
             }
@@ -401,9 +400,7 @@ class DbDefDetailTypes extends DbEntityBase
                         }
 
                         if($record['dty_Type'] == 'resource' || $record['dty_Type'] == 'relmarker'){
-                            if(empty(@$record['dty_PtrTargetRectypeIDs'])){
-                                // $ret[$idx][] = 'A Record Type target is needed for this field';
-                            }else{
+                            if(!empty(@$record['dty_PtrTargetRectypeIDs'])){
                                 $rty_query = 'SELECT rty_ID FROM defRecTypes WHERE rty_ID = ' . $record['dty_PtrTargetRectypeIDs'];
                                 $rty_res = mysql__select_value($mysqli, $rty_query);
 

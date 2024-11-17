@@ -71,7 +71,6 @@ $names = mysql__select_assoc2($mysqli, 'select rty_ID, rty_Plural from defRecTyp
 
 print "top.HEURIST_rectypes.pluralNames = " . json_encode($names) . $eol;
 
-//print "top.HEURIST_rectypes.groupNamesInDisplayOrder = " . json_format(getRectypeGroups()) . $eol;
 print "top.HEURIST_rectypes.groups = " . json_encode(dbs_GetRectypeGroups($mysqli, true)) . $eol;
 
 print "if (window.HEURIST_rectypesOnload) HEURIST_rectypesOnload()$eol";

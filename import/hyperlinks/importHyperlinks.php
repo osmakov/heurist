@@ -214,11 +214,6 @@ if (@$_REQUEST['mode'] == 'Analyse') {
 }
 
 
-//print 'mode '.@$_REQUEST['mode'];
-//print 'addtag '.@$_REQUEST['adding_tags'];
-//print 'links '.@$_REQUEST['links'];
-
-
 $disambiguate_rec_ids = array();
 if ((@$_REQUEST['mode'] == 'Bookmark checked links'  ||  @$_REQUEST['adding_tags'])  &&  @$_REQUEST['links'])
 {
@@ -607,7 +602,7 @@ function records_check($url, $title, $notes, $user_rec_id) {
     $out = recordSave($system, $record);//see recordModify.php
 
     if ( @$out['status'] != HEURIST_OK ) {
-        //print "<div style='color:red'> Error: ".$out["message"].DIV_E;
+        // error $out["message"]
         return 0;
     }else{
 

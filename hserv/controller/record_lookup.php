@@ -293,7 +293,6 @@ if( !$system->init(@$params['db']) ){  //@todo - we don't need db connection her
     $system->errorExitApi();//exit from script
 }elseif ( $system->getUserId()<1 ) {
     $system->errorExitApi('You must be logged in to use the external lookup services', HEURIST_REQUEST_DENIED);
-    //$response = $system->addError(HEURIST_REQUEST_DENIED);
 }
 
 $system->dbclose();
@@ -472,7 +471,7 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
 }elseif(@$params['serviceType'] == 'bnflibrary_bib'){ // BnF Library Search
 
     $author_codes = '';
-    //$contributor_codes = '';
+
     if(array_key_exists('author_codes', $params) && !empty($params['author_codes']) && $params['author_codes'] != 'all'){
         $author_codes = explode(',', $params['author_codes']);
     }

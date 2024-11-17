@@ -11,15 +11,13 @@
         if($error==null){
 
             if(!defined('HEURIST_SCRATCH_DIR')){
-                //$system->initPathConstants($dbname);
-                $upload_root = $system->getFileStoreRootFolder();
-                $filestore_dir = $upload_root . basename($dbname) . '/';
-                if(file_exists($filestore_dir)){
-                    $dir = $filestore_dir.DIR_SCRATCH;
+                $warn = '';
+                $dir = $system->getSysDir(DIR_SCRATCH, basename($dbname));
+                if(!file_exists($dir)){
                     $warn = folderCreate2($dir, '', false);
-                    if($warn==''){
-                        define('HEURIST_SCRATCH_DIR', $dir);
-                    }
+                }
+                if($warn==''){
+                    define('HEURIST_SCRATCH_DIR', $dir);
                 }
             }
             $mysqli = null;

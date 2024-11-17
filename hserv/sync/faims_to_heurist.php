@@ -429,7 +429,6 @@ if(! $system->init(@$_REQUEST['db'], true) ){
                     }
                 }else{
                     print 'Error: '.htmlspecialchars(@$response['status'].'  '.@$response['message']);
-                    //print print_r($response, true)."<br>";
                 }
 
 

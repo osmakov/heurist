@@ -96,19 +96,7 @@ if($filename){ //download from scratch (for csv import)
 
             setlocale(LC_ALL, 'en_US.utf8');
             fclose($handle);
-            /*
-            // read header only - since import terms is no big we can omit this section
-            $line = fgets($handle, 1000000);
-            fclose($handle);
-            if(!mb_check_encoding( $line, 'UTF-8' )){
-               $line = mb_convert_encoding( $line, 'UTF-8');
-            }
-            if(!$line){
-                print $msgTempFile.$file_read
-                .' can\'t be converted to UTF-8. Please open it in any advanced editor and save with UTF-8 text encoding';
-                exit;
-            }
-            */
+            
             $content = file_get_contents($file_read);
             $content = mb_convert_encoding( $content, 'UTF-8', $csv_encoding);
             if(!$content){
@@ -117,7 +105,6 @@ if($filename){ //download from scratch (for csv import)
                 exit;
             }
 
-            //$encoded_file_name = tempnam(HEURIST_FILESTORE_DIR.DIR_SCRATCH, $original_filename);
             $res = file_put_contents($file_read, $content);
             unset($content);
             if(!$res){
@@ -144,7 +131,6 @@ if($filename){ //download from scratch (for csv import)
             $rec_id = substr($rec_id, 4);
             $entity_name  = 'trm';
             $viewmode = 'icon';
-            //$path = HEURIST_TERM_ICON_DIR;
         }elseif($rec_id && strpos($rec_id, 'thumb/th_')===0){
             //backward support - thumbnail for rectype import
             $rec_id = substr($rec_id, 9);
@@ -215,7 +201,6 @@ if($filename){ //download from scratch (for csv import)
                 //at the moment we don't have full images that describe entity - only icons and thumbs
                 $filename = dirname(__FILE__).'/../../hclient/assets/'
                                 .$entity_name.(($viewmode=='icon')?'':'_thumb').'.png';
-                //$filename = dirname(__FILE__).'/../../hclient/assets/cross-red.png';
 
                 if(file_exists($filename) && !is_dir($filename)){
                     _download_file($filename, $content_type);

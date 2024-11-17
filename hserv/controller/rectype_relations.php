@@ -73,7 +73,6 @@
             $rectype->count = intval($row["count"]);
             $rectype->image = HEURIST_RTY_ICON.$row["id"];
 
-            //print_r($rectype);
             array_push($rectypes, $rectype);
         }
 
@@ -109,7 +108,6 @@
             $relation->type = $row["reltype"];
             $relation->ids = $row["ids"];
 
-            //print_r($relation);
             array_push($relations, $relation);
         }
 
@@ -159,7 +157,6 @@
                     $target->id = intval($id);
                     $target->count = intval($row["count"]);
 
-                    //print_r($target);
                     array_push($targets, $target);
                 }
             }
@@ -232,7 +229,6 @@ targetcount:0
                     $link->targetcount = $target->count;
                     $link->relation->count = $target->count;
 
-                    //print_r($link);
                     array_push($links, $link);
                 }
             }

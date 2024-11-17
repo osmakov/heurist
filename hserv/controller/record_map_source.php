@@ -67,11 +67,6 @@
     }
     $system->defineConstants();
 
-    /*
-    if(!(defined('DT_KML') && defined('DT_KML_FILE'))){
-        $system->errorExitApi('Database '.$params['db'].' does not have field definitions for KML/CSV snipppet and file');//exit from script
-    }*/
-
     $record = array("rec_ID"=>intval($params['recID']));
     //load record with details and 2 header fields
     $record = recordSearchByID($system, intval($params['recID']), true, "rec_ID, rec_RecTypeID");
@@ -163,7 +158,6 @@
 
                 if($input_format=='kml' || $ext=='.kmz' || $ext=='.kml'){
                     $input_format = 'kml';
-                    //$input_format = 'csv';
                 }elseif($ext=='.tsv'){
                     $input_format = 'csv';
                     $parser_parms['csv_delimiter'] = 'tab';
@@ -183,14 +177,6 @@
                         $input_format = 'csv';
                     }
                 }
-
-                /*
-                $system->defineConstant('DT_NAME');
-                $system->defineConstant('DT_EXTENDED_DESCRIPTION');
-                $system->defineConstant('DT_START_DATE');
-                $system->defineConstant('DT_END_DATE');
-                $system->defineConstant('DT_GEO_OBJECT');
-                */
 
                 //X 2-930, Y 2-931, t1 2-932, t2 2-933, Name 2-934, Summary description 2-935
                 $mapping = array();
@@ -298,8 +284,6 @@
 
                             $json = json_encode($json);
                             header(CTYPE_JSON);
-                            //header('Content-Type: application/vnd.geo+json');
-                            //header('Content-Disposition: attachment; filename=output.json');
                             header(CONTENT_LENGTH . strlen($json));
                             exit($json);
                     }else{

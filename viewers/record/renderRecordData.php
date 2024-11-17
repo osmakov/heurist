@@ -1636,7 +1636,6 @@ function print_public_details($bib) {
         .' AND rec_ID = d2.dtl_RecID and rec_RecTypeID != '.intval($relRT)
         .SQL_AND.$ACCESS_CONDITION;
 
-//print $query;
         $allow_execute_this_complex_query = true;
         if($allow_execute_this_complex_query){  //this query fails for maria db
 

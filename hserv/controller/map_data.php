@@ -130,7 +130,6 @@ function getRecord($row) {
 * @param mixed $id Record ID
 */
 function getDetailedRecord($system, $id) {
-    //echo "Get detailed record #".$id;
     $record = getRecordByID($system, $id);
     if(@$record->id){
         $record = getRecordDetails($system, $record);
@@ -169,7 +168,6 @@ zipFile: A .zip file
 */
 function getRecordDetails($system, $record) {
     global $detailQuery;
-    //echo "Get record details of " . ($record->id);
 
     // Retrieve extended details
     $query = $detailQuery . intval($record->id);
@@ -181,7 +179,6 @@ function getRecordDetails($system, $record) {
         // [dtl_ID]  [dtl_RecID]  [dtl_DetailTypeID]  [dtl_Value] [dtl_AddedByImport]  [ulf_ObfuscatedFileID]   [dtl_Geo]  [dtl_ValShortened]  [dtl_Modified]
         while($detail = $details->fetch_assoc()) {
             // Fields
-            //print_r($detail);
             $type = $detail["dtl_DetailTypeID"];
             $value = $detail["dtl_Value"];
             $fileID = $detail["ulf_ObfuscatedFileID"];
@@ -354,7 +351,6 @@ function getRecordDetails($system, $record) {
 * @param mixed $system System reference
 */
 function getMapDocuments($system, $recId) {
-    //echo "getMapDocuments() called!";
     global $recordQuery, $recordWhere;
     global $detailQuery;
     $documents = array();
@@ -375,12 +371,10 @@ function getMapDocuments($system, $recId) {
                 // Document object containing the row values
                 $document = getRecord($row);
                 $document = getRecordDetails($system, $document);
-                //print_r($document);
                 array_push($documents, $document);
             }
         }
     }
-    //print_r($documents);
     return $documents;
 }
 

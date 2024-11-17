@@ -60,7 +60,6 @@
 
             if( is_bool($response) && !$response ){
                 $response = $system->getError();
-                //$system->errorExitApi();
                 $system->setResponseHeader();
                 print json_encode($response);
             }else{

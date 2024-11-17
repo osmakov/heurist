@@ -58,7 +58,6 @@ class DbEntitySearch
             //array of integer or integer
             if(!is_array($values)){
                 $values = explode(',', $values);
-                //$values = array($values);
             }
             foreach($values as $val){  //intval()
                 if( !(is_numeric($val) && $val!=null)){
@@ -66,7 +65,6 @@ class DbEntitySearch
                     return false;
                 }
             }
-            //return $values;
 
         return true;
     }
@@ -406,8 +404,6 @@ class DbEntitySearch
                 }
             }
             elseif($data_type == 'date') {
-
-                //$datestamp = Temporal::dateToISO($this->value);
 
                 if($between){
                     $res = $between." '".$values[0]."' ".SQL_AND." '".$values[1]."'";

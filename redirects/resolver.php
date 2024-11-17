@@ -66,9 +66,6 @@ $redirection_path = '../';
 
 $is_own_domain = (strpos($_SERVER["SERVER_NAME"],'.huma-num.fr')>0 && $_SERVER["SERVER_NAME"]!='heurist.huma-num.fr');
 
-//print $_SERVER["SERVER_NAME"].'  '.$is_own_domain.'   '.substr($_SERVER["SERVER_NAME"],0,-12);
-//exit;
-
 if($is_own_domain){
     //'dicobiosport'
     //detect databasename
@@ -78,18 +75,7 @@ if($is_own_domain){
     }
 }
 
-/*
-if(count($requestUri)==1){
-   if($requestUri[0]==='heurist'){
-       redirectURL2('../index.php');
-       exit;
-   }else{
-       $_SERVER["SCRIPT_NAME"] .= '/web/';
-       array_push($requestUri, 'web');
-   }
-}
-http://127.0.0.1/heurist/MBH
-*/
+
 if(count($requestUri)==1 && ($requestUri[0]=='heurist' || $requestUri[0]=='h6-alpha')){
 
     redirectURL2('/'.rawurlencode($requestUri[0]).'/index.php');

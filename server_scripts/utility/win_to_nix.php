@@ -7,12 +7,10 @@ $fix = false;
 
 if (!is_array($argv) || empty($argv)){
     $fix = (@$_GET['fix']==1);
-    //print 'fix='.@$_GET['fix'];
     $iscmd = false;
 }else{
     $iscmd = true;
     foreach ($argv as $arg){
-        //echo "\n".$arg.';';
         if($arg=='fix=1'){
             $fix = true;
         }

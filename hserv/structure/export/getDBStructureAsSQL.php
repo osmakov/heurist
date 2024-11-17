@@ -265,7 +265,6 @@ function do_print_table($desc, $tname, $where=null)
             if ($_REQUEST['pretty']) {
                 print"<br>";
             }
-            //print_row($row, $tname);
         }//while
         $res->close();
         print "$endToken\n";

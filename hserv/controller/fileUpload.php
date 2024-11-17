@@ -39,9 +39,6 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
 
         $response = '<p class="heurist-message">The upload size of '.$_SERVER['CONTENT_LENGTH'].' bytes exceeds the limit of '.ini_get('post_max_size')
         .'.<br><br>If you need to upload larger files please contact the system administrator '.HEURIST_MAIL_TO_ADMIN.'</p>';
-        /*
-            $response = $system->addError(HEURIST_ACTION_BLOCKED, $response);
-        */
 }elseif($system->init(@$_REQUEST['db'])){
 
     $params = USanitize::sanitizeInputArray();
@@ -206,17 +203,6 @@ if($response!=null){
     }
 
     if(@$params['acceptFileTypes']){
-        /*
-        //all these complexity needs to avoid Path Traversal warning
-        $allowed_exts = array();
-        $allowed_exts_2 = explode('|', $params['acceptFileTypes']);
-        foreach($allowed_exts_2 as $ext){
-            if(in_array(strtolower($ext), $allowed_exts_all)){
-                $idx = array_search(strtolower($ext), $allowed_exts_all);
-                if($idx>=0) {$allowed_exts[] = $allowed_exts_all[$idx];}
-            }
-        }
-        */
         $options['accept_file_types'] = 'zip|mbtiles';
     }else{
         $allowed_exts = mysql__select_list2($system->getMysqli(), 'select fxm_Extension from defFileExtToMimetype');

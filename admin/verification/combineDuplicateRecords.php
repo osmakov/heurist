@@ -524,8 +524,6 @@ EXP;
                                             print "<div>{$inputs[0]}</div>";
                                             //FIXME  add code to remove the extra details that are not supposed to be there
                                         }
-                                        //} else{
-                                        //print "<div>$detail</div>";
                                     }
 
                                     print TD_E;
