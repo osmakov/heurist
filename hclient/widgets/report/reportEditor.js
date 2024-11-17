@@ -458,7 +458,6 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         let codes = varname.split('.');
         let field = codes[codes.length-1];
         
-        
         let loopname = (_nodep.parent?.type=='enum')?'ptrloop':'valueloop';
         let getrecord = (_nodep.parent?.type=='resource')? ('{$'+field+'=$heurist->getRecord($'+field+')}') :'';
 
@@ -475,7 +474,14 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
             return '{foreach $r.Relationships as $Relationship name='+loopname+'}'+_remark +'\n\n{/foreach}'+_remark;
             
         }else{
-            return '{foreach $'+varname+'s as $'+field+' name='+loopname+'}'+_remark
+            
+            if(varname.indexOf('_originalvalue')<0){
+                varname = varname+'s';
+            }else if(field.indexOf('_originalvalue')>0){
+                field = field.substring(0, field.length-14);
+            }
+            
+            return '{foreach $'+varname+' as $'+field+' name='+loopname+'}'+_remark
                     +'\n\t'+getrecord+'\n'  //' {* '+_remark + '*}'
                     + language_handle
                     + file_handle
@@ -506,7 +512,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
     //
     // _addVariable2
     //
-    _insertPatternVariable: function(_nodep, varname, insertMode, language_handle = '', file_handle = ''){
+    _insertPatternVariable: function(_nodep, varname, insertMode, inLoop, language_handle = '', file_handle = ''){
         
         let res= '';
         
@@ -527,17 +533,19 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
             res = '{wrap var=$'+varname;
             if(!(_nodep.data.code && _nodep.data.code.indexOf('Relationship')==0))
             {
+                const origvalue = inLoop?'':'_originalvalue';
+                
                 if(_nodep.parent?.type!='enum' && (window.hWin.HEURIST4.util.isempty(dtype) || _nodep.key === 'recURL')){
                     res = res + ' dt="url"';
                 }else if(dtype === 'geo'){
-                    res = res + '_originalvalue dt="'+dtype+'"';
+                    res = res + origvalue+' dt="'+dtype+'"';
                 }else if(dtype === 'date'){
-                    res = res + '_originalvalue dt="date" mode="0" calendar="native"';
+                    res = res + origvalue+' dt="date" mode="0" calendar="native"';
                     
                     remark = remark+' mode: 0-simple,1-full,2-all fields; calendar: native,gregorian,both';
                     
                 }else if(dtype === 'file'){
-                    res = res + '_originalvalue dt="'+dtype+'"';
+                    res = res + origvalue+' dt="'+dtype+'"';
                     res = res + ' width="300" height="auto" auto_play="0" show_artwork="0"';
                 }
             }
@@ -985,6 +993,11 @@ this_id       : "term"
                                 }else if (lastcode.indexOf('lt')==0) {
                                     lastcode = lastcode.substring(2);
                                 }
+                                
+                                if(inloop==1 && (_nodep.type == 'date' || _nodep.type == 'geo' || _nodep.type == 'file')){
+                                    _varname = '_originalvalue'; //for loop it contains all value
+                                }
+                                
                                 _varname = 'f'+lastcode+_varname;    
                             }
 /*
@@ -1084,7 +1097,7 @@ this_id       : "term"
                 
                 
             }else{
-                _text = this._insertPatternVariable(_nodep, _varname, _insertMode, language_handle, file_handle);
+                _text = this._insertPatternVariable(_nodep, _varname, _insertMode, (inloop==2), language_handle, file_handle);
             }
         
         
