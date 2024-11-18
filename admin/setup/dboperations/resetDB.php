@@ -84,4 +84,3 @@ if(is_bool($res) && !$res){
 }
 
 print $response;
-?>

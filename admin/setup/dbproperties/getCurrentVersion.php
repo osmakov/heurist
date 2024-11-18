@@ -34,8 +34,7 @@ $rawdata = '';
 $mysqli = mysql__init(@$_REQUEST['db']);
 $db_version = getDbVersion($mysqli);
 if($db_version){
-    $rawdata = HEURIST_VERSION."|".$db_version;    
+    $rawdata = HEURIST_VERSION."|".$db_version;
 }
 
 print $rawdata;
-?>

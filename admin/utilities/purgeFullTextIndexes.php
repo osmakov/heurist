@@ -102,7 +102,7 @@ if( !$system->init(null, false, false) ){
 $mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
-$exclusion_list = exclusion_list();
+$exclusion_list = exclusionList();
 
 if(!$arg_no_action){
 
@@ -173,44 +173,9 @@ foreach ($databases as $idx=>$db_name){
             $report .= ' ';
         }else{
 
-            $res = false;
+            purgeFtsIndex('Records','rec_Title_FullText',$report);
+            purgeFtsIndex('recDetails','dtl_Value_FullText',$report);
 
-            $query = "SHOW INDEX FROM Records WHERE Key_name='rec_Title_FullText'";
-            $has_index = mysql__select_value($mysqli, $query, null);
-            if($has_index!=null){
-                $query = 'ALTER TABLE Records DROP INDEX `rec_Title_FullText`';
-                $res = mysql__exec_param_query($mysqli, $query, null);
-                if($res===true){
-                    $query = 'OPTIMIZE TABLE Records';
-                    $res = mysql__exec_param_query($mysqli, $query, null);
-                }
-            }else{
-                $report .= ' Records index does not exist ';
-                $res = 'skip';
-            }
-            if($res===true){
-                $query = "SHOW INDEX FROM recDetails WHERE Key_name='dtl_Value_FullText'";
-                $has_index = mysql__select_value($mysqli, $query, null);
-                if($has_index!=null){
-                    $query = 'ALTER TABLE recDetails DROP INDEX `dtl_Value_FullText`';
-                    $res = mysql__exec_param_query($mysqli, $query, null);
-                    if($res===true){
-                        $query = 'OPTIMIZE TABLE recDetails';
-                        $res = mysql__exec_param_query($mysqli, $query, null);
-                    }
-                }
-            }else{
-                $report .= ' Details index does not exist ';
-                $res = 'skip';
-            }
-
-            if($res===true){
-
-                $report .= ' full text index purged ';
-                $cnt_processed++;
-            }elseif($res!='skip'){
-                $report .= ('ERROR: '.$res);
-            }
         }
     }
 
@@ -229,7 +194,33 @@ if(!$arg_no_action){
 
 echo $tabs0.'finished'.$eol;
 
-function exclusion_list(){
+function purgeFtsIndex($table, $index, &$report ){
+
+            $res = false;
+
+            $query = "SHOW INDEX FROM $table WHERE Key_name='$index'";
+            $has_index = mysql__select_value($mysqli, $query, null);
+            if($has_index!=null){
+                $query = "ALTER TABLE $table DROP INDEX `$index`";
+                $res = mysql__exec_param_query($mysqli, $query, null);
+                if($res===true){
+                    $query = "OPTIMIZE TABLE $table"; //it cleanups FTS*.ibd files
+                    $res = mysql__exec_param_query($mysqli, $query, null);
+                }
+            }else{
+                $res = 'skip';
+            }
+            if($res===true){
+                $report .= "$table FTS purged ";
+            }elseif($res=='skip'){
+                $report .= " $table index does not exist ";
+            }else{
+                $report .= ('ERROR: '.$res);
+            }
+
+}
+
+function exclusionList(){
 
     $res = array();
     $fname = realpath(dirname(__FILE__)."/../../../../databases_not_to_purge.txt");

@@ -30,10 +30,10 @@
 * registrationDelete - remove registration
 *
 * private
-* _registrationRemoteCall - if script is not executed on reference server, it calls indexControleer on reference server
+* registrationRemoteCall - if script is not executed on reference server, it calls indexControleer on reference server
 * addError - add error into global $system
-* _registrationValidateValues
-* _registrationValidateUser
+* registrationValidateValues
+* registrationValidateUser
 *
 */
 namespace hserv\utilities;
@@ -86,7 +86,7 @@ class DbRegis {
     *
     * @param mixed $params
     */
-    private static function _registrationRemoteCall($params){
+    private static function registrationRemoteCall($params){
 
         if(@$params['db']!=null){
             unset($params['db']);//reset to avoid recursion
@@ -146,7 +146,7 @@ class DbRegis {
     *
     * @param mixed $params
     */
-    private static function _registrationValidateValues(&$params){
+    private static function registrationValidateValues(&$params){
 
         //check url
         if(@$params["serverURL"]){
@@ -198,7 +198,7 @@ class DbRegis {
     *
     * @param mixed $params
     */
-    private static function _registrationValidateUser($params){
+    private static function registrationValidateUser($params){
 
         $mysqli = self::$mysqli;
 
@@ -227,11 +227,6 @@ class DbRegis {
             $valid_password = hash_equals($usrPassword, $user_pwd);
             //hash_equals(crypt($usrPassword, $user_pwd), $user_pwd);
         }
-
-        //DEBUG
-        //self::addError(HEURIST_ACTION_BLOCKED, 'DEBUG '.$user_id.'  '.$usrPassword.'   '.$user_pwd.'  is valid '.$valid_password);
-        //return false;
-
 
         // Unable to retrieve existing user or provided password is wrong
         if($user_id <= 0 || !$valid_password){
@@ -268,27 +263,26 @@ class DbRegis {
         if(!self::initialize()) {return false;} //can not connect to index database
 
         if(self::$isOutSideRequest){
-            return self::_registrationRemoteCall($params);
+            return self::registrationRemoteCall($params);
         }
 
         $mysqli = self::$mysqli;
 
         $dbID = intval(@$params["dbID"]);
 
-        if (!($dbID>0)){
+        if (!isPositiveInt($dbID)){
             self::addError(HEURIST_INVALID_REQUEST, 'Database ID not defined');
             return false;
         }
 
-        if(!self::_registrationValidateValues($params)){
+        if(!self::registrationValidateValues($params)){
             return false;
         }
 
-        if(!self::_registrationValidateUser($params)){
+        if(!self::registrationValidateUser($params)){
             return false;
         }
 
-        //recordDelete(self:$system,$dbID);
         mysql__supress_trigger($mysqli, false);
         ConceptCode::setSystem(self::$system);
         $rty_ID_registered_database = ConceptCode::getRecTypeLocalID(HEURIST_INDEX_DBREC);
@@ -323,7 +317,7 @@ class DbRegis {
         if(!self::initialize()) {return false;} //can not connect to index database
 
         if(self::$isOutSideRequest){
-            return self::_registrationRemoteCall($params);
+            return self::registrationRemoteCall($params);
         }
 
         $sys = self::$system;
@@ -334,12 +328,12 @@ class DbRegis {
         $dbTitle = @$params['dbTitle'];// Database description (DT_NAME)
         $dbID = intval(@$params['dbID']);
 
-        if (!($dbID>0)){
+        if (!isPositiveInt($dbID)){
             self::addError(HEURIST_INVALID_REQUEST, 'Database ID not defined');
             return false;
         }
 
-        if(!self::_registrationValidateValues($params)){
+        if(!self::registrationValidateValues($params)){
             return false;
         }
 
@@ -349,7 +343,7 @@ class DbRegis {
             return false;
         }
 
-        if(!self::_registrationValidateUser($params)){
+        if(!self::registrationValidateUser($params)){
             return false;
         }
 
@@ -383,18 +377,18 @@ class DbRegis {
 
 
         ConceptCode::setSystem($sys);
-        $rty_ID_registered_database = ConceptCode::getRecTypeLocalID(HEURIST_INDEX_DBREC);
 
         if($dbTitle){
-           self::_recordUpdateField($sys, $dbID, '2-1', $dbTitle);
+           self::recordUpdateField($sys, $dbID, '2-1', $dbTitle);
         }
         if($dbName){
-           self::_recordUpdateField($sys, $dbID, '1176-469', $dbName);
+           self::recordUpdateField($sys, $dbID, '1176-469', $dbName);
         }
 
         //update record title
         // it does not work - need to convert TitleMask class from static
-        //recordUpdateTitle($sys, $dbID, $rty_ID_registered_database, $defRecTitle);
+        // $rty_ID_registered_database = ConceptCode::getRecTypeLocalID(HEURIST_INDEX_DBREC);
+        // recordUpdateTitle($sys, $dbID, $rty_ID_registered_database, $defRecTitle);
 
         return $dbID;
     }
@@ -411,7 +405,7 @@ class DbRegis {
 
         if(self::$isOutSideRequest){
             $params['action'] = 'info';
-            return self::_registrationRemoteCall($params);
+            return self::registrationRemoteCall($params);
         }
 
         if(!isPositiveInt(@$params['dbID'])){
@@ -468,7 +462,7 @@ class DbRegis {
 
         if(self::$isOutSideRequest){
             $dbname = @$params['db'];//keep
-            $reg_rec = self::_registrationRemoteCall($params);
+            $reg_rec = self::registrationRemoteCall($params);
 
             if($dbname!=null && $reg_rec){
                  //on remote servr
@@ -483,7 +477,7 @@ class DbRegis {
 
 
         //validate serverURL
-        if(!self::_registrationValidateValues($params)){
+        if(!self::registrationValidateValues($params)){
             return false;
         }
 
@@ -516,7 +510,7 @@ class DbRegis {
         ConceptCode::setSystem($sys);
         $rty_ID_registered_database = ConceptCode::getRecTypeLocalID(HEURIST_INDEX_DBREC);
 
-        if(!($rty_ID_registered_database>0)){
+        if(!isPositiveInt($rty_ID_registered_database)){
             self::addError(HEURIST_SYSTEM_CONFIG, 'Record type "Database registration" ('.HEURIST_INDEX_DBREC.') bot found in Heurist reference index database');
             return false;
         }
@@ -547,12 +541,12 @@ class DbRegis {
 
         // Check if the email address is recognised as a user name
         // Added 19 Jan 2012: we also use email for ugr_Name and it must be unique, so check it has not been used
-        if(!($indexdb_user_id>0)) { // no user found on email, try querying on user name
+        if(!isPositiveInt($indexdb_user_id)) { // no user found on email, try querying on user name
             $indexdb_user_id = mysql__select_value($mysqli, 'select ugr_ID from sysUGrps where lower(ugr_Name)="'
                 .$mysqli->real_escape_string($usrEmail).'"');
         }
 
-        if(!($indexdb_user_id>0)) { // did not find the user, create a new one and pass back login info
+        if(!isPositiveInt($indexdb_user_id)) { // did not find the user, create a new one and pass back login info
 
             // Note: we use $usrEmail as user name because the person's name may be repeated across many different users of
             // different databases eg. there are lots of johnsons, which will cause insert statement to fail as ugr_Name is unique.
@@ -568,7 +562,7 @@ class DbRegis {
                 )
             );
 
-            if(!($indexdb_user_id>0)) { // Unable to create the new user
+            if(!isPositiveInt($indexdb_user_id)) { // Unable to create the new user
                 self::addError(array(HEURIST_DB_ERROR,
                         'Unable to write new user in Heurist reference index database', $mysqli->error));
                 return false;
@@ -579,13 +573,14 @@ class DbRegis {
         // write the core database record describing the database to be registered and allocate registration ID
         // This is not a fully valid Heurist record, we let the edit form take care of that
         // First look to see if there is an existing registration - note, this uses the URL to find the record, not the registration ID
-        // TODO: Would be good to have a recaptcha style challenge otherwise can be called repeatedly
+        //
+        // TOOD: Would be good to have a recaptcha style challenge otherwise can be called repeatedly
         // with slight URL variations to spawn multiple registrations of dummy databases
 
         $dbID = mysql__select_value($mysqli, "select rec_ID from Records where lower(rec_URL)='".
                         $mysqli->real_escape_string(strtolower(trim($serverURL)))."'");
         if($dbID>0) {
-            //database with sush id already exist
+            //database with such id already exist
             self::addError(HEURIST_ACTION_BLOCKED, 'Database with such URL already registered');
             return false;
             //return $dbID;
@@ -613,13 +608,13 @@ class DbRegis {
 
             if($dbID>0){
                 if($dbTitle){
-                    self::_recordUpdateField($sys, $dbID, '2-1', $dbTitle, false);
+                    self::recordUpdateField($sys, $dbID, '2-1', $dbTitle, false);
                 }
                 if($dbName){
-                    self::_recordUpdateField($sys, $dbID, '1176-469', $dbName, false);
+                    self::recordUpdateField($sys, $dbID, '1176-469', $dbName, false);
                 }
                 if($dbVersion){
-                    self::_recordUpdateField($sys, $dbID, '1176-335', $dbVersion, false);
+                    self::recordUpdateField($sys, $dbID, '1176-335', $dbVersion, false);
                 }
 
                 //update record title
@@ -636,6 +631,7 @@ class DbRegis {
                     )
                 );
 
+                
                 //send email to administrator about new database registration
                 $email_text =
                 "There is a new Heurist database registration on the Heurist Reference Index\n\n".
@@ -651,8 +647,8 @@ class DbRegis {
                 $dbowner_Email = $dbowner['ugr_eMail'];
                 $email_title = 'Database registration ID: '.$dbID.'. User ['.$indexdb_user_id.']';
 
-                //sendEmail($dbowner_Email, $email_title, $email_text);
-//TEMP it is very slow on intersect server                sendEmail_native($dbowner_Email, $email_title, $email_text, null);
+                sendEmail($dbowner_Email, $email_title, $email_text);
+            
                 //END email -----------------------------------
 
                 $res = array('dbID'=>$dbID, 'dbTitle'=>$params['dbTitle']);
@@ -684,7 +680,7 @@ class DbRegis {
     * @param mixed $value
     * @param mixed $isnew
     */
-    private static function _recordUpdateField($system, $rec_ID, $conceptCode, $value, $is_exist=true){
+    private static function recordUpdateField($system, $rec_ID, $conceptCode, $value, $is_exist=true){
 
         $dty_ID = ConceptCode::getDetailTypeLocalID($conceptCode);
 
@@ -712,6 +708,3 @@ class DbRegis {
     }
 
 }
-
-
-?>

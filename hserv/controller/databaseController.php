@@ -153,7 +153,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
                         $res = DbUtils::databaseCreateFull($database_name, $usr_owner);
 
                         if($res!==false){
-                            sendEmail_NewDatabase($usr_owner, $database_name, null);
+                            sendEmailNewDatabase($usr_owner, $database_name, null);
                             //add url to new database
                             $res = array(
                                 'newdbname'  => $database_name,
@@ -243,7 +243,7 @@ if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, exce
                     $res = DbUtils::databaseDrop(false, $db_target, $create_archive);
 
                     if($res!==false && !$is_current_db){
-                        sendEmail_DatabaseDelete($usr_owner, $db_target, 1);
+                        sendEmailDatabaseDelete($usr_owner, $db_target);
                     }
                 }
             }
@@ -359,7 +359,7 @@ $sErrorMsg = "Sorry, the database $db_source must be registered with an ID less 
 
                         //to send email after clone
                         $usr_owner = user_getByField($mysqli, 'ugr_ID', 2, $db_target);
-                        sendEmail_NewDatabase($usr_owner, $db_target,
+                        sendEmailNewDatabase($usr_owner, $db_target,
                                 ' from  '.($is_template?'':'template ').$db_source);
 
                         $res = array(

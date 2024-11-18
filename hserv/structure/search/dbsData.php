@@ -1,6 +1,6 @@
 <?php
     /**
-    * dbsData.php - retrieveing database definitions
+    * dbsData.php - retrieving database definitions
     *
     * Library of function that provides database structure information: rectypes, fieldtypes and terms defined in database
     *

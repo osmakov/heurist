@@ -19,11 +19,12 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-function sendEmail_NewDatabase($user_record, $database_name, $source_database){
+function sendEmailNewDatabase($user_record, $database_name, $source_database){
 
     $fullName = $user_record['ugr_FirstName'].' '.$user_record['ugr_LastName'];
 
     // email the system administrator to tell them a new database has been created
+    /*
     $email_text =
     "There is new Heurist database.\n".
     "Database name: ".$database_name."\n\n".
@@ -35,10 +36,7 @@ function sendEmail_NewDatabase($user_record, $database_name, $source_database){
     "Research interests:  ".$user_record['ugr_Interests']."\n".
     "Go to the address below to review further details:\n".
     HEURIST_BASE_URL."?db=".$database_name;
-
-    $email_title = (($source_database!=null)?'CloneDB: ':'NewDB: ')
-        .$database_name.' by '.$fullName.' ['.$user_record['ugr_eMail'].']'
-        .(($source_database!=null) ?$source_database:'');
+    */
 
     //send an email with attachment
     $message = file_get_contents(dirname(__FILE__).'/welcomeEmail.html');
@@ -67,11 +65,10 @@ function sendEmail_NewDatabase($user_record, $database_name, $source_database){
                                                     true, dirname(__FILE__).'/Heurist Welcome attachment.pdf');
 }
 
-// $reason  0 - inactive
-//          1 - forcefully
 //
 //
-function sendEmail_DatabaseDelete($usr_owner, $database_name, $reason){
+//
+function sendEmailDatabaseDelete($usr_owner, $database_name){
 
                     $server_name = HEURIST_SERVER_NAME;
                     $email_title = 'Your Heurist database '.$database_name.' has been archived';
@@ -96,5 +93,3 @@ EOD;
 sendEmail(array($usr_owner['ugr_eMail'],HEURIST_MAIL_TO_ADMIN), $email_title, $email_text);
 
 }
-
-?>

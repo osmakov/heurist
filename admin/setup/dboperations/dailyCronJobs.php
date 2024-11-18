@@ -52,7 +52,8 @@ if (@$argv) {
 // sudo php -f /var/www/html/h6-alpha/admin/setup/dboperations/dailyCronJobs.php -- url
 
     $ARGV = array();
-    for ($i = 0;$i < count($argv);++$i) {
+    $i=0;
+    while ($i < count($argv)) {
         if ($argv[$i][0] === '-') {  //pair: -param value
             if (@$argv[$i + 1] && $argv[$i + 1][0] != '-') {
                 $ARGV[substr($argv[$i],1)] = $argv[$i + 1];
@@ -61,6 +62,7 @@ if (@$argv) {
         } else {
             $ARGV[$argv[$i]] = true;
         }
+        ++$i;
     }
 
 //sudo php -f /var/www/html/h6-alpha/admin/setup/dboperations/dailyCronJobs.php -- -database camil_inthemarginofstone
@@ -88,8 +90,6 @@ if (@$argv) {
 
 }else{
     exit('This function must be run from the shell');
-    //$arg_database = 'libraries_readers_culture_18c_atlantic';
-    //$do_reports = true;
 }
 
 use hserv\entity\DbUsrReminders;
@@ -126,7 +126,7 @@ $upload_root = $system->getFileStoreRootFolder();
 
 echo "root : ".$upload_root."\n";
 
-$exclusion_list = exclusion_list();//read databases_not_to_crons
+$exclusionList = exclusionList();//read databases_not_to_crons
 
 set_time_limit(0);//no limit
 
@@ -213,7 +213,7 @@ foreach ($databases as $idx=>$db_name){
         }
     }
 
-    if(in_array($db_name,$exclusion_list)){
+    if(in_array($db_name,$exclusionList)){
         continue;
     }
 
@@ -274,7 +274,7 @@ foreach ($databases as $idx=>$db_name){
 
                         $url_list[$db_name][1][] = $rec_id . ' : ' . implode(',', array_keys($flds));
                     }
-                                                    
+
             }
             if(!empty($invalid_file_urls)){
 
@@ -396,7 +396,7 @@ if($errors>0){
 
 
 
-function exclusion_list(){
+function exclusionList(){
 
     $res = array();
     $fname = realpath(dirname(__FILE__)."/../../../../databases_exclude_cronjobs.txt");
@@ -411,4 +411,3 @@ function exclusion_list(){
     }
     return $res;
 }
-?>

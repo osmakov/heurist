@@ -115,7 +115,7 @@ if($sysadmin_pwd==null){
                         // in case deletion by sysadmin - send email to onwer of deleted database
                         if($res && !$is_delete_current_db)
                         {
-                            sendEmail_DatabaseDelete($usr_owner, $dbname, 1);
+                            sendEmailDatabaseDelete($usr_owner, $dbname);
                         }
 
                     }else{
@@ -143,4 +143,3 @@ if(is_bool($res) && !$res){
 
 header(CTYPE_JS);
 print json_encode($response);
-?>
