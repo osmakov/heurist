@@ -196,7 +196,7 @@ $.widget( "heurist.rectypeTitleMask", $.heurist.recordAction, {
     _insertAtCursor: function(myField, myValue) {
         //IE support
         if (document.selection) {
-            myField.focus();
+            myField.dispatchEvent(new Event('focus'));
             let sel = document.selection.createRange();
             sel.text = myValue;
         }

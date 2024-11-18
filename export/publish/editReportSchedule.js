@@ -228,7 +228,7 @@ function ReportScheduleEditor() {
                     if(isShowWarn) {
                         alert(fname.substr(4)+" is a mandatory field");
                     }
-                    el.focus();
+                    el.dispatchEvent(new Event('focus'));
                     _updatedFields = [];
                     return "mandatory";
                 }

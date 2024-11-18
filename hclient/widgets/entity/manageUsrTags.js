@@ -785,7 +785,7 @@ $.widget( "heurist.manageUsrTags", $.heurist.manageEntity, {
                                     let recID = $(event.target).attr('recid');
                                     that._addTagToPicked(recID);
                                     that.list_div.hide();
-                                    input_tag.val('').focus();
+                                    input_tag.val('').trigger('focus');
                                 } );
                             }
                         }

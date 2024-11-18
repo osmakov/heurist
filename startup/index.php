@@ -292,7 +292,7 @@ if (!defined('PDIR')){
             ele.value = user_name.substr(0,5).replace(/[^a-zA-Z0-9$_]/g,'');
 
             _showStep(3);
-            document.getElementById("dbname").focus();
+            document.getElementById("dbname").dispatchEvent(new Event('focus'));
         }else{
             window.hWin.HEURIST4.msg.showMsgErr({
                 message: err_text,
