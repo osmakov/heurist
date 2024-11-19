@@ -453,8 +453,15 @@ class ReportExecute
         } else {
             $this->smarty->assign('heurist', $heuristRec);
         }
+        
+        if($this->publishmode == 4){
+            //assign the only record for calculation field
+            $this->smarty->assign('r', $heuristRec->getRecord($results[0]));
+        }else{
+            $this->smarty->assign('results', $results);    
+        }
 
-        $this->smarty->assign('results', $results);
+        
 
         $facet_value = isset($this->params['facet_val']) ? htmlspecialchars($this->params['facet_val']) : null;
         if (!empty($facet_value)) {
@@ -499,9 +506,6 @@ class ReportExecute
                 $temp_templateFile = $this->saveTemporaryTemplate($content);
 
                 if($this->publishmode == 4){
-                    //assign the only record for calculation field
-                    $this->smarty->assign('r', (new ReportRecord($this-system))->getRecord($results[0]));
-
                     try{
                         $output = $this->smarty->fetch($temp_templateFile);
                     } catch (\Exception $e) {

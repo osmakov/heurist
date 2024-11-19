@@ -35,7 +35,9 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         rty_ID:null, 
         
         keep_instance: true,
-        template: null
+        template: null,
+        
+        onChange: null
     },
     
     usrPreferences:{
@@ -194,7 +196,11 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         let $rec_select = window.hWin.HEURIST4.ui.createRectypeSelect( rtSelect.get(0), 
                                         this.options.rty_ID,
                                         this.options.rty_ID>0?null:window.hWin.HR('select record type'), true );
-        this._on($rec_select,{change: this._loadRecordTypeTreeView});
+        this._on($rec_select,{change: function(){
+           this._loadRecordTypeTreeView();
+           const rty_ID = this._$('#rectype_selector').val();
+           this._loadTestRecords( rty_ID );
+        }});
         
         this._on(this._$('#btnInsertPattern').button(), {click:this._insertPattern});
 
@@ -224,7 +230,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
     },
     
     //
-    //
+    // Test action
     //
     _doTest:function(){
 
@@ -240,7 +246,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
                        action: 'execute', 
                        recordset: 1,
                        template_body:1};
-        
+
         if(this.options.is_snippet_editor){
                 let rec_ID = this._$('#listRecords').val();
                 if(!window.hWin.HEURIST4.util.isPositiveInt(rec_ID)){
@@ -251,7 +257,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
                     return;
                 }
                 request['publish'] = 4;
-                recset = JSON.stringify({records:[rec_ID], reccount:1});
+                recset = {records:[rec_ID], reccount:1}; //JSON.stringify(
                 
         }else if(window.hWin.HAPI4.currentRecordset?.length()==0){
             window.hWin.HEURIST4.msg.showMsgFlash('Perform search to get record set to test against');
@@ -300,7 +306,9 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         
     },
     
-    
+    //
+    //
+    //
     _showWarningAboutDisabledFunction: function(){    
         
         let txt = this._$('#test_container_frame')[0].contentDocument.body.innerHTML;
@@ -394,10 +402,20 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
                         "Enter": function(e){
                             that._insertAtCursor('');
                         }
-                    },
-                    onFocus:function(){},
-                    onBlur:function(){}
+                    }
+                    //onFocus:function(){},
+                    //onBlur:function(){},
                 });
+                
+                if(window.hWin.HEURIST4.util.isFunction(this.options.onChange)){
+                    this.codeEditor.on('change', (args) => { 
+                        if(that.isModified()){
+                            that.options.onChange(that.codeEditor.getValue());
+                        }
+                    } )    
+                }
+                
+                
         }//codeMirror init
 
         let using_default = false;
@@ -1374,15 +1392,16 @@ this_id       : "term"
     //
     // Load limited list of records of given record types (to test template)
     //
-    _loadTestRecords: function()
+    _loadTestRecords: function( rty_ID )
     {
         let selector = this._$('#listRecords')[0];
         selector.innerHTML = '';
         //load list of records for testing 
-        if(this.options.rty_ID>0){
+        rty_ID = rty_ID??this.options.rty_ID
+        if(rty_ID>0){
             
                 const server_request = {
-                    q: 't:'+this.options.rty_ID,
+                    q: 't:'+rty_ID,
                     restapi: 1,
                     columns: ['rec_ID', 'rec_Title'],
                     limit:10,

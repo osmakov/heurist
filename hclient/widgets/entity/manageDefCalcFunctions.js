@@ -39,7 +39,7 @@ $.widget( "heurist.manageDefCalcFunctions", $.heurist.manageEntity, {
             this.options.edit_mode = 'editonly';
             this.options.select_mode = 'manager';
             this.options.layout_mode = 'editonly';
-            this.options.width = 790;
+            this.options.width = 1000;
             if(!(this.options.height>0)) this.options.height = 600;
             this.options.beforeClose = function(){}; //to supress default warning
 
@@ -53,8 +53,8 @@ $.widget( "heurist.manageDefCalcFunctions", $.heurist.manageEntity, {
             this.options.title = "Select formula for calculated field";
         }
         
-        this.options.edit_height =640;
-        this.options.edit_width = 900;
+        this.options.edit_height = 640;
+        this.options.edit_width = 1200;
         
 
         this._super();
@@ -128,22 +128,21 @@ $.widget( "heurist.manageDefCalcFunctions", $.heurist.manageEntity, {
     },
     
 //----------------------------------------------------------------------------------    
-/*
     _getValidatedValues: function(){
         
-        var fields = this._super();
+        let fields = this._super();
         
         if(fields!=null){
-            //validate that at least on recipient is defined
-            if(!(fields['rem_ToWorkgroupID'] || fields['cfn_FunctionSpecification'] || fields['rem_ToEmail'])){
-                  window.hWin.HEURIST4.msg.showMsgFlash('You have to fill one of recipients field');
+            //validate that code is defined
+            if(!fields['cfn_FunctionSpecification']){
+                  window.hWin.HEURIST4.msg.showMsgFlash('You have to define formula code');
                   return null;
             }
         }
         
         return fields;
     },
-*/
+
     //
     //
     //
@@ -187,32 +186,37 @@ $.widget( "heurist.manageDefCalcFunctions", $.heurist.manageEntity, {
     _afterInitEditForm: function(){
 
         this._super();
-/* to test        
-        //add form to edit smarty snippet
-        this.dosframe = $( "<iframe>" )
-                    .css({'overflow-x': 'none !important', height:'400px', width:'100% !important'})
+
+        this.formulaeditor = $( "<div>" )
+                    .addClass('ent_wrapper')
+                    .css({'top': '155px'})
                     .appendTo( this.editForm );
-           
-        let that = this;            
-        let surl = window.hWin.HAPI4.baseURL + 'viewers/smarty/showReps.html?db=' + window.hWin.HAPI4.database;
-        
-        this.dosframe.on('load', function(){
-            
-           let showReps = that.dosframe[0].contentWindow.showReps; 
+                    
+        let that = this;
 
-           showReps.initSnippetEditor( that._editing.getValue('cfn_FunctionSpecification')[0], null, 
-            function(instance){
-                that._editing.setFieldValueByName2('cfn_FunctionSpecification', instance.getValue());
-            });
-        });
-        
-        this.dosframe.attr('src', surl).show();
+        let cfn_Content = this._editing.getValue('cfn_FunctionSpecification')[0];
 
-        let $dlg = this._getEditDialog(true);
-        if($dlg && $dlg.length > 0 && $dlg.parent().find('.ui-dialog-title').length > 0){
-            $dlg.parent().find('.ui-dialog-title').text('Add and apply formulae');
-        }
-*/        
+        let popup_dialog_options = {path: 'widgets/report/', 
+                    //default_palette_class: 'ui-heurist-design',
+                    keep_instance:false, 
+                    
+                    is_snippet_editor: true, 
+                    //rty_ID:rectypes, 
+                    rec_ID:0,
+                    template_body:cfn_Content,
+                    
+                    isdialog: false,
+                    container: this.formulaeditor,
+                    
+                    onChange: function(context){
+                        if(!context) return;
+                        
+                        that._editing.setFieldValueByName2('cfn_FunctionSpecification', context);
+
+                    }
+        };
+        window.hWin.HEURIST4.ui.showRecordActionDialog('reportEditor', popup_dialog_options);
+
     },
 
     //
