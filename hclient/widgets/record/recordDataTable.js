@@ -283,10 +283,11 @@ $.widget( "heurist.recordDataTable", $.heurist.recordAction, {
 
         this.selectRecordScope.empty();
 
-        let  selScope = this.selectRecordScope.get(0);
-        
+        let selScope = this.selectRecordScope.get(0);
+
         let rectype_Ids = this._currentRecordset.getRectypes();
-        
+        let init_rectype = rectype_Ids.length > 1 ? this.options.initial_cfg.rty_ID : rectype_Ids[0];
+
         if(rectype_Ids.length>0 && 
            this.options.initial_cfg && 
            window.hWin.HEURIST4.util.findArrayIndex(this.options.initial_cfg.rty_ID,rectype_Ids)<0)
@@ -309,21 +310,16 @@ $.widget( "heurist.recordDataTable", $.heurist.recordAction, {
                 });
         }
 
-/*        
-        if (this._currentRecordset &&  this._currentRecordset.length() > 0 && rectype_Ids.length>1) {
-                var msg = 'Any recordtype: Basic record fields only';
-                window.hWin.HEURIST4.ui.addoption(selScope, '', msg);
-        }
-*/        
         this._on( this.selectRecordScope, {
-                change: this._onRecordScopeChange} );        
+            change: this._onRecordScopeChange
+        });
 
-        if(this.options.initial_cfg){
-            this.selectRecordScope.val(this.options.initial_cfg.rty_ID);
+        if(init_rectype > 0){
+            this.selectRecordScope.val(init_rectype);
         }
-                
+
         this._onRecordScopeChange();
-        
+
         window.hWin.HEURIST4.ui.initHSelect(selScope);
     },
             
