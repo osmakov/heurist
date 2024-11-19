@@ -238,7 +238,7 @@
 
         $settings = $system->settings->getDatabaseSetting('TinyMCE formats');
 
-        if(!$settings){
+        if($settings===false){
             $res = false;
         }elseif(empty($settings) || empty($settings['formats'])){
             $res = array(
