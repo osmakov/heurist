@@ -190,7 +190,7 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         
         this._on(this._$('.closeInsertForm'), {click:()=>{this.editSmarty.layout().close("west");}});
         this._on(this._$('.closeTestForm'), {click:()=>{this.editSmarty.layout().close("east");}});
-        
+
         //init Insert Pattern controls
         let rtSelect = this._$('#rectype_selector');
         let $rec_select = window.hWin.HEURIST4.ui.createRectypeSelect( rtSelect.get(0), 
@@ -201,7 +201,12 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
            const rty_ID = this._$('#rectype_selector').val();
            this._loadTestRecords( rty_ID );
         }});
+        if(!this.options.rty_ID && this.options.is_snippet_editor){
+            rtSelect.val(rtSelect.find('option').get(1).value);
+            rtSelect.trigger('change');
+        }
         
+      
         this._on(this._$('#btnInsertPattern').button(), {click:this._insertPattern});
 
         //init test panel
@@ -1394,6 +1399,10 @@ this_id       : "term"
     //
     _loadTestRecords: function( rty_ID )
     {
+        if(!this.options.is_snippet_editor){
+            return;
+        }
+        
         let selector = this._$('#listRecords')[0];
         selector.innerHTML = '';
         //load list of records for testing 
