@@ -151,9 +151,9 @@ class DbVerify {
                         $dtl_value = strip_tags($row['dtl_Value'],'<span>');
                     }
 
-
-                    $resMsg = $resMsg . <<<EOT
-                        <tr>
+                    $rollover = str_replace('"', "&quot;", "#$rec_id $rec_title");
+                    $resMsg .= <<<EOT
+                        <tr title="$rollover">
                             <td><input type=checkbox name="$marker" value={$rec_id}></td>
                             <td><img alt class="rft" style="background-size:contain;background-image:url($url_icon)" src="$url_icon_placeholder"></td>
                             <td style="white-space: nowrap;"><a target=_new href="$url_rec">
@@ -164,7 +164,7 @@ class DbVerify {
                 }else{
                     $resMsg .= '<tr><td colspan="4"></td>';
                 }
-                $resMsg = $resMsg . <<<EOT
+                $resMsg .= <<<EOT
                             <td>{$row['dty_ID']}</td>
                             <td width="150px" style="max-width:150px" class="truncate">{$row['dty_Name']}</td>
                             <td style="max-width:400px" class="truncate">{$dtl_value}</td></tr>
@@ -620,7 +620,7 @@ class DbVerify {
 
 
     /**
-    * Check
+    * Check that record pointer values point to an existing record
     *
     * @param array $params
     */
@@ -648,16 +648,16 @@ class DbVerify {
             }
         }
 
-        $res = $mysqli->query('select a.rec_ID, dty_ID, dty_Name, a.rec_Title, a.rec_RecTypeID, dtl_Value
+        $res = $mysqli->query('select a.rec_ID, dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) as dty_Name, a.rec_Title, a.rec_RecTypeID, dtl_Value
             from recDetails
             left join defDetailTypes on dty_ID = dtl_DetailTypeID
             left join Records a on a.rec_ID = dtl_RecID and a.rec_FlagTemporary!=1
             left join Records b on b.rec_ID = dtl_Value and b.rec_FlagTemporary!=1
+            left join defRecStructure on dty_ID = rst_DetailTypeID AND a.rec_RecTypeID = rst_RecTypeID
             where dty_Type = "resource"
             and a.rec_ID is not null
             and b.rec_ID is null ORDER BY a.rec_ID');
         $bibs = array();
-        $ids = array();
         while ($row = $res->fetch_assoc()) {
             array_push($bibs, $row);
         }
@@ -688,7 +688,7 @@ class DbVerify {
     }
 
     /**
-    * Check
+    * Check that record pointer values confine to there list of allowed record types
     *
     * @param array $params
     */
@@ -698,21 +698,22 @@ class DbVerify {
         $resMsg = '';
         $mysqli = $this->mysqli;
 
-        $res = $mysqli->query('SELECT dtl_RecID AS rec_ID, dty_ID, dty_Name, ' //dty_PtrTargetRectypeIDs,
-            .' rec_ID as target_ID, rec_Title, rty_Name ' //, rec_RecTypeID
-            .' FROM defDetailTypes'
-            .' left join recDetails on dty_ID = dtl_DetailTypeID'
-            .' left join Records on rec_ID = dtl_Value and rec_FlagTemporary!=1'
-            .' left join defRecTypes on rty_ID = rec_RecTypeID'
-            .' where dty_Type = "resource"'
-            .' and dty_PtrTargetRectypeIDs > 0'
-        .' and (INSTR(concat(dty_PtrTargetRectypeIDs,\',\'), concat(rec_RecTypeID,\',\')) = 0) ORDER BY dtl_RecID');
+        $res = $mysqli->query(<<<QUERY
+        SELECT source.rec_ID, dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name, target.rec_ID as target_ID, target.rec_Title as target_Title, rty_Name, source.rec_RecTypeID, source.rec_Title
+        FROM defDetailTypes
+        LEFT JOIN recDetails ON dty_ID = dtl_DetailTypeID
+        LEFT JOIN Records AS target ON target.rec_ID = dtl_Value AND rec_FlagTemporary!=1
+        LEFT JOIN Records AS source ON source.rec_ID = dtl_RecID
+        LEFT JOIN defRecTypes ON rty_ID = target.rec_RecTypeID
+        LEFT JOIN defRecStructure ON dtl_DetailTypeID = rst_DetailTypeID AND source.rec_RecTypeID = rst_RecTypeID
+        WHERE dty_Type = "resource" AND dty_PtrTargetRectypeIDs > 0 AND (INSTR(concat(dty_PtrTargetRectypeIDs,','), concat(target.rec_RecTypeID,',')) = 0) 
+        ORDER BY dtl_RecID
+        QUERY);
 
         $bibs = array();
         while ($row = $res->fetch_assoc()){
-            $rec_title = (substr(strip_tags($row['rec_Title']), 0, 50));
+            $rec_title = (substr(strip_tags($row['target_Title']), 0, 50));
             $row['dtl_Value'] = "points to {$row['target_ID']} ({$row['rty_Name']}) - $rec_title";
-            unset($row['rec_Title']);
             $bibs[] = $row;
         }
         $res->close();
@@ -737,7 +738,7 @@ class DbVerify {
 
 
     /**
-    * Check
+    * Check that all parent child pointers are valid
     *
     * @param array $params
     */
@@ -745,7 +746,7 @@ class DbVerify {
 
         $resStatus = true;
         $resMsg = '';
-        $wasdeleted = 0;
+        $wasdeleted1 = 0;
         $wasadded1 = 0;
 
         $mysqli = $this->mysqli;
@@ -758,7 +759,7 @@ class DbVerify {
 
             //remove pointer field in parent records that does not have reverse in children
             $query = 'DELETE parent FROM Records parentrec, defRecStructure, recDetails parent '
-            .'LEFT JOIN recDetails child ON child.dtl_DetailTypeID='.DT_PARENT_ENTITY.' AND child.dtl_Value=parent.dtl_RecID '
+            .'LEFT JOIN recDetails child ON child.dtl_DetailTypeID='.$dt_parent_entity_field_id.' AND child.dtl_Value=parent.dtl_RecID '
             .'LEFT JOIN Records childrec ON parent.dtl_Value=childrec.rec_ID '
             .'WHERE '
             .'parentrec.rec_ID=parent.dtl_RecID AND rst_CreateChildIfRecPtr=1 '
@@ -802,7 +803,7 @@ class DbVerify {
                 }else{
                     $child_ID = intval($row['dtl_Value']);//child record ID
                     $query2 = 'INSERT into recDetails (dtl_RecID, dtl_DetailTypeID, dtl_Value) VALUES('
-                        .$child_ID . ','. DT_PARENT_ENTITY  .', '.intval($row['rec_ID']) . ')';
+                        .$child_ID . ','. $dt_parent_entity_field_id  .', '.intval($row['rec_ID']) . ')';
                 }
                 $mysqli->query($query2);
                 $wasadded1++;
@@ -1032,7 +1033,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check for recDetail that contain no values
     *
     * @param array $params
     */
@@ -1059,10 +1060,15 @@ HEADER;
         $total_count_rows = 0;
 
         //find all fields with empty values
-        $res = $mysqli->query('select a.rec_ID, a.rec_RecTypeID, a.rec_Title, dty_ID, dty_Name
-            from recDetails, defDetailTypes, Records a
-            where (a.rec_ID = dtl_RecID) and (dty_ID = dtl_DetailTypeID) and (a.rec_FlagTemporary!=1)
-        and (dty_Type!=\'file\') and ((dtl_Value=\'\') or (dtl_Value is null)) ORDER BY a.rec_ID');
+        $res = $mysqli->query(<<<QUERY
+        SELECT a.rec_ID, a.rec_RecTypeID, a.rec_Title, dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name
+        FROM recDetails
+        INNER JOIN Records AS a ON a.rec_ID = dtl_RecID
+        INNER JOIN defDetailTypes ON dty_ID = dtl_DetailTypeID
+        LEFT JOIN defRecStructure ON a.rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
+        WHERE a.rec_FlagTemporary != 1 AND dty_Type != 'file' AND (dtl_Value = '' OR dtl_Value IS NULL)
+        ORDER BY a.rec_ID
+        QUERY);
 
         $total_count_rows = mysql__found_rows($mysqli);
 
@@ -1091,7 +1097,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check that all term values are pointing to existing terms
     *
     * @param array $params
     */
@@ -1125,11 +1131,12 @@ HEADER;
         $total_count_rows = 0;
 
         //find non existing term values
-        $res = $mysqli->query('SELECT a.rec_ID, a.rec_RecTypeID, a.rec_Title, dty_ID, dty_Name
+        $res = $mysqli->query('SELECT a.rec_ID, a.rec_RecTypeID, a.rec_Title, dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) as dty_Name
             FROM recDetails
             left join defDetailTypes on dty_ID = dtl_DetailTypeID
             left join Records a on a.rec_ID = dtl_RecID
             left join defTerms b on b.trm_ID = dtl_Value
+            left join defRecStructure on dty_ID = rst_DetailTypeID AND a.rec_RecTypeID = rst_RecTypeID
             where (dty_Type = "enum" or dty_Type = "relmarker") and dtl_Value is not null
             and a.rec_ID is not null
             and b.trm_ID is null ORDER BY a.rec_ID');
@@ -1160,7 +1167,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check that single value fields correctly have only a single value
     *
     * @param array $params
     */
@@ -1205,7 +1212,7 @@ HEADER;
 
 
     /**
-    * Check
+    * Check that records have all the required fields
     *
     * @param array $params
     */
@@ -1249,7 +1256,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check all records for non-standard field values
     *
     * @param array $params
     */
@@ -1264,12 +1271,12 @@ HEADER;
         $total_count_rows = 0;
 
         //find non standard fields
-        $query = 'select rec_ID, rec_RecTypeID, dty_ID, dty_Name, dtl_Value, rec_Title
-        from Records
-        left join recDetails on rec_ID = dtl_RecID
-        left join defRecStructure on rst_RecTypeID = rec_RecTypeID and rst_DetailTypeID = dtl_DetailTypeID
-        left join defDetailTypes on dtl_DetailTypeID = dty_ID
-        where rec_FlagTemporary!=1 AND rst_ID IS NULL';
+        $query = 'SELECT rec_ID, rec_RecTypeID, dty_ID, dty_Name, dtl_Value, rec_Title
+        FROM Records
+        LEFT JOIN recDetails ON rec_ID = dtl_RecID
+        LEFT JOIN defRecStructure ON rst_RecTypeID = rec_RecTypeID AND rst_DetailTypeID = dtl_DetailTypeID
+        LEFT JOIN defDetailTypes ON dtl_DetailTypeID = dty_ID
+        WHERE rec_FlagTemporary!=1 AND rst_ID IS NULL';
 
         $except_ids = array();
         if($this->system->defineConstant('DT_PARENT_ENTITY')){
@@ -1309,7 +1316,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check text fields (freetext and blocktext) for invalid characters
     *
     * @param array $params
     */
@@ -1341,10 +1348,18 @@ HEADER;
 
             $is_finished = true;
 
-            $res = $mysqli->query('SELECT dtl_ID,dtl_RecID,dtl_Value,dty_Name '.
-            'FROM recDetails, defDetailTypes '.
-            'WHERE dtl_DetailTypeID = dty_ID AND (dty_Type=\'freetext\' OR dty_Type=\'blocktext\') '
-            .' ORDER BY dtl_RecID  limit 10000 offset '.$offset);
+            $res = $mysqli->query(<<<QUERY
+            SELECT dtl_ID, rec_ID, rec_Title, dtl_Value, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name
+            FROM recDetails
+            INNER JOIN defDetailTypes ON dtl_DetailTypeID = dty_ID
+            INNER JOIN Records ON dtl_RecID = rec_ID
+            LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
+            WHERE dty_Type='freetext' OR dty_Type='blocktext'
+            ORDER BY dtl_RecID LIMIT 10000 OFFSET $offset
+            QUERY);
+
+            $url_icon_placeholder = ICON_PLACEHOLDER;
+
             if($res){
                 while ($row = $res->fetch_assoc()) {
 
@@ -1367,15 +1382,21 @@ HEADER;
                     {
                         $resStatus = false;
 
-                        if ($prevInvalidRecId < $row['dtl_RecID']) {
+                        if ($prevInvalidRecId < $row['rec_ID']) {
 
-                            $url_rec = $this->getEditURL($row['dtl_RecID']);
-                            $resMsg .= '<tr><td><a target=_blank href="'.$url_rec. '"> ' . $row['dtl_RecID']. "</a></td></tr>\n";
-                            $prevInvalidRecId = $row['dtl_RecID'];
+                            $url_rec = $this->getEditURL($row['rec_ID']);
+                            $url_icon = @$row['rec_RecTypeID']?HEURIST_RTY_ICON.$row['rec_RecTypeID']:'';
+                            $rec_title = @$row['rec_Title']?strip_tags($row['rec_Title']):'';
+                            $resMsg .= '<tr>'
+                                . '<td><img alt class="rft" style="background-size:contain;background-image:url('.$url_icon.')" src="'.$url_icon_placeholder.'"></td>'
+                                . '<td><a target=_blank href="'.$url_rec.'">'.$row['rec_ID'].'</a></td>'
+                                . '<td class="truncate" style="max-width:400px">'.$rec_title.'</td>'
+                            . '</tr>\n';
+                            $prevInvalidRecId = $row['rec_ID'];
 
                             //update record header
                             mysql__insertupdate($mysqli, 'Records', 'rec_',
-                                    array('rec_ID'=>intval($row['dtl_RecID']), 'rec_Modified'=>$now) );
+                                    array('rec_ID'=>intval($row['rec_ID']), 'rec_Modified'=>$now) );
 
                             $cnt++;
                         }
@@ -1387,11 +1408,11 @@ HEADER;
                                     array('dtl_ID'=>intval($row['dtl_ID']), 'dtl_Value'=>$newText) );
 
 
-                        if ($res>0) {
+                        if ($res2>0) {
                             //$resMsg .= "<tr><td><pre>" . "Updated to : ".htmlspecialchars($newText) . "</pre></td></tr>\n";
                         }else{
                             $is_error = true;
-                            $resMsg .= "<tr><td>Error ". res2. " while updating to : ".htmlspecialchars($newText) . "</td></tr>\n";
+                            $resMsg .= "<tr><td>Error ". $res2 . " while updating to : ".htmlspecialchars($newText) . "</td></tr>\n";
                             break 2;
                         }
 
@@ -1439,7 +1460,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check that all record types have valid title masks
     *
     * @param array $params
     */
@@ -1485,7 +1506,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check relationship cache (recLinks table)
     *
     * @param array $params
     */
@@ -1756,7 +1777,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check that geospatial values are: within bounds, valid coordinates, and that both dtl_Geo and a geoType exist
     *
     * @param array $params
     */
@@ -1768,11 +1789,11 @@ HEADER;
         $mysqli = $this->mysqli;
 
 
-        $query = 'SELECT dtl_ID, rec_ID, rec_Title, rec_RecTypeID, dtl_Value, dtl_Geo, ST_asWKT(dtl_Geo) AS wkt, dty_Name, rty_Name
+        $query = 'SELECT dtl_ID, rec_ID, rec_Title, rec_RecTypeID, dtl_Value, dtl_Geo, ST_asWKT(dtl_Geo) AS wkt, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) as dty_Name
                   FROM Records
-                  LEFT JOIN recDetails ON rec_ID = dtl_RecID
-                  LEFT JOIN defDetailTypes ON dty_ID = dtl_DetailTypeID
-                  LEFT JOIN defRecTypes ON rty_ID = rec_RecTypeID
+                  INNER JOIN recDetails ON rec_ID = dtl_RecID
+                  INNER JOIN defDetailTypes ON dty_ID = dtl_DetailTypeID
+                  LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
                   WHERE dty_Type = "geo"';
 
         $res = $mysqli->query($query);
@@ -1949,7 +1970,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check text fields for double, leading and trailing spaces
     *
     * @param array $params
     */
@@ -2022,6 +2043,8 @@ HEADER;
                         }else{
 
                             $row2 = mysql__select_row_assoc($mysqli,'SELECT rec_Title, rec_RecTypeID FROM Records WHERE rec_ID='.$rec_id);
+                            $rst_DisplayName = mysql__select_value($mysqli, 'SELECT rst_DisplayName FROM defRecStructure WHERE rst_DetailType = ? AND rst_RecTypeID = ?', ['ii', $row['dty_ID'], $row['rec_RecTypeID']]);
+                            $row['dty_Name'] = !empty($rst_DisplayName) ? $rst_DisplayName : $row['dty_Type'];
                             $row['rec_Title'] = $row2['rec_Title'];
                             $row['rec_RecTypeID'] = $row2['rec_RecTypeID'];
                             $row['dtl_Value'] = $new_val;
@@ -2122,7 +2145,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check for records with multiple workflow stages (should be a single value field)
     *
     * @param array $params
     */
@@ -2218,7 +2241,7 @@ HEADER;
     }
 
     /**
-    * Check
+    * Check that term values match their field configurations
     *
     * @param array $params
     */
@@ -2253,13 +2276,15 @@ HEADER;
 
             $is_finished = true;
 
-            $res = $mysqli->query('SELECT dtl_ID,rec_ID,rec_RecTypeID,rec_Title,dty_ID,dty_Name,dtl_Value,dty_JsonTermIDTree ' //',trm_Label '
-                    .' FROM defDetailTypes,recDetails,Records'  // left join defTerms on dtl_Value=trm_ID
-                    .' WHERE (dty_Type = "enum" or dty_Type = "relmarker") AND dty_ID = dtl_DetailTypeID AND rec_ID=dtl_RecID '
-                    .' AND rec_FlagTemporary!=1 '
-                .' ORDER by dtl_DetailTypeID limit 10000 offset '.$offset);//  and dtl_RecID=62734
-
-//, rec_Title, rec_RecTypeID,
+            $res = $mysqli->query(<<<QUERY
+            SELECT dtl_ID, rec_ID, rec_RecTypeID, rec_Title, dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name, dtl_Value, dty_JsonTermIDTree
+            FROM recDetails
+            INNER JOIN defDetailTypes ON dtl_DetailTypeID = dty_ID
+            INNER JOIN Records ON dtl_RecID = rec_ID
+            LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
+            WHERE (dty_Type = "enum" OR dty_Type = "relmarker") AND rec_FlagTemporary != 1
+            ORDER BY dtl_DetailTypeID LIMIT 10000 OFFSET $offset
+            QUERY);
 
             if($res){
                 while ($row = $res->fetch_assoc()) {
@@ -2388,7 +2413,7 @@ FIXMSG
 
 
     /**
-    * Check
+    * Check that date values are valid and can be converted into a Temporal object
     *
     * @param array $params
     */
@@ -2430,12 +2455,15 @@ FIXMSG
 
             $is_finished = true;
 
-            $res = $mysqli->query('SELECT dtl_ID,rec_ID,rec_RecTypeID,rec_Title,rec_Added,'
-                    .' dty_ID, dty_Name, dtl_Value '
-                    .' FROM defDetailTypes,recDetails,Records'
-                    .' WHERE dty_Type = "date" AND dty_ID = dtl_DetailTypeID AND rec_ID=dtl_RecID '
-                    .' AND rec_FlagTemporary!=1 '
-                .' ORDER by dtl_DetailTypeID limit 10000 offset '.$offset);
+            $res = $mysqli->query(<<<QUERY
+            SELECT dtl_ID,rec_ID,rec_RecTypeID,rec_Title,rec_Added,dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name, dtl_Value
+            FROM recDetails
+            INNER JOIN defDetailTypes ON dtl_DetailTypeID = dty_ID
+            INNER JOIN Records ON dtl_RecID = rec_ID
+            LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
+            WHERE dty_Type = "date" AND rec_FlagTemporary != 1
+            ORDER BY dtl_DetailTypeID LIMIT 10000 OFFSET $offset
+            QUERY);
 
             if($res){
                 while ($row = $res->fetch_assoc()) {
