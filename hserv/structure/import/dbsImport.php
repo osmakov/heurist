@@ -2014,6 +2014,7 @@ $mysqli->commit();
         if (strpos($sterms,"{")!== false) {
             foreach ($this->terms_correspondence as $imp_id=>$trg_id) {
                 //replace termID in string
+                $imp_id = intval($imp_id);
                 $sterms = preg_replace("/\"".$imp_id."\"/","\"".$trg_id."\"",$sterms);
             }
         }else{
