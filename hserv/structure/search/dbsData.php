@@ -330,9 +330,9 @@
         $index = 0;
         $res = $mysqli->query("select * from defRecTypeGroups order by rtg_Order, rtg_Name");
         while ($row = $res->fetch_assoc()) {
-
-            array_push($rtGroups, array('id' => $row["rtg_ID"], 'name' => $row["rtg_Name"], 'order' => $row["rtg_Order"], 'description' => $row["rtg_Description"], 'allTypes' => array(), 'showTypes' => array()));
-            $rtGroups['groupIDToIndex'][$row["rtg_ID"]] = $index++;
+            $rtgID = intval($row["rtg_ID"]);
+            array_push($rtGroups, array('id' => $rtgID, 'name' => $row["rtg_Name"], 'order' => $row["rtg_Order"], 'description' => $row["rtg_Description"], 'allTypes' => array(), 'showTypes' => array()));
+            $rtGroups['groupIDToIndex'][$rtgID] = $index++;
         }
         $res->close();
 
