@@ -54,7 +54,7 @@ protected function _outputPrepareFields($params){
 //
 protected function _outputHeader(){
 
-    $this->gephi_links_dest = tempnam(HEURIST_SCRATCHSPACE_DIR, "links");
+    $this->gephi_links_dest = tempnam($this->system->getSysDir(DIR_SCRATCH), "links");
     $this->fd_links = fopen($this->gephi_links_dest, 'w');//less than 1MB in memory otherwise as temp file
     if (false === $this->fd_links) {
         $this->system->addError(HEURIST_SYSTEM_CONFIG, 'Failed to create temporary file in scratch folder');
@@ -151,7 +151,7 @@ protected function _outputRecord($record){
     $recID = intval($record['rec_ID']);
     $rty_ID = intval($record['rec_RecTypeID']);
     $name   = htmlspecialchars($record['rec_Title']);
-    $image  = htmlspecialchars(HEURIST_RTY_ICON.$rty_ID);
+    $image  = htmlspecialchars(HEURIST_BASE_URL.'?db='.$this->system->dbname().'&icon='.$rty_ID);
     $recURL = htmlspecialchars(HEURIST_BASE_URL.'recID='.$recID.'&fmt=html&db='.$this->system->dbname());
 
     $rec_values = '';
@@ -336,7 +336,7 @@ private function _processFieldData($dty_ID, &$values){
                 $f_id = $value['file']['ulf_ObfuscatedFileID'];
                 $external_url = $value['file']['ulf_ExternalFileReference'];
 
-                $value = empty($external_url) ? HEURIST_BASE_URL_PRO."?db=".HEURIST_DBNAME."&file={$f_id}" : $external_url;
+                $value = empty($external_url) ? HEURIST_BASE_URL_PRO."?db=".$this->system->dbname()."&file={$f_id}" : $external_url;
                 break;
 
             case 'enum': // get term label

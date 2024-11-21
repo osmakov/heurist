@@ -20,6 +20,8 @@
 * @license     https://www.gnu.org/licenses/gpl-3.0.txt GNU License 3.0
 * @version     4.0
 */
+namespace hserv\records\export;
+
 use hserv\utilities\USystem;
 use hserv\utilities\USanitize;
 use hserv\entity\DbDefRecStructure;
@@ -173,7 +175,7 @@ public static function output($data, $params){
     $defTerms = null;
     if(!$term_ids_only){
         $defTerms = dbs_GetTerms(self::$system);
-        $defTerms = new DbsTerms(self::$system, $defTerms);
+        $defTerms = new \DbsTerms(self::$system, $defTerms);
     }
 
     // Track column indices for advanced option fields.
@@ -685,13 +687,13 @@ public static function output($data, $params){
                                     if(@$val['file']['ulf_ExternalFileReference']){
                                         $file_urls[] = $val['file']['ulf_ExternalFileReference'];
                                     }else{
-                                        $file_urls[] = HEURIST_BASE_URL.'?db='.HEURIST_DBNAME.'&file='.$val['file']['ulf_ObfuscatedFileID'];
+                                        $file_urls[] = HEURIST_BASE_URL.'?db='.self::$system->dbname().'&file='.$val['file']['ulf_ObfuscatedFileID'];
                                     }
                                 }
                             }
                         }elseif($dt_type=='date'){
                             foreach($values as $val){
-                                $vals[] = Temporal::toHumanReadable(trim($val));
+                                $vals[] = \Temporal::toHumanReadable(trim($val));
                                 if($include_temporals){
                                     $date_temporals[] = trim($val);
                                 }
@@ -757,7 +759,7 @@ public static function output($data, $params){
                 $value = self::$defRecTypes['names'][$rty_ID];
             }elseif($dt_id=='rec_ID'){
                 $value = @$record[$dt_id];
-                $rec_url_base = HEURIST_BASE_URL_PRO . '?db=' . HEURIST_DBNAME . '&recID=' . $value;
+                $rec_url_base = HEURIST_BASE_URL_PRO . '?db=' . self::$system->dbname() . '&recID=' . $value;
                 if($include_record_url_html){ // html
                     $record_urls[] = $rec_url_base . '&fmt=html';
                 }
@@ -1106,7 +1108,7 @@ public static function output_header($data, $params)
 
     if(!isEmptyArray($terms_pickup)) {
         $defTerms = dbs_GetTerms(self::$system);
-        $defTerms = new DbsTerms(self::$system, $defTerms);
+        $defTerms = new \DbsTerms(self::$system, $defTerms);
     }
 
 
@@ -1307,9 +1309,9 @@ private static function writeResults( $streams, $temp_name, $headers, $error_log
     }else{
 
         $zipname = $temp_name.'_'.date("YmdHis").'.zip';
-        $destination = tempnam(HEURIST_SCRATCHSPACE_DIR, "zip");
+        $destination = tempnam(self::$system->getSysDir(DIR_SCRATCH), "zip");
 
-        $zip = new ZipArchive();
+        $zip = new \ZipArchive();
         if (!$zip->open($destination, ZIPARCHIVE::OVERWRITE)) {
             array_push($error_log, "Cannot create zip $destination");
         }else{

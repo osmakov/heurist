@@ -66,6 +66,8 @@
     * See the License for the specific language governing permissions and limitations under the License.
     */
     use hserv\utilities\USanitize;
+    use hserv\records\export\RecordsExportCSV;
+    
     require_once dirname(__FILE__).'/../../autoload.php';
 
     require_once dirname(__FILE__).'/../records/search/recordSearch.php';
@@ -73,8 +75,6 @@
     require_once dirname(__FILE__).'/../structure/dbsTerms.php';
     require_once dirname(__FILE__).'/../utilities/Temporal.php';
     require_once dirname(__FILE__).'/../../admin/verification/verifyValue.php';
-
-    require_once dirname(__FILE__).'/../records/export/recordsExportCSV.php';
 
     $response = array();
 

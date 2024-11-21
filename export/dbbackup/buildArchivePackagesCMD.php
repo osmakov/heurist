@@ -27,8 +27,9 @@
 $arg_database = null;
 $arg_skip_files = false;    // include all the uploaded files
 $arg_include_docs = true;   // include full documentation to make the archive interpretable
-$arg_skip_hml = true;       // don't include HML as this function is primarily intended for database transfer
+$arg_skip_hml = false;      // don't include HML as this function is primarily intended for database transfer
                             // and HML is voluminous. HML should be included if this is intended as longer term archive.
+$arg_skip_tsv = false;      // don't include TSV
 $with_triggers = false;
 $backup_root = null;
 
@@ -64,9 +65,10 @@ if (@$argv) {
     }
     if (@$ARGV['-db']) {$arg_database = $ARGV['-db'];}
     if (@$ARGV['-nofiles']) {$arg_skip_files = true;}
-    if (@$ARGV['-hml']) {$arg_skip_hml = false;}
     if (@$ARGV['-nodocs']) {$arg_include_docs = false;}
-
+    if (@$ARGV['-nohml']) {$arg_skip_hml = true;}
+    if (@$ARGV['-notsv']) {$arg_skip_tsv = true;}
+                            
 
 
 }else{
@@ -79,6 +81,7 @@ if($arg_database==null){
 
 use hserv\utilities\DbUtils;
 use hserv\utilities\UArchive;
+use hserv\utilities\DbExportTSV;
 
 require_once dirname(__FILE__).'/../../autoload.php';
 
@@ -87,7 +90,7 @@ require_once dirname(__FILE__).'/../../hserv/records/search/recordFile.php';
 
 //retrieve list of databases
 $system = new hserv\System();
-if( !$system->init(null, false,false) ){
+if( !$system->init(null, false, false) ){
     exit("Cannot establish connection to sql server\n");
 }
 
@@ -119,8 +122,8 @@ if (!folderCreate($backup_root, true)) {
 
 
 //flag that backup in progress
-$action = 'backupDBs';
-if(!isActionInProgress($action, 30)){
+$actionName = 'backupDBs';
+if(!isActionInProgress($actionName, 30)){
     exit("It appears that backup operation has been started already. Please try this function later");
 }
 
@@ -142,6 +145,11 @@ if($with_triggers){
 }
 
 
+if(!$arg_skip_tsv){
+    $dbExportTSV = new DbExportTSV($system);
+}
+        
+
 
 set_time_limit(0);//no limit
 
@@ -162,7 +170,7 @@ foreach ($arg_database as $idx=>$db_name){
         $res = folderDelete2($folder, true);//remove previous backup
         if(!$res){
 
-            if(file_exists($progress_flag)) {unlink($progress_flag);}
+            isActionInProgress($actionName, -1);
             exit("Cannot clear existing backup folder $folder_esc \n");
         }
     }
@@ -174,7 +182,7 @@ foreach ($arg_database as $idx=>$db_name){
 
 
     if (!folderCreate($folder, true)) {
-        if(file_exists($progress_flag)) {unlink($progress_flag);}
+        isActionInProgress($actionName, -1);
         exit("Failed to create folder $folder_esc in which to create the backup \n");
     }
 
@@ -186,7 +194,10 @@ foreach ($arg_database as $idx=>$db_name){
         //Exporting system folders
 
         //get all folders except backup, scratch, file_uploads and filethumbs
-        $folders_to_copy = folderSubs($database_folder, array('backup', 'scratch', 'file_uploads', 'filethumbs', 'webimagecache', 'blurredimagescache'));
+        $folders_to_copy = folderSubs($database_folder, 
+                    array('backup', 'scratch', 'generated-reports', 'file_uploads', 'filethumbs',
+                          //'tileserver', 'uploaded_files', 'uploaded_tilestacks', 'rectype-icons','term-images', 
+                          'webimagecache', 'blurredimagescache'));//except these folders - some of them may exist in old databases only
 
         // this is limited set of folder
 
@@ -214,19 +225,35 @@ foreach ($arg_database as $idx=>$db_name){
     }
 
     // Export database definitions as readable text
+    if(!$arg_skip_tsv){
+        echo('Export TSV for '.$db_name_esc."\n");
+        
+        $system->setDbnameFull($db_name);
+        mysql__usedatabase($mysqli, $db_name);
+        
+        $dbExportTSV->setSession($system, $folder);
+        
+        $warns = $dbExportTSV->output();
+        if(!empty($warns)){
+            echo (implode('<br>', $warns));
+        }
+    }
+    
+    // Do an SQL dump of the whole database
+    if(false){
     echo "sql.. ";
 
-    // Do an SQL dump of the whole database
     $dumpfile = $folder."/".$db_name."_MySQL_Database_Dump.sql";
 
     $res = DbUtils::databaseDump($db_name, $dumpfile, $dump_options);
     if($res===false){
-        if(file_exists($progress_flag)) {unlink($progress_flag);}
+        isActionInProgress($actionName, -1);
 
         $err = $system->getError();
         error_log('buildArchivePackagesCMD Error: '.@$err['message']);
 
         exit("Sorry, unable to generate MySQL database dump for $db_name_esc. ".$err['message']."\n");
+    }
     }
 /*
     try{
@@ -234,7 +261,7 @@ foreach ($arg_database as $idx=>$db_name){
         $dump = new Mysqldump( $pdo_dsn, ADMIN_DBUSERNAME, ADMIN_DBUSERPSWD, $dump_options);
         $dump->start($dumpfile);
     } catch (Exception $e) {
-        if(file_exists($progress_flag)) {unlink($progress_flag);}
+        isActionInProgress($actionName, -1);
         exit("Sorry, unable to generate MySQL database dump for $db_name.".$e->getMessage()."\n");
     }
 */
@@ -248,7 +275,7 @@ foreach ($arg_database as $idx=>$db_name){
     folderDelete2($folder, true);
 
     if(!$res){
-        if(file_exists($progress_flag)) {unlink($progress_flag);}
+        isActionInProgress($actionName, -1);
         $destination = htmlentities($destination);
         exit("Database: $db_name_esc Failed to create zip file at $destination \n");
     }
@@ -256,7 +283,7 @@ foreach ($arg_database as $idx=>$db_name){
     echo "   $db_name_esc OK \n";//.'  in '.$folder
 }//for
 
-if(file_exists($progress_flag)) {unlink($progress_flag);}
+isActionInProgress($actionName, -1);
 
 exit("\nfinished all requested databases, results in HEURIST_FILESTORE/_BATCH_PROCESS_ARCHIVE_PACKAGE/
 \n\n");

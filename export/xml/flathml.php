@@ -190,7 +190,7 @@ if(!$intofile){
 
 set_time_limit(0);//no limit
 
-
+//TODO change to ConceptCode 
 $relRT = ($system->defineConstant('RT_RELATION')?RT_RELATION:0);
 $relSrcDT = ($system->defineConstant('DT_PRIMARY_RESOURCE')?DT_PRIMARY_RESOURCE:0);
 $relTrgDT = ($system->defineConstant('DT_TARGET_RESOURCE')?DT_TARGET_RESOURCE:0);

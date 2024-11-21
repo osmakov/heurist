@@ -51,7 +51,7 @@ if (@$httpProxy != '') {
     }
 }
 
-$host_params = USystem::getHostParams(@$argv);
+$host_params = USystem::getHostParams(isset($argv)?$argv:null);
 
 define('HEURIST_DOMAIN', $host_params['domain']);
 

@@ -170,7 +170,7 @@ abstract class ExportRecords {
         }
 
         $this->rt_counts = array();
-        $this->tmp_destination = tempnam(HEURIST_SCRATCHSPACE_DIR, "exp");
+        $this->tmp_destination = tempnam($this->system->getSysDir(DIR_SCRATCH), "exp");
         $this->fd = fopen($this->tmp_destination, 'w');
 
         if ($this->fd === false) {
@@ -421,7 +421,7 @@ abstract class ExportRecords {
 
             //archive into zip
             $file_zip = $originalFileName.'.zip';
-            $file_zip_full = tempnam(HEURIST_SCRATCHSPACE_DIR, "arc");
+            $file_zip_full = tempnam($this->system->getSysDir(DIR_SCRATCH), "arc");
             $zip = new ZipArchive();
             if (!$zip->open($file_zip_full, ZIPARCHIVE::CREATE)) {
                 $this->system->addError(HEURIST_SYSTEM_CONFIG, "Cannot create zip $file_zip_full");

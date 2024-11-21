@@ -708,7 +708,8 @@ class DbVerify {
         LEFT JOIN defRecStructure ON dtl_DetailTypeID = rst_DetailTypeID AND source.rec_RecTypeID = rst_RecTypeID
         WHERE dty_Type = "resource" AND dty_PtrTargetRectypeIDs > 0 AND (INSTR(concat(dty_PtrTargetRectypeIDs,','), concat(target.rec_RecTypeID,',')) = 0) 
         ORDER BY dtl_RecID
-        QUERY);
+        QUERY
+        );
 
         $bibs = array();
         while ($row = $res->fetch_assoc()){
@@ -925,7 +926,7 @@ ORDER BY child.dtl_RecID";
                     <td colspan="2"></td>
                     <td><strong>Child record title</strong></td>
                 </tr>
-HEADER;
+                HEADER;
 
                 $url_icon_placeholder = ICON_PLACEHOLDER;
                 $url_icon_extlink = ICON_EXTLINK;
@@ -1068,7 +1069,8 @@ HEADER;
         LEFT JOIN defRecStructure ON a.rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
         WHERE a.rec_FlagTemporary != 1 AND dty_Type != 'file' AND (dtl_Value = '' OR dtl_Value IS NULL)
         ORDER BY a.rec_ID
-        QUERY);
+        QUERY
+        );
 
         $total_count_rows = mysql__found_rows($mysqli);
 
@@ -1356,7 +1358,8 @@ HEADER;
             LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
             WHERE dty_Type='freetext' OR dty_Type='blocktext'
             ORDER BY dtl_RecID LIMIT 10000 OFFSET $offset
-            QUERY);
+            QUERY
+            );
 
             $url_icon_placeholder = ICON_PLACEHOLDER;
 
@@ -2276,7 +2279,8 @@ HEADER;
 
             $is_finished = true;
 
-            $res = $mysqli->query(<<<QUERY
+            $res = $mysqli->query(
+            <<<QUERY
             SELECT dtl_ID, rec_ID, rec_RecTypeID, rec_Title, dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name, dtl_Value, dty_JsonTermIDTree
             FROM recDetails
             INNER JOIN defDetailTypes ON dtl_DetailTypeID = dty_ID
@@ -2284,7 +2288,8 @@ HEADER;
             LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
             WHERE (dty_Type = "enum" OR dty_Type = "relmarker") AND rec_FlagTemporary != 1
             ORDER BY dtl_DetailTypeID LIMIT 10000 OFFSET $offset
-            QUERY);
+            QUERY
+            );
 
             if($res){
                 while ($row = $res->fetch_assoc()) {
@@ -2393,13 +2398,14 @@ HEADER;
                 }elseif($suggest_cnt>0){
                     $resStatus = false;
 
-                    fwrite($this->out, <<<FIXMSG
+                    fwrite($this->out, 
+<<<FIXMSG
 <h3>Terms referenced in incorrect vocabulary (n = $suggest_cnt)</h3>
 <span style="font-size:0.9em;">Terms are referenced in a different vocabulary than that specified for the corresponding field,
 <br>however the same term label exists in the vocabulary specified for the field.
 <br><button data-fix="expected_terms">Click here to change these terms</button> to the ones in the vocabularies specified for each field,<br>otherwise they can be fixed for each term individually in record editing.</span><br><br>
 FIXMSG
-                    );
+);
 
                 }
             }
@@ -2455,7 +2461,8 @@ FIXMSG
 
             $is_finished = true;
 
-            $res = $mysqli->query(<<<QUERY
+            $res = $mysqli->query(
+            <<<QUERY
             SELECT dtl_ID,rec_ID,rec_RecTypeID,rec_Title,rec_Added,dty_ID, IF(rst_DisplayName IS NULL, dty_Name, rst_DisplayName) AS dty_Name, dtl_Value
             FROM recDetails
             INNER JOIN defDetailTypes ON dtl_DetailTypeID = dty_ID
@@ -2463,7 +2470,8 @@ FIXMSG
             LEFT JOIN defRecStructure ON rec_RecTypeID = rst_RecTypeID AND dtl_DetailTypeID = rst_DetailTypeID
             WHERE dty_Type = "date" AND rec_FlagTemporary != 1
             ORDER BY dtl_DetailTypeID LIMIT 10000 OFFSET $offset
-            QUERY);
+            QUERY
+            );
 
             if($res){
                 while ($row = $res->fetch_assoc()) {

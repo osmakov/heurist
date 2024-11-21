@@ -30,6 +30,7 @@ set_time_limit(0);//no limit
 use hserv\structure\ConceptCode;
 use hserv\utilities\DbUtils;
 use hserv\utilities\UArchive;
+use hserv\utilities\DbExportTSV;
 
 require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 require_once dirname(__FILE__).'/../../hserv/records/search/recordFile.php';
@@ -624,151 +625,14 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
 
            if(@$_REQUEST['include_tsv']=='1'){
 
-                require_once dirname(__FILE__).'/../../hserv/records/export/recordsExportCSV.php';
-
-                $mysqli = $system->getMysqli();
-
-                // Export tables
-                $skip_tables = [
-                    'defCalcFunctions', 'recLinks',
-                    'recSimilarButNotDupes', //'Records', 'recDetails',
-                    'sysArchive', 'sysLocks', 'usrHyperlinkFilters'
-                ];// tables to skip - woot, import and index are filtered out below
-
-                $tables = mysql__select_list2($mysqli, "SHOW TABLES");
-
-                $field_types = [];
-                $record_types = [];
-
-                echo_flush2("Exporting database tables as TSV<br>");
-
-                foreach ($tables as $table) {
-
-                    if(strpos($table, 'woot') !== false || strpos($table, 'import') === 0 || strpos($table, 'Index') !== false || in_array($table, $skip_tables)){
-                        continue;
-                    }
-
-                    $query = "SELECT * FROM $table";
-                    $res = $mysqli->query($query);
-
-                    $get_headers = true;
-
-                    if(!$res || $res->num_rows == 0){
-                        continue;
-                    }
-
-                    $filename = FOLDER_BACKUP . "/tsv-output/{$table}.tsv";
-                    $fd = fopen($filename, 'w');
-                    if(!$fd){
-                        $msg = error_get_last();
-                        $msg = !empty($msg) ? print_r($msg, true) : "None provided";
-                        echo_flush2("<br>Unable to create TSV file for $table values at $filename<br>Error message: $msg<br><br>");
-                        break;
-                    }
-
-                    while($row = $res->fetch_assoc()){
-
-                        if($table == 'defDetailTypes'){
-
-                            $field_types[ $row['dty_ID'] ] = [ 'type' => $row['dty_Type'] ];
-
-                        }elseif($table == 'defRecStructure'){
-
-                            $rty_ID = $row['rst_RecTypeID'];
-                            $dty_ID = $row['rst_DetailTypeID'];
-
-                            if($field_types[$dty_ID]['type'] == 'separator'){
-                                continue;
-                            }
-
-                            if(!array_key_exists($rty_ID, $record_fields)) {
-                                $record_fields[$rty_ID] = [ 'rec_ID', 'rec_Title' ];// add id + title by default
-                            }
-
-                            $record_fields[$rty_ID][] = "$dty_ID";
-                        }
-
-                        if($get_headers){ // get table field names
-
-                            $w_res = fputcsv($fd, array_keys($row), "\t");
-                            if(!$w_res){
-
-                                echo_flush2("Unable to write table headings to TSV file for $table<br>");
-
-                                fclose($fd);
-                                $res->close();
-                                continue;
-                            }
-
-                            $get_headers = false;
-                        }
-
-                        $w_res = fputcsv($fd, $row, "\t");
-                        if(!$w_res){
-
-                            echo_flush2("Unable to write table row to TSV file for $table<br>");
-
-                            fclose($fd);
-                            $res->close();
-                        }
-
-                    }
-
-                    fclose($fd);
-                    $res->close();
-
-                    if(filesize($filename) == 0){ // remove empty files
-                        fileDelete($filename);
-                    }
-                }
-
                 echo_flush2("Exporting database records as TSV<br>(may take several minutes for large databases)<br>");
-
-                // Export records per rectype
-                foreach ($record_fields as $rty_ID => $field_codes) {
-
-                    $rty_CC_ID = ConceptCode::getRecTypeConceptID($rty_ID);
-                    $rty_CC_ID = preg_replace('/^0000\-/', '0', $rty_CC_ID);
-                    $rty_Name = mysql__select_value($mysqli, "SELECT rty_Name FROM defRecTypes WHERE rty_ID = $rty_ID");
-
-                    $request = [
-                        'detail' => 'ids',
-                        'q' => "t:{$rty_ID}"
-                    ];
-
-                    $response = recordSearch($system, $request);
-                    if($response['status'] != HEURIST_OK){
-
-                        echo_flush2("Unable to retrieve records for record type #$rty_ID<br>");
-                        continue;
-                    }elseif($response['data']['reccount'] == 0){
-                        continue;
-                    }
-
-                    $options = [
-                        'prefs' => [
-                            'main_record_type_ids' => $rty_ID,
-                            'term_ids_only' => 1,
-                            'include_resource_titles' => 1,
-                            'include_temporals' => 1,
-                            'fields' => [$rty_ID => $field_codes],
-                            'csv_delimiter' => "\t"
-                        ],
-                        'save_to_file' => 1,
-                        'file' => [
-                            'directory' => FOLDER_BACKUP . "/tsv-output/records",
-                            'filename' => "{$rty_CC_ID}_{$rty_ID}_{$rty_Name}.tsv"
-                        ]
-                    ];
-
-                    $res = RecordsExportCSV::output($response, $options);
-                    if($res <= 0){
-
-                        $msg = $res == 0 ? "Failed to write to TSV file for record type #$rty_ID" : "An error occurred while handling the record type #$rty_ID, error was placed within TSV file";
-
-                        echo_flush2("<span style='color: red;margin-left: 5px;'>$msg</span><br>");
-                    }
-                }//for
+               
+                $dbExportTSV = new DbExportTSV($system);
+                
+                $warns = $dbExportTSV->output();
+                if(!empty($warns)){
+                    echo_flush2(implode('<br>', $warns));
+                }
 
                 $separate_tsv_zip = $separate_tsv_zip && folderSize2(FOLDER_BACKUP . "/tsv-output") > 0;
                 if($separate_tsv_zip){ // copy tsv dumps to separate directory
@@ -787,7 +651,6 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
 
            $url = HEURIST_BASE_URL . "hserv/structure/export/getDBStructureAsXML.php?db=".HEURIST_DBNAME;
            saveURLasFile($url, FOLDER_BACKUP."/Database_Structure.xml");//save to HEURIST_FILESTORE_DIR.DIR_BACKUP.HEURIST_DBNAME
-
 
            if($system->isAdmin()){
                 // Do an SQL dump of the whole database

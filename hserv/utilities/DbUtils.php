@@ -1385,10 +1385,6 @@ class DbUtils {
                         if($isCloneTemplate &&  in_array(strtolower($table), $exception_for_clone_template)){
                             continue;
                         }
-                        
-                        if(preg_match('/[^A-Za-z0-9_\$]/', $table)){ //validatate table name
-                            continue;
-                        }
 
                         if(strtolower($table)=='usrrecpermissions'){
                             $cnt = mysql__select_value($mysqli,'select count(*) from usrRecPermissions');
