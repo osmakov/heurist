@@ -1326,14 +1326,12 @@ function browseRecords(_editing_input, $input){
                                     for (let idx in inputs) {
                                         //$(edit_ele.editing_input('getInputs')[idx])
                                         if($(inputs[idx]) && $(inputs[idx]).parent().find('.child_rec_fld:visible').length>0){
-                                            $inputdiv = $(inputs[idx]).parent();
                                             $input = inputs[idx];
                                             break;
                                         }
                                     }
                                     if(!$input){ //last resort - take last one
                                        $input = inputs[inputs.length-1];
-                                       $inputdiv = $input.parent(); 
                                     }
                                 }else{
                                      let inpt = that.element.find('#'+__current_input_id);
