@@ -121,23 +121,24 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                     if (row.nodeName == "TR" && row.id){
                         id = row.id.replace(/row/,'');
                         d = document.getElementById('duplicate' + id);
-                        if (id == rec_id){
+                        if(id == rec_id){
+
                             row.style.backgroundColor = '#EEE';
+
                             if(d){
                                 d.style.display = "none";
-                                d.nextSibling.style.display = "none";
+                                d.nextElementSibling.style.display = "none";
                             }
-                        }else{
-                            if (d) {
-                                d.style.display = "block";
-                                d.nextSibling.style.display = "block";
-                            }
-                            if (d && d.checked){
-                                row.style.backgroundColor = '#EEE';
-                            }else{
-                                row.style.backgroundColor = '';
-                            }
+
+                            continue;
                         }
+
+                        if(d){
+                            d.style.display = "block";
+                            d.nextElementSibling.style.display = "block";
+                        }
+
+                        row.style.backgroundColor = d?.checked ? '#EEE' : '';
                     }
                 }
                 e = document.getElementById('keep'+rec_id);
