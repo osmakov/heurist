@@ -810,6 +810,7 @@ function editCMS_ElementCfg( element_cfg, _layout_content, _layout_container, $c
                                         lang_key = 'content';
                                     }
                                     if(l_cfg[lang_key] != contents[langs[i]]){
+                                        
                                         l_cfg[lang_key] = contents[langs[i]];
                                         _enableSave();
                                         if(current_language.toUpperCase()==langs[i]){

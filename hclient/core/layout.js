@@ -1,7 +1,7 @@
 /**
 *  appInitAll - main function which initialises everything
 * 
-*  to be replaced with cms/HLayoutMgr
+*  to be replaced with HLayoutMgr
 *
 *  @see ext/layout
 *  @see layout_defaults.js - configuration file
@@ -1467,10 +1467,12 @@ console.error('Cardinal layout widget does not have proper options');
             _defineMediaSource($container); 
         },
 
+        // outdated - used for H4Default layout only
         putAppOnTop: function( widgetname ){
             _putAppOnTop( widgetname );
         },
 
+        // outdated - used for H4Default layout only
         putAppOnTopById: function( widgetname ){
             _putAppOnTopById( widgetname );
         },
@@ -1496,6 +1498,9 @@ console.error('Cardinal layout widget does not have proper options');
             _init(cfg_widgets, cfg_layouts)
         },
         
+        //
+        // to increase/reduce cardinal panel (for mapping, crosstab)
+        //
         cardinalPanel:function(pane, action, element){
             return _cardinalPanel(pane, action, element);
         },

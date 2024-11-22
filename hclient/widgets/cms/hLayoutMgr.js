@@ -863,7 +863,7 @@ function hLayoutMgr(){
         for(let i=0; i<content.length; i++){
             if(content[i].key == ele_key){
                 if(new_cfg.type && new_cfg.type.indexOf('text')==0){
-                   new_cfg.content =  content[i].content;
+                   content[i].content = new_cfg.content;
                 }
                 content[i] = new_cfg;
                 return true 
