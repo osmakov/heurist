@@ -37,7 +37,13 @@
 * @subpackage  !!!subpackagename for file such as Administration, Search, Edit, Application, Library
 */
 use hserv\controller\FrontController;
+use hserv\utilities\USanitize;
+
 require_once dirname(__FILE__).'/../../autoload.php';
-$_REQUEST['controller'] = 'ReportController';
-$frontController = new FrontController();
+$params = USanitize::sanitizeInputArray();
+$params['controller'] = 'ReportController';
+if(!isset($params['id'])){
+    $params['id'] = @$params['template_id'];
+}
+$frontController = new FrontController($params);
 $frontController->run();
