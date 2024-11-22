@@ -26,7 +26,7 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-$.widget( "heurist.lookup_Template", $.heurist.recordAction, {
+$.widget( "heurist.lookup_Template", $.heurist.lookupBase, {
 
     // default options
     options: {
@@ -42,117 +42,69 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
         mapping: null, //configuration from record_lookup_config.json
                
         add_new_record: false, //if true it creates new record on selection
-        
-        pagesize: 20 // result list's number of records per page
-    },
+
+        resultList: {
+
+            recordDivEvenClass: 'recordDiv_blue',
+            eventbased: false,  //do not listent global events
+
+            multiselect: false, // allow only one record to be selected
+            select_mode: 'select_single', // only accept one record for selection
+            selectbutton_label: 'select!!', // not used
+
+            view_mode: 'list', // result list viewing mode [list, icon, thumb]
+            show_viewmode: false,
+            pagesize: 20, // number of records to display per page,
+
+            entityName: 'Lookups',
+
+            empty_remark: '<div style="padding:1em 0 1em 0">No records match the search</div>' // For empty results
+        }
+    }, // see lookupBase.js and recordAction.js for additional general options
     
     recordList:null,
 
-    //  
-    // invoked from _init after loading of html content
-    //
+    search_button_selector: '#btnStartSearch', // selector for the search buttons
+
+    //this.element => dialog inner content
+    //this._as_dialog => dialog container
+
     _initControls: function(){
 
-        //this.element => dialog inner content
-        //this._as_dialog => dialog container
-
-        let that = this;
-
-        // Extra field styling
+        // Extra field styling and positioning - add any additional specific styling or handlers for html elements here
         this.element.find('#search_container > div > div > .header.recommended').css({width:'100px', 'min-width':'100px', display: 'inline-block'});
-        this.element.find('#btn_container').position({my: 'left top', at: 'right top', of: '#search_container'});
-        // Action button styling
-        this.element.find('#btnStartSearch').addClass("ui-button-action");
+        this.element.find('#btn_container').position({my: 'left top', at: 'right top', of: '#search_container'});              
 
-        // Prepare result list options
-        this.options.resultList = $.extend(this.options.resultList, 
-        {
-               recordDivEvenClass: 'recordDiv_blue',
-               eventbased: false,  //do not listent global events
+        // Having an element with #div_result will initialise a resultList widget using the options.resultList as options 
+        //  You can add additional handlers for resultlistonselect and resultlistondblclick after the call to _super
 
-               multiselect: false, // allow only one record to be selected
-               select_mode: 'select_single', // only accept one record for selection
+        // Add the class 'search_on_enter' to inputs that should trigger the lookup search on hitting enter (element will need focus), the handler is assigned in lookupBase
 
-               selectbutton_label: 'select!!', // not used
+        let res = this._super(); // calls parent, setups the resultList, tabs (#tabs-cont), search button (this.search_button_selector)
 
-               view_mode: 'list', // result list viewing mode [list, icon, thumb]
-               show_viewmode:false,
-               
-               entityName: this._entityName,
-               
-               pagesize: this.options.pagesize, // number of records to display per page, 
-               empty_remark: '<div style="padding:1em 0 1em 0">No records match the search</div>', // For empty results
-               renderer: this._rendererResultList // Record render function, is called on resultList updateResultSet
-        });                
-
-        // Init record list
-        this.recordList = this.element.find('#div_result');
-        this.recordList.resultList( this.options.resultList );
-        this.recordList.resultList('option', 'pagesize', this.options.pagesize); // so the pagesize doesn't get set to a different value
-
-        // Init select & double click events for result list
-        this._on( this.recordList, {        
-            "resultlistonselect": function(event, selected_recs){
-                window.hWin.HEURIST4.util.setDisabled( 
-                    this.element.parents('.ui-dialog').find('.btnDoAction'), 
-                    (selected_recs && selected_recs.length()!=1));
-            },
-            "resultlistondblclick": function(event, selected_recs){
-                if(selected_recs && selected_recs.length()==1){
-                    this.doAction();                                
-                }
-            }
-        });        
-
-        // Handling for 'Search' button        
-        this._on(this.element.find('#btnStartSearch').button(),{
-            'click':this._doSearch
-        });
-
-        // For capturing the 'Enter' key while typing
-        this._on(this.element.find('input'),{
-            'keypress':this.startSearchOnEnterPress
-        });
-
-        return this._super();
+        return res;
     },
-    
-    /**
-     * Function handler for pressing the enter button while focused on input element
-     * 
-     * Param:
-     *  e (event trigger)
-     */
-    startSearchOnEnterPress: function(e){
-        
-        let code = (e.keyCode ? e.keyCode : e.which);
-        if (code == 13) {
-            window.hWin.HEURIST4.util.stopEvent(e);
-            e.preventDefault();
-            this._doSearch();
-        }
 
-    },
-    
     /**
      * Result list rendering function called for each record
+     *  Allows you to define what to display for each record row, typically the rec_Title field
+     *  You can add links, buttons, etc... from here (recommended that you use either action_buttons or add a handler for resultlistonpagerender)
      * 
-     * Param:
-     *  recordset (HRecordSet) => Heurist Record Set
-     *  record (json) => Current Record being rendered
+     * @param {HRecordSet} recordset - Complete record set
+     * @param {Object} record - Current record being rendered
      * 
-     * Return: html
+     * @returns {String} Formatted HTML string
      */
     _rendererResultList: function(recordset, record){
 
         /**
-         * Get field details for displaying
-         * 
-         * Param:
-         *  fldname (string) => mapping field name
-         *  width (int) => width for field
-         * 
-         * Return: html
+         * Get field value and width adding to the formatted string
+         *  Set width for truncation
+         *
+         * @param {String} fldname - mapped field name, specifically the field name found in record_lookup_config.json
+         * @param {Number} width - max width for the field, to start truncation
+         *
+         * @returns {String} Value formatted for the overall HTML string
          */
         function fld(fldname, width){
 
@@ -210,12 +162,12 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
             let title = s;
 
             if(fldname == 'biburl'){ // create anchor tag for link to external record
-                s = '<a href="' + s + '" target="_blank"> view here </a>';
+                s = `<a href="${s}" target="_blank"> view here </a>`;
                 title = 'View bibliographic record';
             }
             
             if(width>0){
-                s = '<div style="display:inline-block;width:'+width+'ex" class="truncate" title="'+title+'">'+s+'</div>';
+                s = `<div style="display:inline-block;width:${width}ex" class="truncate" title="${title}">${s}</div>`;
             }
             return s;
         }
@@ -224,15 +176,15 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
         let recID = fld('rec_ID');
         let rectypeID = fld('rec_RecTypeID');
         let recIcon = window.hWin.HAPI4.iconBaseURL + rectypeID;
-        let html_thumb = '<div class="recTypeThumb" style="background-image: url(&quot;' + window.hWin.HAPI4.iconBaseURL + rectypeID + '&version=thumb&quot;);"></div>';
+        let html_thumb = `<div class="recTypeThumb" style="background-image: url(&quot;${window.hWin.HAPI4.iconBaseURL}&version=thumb&quot;);"></div>`;
 
         let recTitle = fld('author', 50) + fld('date', 7) + fld('title', 75) + fld('biburl', 12); 
 
-        let html = '<div class="recordDiv" id="rd'+recID+'" recid="'+recID+'" rectype="'+rectypeID+'">'
+        let html = `<div class="recordDiv" id="rd${recID}" recid="${recID}" rectype="${rectypeID}">`
             + html_thumb
                 + '<div class="recordIcons">'
-                +     '<img src="'+window.hWin.HAPI4.baseURL+'hclient/assets/16x16.gif'
-                +     '" class="rt-icon" style="background-image: url(&quot;'+recIcon+'&quot;);"/>' 
+                +     `<img src="${window.hWin.HAPI4.baseURL}hclient/assets/16x16.gif`
+                +     `" class="rt-icon" style="background-image: url(&quot;${recIcon}&quot;);"/>`
                 + '</div>'
                 +  recTitle
             + '</div>';
@@ -240,11 +192,13 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
     },
 
     /**
-     * Initial dialog buttons on bottom bar, _getActionButtons() under recordAction.js
+     * Initial dialog buttons on bottom bar, _getActionButtons() under lookupBase.js & recordAction.js
      */
     _getActionButtons: function(){
-        let res = this._super(); //dialog buttons
-        res[1].text = window.hWin.HR('Select');
+        let res = this._super(); // get general dialog buttons (Save and Close buttons)
+        /**
+         * Additional buttons can be pushed into the array
+         */
         return res;
     },
 
@@ -280,7 +234,7 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
      *  the value must ONLY BE THE URL
      *  e.g. res['ext_url'] = 'www.example.com'
      * 
-     * Param: None
+     * NOTE: A basic version of this is available from lookupBase and can be accessed via this._super() passing the external URL
      */
     doAction: function(){
 
@@ -385,8 +339,6 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
                                     value = (value != '') ? value + ' ' + cur_val['location'] : cur_val['location'];
                                     search = (search != '') ? search : value;
                                 }
-                            }else{
-                                let completed_val = cur_val; //????
                             }
 
                             if(value != '' && !Array.isArray(value) && !$.isPlainObject(value)){
@@ -460,20 +412,15 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
 
 
     /**
-     * Perform final actions before exiting popup
+     * Perform final actions before exiting popup and returning the mapped values back to the record editor
      * 
-     * Param:
-     *  dlg_reponse (json) => mapped values to fields
+     * @param {Object} dlg_reponse - mapped values to record fields
      */
     closingAction: function(dlg_response){
-
-        let that = this;
 
         if(window.hWin.HEURIST4.util.isempty(dlg_response)){
             dlg_response = {};
         }
-
-        this.toggleCover('');
 
         // Pass mapped values back and close dialog
         this._context_on_close = dlg_response;
@@ -483,8 +430,6 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
     /**
      * Create search URL using user input within form
      * Perform server call and handle response
-     * 
-     * Params: None
      */
     _doSearch: function(){
 
@@ -504,7 +449,7 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
 
         // any field
         if(this.element.find('#inpt_any').val()!=''){
-            query += 'bib.anywhere all "' + this.element.find('#inpt_any').val() + '"';
+            query += `bib.anywhere all "${this.element.find('#inpt_any').val()}"`;
         }
 
         // Close off and encode query portion, then add to request url
@@ -518,7 +463,7 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
 
         window.hWin.HEURIST4.msg.bringCoverallToFront(this._as_dialog.parent()); // show loading cover
 
-        // for record_lookup.php
+        // calls record_lookup.php
         let request = {
             service: sURL, // request url
             serviceType: 'bnflibrary_bib' // requesting service, otherwise the request will result in an error
@@ -551,9 +496,8 @@ $.widget( "heurist.lookup_Template", $.heurist.recordAction, {
     
     /**
      * Prepare json for displaying via the Heuirst resultList widget
-     * 
-     * Param:
-     *  json_data (json) => search response
+     *
+     * @param {Object} json_data - search response, formatted data from record_lookup.php
      */
     _onSearchResult: function(json_data){
 
