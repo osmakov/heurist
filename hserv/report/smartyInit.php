@@ -31,7 +31,7 @@ class HeuristSecurityPolicy extends Security {
   // disable acess to static classes
   public $static_classes = null;
 
-  public $allowed_modifiers = array('isset', 'empty', 'escape', //'constant',
+  public $allowed_modifiers = array('isset', 'empty', 'escape', 'constant',
                     'sizeof', 'in_array', 'is_array', 'intval', 'implode', 'explode',
                     'array_key_exists', 'array_column', 'array_keys', 'array_multisort',
                     'array_diff', 'array_count_values', 'array_unique',
@@ -60,11 +60,11 @@ class HeuristSecurityPolicy extends Security {
 
 }
 
-function smartyInit($smarty_templates_dir=null){
+function smartyInit($system, $smarty_templates_dir=null){
 
 
-    if($smarty_templates_dir==null && defined('HEURIST_SMARTY_TEMPLATES_DIR')){
-        $smarty_templates_dir = HEURIST_SMARTY_TEMPLATES_DIR;
+    if($smarty_templates_dir==null){
+        $smarty_templates_dir = $system->getSysDir(DIR_SMARTY_TEMPLATES);
     }
 
     if(!file_exists($smarty_templates_dir)){
@@ -127,6 +127,8 @@ function smartyInit($smarty_templates_dir=null){
             $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, $fname, $fname);
         }
 
+        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'constant', array($system, 'getConstant'));
+        
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_key_exists', 'heuristModifierArrayKeyExists');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_column', 'heuristModifierArrayColumn');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'translate', 'heuristModifierTranslate');
@@ -140,7 +142,6 @@ function smartyInit($smarty_templates_dir=null){
         
         return $smarty;
 }
-
 
 function heuristModifierArraySort($arr){
     sort($arr);

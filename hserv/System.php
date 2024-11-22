@@ -201,8 +201,8 @@ class System {
     //
     //  returns constant value, init constant if not defined, if it fails returns default value
     //
-    public function getConstant($const_name, $def=null) {
-
+    public function getConstant($const_name, $def=null) 
+    {
         return $this->defineConstant($const_name) ?constant($const_name) :$def;
     }
 

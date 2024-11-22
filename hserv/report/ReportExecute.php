@@ -417,7 +417,7 @@ class ReportExecute
         $errorMsg = '';
 
         try{
-            $this->smarty = smartyInit($this->system->getSysDir('smarty-templates'));
+            $this->smarty = smartyInit($this->system);
         } catch (\Exception $e) {
             $errorMsg  = $e->getMessage();
         }

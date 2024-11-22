@@ -229,6 +229,7 @@ define('DIR_FILEUPLOADS','file_uploads/');
 define('DIR_WEBIMAGECACHE','webimagecache/');
 define('DIR_BLURREDIMAGECACHE','blurredimagescache/');
 define('DIR_GENERATED_REPORTS','generated-reports/');
+define('DIR_SMARTY_TEMPLATES', 'smarty-templates/');
 
 
 define('ICON_PLACEHOLDER', HEURIST_BASE_URL.'hclient/assets/16x16.gif');
@@ -240,7 +241,7 @@ $rtDefines = array(
     'RT_RELATION' => array(2, 1),
     'RT_INTERNET_BOOKMARK' => array(2, 2),
     'RT_NOTE' => array(2, 3),
-    'RT_ORGANIZATION' => array(2, 4),
+    'RT_ORGANISATION' => array(2, 4),
     'RT_MEDIA_RECORD' => array(2, 5),
     'RT_AGGREGATION' => array(2, 6),
     'RT_COLLECTION' => array(2, 6), // duplicate naming

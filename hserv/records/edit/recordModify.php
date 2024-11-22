@@ -1909,7 +1909,7 @@ function recordUpdateCalcFields($system, $recID, $rty_ID=null, $progress_session
     }
 
     try{
-        $smarty = smartyInit($system->getSysDir('smarty-templates'));
+        $smarty = smartyInit($system);
     } catch (Exception $e) {
         return array('message'=>'Smarty init error: '.$e->getMessage());
     }

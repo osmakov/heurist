@@ -53,15 +53,8 @@ class ReportRecord
      */
     public function constant($name, $smarty_obj = null)
     {
-        if (defined($name)) {
-            return constant($name);
-        } elseif ( (strpos($name, 'RT_') === 0 || strpos($name, 'DT_') === 0)
-                && $this->system->defineConstant($name)
-                 )
-        {
-            return constant($name);
-        }
-        return null;
+        $id = $this->system->getConstant($name);
+        return $id;
     }
 
     /**

@@ -635,7 +635,7 @@ if($step=="1"){  //first step - info about current status
                                 if(!$title){
                                     $key = array($key, RT_PERSON, 0);
                                 }else{
-                                    $key = array($key, RT_ORGANIZATION, 0);
+                                    $key = array($key, RT_ORGANISATION, 0);
                                 }
                             }
 
