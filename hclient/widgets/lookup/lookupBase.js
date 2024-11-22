@@ -55,6 +55,8 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
             entityName: 'Lookups',
 
             empty_remark: '<div style="padding:1em 0 1em 0">No records match the search</div>' // For empty results
+
+            //action_buttons - additional buttons within each record row, handler is resultlistonaction
         }
     },
 
@@ -85,7 +87,7 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
     //_as_dialog => dialog container
 
     _init: function(){
-        this._super(); // bare in mind that the html hasn't been loaded yet
+        this._super(); // whatever you do before this bare in mind that the html and dialog haven't been loaded yet
     },
 
     /**
@@ -118,6 +120,10 @@ $.widget( "heurist.lookupBase", $.heurist.recordAction, {
                         this.doAction();
                     }
                 }
+                /**
+                 * resultlistonpagerender - on loading the result list
+                 * resultlistonaction - on clicking an action button within the record row (action buttons are defined in option action_buttons)
+                 */
             });
         }
 
