@@ -441,6 +441,34 @@ window.hWin.HEURIST4.dbs = {
                         let dc = window.hWin.HAPI4.sysinfo['dbconst'];
                         
                         let $rl_children = [];
+                        
+                        let $details = $Db.rst(rt_id);
+                        $details.each2(function($dtID, $dtValue){
+                            
+                            let $dt_type = $Db.dty($dtID,'dty_Type');
+                            if( $dtValue['rst_RequirementType']=='forbidden' ||
+                                $dt_type == 'separator' ||
+                                $dtID == dc['DT_TARGET_RESOURCE'] ||
+                                $dtID == dc['DT_PRIMARY_RESOURCE'] 
+                                ){
+                                return;    
+                            }
+                            
+                            if($dtID == dc['DT_RELATION_TYPE']){
+                                $dt_type = 'reltype';
+                            }    
+                            
+                            let titleR = $dtValue['rst_DisplayName'];
+                            if(titleR.indexOf('Relationship ')<0){
+                                titleR = 'Relationship '+titleR;
+                            }
+                                
+                            $rl_children.push({type:$dt_type,
+                                title: titleR, 
+                                code:(rt_id+_separator+'r.'+$dtID), name:$dtValue['rst_DisplayName']});
+                            
+                        });
+/*                        
                         $rl_children.push({type:'reltype',
                             title:'Relationship type', 
                             code:(rt_id+_separator+'r.'+dc['DT_RELATION_TYPE']), name:'Relationship type'}); 
@@ -460,9 +488,10 @@ window.hWin.HEURIST4.dbs = {
                         $rl_children.push({type:'enum',
                             title:'Relationship interpretation reference', 
                             code:(rt_id+_separator+'r.'+dc['DT_INTERPRETATION_REFERENCE']), name:'Interpretation Reference'});
-                        
+*/                        
                         $grouped.push(
-                            {title:'<span style="font-style:italic">Relationship Fields</span>', folder:true, is_generic_fields:true, children:$rl_children});
+                            {title:'<span style="font-style:italic">Relationship Fields</span>', folder:true, 
+                                        is_generic_fields:true, children:$rl_children});
                             
                     }else if($mode==5 && $recTypeId>0 && is_multi_constrained>0){ //for search builder
                         

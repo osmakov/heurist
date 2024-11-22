@@ -31,6 +31,7 @@ require_once dirname(__FILE__).'/../../utilities/geo/mapSimplify.php';
 require_once dirname(__FILE__).'/../../utilities/geo/mapCoordConverter.php';
 require_once dirname(__FILE__).'/../../utilities/Temporal.php';
 require_once dirname(__FILE__).'/../../structure/dbsTerms.php';
+require_once dirname(__FILE__).'/../../../admin/verification/verifyValue.php';
 
 if(!defined('H_ID')){
     define('H_ID',' H-ID');
@@ -576,7 +577,7 @@ public static function output($data, $params){
 
                             $all_terms = self::$defRecTypes['typedefs'][$rty_ID]['dtFields'][$dt_id][$idx_term_tree];
                             $nonsel_terms = self::$defRecTypes['typedefs'][$rty_ID]['dtFields'][$dt_id][$idx_term_nosel];
-                            $is_allowed = VerifyValue::isValidTerm($all_terms, $nonsel_terms, $relation->trmID, $dt_id);
+                            $is_allowed = \VerifyValue::isValidTerm($all_terms, $nonsel_terms, $relation->trmID, $dt_id);
 
                             if($is_allowed){
                                 //if record type among selected -  add record to list to be exported
@@ -604,7 +605,7 @@ public static function output($data, $params){
 
                             $all_terms = self::$defRecTypes['typedefs'][$source_rt]['dtFields'][$dt_id][$idx_term_tree];
                             $nonsel_terms = self::$defRecTypes['typedefs'][$source_rt]['dtFields'][$dt_id][$idx_term_nosel];
-                            $is_allowed = VerifyValue::isValidTerm($all_terms, $nonsel_terms, $relation->trmID, $dt_id);
+                            $is_allowed = \VerifyValue::isValidTerm($all_terms, $nonsel_terms, $relation->trmID, $dt_id);
 
                             if($is_allowed){
                                 //if record type among selected -  add record to list to be exported
