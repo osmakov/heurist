@@ -56,9 +56,9 @@ class DbExportTSV {
     }   
     
     public function setBackupFolder($folder=null){
-        $this->$backupFolder = $folder??($this->system->getSysDir(DIR_BACKUP).$this->system->dbname().'/');
-        $this->$backupFolder .= 'tsv-output/';
-        return folderCreate($this->$backupFolder.'records', true);
+        $this->backupFolder = $folder ?? ($this->system->getSysDir(DIR_BACKUP).$this->system->dbname().'/');
+        $this->backupFolder .= 'tsv-output/';
+        return folderCreate("{$this->backupFolder}records", true);
     }
     
     
@@ -100,7 +100,7 @@ class DbExportTSV {
                 continue;
             }
 
-            $filename = $this->$backupFolder . "{$table}.tsv";
+            $filename = "{$this->backupFolder}{$table}.tsv";
             $fd = fopen($filename, 'w');
             if(!$fd){
                 $msg = error_get_last();
@@ -207,7 +207,7 @@ class DbExportTSV {
                 ],
                 'save_to_file' => 1,
                 'file' => [
-                    'directory' => $this->$backupFolder . "records",
+                    'directory' => "{$this->backupFolder}records",
                     'filename' => "{$rty_CC_ID}_{$rty_ID}_{$rty_Name}.tsv"
                 ]
             ];
@@ -226,8 +226,8 @@ class DbExportTSV {
 
     public function output(){
         
-        if(!file_exists($this->$backupFolder.'records')){
-            return ["Destination folder does not exist {$this->$backupFolder}record"];
+        if(!file_exists("{$this->backupFolder}records")){
+            return ["Destination folder does not exist {$this->backupFolder}record"];
         }
         
         $this->record_fields = []; //reset
