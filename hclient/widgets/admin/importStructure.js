@@ -1436,7 +1436,8 @@ $.widget( "heurist.importStructure", {
             +'</p>'
             +'<p style="font-size:smaller">'
                 +'<label><input type="checkbox" id="import_new_rectypes_only"/>&nbsp;Check this box</label> '
-                +' if you wish to import dependent record types not existing in this database.'
+                +'  if you wish to import record types not yet in this database which are connected to the '
+                +' imported record type through record pointer or relationship marker fields.'
             +'</p>';
         }else if(type == 'detailtype'){
 
