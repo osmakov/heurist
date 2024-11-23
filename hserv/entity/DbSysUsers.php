@@ -139,9 +139,14 @@ class DbSysUsers extends DbEntityBase
             return false;
         }
 
-        //exclude ugr_Password form sending to clientr side
+        //exclude ugr_Password form sending to client side
         $idx = array_search('ugr_Password', $this->data['details']);
         if($idx>0){
+            unset($this->data['details'][$idx]);
+        }
+        // exclude ugr_eMail from sending to client side when client's not logged in
+        $idx = array_search('ugr_eMail', $this->data['details']);
+        if(!$this->system->hasAccess() && $idx > 0){
             unset($this->data['details'][$idx]);
         }
 
