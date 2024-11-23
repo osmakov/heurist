@@ -27,7 +27,6 @@
  * @property {string} trm_Domain - what types of new vocabularies/terms are being created, [enum|relation]
  * @property {boolean} is_Translations - whether the import is for only translating existing term's label and description
  *
- * @function matchColumns - Perform column matching base on imported column headers
  * @function doPrepare - Prepare data for creating new vocabularies/terms
  * @function doPrepareTranslation - Prepare data for creating new label and description translations
  * @function doPost - Sends the prepared data server side and either; creates the new vocabularies/terms or adds the new translation values
@@ -102,42 +101,6 @@ class HImportTerms extends HImportBase{
         if(is_Translations){ // Set display for translation importing
             $('.trm_translation').show();
             $('.trm_import').hide();
-        }
-    }
-
-    /**
-     * Attempt to automatically match column headers to mappable fields
-     *
-     * @param {array} headers - array of column headers, to use for matching
-     */
-    matchColumns(headers = []){
-
-        if(headers.length == 0){
-            return;
-        }
-
-        for(const idx in headers){
-
-            const column = headers[idx].toLowerCase();
-
-            if(column.indexOf('term') >= 0 || column.indexOf('label') >= 0){
-
-                $('#field_term').val(idx);
-
-            }else if(column.indexOf('uri')>=0 || column.indexOf('url')>=0
-                || column.indexOf('reference')>=0 || column.indexOf('semantic')>=0){
-
-                $('#field_uri').val(idx);
-
-            }else if(column.indexOf('code') >= 0){
-
-                $('#field_code').val(idx);
-
-            }else if(column.indexOf('desc') >= 0){
-
-                $('#field_desc').val(idx);
-
-            }
         }
     }
 

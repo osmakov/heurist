@@ -22,7 +22,6 @@
  * @augments HImportBase
  * @classdesc For handling the bulk registeration of new external files by CSV
  *
- * @function matchColumns - Perform column matching base on imported column headers
  * @function doPrepare - Prepare data for registering new external media
  * @function doPost - Sends the prepared data server side to register new external media
  * @function prepareURLs - Process the URL field, which can contain several URLs to handle individually
@@ -33,33 +32,6 @@ class HImportMedia extends HImportBase{
     constructor(){
         let field_selectors = ['#field_url', '#field_desc'];
         super(0, 'ulf', field_selectors, false);
-    }
-
-    /**
-     * Attempt to automatically match column headers to mappable fields
-     *
-     * @param {array} headers - array of column headers, to use for matching
-     */
-    matchColumns(headers = []){
-
-        if(headers.length == 0){
-            return;
-        }
-
-        for(const idx in headers){
-
-            const column = headers[idx].toLowerCase();
-
-            if(column.indexOf('url') >= 0 || column.indexOf('path') >= 0 || column.indexOf('uri') >= 0){
-
-                $('#field_url').val(idx);
-
-            }else if(column.indexOf('desc') >= 0){
-
-                $('#field_desc').val(idx);
-
-            }
-        }
     }
 
     /**

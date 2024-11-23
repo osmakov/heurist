@@ -60,6 +60,12 @@ class HImportBase{
         vcg: {name: 'vocabulary group', group: 'vcg', script: 'defTerms', refresh: 'trm'},
         ulf: {name: 'file', group: '', script: 'recUploadedFiles', refresh: ''}
     };
+    #entity_headers = {
+        rty: {'#field_name': ['name', 'label', 'rectype'], '#field_desc': ['desc'], '#field_uri': ['uri', 'url', 'reference', 'semantic']},
+        dty: {'#field_name': ['name', 'label', 'detailtype'], '#field_desc': ['desc'], '#field_uri': ['uri', 'url', 'reference', 'semantic'], '#field_type': ['type'], '#field_vocab': ['vocab', 'enum', 'term'], '#field_target': ['target', 'pointer', 'rectype']},
+        trm: {'#field_term': ['name', 'label', 'term', 'vocab'], '#field_desc': ['desc'], '#field_uri': ['uri', 'url', 'reference', 'semantic'], '#field_code': ['code']},
+        ulf: {'#field_url': ['url', 'path', 'uri'], '#field_desc,#file_desc': ['desc'], '#file_id': ['id', 'file'], '#file_cap': ['cap'], '#file_rights': ['right'], '#file_owner': ['owner'], '#file_vis': ['vis', 'whocanview']}
+    };
 
     entity_type = null;
 
@@ -525,10 +531,32 @@ class HImportBase{
      * Match the column headers from the CSV data to the mappable columns
      *  Function should be extended by child classes
      *
-     * @param {array} header - Column headers from data
+     * @param {array} headers - Column headers from data
      */
-    matchColumns(header = []){
-        return;
+    matchColumns(headers = []){
+
+        const entity = this.entity_type == 'vcg' ? 'trm' : this.entity_type;
+        let fields = this.#entity_headers[entity];
+
+        if(headers.length == 0){
+            return;
+        }
+
+        headers = headers.map(header => header.toLowerCase());
+
+        for(const selector in fields){
+
+            let $select = $(selector);
+            if($select.length == 0){
+                continue;
+            }
+
+            let labels = fields[selector];
+
+            let idx = headers.findIndex(header => labels.filter(field => header.indexOf(field) >= 0).length > 0);
+
+            $select.val(idx);
+        }
     }
 
     /**

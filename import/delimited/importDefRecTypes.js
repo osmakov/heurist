@@ -23,7 +23,6 @@
  * @augments HImportBase
  * @classdesc For handling the bulk importing of new record types by CSV
  *
- * @function matchColumns - Perform column matching base on imported column headers
  * @function doPrepare - Prepare data for creating new record types
  */
 
@@ -35,38 +34,6 @@ class HImportRecordTypes extends HImportBase{
     constructor(rtg_ID = 0){
         let field_selectors = ['#field_name', '#field_desc', '#field_uri'];
         super(rtg_ID, 'rty', field_selectors, !window.hWin.HEURIST4.util.isempty(rtg_ID) && rtg_ID > 0);
-    }
-
-    /**
-     * Attempt to automatically match column headers to mappable fields
-     *
-     * @param {array} headers - array of column headers, to use for matching
-     */
-    matchColumns(headers = []){
-
-        if(headers.length == 0){
-            return;
-        }
-
-        for(const idx in headers){
-
-            const column = headers[idx].toLowerCase();
-
-            if(column.indexOf('name') >= 0 || column.indexOf('rectype') >= 0){
-
-                $('#field_name').val(idx);
-
-            }else if(column.indexOf('desc') >= 0){
-
-                $('#field_desc').val(idx);
-
-            }else if(column.indexOf('uri') >= 0 || column.indexOf('url') >= 0
-                || column.indexOf('reference') >= 0 || column.indexOf('semantic') >= 0){
-
-                $('#field_uri').val(idx);
-
-            }
-        }
     }
 
     /**

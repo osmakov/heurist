@@ -25,7 +25,6 @@
  *  For handling the bulk addition or replacement of already registered file details by CSV.
  *  For bulk registeration see HImportMedia
  *
- * @function matchColumns - Perform column matching base on imported column headers
  * @function doPrepare - Prepare data for adding/updating file details
  * @function doPost - Send the prepared data server side to add/update file details
  */
@@ -35,49 +34,6 @@ class HImportFileData extends HImportBase{
     constructor(){
         let field_selectors = ['#file_id', '#file_desc', '#file_cap', '#file_rights', '#file_owner', '#file_vis'];
         super(0, 'ulf', field_selectors, false);
-    }
-
-    /**
-     * Attempt to automatically match column headers to mappable fields
-     *
-     * @param {array} headers - array of column headers, to use for matching
-     */
-    matchColumns(headers = []){
-
-        if(headers.length == 0){
-            return;
-        }
-
-        for(const idx in headers){
-
-            const column = headers[idx].toLowerCase();
-
-            if(column.indexOf('id') >= 0 || column.indexOf('file') >= 0){
-
-                $('#file_id').val(idx);
-
-            }else if(column.indexOf('desc') >= 0){
-
-                $('#file_desc').val(idx);
-
-            }else if(column.indexOf('cap') >= 0 || column.indexOf('caption') >= 0){
-
-                $('#file_cap').val(idx);
-
-            }else if(column.indexOf('rights') >= 0 || column.indexOf('copyright') >= 0){
-
-                $('#file_rights').val(idx);
-
-            }else if(column.indexOf('owner') >= 0 || column.indexOf('copyowner') >= 0){
-
-                $('#file_owner').val(idx);
-
-            }else if(column.indexOf('vis') >= 0 || column.indexOf('whocanview') >= 0){
-
-                $('#file_vis').val(idx);
-
-            }
-        }
     }
 
     /**
