@@ -340,7 +340,6 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
             }
         });
 
-        
         return true;
     }
     
@@ -377,6 +376,8 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
 
         let name_width = navigator.userAgent.toLowerCase().includes('firefox') ? 7.5 : 8.5;
 
+        let mail_link = !window.hWin.HEURIST4.util.isempty(fld('ugr_eMail')) ? ` href="mailto:${fld('ugr_eMail')}" ` : '';
+
         let html = '<div class="recordDiv" id="rd'+recID+'" recid="'+recID+'" usr_status="'+fld('ugr_Enabled')+'" style="display: flex;">'
         + html_thumb
         + '<div class="recordSelector"><input type="checkbox"></div>'
@@ -385,13 +386,15 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
         +     '" style="background-image: url(&quot;'+rtIcon+'&quot;);opacity:'+recOpacity+'">'
         + '</div>'
         + fld2('ugr_ID','flex:0 2 4em;')
-        + `<a class="truncate" style="flex:0 1 ${name_width}em" href="mailto:${fld('ugr_eMail')}" title="${fld('ugr_eMail')}">`
+        + `<a class="truncate" style="flex:0 1 ${name_width}em"${mail_link}title="${fld('ugr_eMail')}">`
             + fld('ugr_Name')
         + '</a>'
         + '<div class="truncate" style="flex:0 3 10em;">'+fld('ugr_FirstName')+' '+fld('ugr_LastName')+'</div>';
 
+        let show_buttons = this.options.edit_mode !== 'none';
+
         // add edit/remove action buttons
-        if(recID == 2 && window.hWin.HAPI4.has_access(2)){ // only db owner can edit db owner
+        if(recID == 2 && window.hWin.HAPI4.has_access(2) && show_buttons){ // only db owner can edit db owner
 
             html += '<div title="Click to edit user" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" role="button" aria-disabled="false" data-key="edit" '
                   + 'style="height:16px;margin: 0px 15px;flex:0 0 25px;">'
@@ -400,7 +403,7 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
                 + '<div style="width: 75px;"></div>';
 
         }else
-        if( window.hWin.HAPI4.is_admin() ) {//current user is admin of database managers
+        if(window.hWin.HAPI4.is_admin() && show_buttons){//current user is admin of database managers
 
             let icon = !this.options.ugl_GroupID ? 'circle-close' : 'arrowrefresh-1-n';
             let action = !this.options.ugl_GroupID ? 'delete' : 'remove';
@@ -417,7 +420,7 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
         }
 
         // add edit group memberships
-        if(this.options.select_mode=='manager' && this.options.edit_mode=='popup'){
+        if(this.options.select_mode=='manager' && show_buttons){
         
             const ugl_GroupID = this.searchForm.find('#input_search_group').val(); 
             if(window.hWin.HAPI4.is_admin() && !(ugl_GroupID>0)){  //all groups - show count of groups where user is a member
@@ -490,12 +493,11 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
     _recordListGetFullData:function(arr_ids, pageno, callback){
 
         let request = {
-                'a'          : 'search',
-                'entity'     : this.options.entity.entityName,
-                'details'    : 'list',
-                'pageno'     : pageno,
-                'db'         : this.options.database  
-                
+            'a': 'search',
+            'entity': this.options.entity.entityName,
+            'details': 'list',
+            'pageno': pageno,
+            'db': this.options.database                
         };
         let ugl_GroupID = this.searchForm.find('#input_search_group').val();
         if(ugl_GroupID>0){
