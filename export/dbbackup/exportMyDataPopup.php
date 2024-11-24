@@ -616,7 +616,6 @@ Use BZip format rather than Zip (BZip is more efficient for archiving, but Zip i
                    include_once $to_include;
                }
 
-
                if(file_exists(FOLDER_BACKUP.'/'.HEURIST_DBNAME.'.xml') && $separate_hml_zip){
                    $separate_hml_zip = fileCopy(FOLDER_BACKUP.'/'.HEURIST_DBNAME.'.xml', FOLDER_HML_BACKUP."/".HEURIST_DBNAME.".xml");
                }

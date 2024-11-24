@@ -30,6 +30,8 @@ $arg_include_docs = true;   // include full documentation to make the archive in
 $arg_skip_hml = false;      // don't include HML as this function is primarily intended for database transfer
                             // and HML is voluminous. HML should be included if this is intended as longer term archive.
 $arg_skip_tsv = false;      // don't include TSV
+$arg_skip_sql = false;
+
 $with_triggers = false;
 $backup_root = null;
 
@@ -66,6 +68,8 @@ if (@$argv) {
     if (@$ARGV['-db']) {$arg_database = $ARGV['-db'];}
     if (@$ARGV['-nofiles']) {$arg_skip_files = true;}
     if (@$ARGV['-nodocs']) {$arg_include_docs = false;}
+    
+    if (@$ARGV['-nosql']) {$arg_skip_sql = true;}
     if (@$ARGV['-nohml']) {$arg_skip_hml = true;}
     if (@$ARGV['-notsv']) {$arg_skip_tsv = true;}
                             
@@ -73,10 +77,19 @@ if (@$argv) {
 
 }else{
     exit('This function must be run from the shell');
+    /* for debug 
+    $arg_database = 'osmak_9a,osmak_9c';
+    
+    $arg_skip_files = true;
+    $arg_include_docs = false;
+    
+    $arg_skip_sql = true;
+    $arg_skip_tsv = true;    
+    */
 }
 
 if($arg_database==null){
-    exit("Required parameter -db is not defined\n");
+    //exit("Required parameter -db is not defined\n");
 }
 
 use hserv\utilities\DbUtils;
@@ -148,23 +161,23 @@ if($with_triggers){
 if(!$arg_skip_tsv){
     $dbExportTSV = new DbExportTSV($system);
 }
-        
-
 
 set_time_limit(0);//no limit
 
 foreach ($arg_database as $idx=>$db_name){
 
-    echo "processing ".htmlentities($db_name)." ";//.'  in '.$folder
-
     $db_name = basename($db_name);
+    
+    $db_name_esc = htmlentities($db_name);
+    
+    echo "processing $db_name_esc ";//.'  in '.$folder
+
     $folder = $backup_root.$db_name.'/';
     $backup_zip = $backup_root.$db_name.'.zip';
 
     $database_folder = $upload_root.$db_name.'/';
 
     $folder_esc =  htmlentities($folder);
-    $db_name_esc = htmlentities($db_name);
 
     if(file_exists($folder)){
         $res = folderDelete2($folder, true);//remove previous backup
@@ -226,7 +239,7 @@ foreach ($arg_database as $idx=>$db_name){
 
     // Export database definitions as readable text
     if(!$arg_skip_tsv){
-        echo('Export TSV for '.$db_name_esc."\n");
+        echo('tsv.. ');
         
         $system->setDbnameFull($db_name);
         mysql__usedatabase($mysqli, $db_name);
@@ -235,25 +248,69 @@ foreach ($arg_database as $idx=>$db_name){
         
         $warns = $dbExportTSV->output();
         if(!empty($warns)){
-            echo (implode('<br>', $warns));
+            echo (implode("\n", $warns)."\n");
         }
+    }
+
+    if(!$arg_skip_hml){
+        echo('hml.. ');
+       //load hml output into string file and save it
+       /* it does not work in shell mode
+       $hml_url = HEURIST_BASE_URL.'export/xml/flathml.php?w=all&q=sortby:-m&a=1&linkmode=none&filename=1&db='.$db_name;
+       $outres = loadRemoteURLContentWithRange($hml_url, null, true);
+       if($outres){
+            $dumpfile = "$folder/$db_name.xml";     
+            file_put_contents($dumpfile, $outres);
+       }else{
+            isActionInProgress($actionName, -1);
+            exit("Sorry, unable to generate HML database dump for $db_name_esc. $glb_curl_error\n");
+       }       
+       */
+               
+       $hmlscript = realpath(dirname(__FILE__).'/../xml/flathml.php');
+                
+       $cmd = escapeshellcmd('php -f '.$hmlscript);
+
+       $cmd = $cmd." -- -db $db_name -backup 1";
+
+       $arr_out = [];
+       $res2 = 0; 
+
+       exec($cmd, $arr_out, $res2);       
+
+       if($res2 !== 0){
+           
+            $err = ' failed with a return status: '.($res2!=null?intval($res2):'unknown')
+                    .'. Output: '.(is_array($arr_out)&&!empty($arr_out)?print_r($arr_out, true):'');
+
+            isActionInProgress($actionName, -1);
+            exit("Sorry, unable to generate HML database dump for $db_name_esc. $err \n");
+       }
+       
+       $output_file_name = HEURIST_FILESTORE_ROOT.$db_name.'/'.DIR_BACKUP."$db_name.xml";
+       $dumpfile = "$folder/$db_name.xml";
+       if(file_exists($output_file_name)){
+            fileCopy($output_file_name, $dumpfile);
+            unlink($output_file_name);
+       }
+       
     }
     
     // Do an SQL dump of the whole database
-    if(false){
-    echo "sql.. ";
+    if(!$arg_skip_sql){
+        echo 'sql.. ';
 
-    $dumpfile = $folder."/".$db_name."_MySQL_Database_Dump.sql";
+        $dumpfile = $folder."/".$db_name."_MySQL_Database_Dump.sql";
 
-    $res = DbUtils::databaseDump($db_name, $dumpfile, $dump_options);
-    if($res===false){
-        isActionInProgress($actionName, -1);
+        $res = DbUtils::databaseDump($db_name, $dumpfile, $dump_options);
+        if($res===false){
+            isActionInProgress($actionName, -1);
 
-        $err = $system->getError();
-        error_log('buildArchivePackagesCMD Error: '.@$err['message']);
+            $err = $system->getError();
+            error_log('buildArchivePackagesCMD Error: '.@$err['message']);
 
-        exit("Sorry, unable to generate MySQL database dump for $db_name_esc. ".$err['message']."\n");
-    }
+            exit("Sorry, unable to generate MySQL database dump for $db_name_esc. ".$err['message']."\n");
+        }
     }
 /*
     try{
@@ -265,7 +322,7 @@ foreach ($arg_database as $idx=>$db_name){
         exit("Sorry, unable to generate MySQL database dump for $db_name.".$e->getMessage()."\n");
     }
 */
-     echo "zip.. ";
+     echo 'zip.. ';
 
     // Create a zipfile of the definitions and data which have been dumped to disk
     $destination = $backup_zip;
@@ -280,11 +337,9 @@ foreach ($arg_database as $idx=>$db_name){
         exit("Database: $db_name_esc Failed to create zip file at $destination \n");
     }
 
-    echo "   $db_name_esc OK \n";//.'  in '.$folder
+    echo " OK \n";//.'  in '.$folder
 }//for
 
 isActionInProgress($actionName, -1);
-
-exit("\nfinished all requested databases, results in HEURIST_FILESTORE/_BATCH_PROCESS_ARCHIVE_PACKAGE/
-\n\n");
+//exit("\nfinished all requested databases, results in HEURIST_FILESTORE/_BATCH_PROCESS_ARCHIVE_PACKAGE/\n\n");
 ?>

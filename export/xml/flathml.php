@@ -99,6 +99,14 @@ if (@$argv) {
     if (@$ARGV['-fc']) {$_REQUEST['fc'] = '1';}// inline file content
     if (@$ARGV['-file']) {$_REQUEST['file'] = '1';}// inline file content
 
+    $_REQUEST['linkmode'] = @$ARGV['-linkmode'] ? $ARGV['-linkmode'] : 'none';
+    
+    if (@$ARGV['-backup']) { //save output to backup folder
+       if(!$_REQUEST['q']){
+            $_REQUEST['q'] = 'sortby:-m';
+       }
+       $_REQUEST['filename'] = '1';
+    }
 }
 
 use hserv\structure\ConceptCode;
@@ -144,13 +152,13 @@ $hunifile = null; //name of file-per-record for HuNI mode
 if(!defined('PDIR')){
     $system = new hserv\System();
     if( !$system->init(@$_REQUEST['db']) ){
-        die("Cannot connect to database");
+        die('Cannot connect to database');
     }
 }
 
 //write the output into single file
 // output to file is allowed in the only case - archiving database
-if(@$_REQUEST['filename']==1 && file_exists(HEURIST_FILESTORE_DIR.DIR_BACKUP.HEURIST_DBNAME)){
+if(@$_REQUEST['filename']==1 && file_exists(HEURIST_FILESTORE_DIR.DIR_BACKUP)){
     $output_file = tempnam(HEURIST_SCRATCHSPACE_DIR, "xml");
 
     $output_file_fd = fopen($output_file, 'w');
@@ -2135,7 +2143,7 @@ else{ // single output stream
 
     if($output_file_fd){
         fclose ($output_file_fd);
-        $output_file_name = HEURIST_FILESTORE_DIR.DIR_BACKUP.HEURIST_DBNAME."/".HEURIST_DBNAME.".xml";
+        $output_file_name = HEURIST_FILESTORE_DIR.DIR_BACKUP.HEURIST_DBNAME.".xml";
         rename($output_file, $output_file_name);
     }
 
