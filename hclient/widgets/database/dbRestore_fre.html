@@ -1,78 +1,95 @@
-<div id="div_header" class="ent_wrapper" style="margin-left:40px;width:530px;font-size:0.95em">
-    <div class="heurist-helper1" style="margin-top:50px">       
-    
-         Cette fonction restaure une base de données à partir d'un fichier de sauvegarde au format Zip créé 
-         soit par suppression d'une base de données,
-         par des fonctions de sauvegarde/archivage nocturnes, ou en demandant le téléchargement 
-         d'un fichier de sauvegarde via Publier > Sauvegarder le fichier.
-         <br><br>
-         Si vous effectuez une restauration à partir d'un fichier créé sur un autre serveur, 
-         nous vous recommandons de le télécharger vers /srv/transfer en utilisant sftp.
-         Les archives plus anciennes (avant 2024) dans tar.bz2 devront être décompressées et 
-         chargées manuellement via la ligne de commande Unix.
-         <br><br>
-         Après avoir terminé avec succès, vous devrez vous connecter à la base de données restaurée.        
-        
-        <br><br>
-            Sélectionnez la source pour rechercher l'archive<br>
-            <label>
-                <input type="radio" value="1" name="selArchiveFolder" checked/>
-                Deleted database
-            </label>
-            <br>
-            <label>
-                <input type="radio" value="4" name="selArchiveFolder"/>
-                Database to restore
-            </label>
-            <br>
-            <label>
-                <input type="radio" value="3" name="selArchiveFolder"/>
-                Archived backups (in BACKUP/ARCHIVE)
-            </label>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="btnSelectZip">Rechercher le zip</button>
-        
-            <br>In case archive contains database dump only, filestore of current database will be used
-    </div>
+<div id="div_header" class="ent_wrapper" style="margin-left:40px;font-size:0.95em;overflow-y:auto">
+<div class="heurist-helper1" style="margin-top:50px;width:640px;">
 
-    <div class="entry-box">
+Cette fonction restaure une base de données à partir d'un fichier de sauvegarde au format Zip créé soit par suppression d'une base de données,
+<br>par des fonctions de sauvegarde/archivage nocturnes, soit en demandant le téléchargement d'un fichier de sauvegarde via Publier - Fichier de sauvegarde.
+<br>
+<br>
+Si vous effectuez une restauration à partir d'un fichier créé sur un autre serveur, nous vous recommandons de le télécharger, en utilisant sftp, vers :
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;…/HEURIST_FILESTORE/DBS_TO_RESTORE .
+<br>
+<br>
+<b>Remarques : </b>
+<br>
+<br>Les archives plus anciennes (antérieures à 2024) dans tar.bz2 devront être extraites et compressées avec zip
+<br>ou chargées manuellement via la ligne de commande Unix.
+<br>
+<br>Si le dump a été créé sous MySQL 8 ou version ultérieure et doit être téléchargé sur MySQL 5,
+<br>vous devrez modifier manuellement le SQL dans le fichier ZIP et supprimer COLLATION ORDER
+<br>
+<br>
+Une fois l'opération terminée avec succès, vous pourrez vous connecter à la base de données restaurée.
+<br>
+<br>
+<hr>
+<br>
+Sélectionnez le dossier source pour parcourir les archives de base de données (format zip ou bz2 de fichiers SQL uniquement) :
+<br>
+<br>
+<label>
+<input type="radio" value="1" name="selArchiveFolder" checked/>
+Base de données supprimée (dans HEURIST_FILESTORE/DELETED_DATABASES)
+</label>
+<br>
+<label>
+<input type="radio" value="4" name="selArchiveFolder"/>
+Sauvegardes téléchargées (dans HEURIST_FILESTORE/DBS_TO_RESTORE)
+</label>
+<br>
+<label>
+<input type="radio" value="3" name="selArchiveFolder"/>
+Sauvegardes archivées (dans /srv/BACKUP/ARCHIVE, ou dans HEURIST_FILESTORE/BACKUP/ARCHIVE sur localhost)
+</label>
 
-        <div id="divSelectedZip" style="display:none;">
-           Archive: <span id="selectedZip" style="font-weight:bold"></span>
-        </div>
+<br><br><button id="btnSelectZip">Rechercher un fichier</button>
 
-        <h3>Entrez un nom pour la base de données</h3>
-        
-        <div>
-            <span class="dbprefix">hdb_</span>
-            <input type="text" id="dbname"  name="dbname" class="text ui-widget-content ui-corner-all"
-                    maxlength="64" size="40" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>
+<div class="heurist-helper1" style="padding-top:10px"><i>Si l'archive contient uniquement le vidage SQL, le magasin de fichiers de la base de données actuelle sera copié</i></div>
 
-            <button class="ui-button-action" id="btnCreateDb">Restaurer la base de données</button>
-        </div>
-        
-    </div>
-    
-    <div class="heurist-helper1">                
-        N'utilisez pas de ponctuation sauf le trait de soulignement. Les noms sont sensibles à la casse.<br><br> 
-    </div>
+</div>
+
+<div class="entry-box" style="width:640px;">
+
+<div id="divSelectedZip" style="display:none;">
+Archive : <span id="selectedZip" style="font-weight:bold"></span>
+</div>
+
+<br>
+<b>Entrez un nom pour la base de données restaurée : </b> <i>(concis mais informatif)</i>
+
+<div style="margin-top: 10px;">
+<span class="dbprefix">hdb_</span>
+<input type="text" id="dbname" name="dbname" class="text ui-widget-content ui-corner-all"
+maxlength="40" size="25" onkeypress="{window.hWin.HEURIST4.ui.preventNonAlphaNumeric(event)}"/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button class="ui-button-action" id="btnCreateDb">Restaurer la base de données</button>
+</div>
+
+</div>
+
+<div class="heurist-helper1" style="margin-top: 10px;">
+<i>N'utilisez pas de ponctuation, à l'exception du trait de soulignement. Les noms sont sensibles à la casse.</i>
+<br><br>
+</div>
 </div>
 
 <div class="ent_wrapper progressbar_div" style="display: none; background:white;z-index:60001">
-        <div class="loading" style="display:none;height:100%">
-            <ol type="1" style="margin-top:40px">
-                <li>Validation du nom de la base de données et de l'archive</li>
-                <li>Création de dossiers de base de données</li>
-                <li>Déballage des archives et copie des données</li>
-                <li>Création de base de données et importation à partir d'un fichier de dump SQL</li>
-            </ol>
-        </div>
+<div class="loading" style="display:none;height:100%">
+<ol type="1" style="margin-top:40px">
+<li>Validation du nom de la base de données et de l'archive</li>
+<li>Création de dossiers de base de données</li>
+<li>Décompression de l'archive et copie des données</li>
+<li>Création et importation de la base de données à partir du fichier de vidage SQL</li>
+</ol>
+</div>
 </div>
 
 <div id="div_result" class="ent_wrapper" style="margin-left:40px;margin-top:75px;display: none;">
-    <h4 style='padding-bottom:10px;margin:0' class="ui-heurist-title">La base de données [ <span id="newdbname"></span> ] a été restaurée à partir de l'archive</h4>
-    
-    <div class="ui-state-error" id="div_warnings" style="display:none;padding:10px"></div>
-    <div style="padding-top:20px">Connectez-vous à votre base de données avec le lien suivant:</div>
-    <div style="padding-top:20px"><b><a id="newdblink" href="#" oncontextmenu="return false;" 
-        title="" target="blank"></a></b></div>
+<h4 style='padding-bottom:10px;margin:0' class="ui-heurist-title">La base de données [ <span id="newdbname"></span> ] a été restaurée à partir de l'archive</h4>
+
+<div class="ui-state-error" id="div_warnings" style="display:none;padding:10px"></div>
+<div style="padding-top:20px">Connectez-vous à la base de données avec le lien suivant :</div>
+<div style="padding-top:20px"><b><a id="newdblink" href="#" oncontextmenu="return false;"
+title="" target="blank"></a></b></div>
 </div>
