@@ -75,10 +75,11 @@ if($is_own_domain){
     }
 }
 
-
+// --------------- INDEX or STARTUP
 if(count($requestUri)==1 && ($requestUri[0]=='heurist' || $requestUri[0]=='h6-alpha')){
 
-    redirectURL2('/'.rawurlencode($requestUri[0]).'/index.php');
+    //redirectURL2('/'.rawurlencode($requestUri[0]).'/index.php');
+    include_once '../index.php';
     exit;
 
 }elseif ((count($requestUri)==1)
@@ -87,17 +88,21 @@ if(count($requestUri)==1 && ($requestUri[0]=='heurist' || $requestUri[0]=='h6-al
     )
 { //&& (@$requestUri[0]=='MBH' || @$requestUri[0]=='johns_test_BnF')){
     $dbname = filter_var((count($requestUri)==1)?$requestUri[0]:$requestUri[1]);//to avoid "Open redirect" security report
-
+    
     if($dbname=='startup'){
-        redirectURL2('/'.rawurlencode($requestUri[0]).'/startup/index.php');
+        //redirectURL2('/'.rawurlencode($requestUri[0]).'/startup/index.php');
+        include_once '../startup/index.php';
         exit;
     }elseif(!preg_match('/[^A-Za-z0-9_\$]/', $dbname)){
+        //include_once '../startup/index.php';
         redirectURL2('/'.rawurlencode($dbname).'/web/');
         exit;
     }
 }
 
 $isMediaRequest = false;
+
+// --------------- RECORD VIEW   in format db/record/[rec-id] 
 
 // db/record/2312-123  or  db/record/2312-123.rdf  or db/record/123?db=somedb&fmt=rdf
 if(count($requestUri)==3 && $requestUri[0]=='db' && ($requestUri[1]=='record' || $requestUri[1]=='file')){
@@ -138,6 +143,9 @@ if(count($requestUri)==3 && $requestUri[0]=='db' && ($requestUri[1]=='record' ||
 
     //redirectURL2('/h6-alpha/redirects/resolver.php?recID='.$requestUri[2].'&fmt='.$format);
 
+    
+// --------------- 
+    
 }elseif(count($requestUri)>1 && (in_array($requestUri[1],$allowedActions) || in_array(@$requestUri[2],$allowedActions))){
                              // dbname/action                               heurist/dbname/action
 
@@ -214,7 +222,8 @@ $requestUri:
             //$_SERVER["REQUEST_URI"] = $host_params['install_dir'];
             $rewrite_path = dirname(__FILE__).'/../index.php';
 
-        }else {
+        }
+        else {
             require_once dirname(__FILE__).'/../hserv/dbaccess/utils_db.php';
 
             $redirect = $host_params['baseURL'];
@@ -242,7 +251,8 @@ $requestUri:
                     $error_msg = 'Record ID is not defined';
                 }
 
-            }elseif($action=='hml'){
+            }
+            elseif($action=='hml'){
 
                 //example: https://example.org/heurist/dbname/hml/18/1
 
@@ -267,7 +277,8 @@ $requestUri:
                     $error_msg = 'Query or Record ID is not defined';
                 }
 
-            }elseif($action=='adm'){
+            }
+            elseif($action=='adm'){
 
                 $redirect = $redirect.'?db='.$database;
 
@@ -285,7 +296,8 @@ $requestUri:
                     $redirect = $redirect.'&q='.$query;
                 }
                 
-            }elseif($action=='tpl'){
+            }
+            elseif($action=='tpl'){
                 $query = null;
 
                 if(@$requestUri[3]){
