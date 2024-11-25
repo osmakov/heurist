@@ -32,6 +32,13 @@ class DbSysBugreport extends DbEntityBase
 
     private $performLogout = false; // perform logout after completing the required action
 
+    private $reportEmail = <<<EMAIL
+    Your bug report has been successfully added to the Heurist Job tracker database.<br>
+    You can view your report at: __LINK__<br>
+    See current and resolved issues list: <a href="https://heuristref.net/Heurist_Job_Tracker/web/64/1526">https://heuristref.net/Heurist_Job_Tracker</a><br><br>
+    Bug description:<br>__DESC__
+    EMAIL;
+
     public function __construct( $system, $data=null ) {
        parent::__construct( $system, $data );
        $this->requireAdminRights = false;
@@ -294,11 +301,9 @@ class DbSysBugreport extends DbEntityBase
 
             if($rec_ID > 0){
                 $bug_title = "Heurist tracker #$rec_ID: {$record['2-1']}";
-                $sMessage .= "<p>Link: " . HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/edit/$rec_ID</p>";
+                $sMessage .= "<p>Link: " . HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$rec_ID</p>";
 
-                $res = 'Your bug report has been successfully added to the Heurist Job tracker database.<br>'
-                      .'You can view your report at:  '. HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$rec_ID<br>"
-                      .'See current and resolved issues list: <a href="https://heuristref.net/Heurist_Job_Tracker/web/64/1526">https://heuristref.net/Heurist_Job_Tracker</a>';
+                $res = str_replace(['__LINK__', '__DESC__'], [HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$rec_ID", $record['details']['3']], $this->reportEmail);
                       
             }elseif(is_array($res)){
                 $this->system->addErrorArr($res);
@@ -315,7 +320,7 @@ class DbSysBugreport extends DbEntityBase
                 $sMessage, //since 02 Dec 2021 we sent human readable message
                 $filename, true)){
 
-            $message = $res ? $res : "Your bug report has been sent to the Heurist team.";
+            $message = $res ?: "Your bug report has been sent to the Heurist team.";
             return $res === false ? false : [$message];
         }else{
 
@@ -352,6 +357,7 @@ class DbSysBugreport extends DbEntityBase
             return false;
         }
 
+        $files = [];
         $rec_uploads = new DbRecUploadedFiles($report_system);
         if(!empty($record['details']['38']) && $rec_uploads){
             foreach($record['details']['38'] as $idx => $file_url){
@@ -360,6 +366,13 @@ class DbSysBugreport extends DbEntityBase
                 $file_name = str_replace('~', 'bugreport_img_', array_pop($file_name));
 
                 $record['details']['38'][$idx] = $rec_uploads->downloadAndRegisterdURL($file_url, ['ulf_NewName' => $file_name], 2);
+
+                if(!$record['details']['38'][$idx]){
+                    continue;
+                }
+
+                $ulf_file_name = mysql__select_value($this->system->getMysqli(), "SELECT ulf_FileName FROM recUploadedFiles WHERE ulf_ID = {$record['details']['38'][$idx]}");
+                $files[] = $this->system->getSysDir(DIR_FILEUPLOADS) . $ulf_file_name;
             }
             $record['details']['38'] = array_filter($record['details']['38']); // remove null/false values
         }
@@ -386,13 +399,12 @@ class DbSysBugreport extends DbEntityBase
         if(!empty($record['details']['956'])){
 
             $title = "Heurist tracker #$res: {$record['details']['1']}";
-            $msg = "Your bug report has been successfully added to the Heurist Job Tracker database.<br>"
-                 . "You can view your report at: " . HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$res";
+            $msg = str_replace(['__LINK__', '__DESC__'], [HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$res", $record['details']['3']], $this->reportEmail);
 
             $user_query = "SELECT ugr_eMail FROM sysUsrGrpLinks LEFT JOIN sysUGrps ON ugr_ID = ugl_UserID WHERE ugl_GroupID = 1 AND ugl_Role='admin'";
             $admin_emails = mysql__select_list2($mysqli, $user_query);
 
-            $sent_email = sendPHPMailer(null, 'Bug reporter', ['to' => $record['details']['956'], 'bcc' => $admin_emails], $title, $msg, null, true);
+            $sent_email = sendPHPMailer(null, 'Bug reporter', ['to' => $record['details']['956'], 'bcc' => $admin_emails], $title, $msg, $files, true);
         }
 
         return ['status' => HEURIST_OK, 'data' => ['recID' => $res, 'email_sent' => $sent_email]];
