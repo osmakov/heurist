@@ -536,7 +536,7 @@ class System {
 
         $system_folders = array();
 
-        $dbfolder = getSysDir(null, $database_name);
+        $dbfolder = $this->getSysDir(null, $database_name);
 
         foreach ($folders as $folder_name=>$folder){
             $folder_name = $dbfolder.$folder_name;
