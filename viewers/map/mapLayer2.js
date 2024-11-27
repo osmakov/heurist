@@ -294,7 +294,7 @@ function HMapLayer2( _options ) {
                     options.className = layer_options.className = 'heurist-imageoverlay-'+_recordset.fld(options.rec_layer, 'rec_ID');
                 }
             }
-            
+           
             _nativelayer_id = options.mapwidget.mapping('addTileLayer', 
                                                         layer_url, 
                                                         layer_options, 
@@ -751,7 +751,7 @@ function HMapLayer2( _options ) {
         let ext = window.hWin.HEURIST4.geo.getWktBoundingBox(
             _recordset.getFieldGeoValue(_record, window.hWin.HAPI4.sysinfo['dbconst']['DT_GEO_OBJECT'])
         );
-             
+        
         if(options.mapwidget.mapping('getCurrentCRS')=='Simple'){
             let maxzoom = _getMaxZoomLevel();
             

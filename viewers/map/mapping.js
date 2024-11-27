@@ -672,7 +672,7 @@ $.widget( "heurist.mapping", {
     //
     //
     defineCRS: function(CRS){
-        
+
         if(CRS && CRS.indexOf(':')>0){
             CRS = CRS.replace(':','');
         }
@@ -1036,7 +1036,7 @@ $.widget( "heurist.mapping", {
         
             function __convert_primitive(geometry){
 
-                if(!$.isEmptyObject(geometry)) return;
+                if($.isEmptyObject(geometry)) return;
 
                 if(geometry.type=="GeometryCollection"){
                     let l;
