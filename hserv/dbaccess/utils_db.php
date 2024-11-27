@@ -341,7 +341,7 @@ use hserv\structure\ConceptCode;
      * @return bool - True if the database matches the role and email filter, false otherwise
      */
     function mysql__checkUserRole($mysqli, $database, $email, $role) {
-        if (!$email || !$role) {
+        if(empty($email) || !$role){
             return true; // No filtering required
         }
 

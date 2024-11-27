@@ -33,9 +33,7 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
         
         this.options.layout_mode = 'short';
         this.options.use_cache = false;
-       
-        
-       
+
         this.options.edit_need_load_fullrecord = true;
         this.options.edit_height = 640;
         this.options.height = 640;
@@ -167,51 +165,50 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
         }
 
         this._on( this.searchForm, {
-                "searchsysusersonresult": this.updateRecordList,
-                "searchsysusersonadd": function() { this.addEditRecord(-1); },
-                "searchsysusersonfind": function() { 
-                    
-                        let ugl_GroupID = this.searchForm.find('#input_search_group').val(); 
+            "searchsysusersonresult": this.updateRecordList,
+            "searchsysusersonadd": function() { this.addEditRecord(-1); },
+            "searchsysusersonfind": function() { 
 
-                        let options = {select_mode: 'select_multi',
-                                ugl_GroupID: -ugl_GroupID,
-                                edit_mode:'none',
-                                title: ("Select Users to add to Workgroup #"+ugl_GroupID),
-                                onselect:function(event, data){
-                        
-                                    if(data && window.hWin.HEURIST4.util.isArrayNotEmpty(data.selection))
-                                    {
-                                        let request = {};
-                                        request['a']        = 'action'; //batch action
-                                        request['entity']   = 'sysGroups';
-                                        request['role']     = 'member';
-                                        request['userIDs']  = data.selection;
-                                        request['groupID']  = ugl_GroupID;
-                                        request['request_id'] = window.hWin.HEURIST4.util.random();
-                                        
-                                        window.hWin.HAPI4.EntityMgr.doRequest(request, 
-                                            function(response){
-                                                if(response.status == window.hWin.ResponseStatus.OK){
-                                                    //reload
-                                                    that.searchForm.searchSysUsers('startSearch');
-                                                    
-                                                    if(data.selection.indexOf(window.hWin.HAPI4.currentUser['ugr_ID'])>=0){
-                                                        window.hWin.HAPI4.currentUser['ugr_Groups'][ugl_GroupID] = 'member';
-                                                        $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_CREDENTIALS); 
-                                                    }
-                                                    
-                                                }else{
-                                                    window.hWin.HEURIST4.msg.showMsgErr(response);      
-                                                }
-                                            });
-                                    
-                                    }                                    
-                                }};                    
-                        
-                        window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options);
-                    }
-                });
-        
+                let ugl_GroupID = this.searchForm.find('#input_search_group').val(); 
+
+                let options = {select_mode: 'select_multi',
+                        ugl_GroupID: -ugl_GroupID,
+                        edit_mode:'none',
+                        title: ("Select Users to add to Workgroup #"+ugl_GroupID),
+                        onselect:function(event, data){
+                
+                            if(data && window.hWin.HEURIST4.util.isArrayNotEmpty(data.selection))
+                            {
+                                let request = {};
+                                request['a']        = 'action'; //batch action
+                                request['entity']   = 'sysGroups';
+                                request['role']     = 'member';
+                                request['userIDs']  = data.selection;
+                                request['groupID']  = ugl_GroupID;
+                                request['request_id'] = window.hWin.HEURIST4.util.random();
+                                
+                                window.hWin.HAPI4.EntityMgr.doRequest(request, 
+                                    function(response){
+                                        if(response.status == window.hWin.ResponseStatus.OK){
+                                            //reload
+                                            that.searchForm.searchSysUsers('startSearch');
+                                            
+                                            if(data.selection.indexOf(window.hWin.HAPI4.currentUser['ugr_ID'])>=0){
+                                                window.hWin.HAPI4.currentUser['ugr_Groups'][ugl_GroupID] = 'member';
+                                                $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_CREDENTIALS); 
+                                            }
+                                            
+                                        }else{
+                                            window.hWin.HEURIST4.msg.showMsgErr(response);      
+                                        }
+                                    });
+                            
+                            }                                    
+                        }};                    
+                
+                window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options);
+            }
+        });
 
         this._on( this.recordList, {
             "resultlistonpagerender": function(event){
@@ -378,6 +375,10 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
 
         let mail_link = !window.hWin.HEURIST4.util.isempty(fld('ugr_eMail')) ? ` href="mailto:${fld('ugr_eMail')}" ` : '';
 
+        let user_content = window.hWin.HEURIST4.util.isempty(fld('ugr_Name'))
+            ? ''
+            : `<a class="truncate" style="flex:0 1 ${name_width}em"${mail_link}title="${fld('ugr_eMail')}">{fld('ugr_Name')}</a>`;
+
         let html = '<div class="recordDiv" id="rd'+recID+'" recid="'+recID+'" usr_status="'+fld('ugr_Enabled')+'" style="display: flex;">'
         + html_thumb
         + '<div class="recordSelector"><input type="checkbox"></div>'
@@ -386,9 +387,7 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
         +     '" style="background-image: url(&quot;'+rtIcon+'&quot;);opacity:'+recOpacity+'">'
         + '</div>'
         + fld2('ugr_ID','flex:0 2 4em;')
-        + `<a class="truncate" style="flex:0 1 ${name_width}em"${mail_link}title="${fld('ugr_eMail')}">`
-            + fld('ugr_Name')
-        + '</a>'
+        + user_content
         + '<div class="truncate" style="flex:0 3 10em;">'+fld('ugr_FirstName')+' '+fld('ugr_LastName')+'</div>';
 
         let show_buttons = this.options.edit_mode !== 'none';
@@ -591,9 +590,7 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
             content.hide();
             this.editForm.find('#'+content.attr('aria-labelledby')).hide(); // .ui-accordion-header 
         }
-        
-
-    },    
+    },
     
     //
     // save current saml values

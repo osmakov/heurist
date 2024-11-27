@@ -215,7 +215,7 @@ class ActionHandler {
              menu_container.find('li').removeClass('ui-state-active');
              menu_container.find('li[data-action="' + actionid + '"]').addClass('ui-state-active');
          }
-                                                   
+
          let popup_dialog_options = {
              isdialog: !container,
              innerTitle: true,
@@ -252,6 +252,7 @@ class ActionHandler {
         if (!entity_dialog_options) entity_dialog_options = {};
         
         let that = this;
+        let auto_select = '';
         
         let options = $.extend(entity_dialog_options, {
             subtitle: 'Step 1. Select database with users to be imported',
@@ -266,36 +267,70 @@ class ActionHandler {
                 if (!data?.selection || data.selection.length == 0) {
                     return;
                 }
-                    let selected_database = data.selection[0].substr(4);
-                    let options2 = $.extend(entity_dialog_options, {
-                        subtitle: 'Step 2. Select users in ' + selected_database + ' to be imported',
-                        title: 'Import users', 
-                        database: selected_database,
-                        select_mode: 'select_multi',
-                        edit_mode: 'none',
-                        keep_visible_on_selection: true,
-                        onselect: function(event, data){
-                                if (!data?.selection || data.selection.length == 0) {
-                                    return;
-                                }
-                                let selected_users = data.selection;
-                                let options3 = $.extend(entity_dialog_options, {
-                                    subtitle: 'Step 3. Allocate imported users to work groups',
-                                    title: 'Import users', 
-                                    select_mode: 'select_roles',
-                                    selectbutton_label: 'Allocate roles',
-                                    sort_type_int: 'recent',
-                                    edit_mode: 'none',
-                                    keep_visible_on_selection: false,
-                                    onselect: function(event, data){
-                                       that.importUsersComplete(data, selected_users, selected_database);
-                                    }
-                                });              
-                                window.hWin.HEURIST4.ui.showEntityDialog('sysGroups', options3);
-                            
+
+                let selected_database = data.selection[0];
+                if(selected_database.indexOf(window.hWin.HAPI4.sysinfo.database_prefix) === 0){
+                    selected_database = selected_database.substring(window.hWin.HAPI4.sysinfo.database_prefix.length);
+                }
+
+                let options2 = $.extend(entity_dialog_options, {
+                    subtitle: `Step 2. Select users in ${selected_database} to be imported`,
+                    title: 'Import users', 
+                    database: selected_database,
+                    select_mode: 'select_multi',
+                    edit_mode: 'none',
+                    keep_visible_on_selection: true,
+                    onInitFinished: function(){
+                        setTimeout((mngUsers, rec_id) => { mngUsers.recordList.find(`[recid="${rec_id}"]`).trigger('click'); }, 500, this, auto_select);
+                        auto_select = '';
+                    },
+                    onselect: function(event, data){
+
+                        if (!data?.selection || data.selection.length == 0) {
+                            return;
                         }
+
+                        let selected_users = data.selection;
+                        let options3 = $.extend(entity_dialog_options, {
+                            subtitle: 'Step 3. Allocate imported users to work groups',
+                            title: 'Import users', 
+                            select_mode: 'select_roles',
+                            selectbutton_label: 'Allocate roles',
+                            sort_type_int: 'recent',
+                            edit_mode: 'none',
+                            keep_visible_on_selection: false,
+                            onselect: function(event, data){
+                                that.importUsersComplete(data, selected_users, selected_database);
+                            }
+                        });
+
+                        window.hWin.HEURIST4.ui.showEntityDialog('sysGroups', options3);
+                    }
+                });
+
+                if(!window.hWin.HEURIST4.util.isempty(data.email)){
+                    
+                    let request = {
+                        a: 'search',
+                        entity: 'sysUsers',
+                        details: 'id',
+                        ugr_eMail: data.email,
+                        db: selected_database
+                    };
+
+                    window.hWin.HAPI4.EntityMgr.doRequest(request, (response) => {
+
+                        if(response.status === window.hWin.ResponseStatus.OK && response.data.reccount === 1){
+                            auto_select = response.data.records[0];
+                        }
+
+                        window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options2);
                     });
+
+                }else{
                     window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options2);
+                }
+
             }
             
         });

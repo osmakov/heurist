@@ -33,6 +33,9 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
 
         this._super();
     },
+
+    _fullRecordset: null, // complete list of databases without filtering
+    _email_filter: false, // using user email to filter
     
     //  
     // invoked from _init after load entity config    
@@ -76,13 +79,13 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
         let that = this;
         function __onDataResponse(response){
 
-                window.hWin.HEURIST4.msg.sendCoverallToBack();
-                
-                that._cachedRecordset = response;
-                
-               
-                that.recordList.resultList('updateResultSet', response);
-            };
+            window.hWin.HEURIST4.msg.sendCoverallToBack();
+
+            that._cachedRecordset = response;
+            that._fullRecordset = response;
+
+            that.recordList.resultList('updateResultSet', response);
+        };
             
         let entityData = window.hWin.HAPI4.EntityMgr.getEntityData2( this.options.entity.entityName );
 
@@ -193,10 +196,19 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
     },
     
     filterRecordList: function(event, request){
-        if(this.options.except_current==true){
+
+        let filter_email = this._email_filter != request.ugr_eMail;
+
+        if(filter_email){
+            this._email_filter = request.ugr_eMail;
+            this.filterByEmail(request);
+        }else if(this.options.except_current==true){
+
+            delete request.ugr_eMail;
+
             let subset = this._cachedRecordset.getSubSetByRequest(request, this.options.entity.fields);
             //except current
-            subset = subset.getSubSetByRequest({'sys_Database':'!='+window.hWin.HAPI4.sysinfo.database_prefix+window.hWin.HAPI4.database}, 
+            subset = subset.getSubSetByRequest({'sys_Database': `!=${window.hWin.HAPI4.database}`}, 
                             this.options.entity.fields);
             //update
             this.recordList.resultList('updateResultSet', subset, request);   
@@ -204,5 +216,52 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
             this._super(event, request); 
         }
     },
+
+    filterByEmail: function(filter){
+
+        let that = this;
+
+        if(!this._email_filter){ // reset filter, use saved full list of databases
+            this._cachedRecordset = this._fullRecordset;
+            this.filterRecordList(null, filter);
+            return;
+        }
+
+        let request = $.extend({}, {
+            a: 'search',
+            entity: this.options.entity.entityName,
+            db: window.hWin.HAPI4.database,
+            request_id: window.hWin.HEURIST4.util.random()
+        }, filter);
+
+        window.hWin.HEURIST4.msg.bringCoverallToFront();
+
+        window.hWin.HAPI4.EntityMgr.doRequest(request, (response) => {
+
+            window.hWin.HEURIST4.msg.sendCoverallToBack();
+
+            if(response.status !== window.hWin.ResponseStatus.OK){
+                window.hWin.HEURIST4.msg.showMsgErr(response);
+                return;
+            }
+
+            let recordset = new HRecordSet(response.data);
+
+            that._cachedRecordset = recordset;
+
+            that.filterRecordList(null, filter);
+        })
+    },
+
+    _selectAndClose: function(){
+
+        if(!this._resultOnSelection){
+            this._resultOnSelection = {};
+        }
+
+        this._resultOnSelection.email = this._email_filter;
+
+        this._super();
+    }
     
 });

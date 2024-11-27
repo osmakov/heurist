@@ -386,7 +386,7 @@ class DbEntitySearch
 
             if($between){
                 $values = explode('<>', $value);
-                $between = ((negate)?' not':'').SQL_BETWEEN;
+                $between = (($negate)?' not':'').SQL_BETWEEN;
                 $values[0] = $mysqli->real_escape_string($values[0]);
                 $values[1] = $mysqli->real_escape_string($values[1]);
             }else{

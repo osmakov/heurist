@@ -688,6 +688,8 @@ function doImport(){
 
     let selected_database = null;
     let selected_user = null;
+    let email = '';
+    let auto_select = '';
 
     function _prepareImport(){
 
@@ -733,7 +735,7 @@ function doImport(){
     function _showUsers(){
 
         let options = {
-            subtitle: 'Step 2. Select your account in '+selected_database+' to be imported',
+            subtitle: `Step 2. Select your account in ${selected_database} to be imported`,
             title: 'Import users', 
             database: selected_database,
             select_mode: 'select_single',
@@ -741,6 +743,9 @@ function doImport(){
             keep_visible_on_selection: true,
             onInitFinished: function(){
                 selected_user = null;
+                setTimeout((mngUsers, rec_id) => { mngUsers.recordList.find(`[recid="${rec_id}"]`).trigger('click'); }, 500, this, auto_select);
+                email = '';
+                auto_select = '';
             },
             onClose: function(){
                 if(!selected_user){
@@ -756,7 +761,29 @@ function doImport(){
             }
         };
 
-        window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options);
+        if(!window.hWin.HEURIST4.util.isempty(email)){
+
+            let request = {
+                a: 'search',
+                entity: 'sysUsers',
+                details: 'id',
+                ugr_eMail: email,
+                db: selected_database
+            };
+
+            window.hWin.HAPI4.EntityMgr.doRequest(request, (response) => {
+
+                if(response.status === window.hWin.ResponseStatus.OK && response.data.records.length == 1){
+                    auto_select = response.data.records[0];
+                }
+
+                window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options);
+            });
+
+        }else{
+            window.hWin.HEURIST4.ui.showEntityDialog('sysUsers', options);
+        }
+
     }
 
     function _showDatabases(){
@@ -772,11 +799,19 @@ function doImport(){
             keep_visible_on_selection: true,
             onInitFinished: function(){
                 selected_database = null;
+                auto_select = '';
+                email = '';
             },
             onselect:function(event, data){
                 if(data && data.selection && data.selection.length>0){
 
-                    selected_database = data.selection[0].substring(4);
+                    selected_database = data.selection[0];
+                    if(selected_database.indexOf(window.hWin.HAPI4.sysinfo.database_prefix) === 0){
+                        selected_database = selected_database.substring(window.hWin.HAPI4.sysinfo.database_prefix.length);
+                    }
+
+                    email = data.email;
+
                     _showUsers();
                 }
             }

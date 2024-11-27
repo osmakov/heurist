@@ -41,6 +41,11 @@ class DbSysUsers extends DbEntityBase
 
         $not_in_group = @$this->data['not:ugl_GroupID'];
 
+        // Special handling when filtering with emails
+        if(array_key_exists('ugr_eMail', $this->data) && strpos($this->data['ugr_eMail'], '=') !== 0){
+            $this->data['ugr_eMail'] = "={$this->data['ugr_eMail']}";
+        }
+
         if(parent::search()===false){
             return false;
         }
@@ -60,6 +65,9 @@ class DbSysUsers extends DbEntityBase
         if($pred!=null) {array_push($where, $pred);}
 
         $pred = $this->searchMgr->getPredicate('ugr_Enabled');
+        if($pred!=null) {array_push($where, $pred);}
+
+        $pred = $this->searchMgr->getPredicate('ugr_eMail');
         if($pred!=null) {array_push($where, $pred);}
 
         //find users belong to group
@@ -134,20 +142,24 @@ class DbSysUsers extends DbEntityBase
             $this->data['details'] = explode(',', $this->data['details']);
         }
 
+        //exclude ugr_Password form sending to client side
+        $idx = array_search('ugr_Password', $this->data['details']);
+        if($idx !== false){
+            unset($this->data['details'][$idx]);
+        }
+        // exclude ugr_eMail and ugr_Name from sending to client side when client's not logged in
+        $idx = array_search('ugr_eMail', $this->data['details']);
+        if(!$this->system->hasAccess() && $idx !== false){
+            unset($this->data['details'][$idx]);
+        }
+        $idx = array_search('ugr_Name', $this->data['details']);
+        if(!$this->system->hasAccess() && $idx !== false){
+            unset($this->data['details'][$idx]);
+        }
+
         //validate names of fields
         if($needCheck && !$this->_validateFieldsForSearch()){
             return false;
-        }
-
-        //exclude ugr_Password form sending to client side
-        $idx = array_search('ugr_Password', $this->data['details']);
-        if($idx>0){
-            unset($this->data['details'][$idx]);
-        }
-        // exclude ugr_eMail from sending to client side when client's not logged in
-        $idx = array_search('ugr_eMail', $this->data['details']);
-        if(!$this->system->hasAccess() && $idx > 0){
-            unset($this->data['details'][$idx]);
         }
 
         //----- order by ------------
@@ -526,7 +538,7 @@ class DbSysUsers extends DbEntityBase
 
         // Commit
         if ($this->transaction) {
-            mysql__end_transaction($mysqli, true, $keep_autocommit);
+            mysql__end_transaction($mysqli, true, $this->keep_autocommit);
             return true;
         }
 

@@ -19,6 +19,8 @@
 
 $.widget( "heurist.searchSysDatabases", $.heurist.searchEntity, {
 
+    input_email: null,
+
     //
     _initControls: function() {
         this._super();
@@ -35,7 +37,20 @@ $.widget( "heurist.searchSysDatabases", $.heurist.searchEntity, {
         this._on(this.input_search,  { keydown: window.hWin.HEURIST4.ui.preventNonAlphaNumeric, keyup:this.startSearch });
         
         this.input_search.trigger('focus');         
-        
+
+        // Setup email filtering
+        this.element.find('#input_import_only').show();
+        this.input_email = this.element.find('.input_search_email');
+        this._on(this.input_email, {
+            keydown: (e) => {
+                if(e.key == "Enter"){
+                    this.startSearch();
+                }
+            }
+        });
+        this._on(this.element.find('#btn_filter_email').button(), {
+            click: this.startSearch
+        });
         
         if(this.options.subtitle){
             let ele = this.element.find('.sub-title');
@@ -52,10 +67,13 @@ $.widget( "heurist.searchSysDatabases", $.heurist.searchEntity, {
         
         let request = {};
         
-        if(this.input_search.val()!=''){
+        if(this.input_search.val() != ''){
             request['sys_Database'] = this.input_search.val();
         }
-        
+        if(this.input_email.val() != ''){
+            request['ugr_eMail'] = this.input_email.val();
+        }
+
         if(this.input_search_type.val()!='' && this.input_search_type.val()!='any'){
             request['sus_Role'] = this.input_search_type.val();
         }

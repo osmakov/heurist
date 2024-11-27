@@ -48,46 +48,36 @@ class DbSysDatabases extends DbEntityBase
     public function search(){
 
         //compose WHERE
-        $where = array();
-        $current_user_email = null;
-
+        $email_filter = '';
+        $database_filter = '';
         $mysqli = $this->system->getMysqli();
-        $user = user_getById($mysqli, $this->system->getUserId());
-        if($user){
-            $current_user_email = $user['ugr_eMail'];
+
+        if(@$this->data['ugr_eMail']){
+            $email_filter = $this->data['ugr_eMail'];
         }
 
-        $order   = array();
-        $records = array();
+        $order = [];
+        $records = [];
 
-        $query = "show databases where `database` like '".HEURIST_DB_PREFIX."%'";
-        $res = $this->system->getMysqli()->query($query);
+        $databases = mysql__getdatabases4($mysqli, false, $database_filter, $email_filter, 'user');
 
-        $query = array();
-        while ($row = $res->fetch_row()) {
-            $database  = $row[0];
-            $test = strpos($database, HEURIST_DB_PREFIX);
-            if ($test === 0){
-                //$query[] = "SELECT '".$database."' as sys_Database, sys_dbRegisteredID, sys_dbName FROM `"
-                //        .$database."`.sysIdentification";
-                $records[$database] = array($database);
-                $order[] = $database;
-            }
+        foreach($databases as $database){
+            $records[$database] = [$database];
+            $order[] = $database;
         }
 
-        $res->close();
+        return [
+            'queryid'=> @$this->data['request_id'],  //query unqiue id set in doRequest
+            'entityName'=> $this->config['entityName'],
+            'pageno'=> @$this->data['pageno'],  //page number to sync
+            'offset'=> @$this->data['offset'],
+            'count'=> count($records),
+            'reccount'=> count($records),
+            'records'=> $records,
 
-        return array('queryid'=>@$this->data['request_id'],  //query unqiue id set in doRequest
-            'entityName'=>$this->config['entityName'],
-            'pageno'=>@$this->data['pageno'],  //page number to sync
-            'offset'=>@$this->data['offset'],
-            'count'=>count($records),
-            'reccount'=>count($records),
-            'records'=>$records,
-
-            'order'=>$order,
-            'fields'=>array('sys_Database')//,'sys_dbRegisteredID','sys_dbName'),
-        );
+            'order'=> $order,
+            'fields'=> ['sys_Database']
+        ];
 
     }
 

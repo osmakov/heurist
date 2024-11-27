@@ -56,7 +56,7 @@ abstract class DbEntityBase
     protected $fields;
 
     /** @var array $fieldsNames Non-virtual field names */
-    protected $fieldsNames;
+    protected $fieldNames;
 
     /**
      * @var array $records Holds several records for delete/update actions.
@@ -89,6 +89,9 @@ abstract class DbEntityBase
 
     /** @var array|null $duplicationCheck Check for duplication */
     protected $duplicationCheck = null;
+
+    /** @var mixed $searchMgr Instance of EntitySearch for setting up and executing search queries on entities */
+    protected $searchMgr;
 
      /**
      * Constructor - Loads configuration from JSON file.
