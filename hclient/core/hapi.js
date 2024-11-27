@@ -69,6 +69,8 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
 
         _use_debug = true,
         
+        
+       
         actionHandler = null;
                 
 
@@ -85,6 +87,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
     function _init(_db, _oninit, _baseURL) { //, _currentUser) {
 
         that.SystemMgr = new HSystemMgr(that);
+        that.LayoutMgr2 = new HLayoutMgr();
 
         //@todo - take  database from URL
         if (_db) {
@@ -1161,7 +1164,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
         iconBaseURL: '',
         database: '',
         currentUser: _guestUser,
-        is_publish_mode: true,
+        is_publish_mode: false,
         sysinfo: {},
 
         Event: {

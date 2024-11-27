@@ -80,9 +80,7 @@ $.widget( "heurist.recordListExt", {
             this.element.attr('data-widgetid', this.options.widget_id);
         }
         
-        if(this.element.parent().attr('data-heurist-app-id') || this.element.hasClass('cms-element')){
-            this._is_publication = true;
-        }
+        this._is_publication = window.hWin.HAPI4.is_publish_mode;
         
         let that = this;
 

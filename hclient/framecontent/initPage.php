@@ -231,6 +231,7 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/hapi.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/HSystemMgr.js"></script>
 
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/core/HLayoutMgr.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/layout.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/hRecordSearch.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/recordset.js"></script>
@@ -312,8 +313,9 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
         {
             applyTheme();
 
-            if(!window.hWin.HEURIST4.util.isnull(window.onAboutInit) && window.hWin.HEURIST4.util.isFunction(window.onAboutInit)){
-                if(window.hWin.HAPI4.sysinfo['layout']!='WebSearch')
+            if(!window.hWin.HEURIST4.util.isnull(window.onAboutInit) 
+                && window.hWin.HEURIST4.util.isFunction(window.onAboutInit))
+            {
                     window.onAboutInit();//init about dialog
             }
 

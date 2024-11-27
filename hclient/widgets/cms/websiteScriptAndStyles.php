@@ -145,8 +145,8 @@ if($_is_new_cms_editor){
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cms/editCMS_ElementCfg.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cms/editCMS_SiteMenu.js"></script>
 
-<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cms/hLayoutMgr.js"></script>
-<!-- script type="text/javascript" src="<?php echo PDIR;?>hclient/core/HLayoutMgr.js"></script -->
+<!-- script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cms/hLayoutMgr.js"></script -->
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/core/HLayoutMgr.js"></script>
 
 <style>
 .tox-toolbar{
@@ -321,8 +321,11 @@ function onPageInit(success)
 
     $('#main-menu').hide();
 
-    hLayoutMgr();//init global var layoutMgr
-    //window.layoutMgr = new HLayoutMgr();
+    
+    window.hWin.HAPI4.is_publish_mode = true;
+    
+    //hLayoutMgr();//init global var layoutMgr
+    window.layoutMgr = new HLayoutMgr();
 
     //cfg_widgets is from layout_defaults.js
     window.hWin.HAPI4.LayoutMgr.init(cfg_widgets, null);

@@ -206,12 +206,8 @@ $.widget( "heurist.search_faceted", {
     _create: function() {
         
         if(!this.options.language) this.options.language = 'def'; //"xx" means use current language
-        
-        if( this.element.hasClass('cms-element') || (this.element.parents('.cms-element').length>0)  
-            || this.element.parent().attr('data-heurist-app-id') )
-        {
-            this.options.is_publication = true;
-        }
+
+        this._is_publication = window.hWin.HAPI4.is_publish_mode;
         
         if(!this.element.attr('id')){
             this.element.uniqueId();

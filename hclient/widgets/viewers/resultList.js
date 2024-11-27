@@ -209,6 +209,8 @@ $.widget( "heurist.resultList", {
         if(this.options.widget_id){ //outdated
             this.element.attr('data-widgetid', this.options.widget_id);
         }
+        
+        this.element.css('overflow','hidden');
 
         if(this.options.blog_result_list==true){
             this.options.pagesize = 10;
@@ -219,9 +221,7 @@ $.widget( "heurist.resultList", {
         this.options.empty_remark = this.options.empty_remark=='def' ? window.hWin.HR('resultList_empty_remark') : this.options.empty_remark;
         this.options.placeholder_text = this.options.placeholder_text=='def' ? '' : this.options.placeholder_text;
 
-        this._is_publication  = this.element.parent().attr('data-heurist-app-id') || this.element.hasClass('cms-element');
-        
-       
+        this._is_publication = window.hWin.HAPI4.is_publish_mode;
 
         // Auto select record(s), retrieved from url
         let rec_ids = window.hWin.HEURIST4.util.getUrlParameter('rec_id', location.href);
@@ -4366,7 +4366,6 @@ $.widget( "heurist.resultList", {
             is_h6style: true,
             modal: false,
             dialogid: 'recordview_popup',    
-            //width: 700, height: 800, //(lt=='WebSearch'?(window.hWin.innerWidth*0.9):
             onmouseover: function(){
                 that._clearTimeouts();
             },

@@ -64,45 +64,12 @@ function HLayout(args) {
     */
     function _appGetWidgetById(id){
 
-        let i;
-        for(i=0; i<widgets.length; i++){
+        for(let i=0; i<widgets.length; i++){
             if(widgets[i].id==id){
                 return widgets[i];
             }
         }
         return null;
-    }
-    
-    //
-    // put specified widget on top
-    //
-    // implemented for tabs only and if several same widgets are in layout it show first only
-    //
-    function _putAppOnTop( widgetname ){
-        
-        let app = _appGetWidgetByName( widgetname );
-        if(window.hWin.HEURIST4.util.isnull(app)) return;
-        
-        let ele = $(app.widget);  //find panel with widget
-        if( ele.hasClass('ui-tabs-panel') ){
-            //get parent tab and make it active
-            $(ele.parent()).tabs( "option", "active", ele.index()-1 );
-        }
-    }
-
-    //
-    // we may use several widgets of the same type: staticPage or recordListExt for example
-    // put specific tab on top
-    // note: you have to define unique layout_id in layout_default.js
-    //
-    function _putAppOnTopById( layout_id ){
-        
-        if(window.hWin.HEURIST4.util.isnull(layout_id)) return;
-        
-        let ele = $('div[layout_id="'+layout_id+'"]');
-        if( ele.hasClass('ui-tabs-panel') ){
-            $(ele.parent()).tabs( "option", "active", ele.index()-1 );
-        }
     }
     
     //
@@ -184,7 +151,7 @@ function HLayout(args) {
                 // in new version config is in body
                 let opts = window.hWin.HEURIST4.util.isJSON(cfgele.text());
                 
-                //extend options with suppimentary ones
+                //extend options with supplimentary ones
                 if(supp_options && supp_options[app_id]){
                     opts = (opts!=false)? $.extend(opts, supp_options[app_id])
                                     :supp_options[app_id];
@@ -1372,15 +1339,14 @@ console.error('Cardinal layout widget does not have proper options');
         getVersion: function () {return _version;},
 
         //returns widget options from cfg_widgets
+        //WRONG USAGE, TO REMOVE: used to obtain instance of widget
         appGetWidgetById: function(id){
             return _appGetWidgetById(id);
         },
         
-        //returns widget options from cfg_widgets
-        appGetWidgetByName: function( widgetname ){
-            return _appGetWidgetByName( widgetname );
-        },
-
+        //
+        // 
+        //
         getWidgetByName: function( widgetname ){
             
             if(widgetname=='svs_list'){
@@ -1397,16 +1363,9 @@ console.error('Cardinal layout widget does not have proper options');
                 return null;
             }
         },
-        
-        //not used
-        executeCommand: function( widgetname, method, command ){
-            let app = _appGetWidgetByName( widgetname );
-            if(app && app.widget)
-                $(app.widget)[widgetname](method, command);
-        },
 
         //
-        //
+        // once in map.php
         //
         executeWidgetMethod: function( element_id, widgetname, method, params ){
             let app = window.hWin.document.getElementById(element_id);
@@ -1422,7 +1381,8 @@ console.error('Cardinal layout widget does not have proper options');
         },
     
         //
-        //
+        // loads cfg from layout_default by layoutid and init layout in element with containerid
+        // see index.php and slidersMenu
         //
         appInitAll: function(layoutid, containerid){
             _containerid = containerid
@@ -1432,6 +1392,7 @@ console.error('Cardinal layout widget does not have proper options');
         
         //
         // get layout properties from attributes of elements and init free layout
+        // see init main menu in cms, init layout v1 in HLayoutMgr
         //
         appInitFromContainer: function( document, containerid, supp_options, onInitComplete ){
             
@@ -1453,10 +1414,13 @@ console.error('Cardinal layout widget does not have proper options');
                         onInitComplete.call();
                 }
             }
-            //
+            // define links to media from data-id
             _defineMediaSource($container); 
         },
         
+        //
+        // init layout in popup
+        //
         appInitFromContainer2: function( $container, supp_options ){
             //create layout based on heurist-app-id and heurist-app-options
             let layout = _getLayoutParams($container, supp_options); 
@@ -1466,33 +1430,6 @@ console.error('Cardinal layout widget does not have proper options');
             
             _defineMediaSource($container); 
         },
-
-        // outdated - used for H4Default layout only
-        putAppOnTop: function( widgetname ){
-            _putAppOnTop( widgetname );
-        },
-
-        // outdated - used for H4Default layout only
-        putAppOnTopById: function( widgetname ){
-            _putAppOnTopById( widgetname );
-        },
-        
-
-        visibilityAppById: function ( layout_id, show_or_hide ){
-            
-            if(window.hWin.HEURIST4.util.isnull(layout_id)) return;
-            let ele = $('div[layout_id="'+layout_id+'"]');
-            
-            if( ele.hasClass('ui-tabs-panel') ){
-                let ele2 = $(ele.parent()).find('ul li').eq(ele.index()-1);
-                if(show_or_hide){
-                    ele2.show();
-                }else{
-                    ele2.hide();
-                }
-            }
-        },    
-        
         
         init: function(cfg_widgets, cfg_layouts){
             _init(cfg_widgets, cfg_layouts)

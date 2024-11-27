@@ -65,11 +65,11 @@ $.widget( "heurist.search", {
     _create: function() {
 
         let that = this;
+        
+        this._is_publication = window.hWin.HAPI4.is_publish_mode;
 
-        if(this.element.parent().attr('data-heurist-app-id') || this.element.hasClass('cms-element')){
-
+        if(this._is_publication){
             this.options.button_class = '';
-            this._is_publication = true;
             //this is CMS publication - take bg from parent
             this.element.addClass('ui-widget-content').css({'background':'none','border':'none'});
         }else if(!this.options.is_h6style){
