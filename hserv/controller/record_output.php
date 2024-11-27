@@ -103,6 +103,7 @@
 
     if(@$params['file_refs']){
         downloadFileReferences($system, $params['ids']);
+        exit;
     }
 
     if(!@$params['format']){
@@ -355,7 +356,7 @@ function downloadFileReferences($system, $ids){
     // return setup
 
     // write results
-    fputcsv($fd, array("Uploaded_File_ID", "Referenced by", "New ref H-IDs", "Name", "Path", "Obfuscated URL", "Description", "Caption", "Copyright", "Copy Owner", "File Type", "File Size (in KB)", "Checksum", "Uploaded By", "Added On", "Last Modified", "Original file name"), $sep);
+    fputcsv($fd, array("Uploaded_File_ID", "Name", "Path", "Obfuscated URL", "Description", "Caption", "Copyright", "Copy Owner", "File Type", "File Size (in KB)", "Checksum", "Uploaded By", "Added On", "Last Modified", "Original file name", "Referenced by", "New ref H-IDs"), $sep);
 
     /*
         [0] => File Name
@@ -390,7 +391,7 @@ function downloadFileReferences($system, $ids){
         if(!$recs || empty($recs)){
             $recs = array(0);
         }
-        fputcsv($fd, array($id, implode('|', $recs), "", $name, $path, $obf_url, $details[4], $details[11], $details[12], $details[13], $details[5], $file_size, $checksum, $details[7], $details[8], $details[9], $details[10]), $sep);
+        fputcsv($fd, array($id, $name, $path, $obf_url, $details[4], $details[11], $details[12], $details[13], $details[5], $file_size, $checksum, $details[7], $details[8], $details[9], $details[10], implode('|', $recs), ""), $sep);
     }
     $res_files->close();
 
