@@ -21,7 +21,7 @@
                 "dty_Size":60,
                 "rst_DisplayWidth":70,
                 "rst_DisplayName": "Concise summary",
-                "rst_DisplayHelpText": "Please give a concise but descriptive title for the bug or feature request", 
+                "rst_DisplayHelpText": "Please give a concise but descriptive title for the bug or feature request.<br><strong><em>Limit of 60 characters</em></strong>",
                 "rst_RequirementType":"required"
             }
         },
@@ -32,7 +32,7 @@
                 "rst_DisplayWidth":70,
                 "rst_DisplayHeight":14,
                 "rst_DisplayName": "Full description",
-                "rst_DisplayHelpText": "Please give a detailed description of the bug or feature request",
+                "rst_DisplayHelpText": "Please give a detailed description of the bug or feature request.<br>A couple of sentences is recommended here.",
                 "rst_RequirementType":"required"
             },
             "force_displayheight": 14
@@ -41,7 +41,7 @@
             "dtID": "3-1058",
             "dtFields":{
                 "dty_Type":"freetext",
-                "dty_Size":60,
+                "dty_Size":2046,
                 "rst_DisplayWidth":70,
                 "rst_DisplayName": "URL",
                 "rst_DisplayHelpText": "Please copy the URL that you were using when you encountered the problem"

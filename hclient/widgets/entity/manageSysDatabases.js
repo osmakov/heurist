@@ -202,7 +202,7 @@ $.widget( "heurist.manageSysDatabases", $.heurist.manageEntity, {
         if(filter_email){
             this._email_filter = request.ugr_eMail;
             this.filterByEmail(request);
-        }else if(this.options.except_current==true){
+        }else if(this.options.except_current === true){
 
             delete request.ugr_eMail;
 

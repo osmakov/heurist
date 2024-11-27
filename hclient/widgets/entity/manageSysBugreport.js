@@ -26,6 +26,8 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
     
     //keep to refresh after modifications
     _keepRequest:null,
+
+    _checkDescription: true, // check if bug description is over 20 characters long
     
     _init: function() {
         
@@ -68,6 +70,45 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
         }
         
         return btns;
+    },
+
+    _getValidatedValues: function(){
+
+        let that = this;
+        let res = this._super();
+
+        if(!res){
+            return null;
+        }
+
+        // Check for a usable description (a min of 20 words) or the inclusion of steps to reproduce
+        let desc = res['2-3'];
+        let steps = res['2-4'];
+        if(this._checkDescription && desc.split(' ').length < 20 && window.hWin.HEURIST4.util.isempty(steps)){
+
+            let $dlg;
+            let msg = 'In order for bugs to be found and fixed as quickly as possible, the team requires as many details about the issue you are encountering.<br>'
+                + 'Providing the steps that has lead you to this issue will also greatly speed up the initial stages of fixing this issue.<br><br>'
+                + 'Otherwise, you can click \'Proceed as-is\' if you feel that there are no more details you can provided about this issue.';
+
+            let btns = {};
+            btns[window.hWin.HR('Proceed as-is')] = () => {
+
+                that._checkDescription = false;
+                $dlg.dialog('close');
+
+                that._saveEditAndClose();
+            }
+            btns[window.hWin.HR('Close')] = () => {
+                $dlg.dialog('close');
+            };
+
+            $dlg = window.hWin.HEURIST4.msg.showMsgDlg(msg, btns, {title: 'More information recommended'}, {default_palette_class: 'ui-heurist-admin'});
+
+            return null;
+        }
+
+        return res;
     },
     
 //---------------------------------------------------------------------------------- 
