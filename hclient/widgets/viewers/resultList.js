@@ -444,7 +444,6 @@ $.widget( "heurist.resultList", {
 
                     //this selection is triggered by some other app - we have to redraw selection
                     if(data && data.source!=that.element.attr('id')) {
-                        
                         if(!that._isSameRealm(data)){
                             that.setSelected(null);
                         }else if(data.reset){ //clear selection
@@ -2665,11 +2664,11 @@ $.widget( "heurist.resultList", {
     
     scrollToRecordDiv: function(selected, to_top_of_viewport){
         
-        let rdiv;
-        if($(selected).is('div.recordDiv')){
-            rdiv = $(selected)
-        }else{
+        let rdiv = null;
+        if( window.hWin.HEURIST4.util.isPositiveInt(selected) ){
             rdiv = this.div_content.find('.recordDiv[recid="'+selected+'"]');    
+        }else if($(selected).length>0 && $(selected).is('div.recordDiv')){
+            rdiv = $(selected)
         }
         
         if(rdiv && rdiv.length==1){

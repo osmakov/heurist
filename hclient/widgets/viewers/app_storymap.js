@@ -1258,10 +1258,12 @@ $.widget( "heurist.app_storymap", {
                     //find selected record id among stories
                     let rec = that._resultset_main.getById(rec_ids[0]);
                     if(rec){
-                        $(that.document).trigger(window.hWin.HAPI4.Event.ON_REC_SELECT, 
-                            {selection:[rec_ids[0]], source:that.element.attr('id'), 
-                                search_realm:that.options.search_realm} ); //highlight in main resultset
-                        that._checkForStory(rec_ids[0]); //load first story
+                        if(that.options.storyRecordID != rec_ids[0]){
+                            that._checkForStory(rec_ids[0]); //load first story
+                            $(that.document).trigger(window.hWin.HAPI4.Event.ON_REC_SELECT, 
+                                {selection:[rec_ids[0]], source:that.element.attr('id'), 
+                                    search_realm:that.options.search_realm} ); //highlight in main resultset
+                        }
                     }else{
                         //find selected record id among story elements    
                         rec = that._resultset.getById(rec_ids[0]);
@@ -1289,11 +1291,14 @@ $.widget( "heurist.app_storymap", {
         if(recset.length()==0) return;
         
         if(recset.length()==1){
-            //select the only story at once
-            $(that.document).trigger(window.hWin.HAPI4.Event.ON_REC_SELECT, 
-                {selection:recset.getIds(), source:that.element.attr('id'), 
-                    search_realm:that.options.search_realm} );
-            that._checkForStory(recset.getIds()[0]); //load certain story
+            const selids = recset.getIds();
+            if(that.options.storyRecordID != selids[0]){
+                that._checkForStory(selids[0]); //load certain story
+                //select the only story at once
+                $(that.document).trigger(window.hWin.HAPI4.Event.ON_REC_SELECT, 
+                    {selection:selids, source:that.element.attr('id'), 
+                        search_realm:that.options.search_realm} );
+            }
             return;            
         }
         
@@ -1435,7 +1440,7 @@ $.widget( "heurist.app_storymap", {
         {
             // loads from cache
             
-            if(!this._mapping.app_timemap('isMapInited')){
+            if(!(this._mapping.app_timemap('instance') && this._mapping.app_timemap('isMapInited'))){
                    
                 /*    
                 this._mapping.app_timemap('option','onMapInit', function(){
