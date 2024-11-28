@@ -840,6 +840,19 @@ function afterPageLoad(document, pageid, eventdata){
     if(!eventdata) eventdata = {};
     eventdata['url_params'] = params;
 
+    //execute custom javascript for home page =========================
+    if(pageid!=home_page_record_id && is_execute_homepage_custom_javascript){
+        var func_name = 'afterPageLoad'+home_page_record_id;
+        if(window.hWin.HEURIST4.util.isFunction(window[func_name])){
+            //script may have event listener that is triggered on page exit
+            //disable it
+            $( "#main-content" ).off( "onexitpage");
+            //execute the script
+            window[func_name]( document, pageid, eventdata );
+        }
+    }
+    is_execute_homepage_custom_javascript = false;
+    
     //execute custom javascript per loaded page =========================
     if(DT_CMS_SCRIPT>0){
         var func_name = 'afterPageLoad'+pageid;
@@ -869,18 +882,7 @@ function afterPageLoad(document, pageid, eventdata){
             window[func_name]( document, pageid, eventdata );
         }
     }
-    //execute custom javascript for home page =========================
-    if(pageid!=home_page_record_id && is_execute_homepage_custom_javascript){
-        var func_name = 'afterPageLoad'+home_page_record_id;
-        if(window.hWin.HEURIST4.util.isFunction(window[func_name])){
-            //script may have event listener that is triggered on page exit
-            //disable it
-            $( "#main-content" ).off( "onexitpage");
-            //execute the script
-            window[func_name]( document, pageid, eventdata );
-        }
-    }
-    is_execute_homepage_custom_javascript = false;
+
 
     $('#main-content-container').scrollTop(0);// reset scroll
 
