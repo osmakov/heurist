@@ -234,7 +234,7 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
                     $dlg.find("#zoom_to_selected").prop('checked', opts.layout_params.zoom_to_selected);    
 
                     let ctrls = (opts.layout_params.controls)?opts.layout_params.controls.split(','):[];
-                    $dlg.find('input[name=""]').each(
+                    $dlg.find('input[name="controls"]').each(
                         function(idx,item){$(item).prop('checked',ctrls.indexOf($(item).val())>=0);}
                     );
                                                                 

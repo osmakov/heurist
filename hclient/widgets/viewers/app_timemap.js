@@ -280,6 +280,8 @@ $.widget( "heurist.app_timemap", {
                             }
                         }
                     
+                    }else if(this.options.layout_params.controls?.indexOf('legend') !== -1){
+                        url += '&controls=legend'; // avoid destroying legend controls
                     }
 
                 }else{
