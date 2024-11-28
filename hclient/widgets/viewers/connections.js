@@ -71,17 +71,14 @@ $.widget( "heurist.connections", {
 
                 //accept events from the same realm only
                 if(!that._isSameRealm(data)) return;
-                
-               
-               
-                
-                
+
                 //find all relation within given result set
                 that.recordset_changed = true;
                 that.options.relations = null;
                 that.options.recordset = data.recordset; //HRecordSet
+                that._lastRequest = data.request; //last request, contains query
+
                 that._refresh();
-                
 
             // Search start
             }else if(e.type == window.hWin.HAPI4.Event.ON_REC_SEARCHSTART){
@@ -364,7 +361,7 @@ $.widget( "heurist.connections", {
         
         if( !window.hWin.HEURIST4.util.isnull(this.graphframe) && this.graphframe.length > 0 ){
             let that = this;
-            this.graphframe[0].contentWindow.showData(data, this.options.selection, 
+            this.graphframe[0].contentWindow.showData(data, this.options.selection, this._lastRequest,
                     function(selected){
                         $(that.document).trigger(window.hWin.HAPI4.Event.ON_REC_SELECT, 
                         { selection:selected, source:that.element.attr('id'), search_realm:that.options.search_realm } );

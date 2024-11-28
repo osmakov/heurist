@@ -77,7 +77,9 @@ function onPageInit(success){
 
             var MAXITEMS = window.hWin.HAPI4.get_prefs('search_detail_limit');
 
-            window.hWin.HAPI4.RecordMgr.search({q: q, rules:rules, w: "a", detail:'detail', l:MAXITEMS},
+            let query = {q: q, rules: rules, w: 'a', detail: 'detail', l: MAXITEMS};
+
+            window.hWin.HAPI4.RecordMgr.search(query,
                 function(response){
                     if(response.status == window.hWin.ResponseStatus.OK){
 
@@ -94,7 +96,7 @@ function onPageInit(success){
                                     // Parse response to spring diagram format
                                     var data = __parseData(records_ids, response.data);
 
-                                    showData(data, [], null, null);
+                                    showData(data, [], query, null, null);
 
                                 }else{
                                     window.hWin.HEURIST4.msg.showMsgErr(response);
@@ -220,7 +222,7 @@ function onPageInit(success){
         //
         //
         //
-        function showData(data, selectedRecordsIds, onSelectEvent, onRefreshData) {
+        function showData(data, selectedRecordsIds, new_request, onSelectEvent, onRefreshData) {
                // Processing...
                 if(data && data.nodes){
                     $("#d3svg").html('<text x="25" y="25" fill="black">Buiding graph ...</text>');
@@ -248,6 +250,7 @@ function onPageInit(success){
 
                 $("#visualize").visualize({
                     data: data,
+                    request: new_request,
                     getData: function(data) { return getData(data);},
                     getLineLength: function(record) { return getLineLength(record);},
 

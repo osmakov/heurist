@@ -1576,8 +1576,11 @@ function inIframe() {
 //New graph refresh button - Created by Travis Doyle 24/9/2022
 function refreshButton() {
     if(window.location !== window.parent.location){ // handle iframe
-        let query = window.hWin.HEURIST4.query.composeHeuristQuery2(window.hWin.HEURIST4.current_query_request, false);
+
+        let query = settings.request ? settings.request : window.hWin.HEURIST4.current_query_request;
+        query = window.hWin.HEURIST4.query.composeHeuristQuery2(query, false);
         query = query + ((query == '?') ? '' : '&') + 'db=' + window.hWin.HAPI4.database;
+
         location.href = query;
     }else{
         location.reload();    
