@@ -179,6 +179,9 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title
     } elseif(is_array($db_request) && count($db_request)==4){ // Do filtering, record count and last modified
 
         $count = intval($db_request['count']);
+        if(!($count>0)){
+            $count = 0;
+        }
 
         $lastmod_logic = $mysqli->real_escape_string( filter_var($db_request['lastmod_logic'],FILTER_SANITIZE_STRING) );
         $lastmod_logic = $lastmod_logic == 'more' ? '<=' : '>=';
@@ -200,7 +203,23 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title
         foreach ($dbs as $db) {
 
             $db = preg_replace(REGEX_ALPHANUM, "", $db);
-
+            
+            $isok = true;
+            
+            if($count>0){
+                $count_res = mysql__select_value($mysqli, "select count(*) from $db.`Records` where (not rec_FlagTemporary)");
+                $isok =  intval($count_res)>$count;
+            }
+            
+            if($isok && $lastmod_unit!="ALL"){
+                $cnt = mysql__select_value($mysqli, "select count(*) from $db.`Records` where (not rec_FlagTemporary) ".$lastmod_where);    
+                $isok =  $cnt>0;
+            }
+            if($isok){
+                $data[] = $db;
+            }
+            
+/*
             $query = "SELECT count(*)
                                 FROM (
                                     SELECT *
@@ -210,7 +229,6 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title
                                     AND rec_FlagTemporary != 1
                                     AND rec_Title != '' " . $lastmod_where . "
                                 ) AS a";
-
             $count_res = $mysqli->query($query);
             if($count_res>0){
 
@@ -229,8 +247,9 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title
                 print $rtn;
 
                 exit;
-
             }
+*/            
+            
         }
     }
 

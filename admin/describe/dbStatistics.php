@@ -111,7 +111,9 @@ foreach ($dbs as $db){
 
       $broken_dbs[] = $db_name;
     }else{
-
+        
+        $size = 0;
+       
         $size = file_exists(HEURIST_FILESTORE_ROOT . $db_name) ? folderSize(HEURIST_FILESTORE_ROOT . $db_name) : 0;
 
         if($size > 0){ // to MB
@@ -125,11 +127,10 @@ foreach ($dbs as $db){
             $db_name,
             mysql__select_val("select count(*) from $db.`Records` where (not rec_FlagTemporary)"),
             $size,
-            mysql__select_val("select max(rec_Modified)  from $db.`Records`"),
+            mysql__select_val("select max(rec_Modified)  from $db.`Records` where (not rec_FlagTemporary)"),
             mysql__select_value($mysqli, "select max(rst_Modified) from $db.`defRecStructure`"),
             mysql__select_val("select cast(sys_dbRegisteredID as CHAR) from $db.`sysIdentification` where 1"),
-            mysql__select_val("select concat_ws('.',cast(sys_dbVersion as char),cast(sys_dbSubVersion as char)) "
-                ." from $db.`sysIdentification` where 1")
+            mysql__select_val("select concat_ws('.',cast(sys_dbVersion as char),cast(sys_dbSubVersion as char)) from $db.`sysIdentification` where 1")
         );
 
         $owner = mysql__select_row($mysqli, "SELECT concat(ugr_FirstName,' ',ugr_LastName),ugr_eMail,ugr_Organisation ".
@@ -146,8 +147,8 @@ foreach ($dbs as $db){
 
             $record_row[] = implode(' ', $owner);
 
-            $record_row[4] = strtotime($record_row[4]);
-            $record_row[5] = strtotime($record_row[5]);
+            $record_row[4] = strtotime($record_row[4]);  // rec_Modified
+            $record_row[5] = strtotime($record_row[5]);  // rst_Modified
 
             $aitem_quote = function($n)
             {
