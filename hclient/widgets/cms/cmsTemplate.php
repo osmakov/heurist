@@ -82,9 +82,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="<?php echo $image_icon;?>"> <!--  type="image/x-icon" -->
     <link rel="shortcut icon" href="<?php echo $image_icon;?>">
-    <?php
-        include_once $websiteScriptAndStyles_php;  //include heurist scripts and styles
-    ?>
 
 <style>
 /* page (menu) title it is added to main-pagetitle */
@@ -157,6 +154,11 @@
     text-decoration: none;
 }
 </style>
+
+    <?php
+        include_once $websiteScriptAndStyles_php;  //include heurist scripts and styles
+    ?>
+
 </head>
 <body>
 <?php

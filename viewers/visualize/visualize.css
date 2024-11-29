@@ -223,9 +223,9 @@ text.shadow {
     bottom: 0px;
     width: 30%;
     height: 40%;
-    min-width: 300px;
+    min-width: 380px;
     min-height: 330px;
-    max-width: 330px;
+    max-width: 380px;
     max-height: 350px;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }

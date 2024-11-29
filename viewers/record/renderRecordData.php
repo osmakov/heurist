@@ -53,9 +53,10 @@ define('DIV_MAP_POPUP','<div class="map_popup">');
 define('ALLOWED_TAGS', '<i><b><u><em><strong><sup><sub><small><br>');//for record title see output_chunker for other fields
 //'<a><u><i><em><b><strong><sup><sub><small><br><h1><h2><h3><h4><p><ul><li><img>'
 
-$noclutter = array_key_exists('noclutter', $_REQUEST);//NOT USED
+$noclutter = array_key_exists('noclutter', $_REQUEST);//like for map popup, but with header
 $is_map_popup = array_key_exists('mapPopup', $_REQUEST) && ($_REQUEST['mapPopup']==1);
 $without_header = array_key_exists('noheader', $_REQUEST) && ($_REQUEST['noheader']==1);
+
 $layout_name = @$_REQUEST['ll'];
 $is_production = !$is_map_popup && $layout_name=='WebSearch';
 $primary_language = !empty(@$_REQUEST['lang']) ? getLangCode3($_REQUEST['lang']) : null;
@@ -468,7 +469,6 @@ if(!($is_map_popup || $without_header)){
             // Add group headers to record viewer
             //
             function createRecordGroups(groups){
-
                 var $group_container = $('div#div_public_data');
                 var $data = $group_container.find('div[data-order]');
 
@@ -1125,6 +1125,10 @@ elseif(!$is_map_popup){
 <?php
 }
 
+if($noclutter){
+    $is_map_popup = true;
+}
+
 if ($bkm_ID>0 || $rec_id>0) {
 
         if ($bkm_ID>0) {
@@ -1200,7 +1204,7 @@ if ($bkm_ID>0 || $rec_id>0) {
         } else {
             print 'No details found';
         }
- if($is_map_popup || $without_header){
+ if(!$noclutter && $is_map_popup || $without_header){
 //    print DIV_E;
  }else{
        ?>
@@ -1552,7 +1556,7 @@ function print_personal_details($bkmk) {
 //
 function print_public_details($bib) {
 
-    global $system, $defTerms, $is_map_popup, $without_header, $is_production, $primary_language,
+    global $system, $defTerms, $is_map_popup, $noclutter, $without_header, $is_production, $primary_language,
         $ACCESSABLE_OWNER_IDS, $ACCESS_CONDITION, $relRT, $startDT, $already_linked_ids, $group_details, $hide_images;
 
     $has_thumbs = false;
@@ -2254,10 +2258,12 @@ function print_public_details($bib) {
         }
 
     }
-    if($is_map_popup){
+    if($is_map_popup && !$noclutter){
         //echo '<div class=detailRow><div class=detailType><a href="#" onClick="$(\'.fieldRow\').show();$(event.target).hide()">more</a></div><div class="detail"></div></div>';
     }else{
-
+        
+        echo '<script>$(".fieldRow").css("display","table-row");$(".moreRow").hide();</script>';
+        
         if(is_array($group_details) && !empty($group_details)){
             echo '<script>createRecordGroups(', json_encode($group_details, JSON_FORCE_OBJECT), ');handleCMSContent();</script>';
         }

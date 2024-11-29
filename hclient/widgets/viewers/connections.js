@@ -181,8 +181,7 @@ $.widget( "heurist.connections", {
                         this._doVisualize(data);
                     
                     }
-                }else if(this.graphframe[0] && this.graphframe[0].contentWindow 
-                        && window.hWin.HEURIST4.util.isFunction(this.graphframe[0].contentWindow.showData)){
+                }else if(this._isVisualizeInited()){
                     //clear
                     this.graphframe[0].contentWindow.showData(null);
                 }
@@ -355,11 +354,17 @@ $.widget( "heurist.connections", {
         }
         return {nodes: array, links: links};
     }
+    
+    , _isVisualizeInited(){
+        
+        return !window.hWin.HEURIST4.util.isnull(this.graphframe) && this.graphframe.length > 0 &&
+         window.hWin.HEURIST4.util.isFunction(this.graphframe[0].contentWindow.showData);
+    }
 
     /** Calls the visualisation plugin */
     , _doVisualize: function (data) {
         
-        if( !window.hWin.HEURIST4.util.isnull(this.graphframe) && this.graphframe.length > 0 ){
+        if(this._isVisualizeInited() ){
             let that = this;
             this.graphframe[0].contentWindow.showData(data, this.options.selection, this._lastRequest,
                     function(selected){
@@ -385,12 +390,9 @@ $.widget( "heurist.connections", {
 
             this.options.selection = selection;
             
-            if(!this.element.is(':visible')
-                || window.hWin.HEURIST4.util.isnull(this.graphframe) || this.graphframe.length < 1){
-                    return;
+            if(this.element.is(':visible') && this._isVisualizeInited()){
+                this.graphframe[0].contentWindow.showSelection(this.options.selection);
             }
-            
-            this.graphframe[0].contentWindow.showSelection(this.options.selection);
     }    
 
 });

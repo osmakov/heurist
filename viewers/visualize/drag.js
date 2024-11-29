@@ -190,7 +190,8 @@ function showNodeInformation(d){
     window.hWin.HEURIST4.msg.bringCoverallToFront(iframeDiv, {'background-color': 'white', 'opacity': 1, 'font-weight': 'bold', 'font-size': 'smaller', 'color': 'black'}, 
         'Loading<br><br>'+ window.hWin.HEURIST4.util.stripTags(truncateText(d.name, 40)));
 
-    const srcURL = window.hWin.HAPI4.baseURL + 'viewers/record/renderRecordData.php?recID=' + d.id + '&db=' + window.hWin.HAPI4.database;//URL for source of information iframe
+    const srcURL = window.hWin.HAPI4.baseURL + 'viewers/record/renderRecordData.php?noclutter=1&recID=' 
+                + d.id + '&db=' + window.hWin.HAPI4.database;//URL for source of information iframe
     infoBox.attr("src", srcURL)
            .attr("recid", d.id)
            .attr("data-recid", d.id)
