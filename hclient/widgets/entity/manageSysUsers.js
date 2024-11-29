@@ -377,7 +377,7 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
 
         let user_content = window.hWin.HEURIST4.util.isempty(fld('ugr_Name'))
             ? ''
-            : `<a class="truncate" style="flex:0 1 ${name_width}em"${mail_link}title="${fld('ugr_eMail')}">{fld('ugr_Name')}</a>`;
+            : `<a class="truncate" style="flex:0 1 ${name_width}em"${mail_link}title="${fld('ugr_eMail')}">${fld('ugr_Name')}</a>`;
 
         let html = '<div class="recordDiv" id="rd'+recID+'" recid="'+recID+'" usr_status="'+fld('ugr_Enabled')+'" style="display: flex;">'
         + html_thumb
