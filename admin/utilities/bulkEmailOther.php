@@ -272,22 +272,29 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title
     foreach($dbs as $db){
 
         $db = preg_replace(REGEX_ALPHANUM, "", $db);//for snyk
+        
+        $query = 'SELECT ugr.ugr_FirstName, ugr.ugr_LastName, ugr.ugr_eMail FROM `' . $db . '`.sysUGrps AS ugr ';
+        $need_groups = false;
 
         if($user_request == "owner"){ // Owners
-            $where_clause = "WHERE ugr.ugr_ID = 2";
+            $where_clause = 'ugr.ugr_ID = 2';
         }elseif($user_request == "manager"){ // Admins of Database Managers Workgroup
+        
+            $need_groups = true;
 
-            $where_clause = "WHERE ugl.ugl_Role = 'admin' AND ugr.ugr_Enabled != 'n' AND ugl.ugl_GroupID = 1";
+            $where_clause = "ugl.ugl_Role = 'admin' AND ugr.ugr_Enabled != 'n' AND ugl.ugl_GroupID = 1";
 
-            }elseif($user_request == "admin"){ // Admins for ALL workgroups
+        }elseif($user_request == "admin"){ // Admins for any workgroups
 
-                $where_clause = "WHERE ugl.ugl_Role = 'admin' AND ugr.ugr_Enabled != 'n' AND ugl.ugl_GroupID IN
+            $need_groups = true;
+            
+            $where_clause = "ugl.ugl_Role = 'admin' AND ugr.ugr_Enabled != 'n' AND ugl.ugl_GroupID IN
                    (SELECT ugr_ID
                          FROM `" . $db . "`.sysUGrps
                          WHERE ugr_Type = 'workgroup' AND ugr_Enabled != 'n')";
 
         }elseif($user_request == "user"){ // ALL users
-            $where_clause = "WHERE ugr.ugr_Type = 'user' AND ugr.ugr_Enabled != 'n'";
+            $where_clause = "ugr.ugr_Type = 'user' AND ugr.ugr_Enabled != 'n'";
         }else{
 
             $response = array("status"=>HEURIST_INVALID_REQUEST, "message"=>"Invalid user choice", "request"=>$user_request);
@@ -297,11 +304,20 @@ if(isset($_REQUEST['get_email']) && isset($_REQUEST['recid'])) {/* Get the Title
             exit;
         }
 
+/*        
         $query = "SELECT DISTINCT ugr.ugr_FirstName, ugr.ugr_LastName, ugr.ugr_eMail
                           FROM `" . $db . "`.sysUsrGrpLinks AS ugl
                           INNER JOIN `" . $db . "`.sysUGrps AS ugr ON ugl.ugl_UserID = ugr.ugr_ID "
                         . $where_clause;
+*/
+        if($need_groups){
+            $query = $query.', `' . $db . '`.sysUsrGrpLinks AS ugl ';
+            $where_clause = 'ugl.ugl_UserID = ugr.ugr_ID AND '.$where_clause;
+        }
 
+        $query = $query.' WHERE ' . $where_clause;
+//error_log($query);                        
+                        
         $res = $mysqli->query($query);
         if(!$res){
             //Unable to retrieve user count for databases

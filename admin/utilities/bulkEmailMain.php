@@ -1148,7 +1148,7 @@ if(!$has_emails || empty($emails)) {
 
                         &nbsp;&nbsp;&nbsp;
 
-                        <span class="non-selectable"> Last modified
+                        <span class="non-selectable"> Database Last modified
 
                             <select name="recModLogic" id="recModifiedLogic">
                                 <option value="more">more than</option>
