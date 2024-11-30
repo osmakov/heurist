@@ -779,6 +779,9 @@ if(!($is_map_popup || $without_header)){
 
                     let $ele = $(event.target);
                     $ele.tooltip({
+                        content: function(){
+                            return $(this).attr('title');
+                        },
                         open: function(event, ui){
 
                             ui.tooltip.css({
