@@ -2732,10 +2732,11 @@ $.widget( "heurist.editing_input", {
 
                 let $clear_container = $('<span id="btn_clear_container"></span>').appendTo( $inputdiv );
                 
-                $input.css({'padding-left':'30px', cursor:'hand'});
+                $input.css({'padding-left': '30px', 'padding-right': '30px', cursor:'hand'});
                 //folder icon in the begining of field
                 let $gicon = $('<span class="ui-icon ui-icon-folder-open"></span>')
-                    .css({position: 'absolute', margin: '5px 0px 0px 8px', cursor:'hand'}).insertBefore( $input ); 
+                    .css({position: 'absolute', margin: '5px 0px 0px 8px', cursor:'hand'}).insertBefore( $input );
+                $('<span>', {class: 'file-vis ui-icon', style: 'position: absolute; margin: 3px 0px 0px -24px'}).insertAfter( $input );
 
                 /* Image and Player (enalrged image) container */
                 $input_img = $('<br><div class="image_input ui-widget-content ui-corner-all thumb_image" style="margin:5px 0px;border:none;background:transparent;">'
@@ -2792,7 +2793,9 @@ $.widget( "heurist.editing_input", {
                                         ulf_ExternalFileReference: recset.fld(record,'ulf_ExternalFileReference'),
                                         ulf_OrigFileName: recset.fld(record,'ulf_OrigFileName'),
                                         ulf_MimeExt: recset.fld(record,'fxm_MimeType'),
-                                        ulf_ObfuscatedFileID: recset.fld(record,'ulf_ObfuscatedFileID')
+                                        ulf_ObfuscatedFileID: recset.fld(record,'ulf_ObfuscatedFileID'),
+                                        ulf_Caption: recset.fld(record,'ulf_Caption'),
+                                        ulf_WhoCanView: recset.fld(record,'ulf_WhoCanView')
                                     };
 
                                     that.newvalues[$input.attr('id')] = newvalue;
@@ -3136,11 +3139,15 @@ $.widget( "heurist.editing_input", {
                                 let recordset = data.selection;
                                 let record = recordset.getFirstRecord();
                                 
-                                let newvalue = {ulf_ID: recordset.fld(record,'ulf_ID'),
-                                                ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
-                                                ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
-                                                ulf_MimeExt: recordset.fld(record,'fxm_MimeType'),
-                                                ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID')};
+                                let newvalue = {
+                                    ulf_ID: recordset.fld(record,'ulf_ID'),
+                                    ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
+                                    ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
+                                    ulf_MimeExt: recordset.fld(record,'fxm_MimeType'),
+                                    ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
+                                    ulf_Caption: recset.fld(record,'ulf_Caption'),
+                                    ulf_WhoCanView: recset.fld(record,'ulf_WhoCanView')
+                                };
                                 
                                 that.newvalues[$input.attr('id')] = newvalue;
                                 that._findAndAssignTitle($input, newvalue);
@@ -4510,10 +4517,21 @@ $.widget( "heurist.editing_input", {
 
             if($.isPlainObject(value) && value.ulf_ObfuscatedFileID){
 
-                let rec_Title = value.ulf_ExternalFileReference;
+                // Setup file title
+                let rec_Title = value.ulf_Caption;
+                let file = value.ulf_ExternalFileReference ? value.ulf_ExternalFileReference : value.ulf_OrigFileName;
                 if(window.hWin.HEURIST4.util.isempty(rec_Title)){
-                    rec_Title = value.ulf_OrigFileName;
+                    rec_Title = file;
+                }else{
+                    rec_Title += ` [${file}]`;
                 }
+
+                // Update file visibility
+                let is_public = value.ulf_WhoCanView != 'loginrequired';
+                let vis_title = is_public ? 'File is publicly viewable' : 'File is for logged-in users only';
+                let vis_icon = is_public ? 'ui-icon-eye-open' : 'ui-icon-eye-crossed'; // ui-icon-unlocked ui-icon-locked
+                ele.parent().find('.file-vis').removeClass('ui-icon-eye-open ui-icon-eye-crossed').addClass(vis_icon).attr('title', window.hWin.HR(vis_title));
+
                 window.hWin.HEURIST4.ui.setValueAndWidth(ele, rec_Title, 10);
 
                 //url for thumb
@@ -4644,10 +4662,14 @@ $.widget( "heurist.editing_input", {
                                     let record = recordset.getFirstRecord();
 
                                     if(record){
-                                        let newvalue = {ulf_ID: recordset.fld(record,'ulf_ID'),
-                                                    ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
-                                                    ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
-                                                    ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID')};
+                                        let newvalue = {
+                                            ulf_ID: recordset.fld(record,'ulf_ID'),
+                                            ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
+                                            ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
+                                            ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
+                                            ulf_Caption: recset.fld(record,'ulf_Caption'),
+                                            ulf_WhoCanView: recset.fld(record,'ulf_WhoCanView')
+                                        };
 
                                         that.newvalues[ele.attr('id')] = newvalue;
                                         that._findAndAssignTitle(ele, newvalue, selector_function);

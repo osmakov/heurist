@@ -2753,7 +2753,7 @@ function recordSearch($system, $params, $relation_query=null)
 
                         if($needCompleteInformation){
                             $ulf_fields = 'f.ulf_OrigFileName,f.ulf_ExternalFileReference,f.ulf_ObfuscatedFileID,'
-                            .'f.ulf_MimeExt';//5,6,7,8
+                            .'f.ulf_MimeExt,f.ulf_Caption,f.ulf_WhoCanView';//5,6,7,8,9,10
                         }else{
 
                         }
@@ -2809,6 +2809,8 @@ function recordSearch($system, $params, $relation_query=null)
                                         $row[6] = $fileinfo['ulf_ExternalFileReference'];
                                         $row[7] = $fileinfo['ulf_ObfuscatedFileID'];
                                         $row[8] = $fileinfo['ulf_MimeExt'];
+                                        $row[9] = $fileinfo['ulf_Caption'];
+                                        $row[10] = $fileinfo['ulf_WhoCanView'];
                                     }else{
                                         $row[5] = $fileinfo['ulf_ObfuscatedFileID'];
                                         $row[6] = '';
@@ -2836,12 +2838,15 @@ function recordSearch($system, $params, $relation_query=null)
 
                                 if($needCompleteInformation){
 
-                                    $val = array('ulf_ID'=>$row[3],
+                                    $val = [
+                                        'ulf_ID'=>$row[3],
                                         'ulf_OrigFileName'=>$row[5],
                                         'ulf_ExternalFileReference'=>$row[6],
                                         'ulf_ObfuscatedFileID'=>$row[7],
-                                        'ulf_MimeExt'=>$row[8]);
-
+                                        'ulf_MimeExt'=>$row[8],
+                                        'ulf_Caption'=>$row[9],
+                                        'ulf_WhoCanView'=>$ow[10]
+                                    ];
 
                                 }else{
                                     $val = array($row[5], $row[6]);//obfuscated value for fileid and parameters

@@ -103,6 +103,9 @@ class DbRecUploadedFiles extends DbEntityBase
         $pred = $this->searchMgr->getPredicate('ulf_UploaderUGrpID');
         if($pred!=null) {array_push($where, $pred);}
 
+        $pred = $this->searchMgr->getPredicate('ulf_WhoCanView');
+        if($pred!=null) {array_push($where, $pred);}
+
 
         if(@$this->data['ulf_Referenced']=='yes' || @$this->data['ulf_Referenced']=='no'){
             array_push($from_table, ' left join recDetails ON  (dtl_UploadedFileID=ulf_ID OR dtl_Value LIKE CONCAT("%",ulf_ObfuscatedFileID,"%"))');
