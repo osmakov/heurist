@@ -37,6 +37,8 @@
     - Last record update and last structure update
 */
 
+define('DBPAGES_DIR','db-html-pages');
+
 // Default values for arguments
 $arg_database = null; // databases
 $eol = "\n";
@@ -122,7 +124,7 @@ $mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
 // Consider to use setting for web root in configIni.php
-$index_dir = dirname(__FILE__)."/../../../databases"; //was HarvestableDatabaseDescriptions
+$index_dir = dirname(__FILE__).'/../../../'.DBPAGES_DIR; //was HarvestableDatabaseDescriptions
 
 $is_dir_writable = folderExists($index_dir, true);
 
@@ -143,6 +145,8 @@ $value_to_replace = array('{db_name}','{db_desc}','{db_url}','{db_website}','{db
 
 $curr_date = date('Y-m-d');
 
+$index_file = $base_url_root.DBPAGES_DIR.'/index.html';
+
 //xml version="1.0" encoding="UTF-8"
 $sitemap_page = XML_HEADER."\n".<<<EXP
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -150,7 +154,7 @@ $sitemap_page = XML_HEADER."\n".<<<EXP
       <loc>{$base_url}startup/index.php</loc>
    </url>
    <url>
-      <loc>{$base_url_root}databases/index.html</loc>
+      <loc>{$index_file}</loc>
       <lastmod>{$curr_date}</lastmod>
       <priority>0.8</priority>
    </url>
@@ -161,7 +165,7 @@ EXP;
                           
 
 //
-// File content for (databases/index.html)
+// File content for (db-html-pages/index.html)
 //
 $index_page = <<<EXP
 <!DOCTYPE html>
@@ -219,11 +223,11 @@ $index_row_replace = array('{db_name}', '{db_page_link}', '{website_link}', '{db
 
 $sitemap_replace = array('{db_page_link}', '{website_url}', '{website_mod}');
 
-$sitemap_row_info = '<url><loc>'.$base_url_root.'databases/{db_page_link}</loc><lastmod>'.$curr_date.'</lastmod><priority>0.7</priority></url>';
+$sitemap_row_info = '<url><loc>'.$base_url_root.DBPAGES_DIR.'/{db_page_link}</loc><lastmod>'.$curr_date.'</lastmod><priority>0.7</priority></url>';
 $sitemap_row_web = '<url><loc>{website_url}</loc><lastmod>{website_mod}</lastmod><priority>0.7</priority></url>';
 
 //
-// File content for each database file (databases/{database_name}.html)
+// File content for each database file (DBPAGES_DIR/{database_name}.html)
 //
 $template_page = <<<EXP
 <!DOCTYPE html>
@@ -562,7 +566,7 @@ if(is_array($files)){ // iterate through files
         }
         
         // delete file
-        fileDelete($index_dir/$full_filename);
+        fileDelete("$index_dir/$full_filename");
         echo $tabs0.' Removed old index for '.$filename.$eol;
     }
 
