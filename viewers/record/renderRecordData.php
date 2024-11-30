@@ -178,11 +178,19 @@ if(!($is_map_popup || $without_header)){
         <script type="text/javascript" src="<?=HEURIST_BASE_URL?>hclient/core/hintDiv.js"></script> <!-- for mapviewer roolover -->
         <script type="text/javascript" src="<?=HEURIST_BASE_URL?>hclient/core/detectHeurist.js"></script>
 
+        <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils.js"></script>
+        <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils_msg.js"></script>
+        <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils_ui.js"></script>
+
         <link rel="stylesheet" type="text/css" href="<?=HEURIST_BASE_URL?>external/jquery.fancybox/jquery.fancybox.css" />
 
         <script type="text/javascript" src="<?=HEURIST_BASE_URL?>hclient/widgets/viewers/mediaViewer.js"></script>
 
         <script type="text/javascript">
+
+            if(typeof window.hWin.HR !== 'function'){
+                window.hWin.HR = (res) => res; // to allow dialog creation
+            }
 
             var rec_Files = [];
             var rec_Files_IIIF_and_3D = [];
@@ -469,6 +477,7 @@ if(!($is_map_popup || $without_header)){
             // Add group headers to record viewer
             //
             function createRecordGroups(groups){
+
                 var $group_container = $('div#div_public_data');
                 var $data = $group_container.find('div[data-order]');
 
@@ -725,7 +734,7 @@ if(!($is_map_popup || $without_header)){
 
                     let file_nonce = $ele.attr('data-id');
                     let file = rec_Files.find((file) => file.id === file_nonce);
-                    let file_url = `${window.hWin.HAPI4.baseURL}?db=${window.hWin.HAPI4.database}&file=${file_nonce}`;
+                    let file_url = `${baseURL}?db=${database}&file=${file_nonce}`;
 
                     let file_desc = $ele.closest('.download_link').find('span.media-desc').attr('title');
                     file_desc = window.hWin.HEURIST4.util.isempty(file_desc) ? '' : file_desc;
@@ -1002,13 +1011,13 @@ if(!empty($import_webfonts)){
         }
         .thumb_image {
             margin: 5px 5px 10px;
-            cursor: url(<?=HEURIST_BASE_URL?>hclient/assets/zoom-in.png),pointer;
+            cursor: url('<?=HEURIST_BASE_URL?>hclient/assets/zoom-in.png'),pointer;
         }
         div.thumbnail .fullSize img {
             margin: 0px;
             width: auto;
             max-width: 100%;
-            cursor: url(<?=HEURIST_BASE_URL?>hclient/assets/zoom-out.png),pointer;
+            cursor: url('<?=HEURIST_BASE_URL?>hclient/assets/zoom-out.png'),pointer;
         }
         .download_link{
             float: left;
