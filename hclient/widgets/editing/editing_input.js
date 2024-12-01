@@ -3133,7 +3133,7 @@ $.widget( "heurist.editing_input", {
                     default_palette_class: 'ui-heurist-populate',
                     onselect:function(event, data){
 
-                     if(data){
+                    if(data){
                         
                             if( window.hWin.HEURIST4.util.isRecordSet(data.selection) ){
                                 let recordset = data.selection;
@@ -3145,15 +3145,15 @@ $.widget( "heurist.editing_input", {
                                     ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
                                     ulf_MimeExt: recordset.fld(record,'fxm_MimeType'),
                                     ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
-                                    ulf_Caption: recset.fld(record,'ulf_Caption'),
-                                    ulf_WhoCanView: recset.fld(record,'ulf_WhoCanView')
+                                    ulf_Caption: recordset.fld(record,'ulf_Caption'),
+                                    ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
                                 };
                                 
                                 that.newvalues[$input.attr('id')] = newvalue;
                                 that._findAndAssignTitle($input, newvalue);
                             }
                         
-                     }//data
+                    }//data
 
                     }
                 };//popup_options
@@ -4667,8 +4667,8 @@ $.widget( "heurist.editing_input", {
                                             ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
                                             ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
                                             ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
-                                            ulf_Caption: recset.fld(record,'ulf_Caption'),
-                                            ulf_WhoCanView: recset.fld(record,'ulf_WhoCanView')
+                                            ulf_Caption: recordset.fld(record,'ulf_Caption'),
+                                            ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
                                         };
 
                                         that.newvalues[ele.attr('id')] = newvalue;
