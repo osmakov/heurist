@@ -1,4 +1,6 @@
 #!/bin/sh
+
+# Script: backup_all_dbs.sh
 #
 # Dumps all databases to SQL in /srv/BACKUP
 #

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Script: build_archive_packages.sh               
+
+# Creates complete/full archive packages for all or specified list of databases
+# Package contains all database data in various formats and all files from db folder
+# It uses buildArchivePackagesCMD.php
+# Destintion folder is _BATCH_PROCESS_ARCHIVE_PACKAGE
+
 # Default prefix for databases
 DB_PREFIX="hdb_"
 

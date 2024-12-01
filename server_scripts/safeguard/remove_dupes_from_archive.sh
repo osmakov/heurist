@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Script: remove_dupes_from_archive.sh
+# Script: remove_dupes_from_archive.sh               
 
 # Removes redundant older bz2 files of SQL database dumps which accumulate in /srv/BACKUP/ARCHIVE
 

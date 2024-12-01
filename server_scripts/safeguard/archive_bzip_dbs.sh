@@ -1,4 +1,6 @@
 #!/bin/sh
+
+# Script: archive_bzip_dbs.sh
 #
 # Archive databases when /srv/BACKUP copy differs from copy in ARCHIVE directory
 # 1. Rename archive with date suffix 
