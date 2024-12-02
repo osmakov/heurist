@@ -27,6 +27,8 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 
 $is_csv = (@$_REQUEST['csv']==1);
 
+$folder_size = (@$_REQUEST['folder_size']==1);
+
 $starts_with = filter_var(@$_REQUEST['start'], FILTER_SANITIZE_STRING);
 
 $is_delete_allowed = (strlen(@$passwordForDatabaseDeletion) > 14);
@@ -114,11 +116,13 @@ foreach ($dbs as $db){
         
         $size = 0;
        
-        $size = file_exists(HEURIST_FILESTORE_ROOT . $db_name) ? folderSize(HEURIST_FILESTORE_ROOT . $db_name) : 0;
+        if($folder_size){
+            $size = file_exists(HEURIST_FILESTORE_ROOT . $db_name) ? folderSize(HEURIST_FILESTORE_ROOT . $db_name) : 0;
 
-        if($size > 0){ // to MB
-            $size /= 1048576;
-            $size = round((float)$size, 2);
+            if($size > 0){ // to MB
+                $size /= 1048576;
+                $size = round((float)$size, 2);
+            }            
         }
 
         $db = '`'.$db.'`';

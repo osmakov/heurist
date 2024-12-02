@@ -33,13 +33,14 @@
 
 <li>
     <a href="admin/describe/dbStatistics.php?csv=1" 
-        target="_blank"
+        target="_blank" id="linkStat"
         data-header="Administration &gt; Server usage statistics"
         title="Size and usage statistics for all Heurist databases on this server">
        Server usage statistics (CSV)
     </a>
+    <label>&nbsp;&nbsp;&nbsp;( Calculate disk usage<input type="checkbox" onclick="{let ele = document.getElementById('linkStat'); ele.href='admin/describe/dbStatistics.php?csv=1'+(this.checked?'&folder_size=1':'')}" /> )</label>
 </li>
-
+      
 <li>
     <a href="admin/utilities/purgeInactiveDBs.php" 
         target="_blank"
