@@ -3204,7 +3204,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
             //show rec_URL 
             let ele = that._editing.getFieldByName('rec_URL');
             let hasURLfield = ($Db.rty(rectypeID, 'rty_ShowURLOnEditForm')=='1');
-            if(hasURLfield){
+            if(hasURLfield && ele?.length == 1){
                 ele.show();
 
                 // special case  - show separator between parent record field and other fields
@@ -5138,7 +5138,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
 
         // check for url field, move to new fieldset if set to display
         let $url_field = this._editing.getFieldByName('rec_URL');
-        if($url_field.length == 1){
+        if($url_field?.length == 1){
 
             $url_field.find('div.header').css({'font-size': '12px'}).addClass('recommended');
 

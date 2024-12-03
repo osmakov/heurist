@@ -591,7 +591,10 @@ $.widget( "heurist.editing_input", {
                 }
             });
         }else if(this.isReadonly()){
+
             this.input_cell.attr('title', 'This field has been marked as non-editable');
+
+            $('<span>', {text: 'Read-only field', style: 'color: limegreen; cursor: default; padding-left: 20px;'}).insertAfter(this.input_cell);
         }
     }, //end _create------------------------------------------------------------
 
