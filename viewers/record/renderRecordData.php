@@ -935,6 +935,8 @@ if(!($is_map_popup || $without_header)){
 
                 hint_popup = new HintDiv('mapPopup', 300, 300, '<div id="recviewer_map_popup" style="width:100%;height:100%;"></div>');
 
+                $('.login-viewer').on('click', () => window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();}));
+
             });
 
             /*NOT USED
@@ -1314,7 +1316,7 @@ function print_header_line($bib) {
             </span>
 
         <?php }else{ ?>
-            <span id="login-viewer" onclick="window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();})" class="ui-icon ui-icon-sign-in" alt="Login" title="Login"></span>
+            <span class="login-viewer ui-icon ui-icon-sign-in" title="Sign-in to gain full access" style="cursor: pointer;"></span>
         <?php }
         if(!empty($wfs_details)){
 

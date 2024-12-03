@@ -1239,7 +1239,7 @@ $.widget( "heurist.mapping", {
             this._updatePanels();
 
             //apply layer ot default style and fill markercluster
-            this.applyStyle( new_layer._leaflet_id, layer_style ?layer_style: this.setStyleDefaultValues(), null ); //{color: "#00b0f0"}
+            this.applyStyle( new_layer._leaflet_id, layer_style ? layer_style : this.setStyleDefaultValues(), null ); //{color: "#00b0f0"}
 
             
             if(!preserveViewport){
@@ -2559,10 +2559,14 @@ $.widget( "heurist.mapping", {
                 }else if($popup_ele.resizable('instance') !== undefined){
                     $popup_ele.resizable('destroy');
                 }
-            } else if(that.options.map_popup_mode=='dialog'){
-                
+
+                this._on($popup_ele.find('.login-viewer'), {
+                    click: () => window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();})
+                });
+
+            }else if(that.options.map_popup_mode=='dialog'){
+
                 window.hWin.HEURIST4.msg.showMsg(content);
-                
             }
         }
 
@@ -4112,8 +4116,7 @@ $.widget( "heurist.mapping", {
               
         }
         
-        if(no_map_data){
-           //$('#map').hide();
+        if(no_map_data && !this.options.isPublished){
            $('#map_empty_message').show();
         }else{
            $('#map_empty_message').hide();
