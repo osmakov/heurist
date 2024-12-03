@@ -752,31 +752,32 @@ window.hWin.HEURIST4.query = {
             value = value.filter((trm) => !window.hWin.HEURIST4.util.isempty(trm)).join(', ');
         }
 
+        let val = '';
         if(value === 'NULL'){
             res += 'records that do not have any <em>__FIELD__</em>';
         }else if(window.hWin.HEURIST4.util.isempty(value)){
             res += 'records that have a <em>__FIELD__</em> value';
         }else if(value.startsWith('=') || value.startsWith('-')){
-            value = value.substring(1);
-            res += `${ext} that extactly match "<em>${value}</em>"`;
+            val = value.substring(1);
+            res += `${ext} that ${value.startsWith('-') ? 'does not' : ''} extactly match "<em>${val}</em>"`;
         }else if(value.startsWith('@++') || value.startsWith('@--')){
-            value = value.substring(3);
-            res = `${ext} that contain ${value.startsWith('@++') ? 'all' : 'none'} of the words in "<em>${value}</em>"`;
+            val = value.substring(3);
+            res = `${ext} that contain ${value.startsWith('@++') ? 'all' : 'none'} of the words in "<em>${val}</em>"`;
         }else if(value.startsWith('@')){
-            value = value.substring(1);
-            res = `${ext} that contain all of the words in "<em>${value}</em>"`;
+            val = value.substring(1);
+            res = `${ext} that contain all of the words in "<em>${val}</em>"`;
         }else if(value[0] === '%' || value.endsWith('%')){
-            value = value[0] === '%' ? value.substring(1) : value.slice(0, -1);
-            res = `${ext} that ${value[0] === '%' ? 'start' : 'end'} with "<em>${value}</em>"`;
+            val = value[0] === '%' ? value.substring(1) : value.slice(0, -1);
+            res = `${ext} that ${value[0] === '%' ? 'start' : 'end'} with "<em>${val}</em>"`;
         }else if(value.startsWith('<=') || value.startsWith('>=')){
-            value = value.substring(2);
+            val = value.substring(2);
             let compare = '';
             if(value.startsWith('<')){
                 compare = type == 'date' ? 'before' : 'less than';
             }else{
                 compare = type == 'date' ? 'after' : 'greater than';
             }
-            res = `${ext} that are ${compare} ${value}`;
+            res = `${ext} that are ${compare} ${val}`;
         }else if(value.indexOf('<>') > 0 || value.indexOf('><') > 0){
             let compare = '';
             if(value.indexOf('<>') > 0){
