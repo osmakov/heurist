@@ -513,6 +513,8 @@ class System {
             $folders['uploaded_tilestacks'] = array('TILESTACKS','used to store uploaded map tiles', true, false);
             //since 2023-06-02 $folders['documentation_and_templates'] = array('','', false, false);
             $folders['faims']    = array('','');
+            $folders['blurredimagescache'] = array(null,'(for blurred due to visibility settings)', true, false);
+            $folders['webimagecache'] = array(null,'(for cached web images)', true, false);
         }
 
 
@@ -536,17 +538,13 @@ class System {
 
         $system_folders = array();
 
-        $dbfolder = $this->getSysDir(null, $database_name);
+        $dbfolder = $this->getSysDir(null, $database_name); //root db folder
 
         foreach ($folders as $folder_name=>$folder){
             $folder_name = $dbfolder.$folder_name;
             $folder_name = str_replace('\\', '/', $folder_name);
             array_push($system_folders, $folder_name.'/');
         }//for
-
-        if(defined('HEURIST_XSL_TEMPLATES_DIR')) {array_push($system_folders, HEURIST_XSL_TEMPLATES_DIR);}
-        if(defined('HEURIST_HTML_DIR')) {array_push($system_folders, HEURIST_HTML_DIR);}
-        if(defined('HEURIST_HML_DIR')) {array_push($system_folders, HEURIST_HML_DIR);}
 
         return $system_folders;
     }
@@ -1074,8 +1072,11 @@ class System {
                     'is_file_multipart_upload'=>($this->settings->getDiskQuota()>0)?1:0,
                     'host_logo'=>$host_logo,
                     'host_url'=>$host_url,
+                    
+                    'mediaFolder'=>$this->settings->get('sys_MediaFolders'),
+                    'media_ext_index'=>$this->settings->get('sys_MediaExtensions'), //user define list - what is allowed to index
 
-                    'media_ext'=>HEURIST_ALLOWED_EXT, //$this->settings->get('sys_MediaExtensions'),
+                    'media_ext'=>HEURIST_ALLOWED_EXT, //default list - what is allowed to upload
                     'rty_as_place'=>$this->settings->get('sys_TreatAsPlaceRefForMapping'),
 
                     'need_encode'=>$needEncodeRecordDetails,

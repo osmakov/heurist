@@ -741,14 +741,25 @@
       }
     },
     {
-      "href": "import/fieldhelper/synchroniseWithFieldHelper.php",
       "id": "menu-files-index",
+      "text": "Index external transfers",
+      "data": {
+        "user_admin_status": "1",
+        "size": "medium",
+        "header": "Import > Index uploaded files / external transfers",
+        "icon": "ui-icon-list",
+        "container": "populate"
+      }
+    },
+    {
+      "href": "import/fieldhelper/synchroniseWithFieldHelper.php",
+      "id": "menu-files-index-and-records",
       "text": "Create media records",
       "data": {
         "user_admin_status": "1",
         "size": "medium",
         "header": "Import > Create media records",
-        "icon": "ui-icon-list",
+        "icon": "ui-icon-image",
         "container": "populate"
       }
     },

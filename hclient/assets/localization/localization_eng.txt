@@ -152,7 +152,8 @@
 #menu-import-get-template-hint#Get a template for creating an XML or JSon data file which can be imported into Heurist
 #Media Files#
 #menu-files-upload#Upload media files/images
-#menu-files-index#Create media records
+#menu-files-index#Index external transfers
+#menu-files-index-and-records#Create media records
 #menu-files-annotations#Import Annotations
 #menu-files-csv#Upload media from URLs
 #menu-files-upload-hint#Upload multiple files and/or large files to scratch space or image directories, delete and rename uploaded files

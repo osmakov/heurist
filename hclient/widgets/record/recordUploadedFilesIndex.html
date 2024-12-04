@@ -1,0 +1,44 @@
+<div id="div_header" class="ent_wrapper" style="margin:10px 10px 0px 40px;font-size:0.95em">
+
+    <h2>ADVANCED USERS</h2>
+    <p style="font-weight:bold;font-size:larger;padding:10 0">
+        Index uploaded files / external transfers
+    </p>
+
+    <p>This function scans media folders and add missed to Media Files.
+        <br>
+        <ul>
+            <li>Files that are already indexed retain unchanged.</li>
+            <li>Thumbnails will be created automatically</li>
+            <li>To create Media records assosiated with these files use "Create Media Records"</li>
+        </ul>
+    </p>
+    <p style="max-width: 740px;">
+        Files should be uploaded through Populate > Upload media files/images (limited normally to 30M) or by direct sftp access to the file_uploads directory, or sub-directories, on the server for larger files or very large bulk uploads (available to system administrators only).
+    </p>
+    
+    <p>
+        <b>Folders to scan:</b>
+        <select id="mediafolders"></select>
+    </p>
+    <p>
+        <b style="vertical-align: top;">Extensions to scan:</b> 
+        <span id="mediaexts" style="max-width: 640px;display: inline-block;word-wrap: break-word;"></span>
+    </p>    
+    <p>
+        <a href="#" onclick="{window.hWin.HEURIST4.ui.showEntityDialog('sysIdentification');return false;}" title="Open form to edit properties which determine the handling of files and directories in the database upload folders">
+            Click here to set media folders
+        </a>
+    </p>    
+    <p>
+        <button class="ui-button-action btnAction">Proceed</button>
+    </p>
+
+</div>
+
+<div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
+    <h3 style="margin:0">Report:</h3>
+    <br>
+    <div id="div_result_msg">
+    </div>        
+</div>

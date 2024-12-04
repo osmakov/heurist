@@ -6,6 +6,8 @@ use hserv\utilities\USanitize;
 use hserv\utilities\DbUtils;
 use hserv\utilities\UImage;
 
+use hserv\filestore\FilestoreHarvest;
+
     /**
     * db access to recUploadedFiles table
     *
@@ -28,7 +30,6 @@ use hserv\utilities\UImage;
 
 require_once dirname(__FILE__).'/../records/search/recordFile.php';
 require_once dirname(__FILE__).'/../records/edit/recordModify.php';
-require_once dirname(__FILE__).'/../../import/fieldhelper/harvestLib.php';
 
 /**
 * some public methods
@@ -894,127 +895,15 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             $ret = $this->createMediaRecords();
 
         }
-        elseif(@$this->data['get_media_records']){ // retruns ids of referencing Multi Media records for given files
+        elseif(@$this->data['get_media_records']){ // returns ids of referencing Multi Media records for given files
 
             $ret = $this->getMediaRecords($this->data['get_media_records'], @$this->data['mode'], @$this->data['return']);
 
         }
-        elseif(@$this->data['bulk_reg_filestore']){ // create new file entires
+        elseif(@$this->data['bulk_reg_filestore']){ // create new file entires from filestore subfolders
+        
+            $ret = $this->bulkRegisterFiles();
 
-            $error = array();// file missing or other errors
-            $skipped = array();// already registered
-            $created = array();// total ulf records created
-            $exists = 0; // count of files that already exists
-
-            $files = array();
-
-            $dirs_and_exts = getMediaFolders($mysqli);
-
-            if(array_key_exists('files', $this->data) && !empty($this->data['files'])){ // manageFilesUpload.php
-                $files = json_decode($this->data['files']);
-            }else{ // manageRecUploadedFiles.js
-
-                if(!in_array('file_uploads', $dirs_and_exts['dirs'])){
-                    $dirs_and_exts['dirs'][] = 'file_uploads';
-                }
-
-                // Get non-registered files
-                doHarvest($this->system, $dirs_and_exts, false, 1, ['file_uploads']);
-                $files = getRegInfoResult()['nonreg'];
-            }
-            
-            
-            $filestoreDir = $this->system->getSysDir();
-            $filestoreUrl = $this->system->getSysUrl();
-            
-            // Add filestore path
-            foreach ($dirs_and_exts['dirs'] as $idx => $dir){
-                if(strpos($dir, $filestoreDir) === false){
-                    $dir = $filestoreDir . ltrim($dir, '/');
-                }
-                $dirs_and_exts['dirs'][$idx] = rtrim($dir, '/');
-            }
-
-            $system_folders = $this->system->getSystemFolders();
-            foreach ($files as $file_details) {
-
-                $file = $file_details;
-                if(is_object($file_details)){ // from decoded JS stringified
-                    if(property_exists($file_details, 'file_path')){
-                        $file = $file_details->file_path;
-                    }else{ // not handled
-                        $skipped[] = implode(',', $file) . ' => File data is not in valid format';
-                        continue;
-                    }
-                }
-
-                $file = urldecode($file);
-                $provided_file = $file;
-                if(strpos($file, $filestoreUrl) === 0){
-                    $file = str_replace($filestoreUrl, $filestoreDir, $file);
-                }elseif(strpos($file, $filestoreDir) === false){
-                    $file = $filestoreDir . $file;
-                }
-
-                if(!file_exists($file)){ // not found, or not in file store
-                    $error[] = $provided_file . ' => File does not exist';
-                    continue;
-                }
-
-                $fileinfo = pathinfo($file);
-                $path = $fileinfo['dirname'];
-                $name = $fileinfo['basename'];
-                $valid_dir = false;
-
-                // Check file directory against set 'upload file' directories
-                foreach ($dirs_and_exts['dirs'] as $file_dir) {
-                    if(strpos($path, $file_dir) !== false){
-                        $valid_dir = true;
-                        break;
-                    }
-                }
-                if(!$valid_dir){
-                    $skipped[] = $name . ' => File is not located within any set upload directories';
-                    continue;
-                }
-
-                // Check extension
-                if(!in_array(strtolower($fileinfo['extension']), $dirs_and_exts['exts'])){
-                    $skipped[] = $name . ' => File extension is not allowed';
-                    continue;
-                }
-
-                // Check if file is already registered
-                if(fileGetByFileName($this->system, $file) > 0){
-                    $exists ++;
-                    continue;
-                }
-
-                $ulf_ID = fileRegister($this->system, $file); //@todo convert this function to method of this class
-                if($ulf_ID > 0){
-                    $created[] = $name . ' => Indexed file as #' . $ulf_ID;
-                }else{
-                    $msg = $this->system->getError();
-                    $error[] = $name . ' => Unable to register file' . (is_array($msg) && array_key_exists('message', $msg) ? ', <br>' . $msg['message'] : '');
-                }
-            }
-
-            $ret = array();
-
-            if(!empty($created)){
-                $ret[] = 'Created:<br>' . implode('<br>', $created);
-            }
-            if($exists > 0){
-                $ret[] = 'Already registered: ' . $exists;
-            }
-            if(!empty($skipped)){
-                $ret[] = 'Skipped:<br>' . implode('<br>', $skipped);
-            }
-            if(!empty($error)){
-                $ret[] = 'Errors:<br>' . implode('<br>', $error);
-            }
-
-            $ret = implode('<br><br>', $ret);
         }
         elseif(@$this->data['import_data']){ // importing file metadata
 
@@ -2287,6 +2176,133 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
 
     }
 
+    //
+    // Bulk register files from database folders
+    //
+    private function bulkRegisterFiles(){
+        
+            $error = array();// file missing or other errors
+            $skipped = array();// already registered
+            $created = array();// total ulf records created
+            $exists = 0; // count of files that already exists
+
+            $files = array();
+            
+            $fileStore = new FilestoreHarvest($this->system);
+
+            $dirs_and_exts = $fileStore->getMediaFolders();
+            
+            $folders = @$this->data['folders'];
+            if($folders && $folders!='all'){ //limited set of folders
+                $dirs_and_exts['dirs'] = explode(';',$folders);                
+            }
+
+            if(array_key_exists('files', $this->data) && !empty($this->data['files'])){ // manageFilesUpload.php
+                $files = json_decode($this->data['files']);   //register selected files
+            }else{ // manageRecUploadedFiles.js
+
+                // Get non-registered files
+                $fileStore->doHarvest($dirs_and_exts, false, 1);
+                $files = $fileStore->getRegInfoResult()['nonreg'];
+            }
+            
+            
+            $filestoreDir = $this->system->getSysDir();
+            $filestoreUrl = $this->system->getSysUrl();
+            
+            // Add filestore path
+            foreach ($dirs_and_exts['dirs'] as $idx => $dir){
+                if(strpos($dir, $filestoreDir) === false){
+                    $dir = $filestoreDir . ltrim($dir, '/');
+                }
+                $dirs_and_exts['dirs'][$idx] = rtrim($dir, '/');
+            }
+
+            $system_folders = $this->system->getSystemFolders();
+            foreach ($files as $file_details) {
+
+                $file = $file_details;
+                if(is_object($file_details)){ // from decoded JS stringified
+                    if(property_exists($file_details, 'file_path')){
+                        $file = $file_details->file_path;
+                    }else{ // not handled
+                        $skipped[] = implode(',', $file) . ' => File data is not in valid format';
+                        continue;
+                    }
+                }
+
+                $file = urldecode($file);
+                $provided_file = $file;
+                if(strpos($file, $filestoreUrl) === 0){
+                    $file = str_replace($filestoreUrl, $filestoreDir, $file);
+                }elseif(strpos($file, $filestoreDir) === false){
+                    $file = $filestoreDir . $file;
+                }
+
+                if(!file_exists($file)){ // not found, or not in file store
+                    $error[] = $provided_file . ' => File does not exist';
+                    continue;
+                }
+
+                $fileinfo = pathinfo($file);
+                $path = $fileinfo['dirname'];
+                $name = $fileinfo['basename'];
+                $valid_dir = false;
+
+                // Check file directory against set 'upload file' directories
+                foreach ($dirs_and_exts['dirs'] as $file_dir) {
+                    if(strpos($path, $file_dir) !== false){
+                        $valid_dir = true;
+                        break;
+                    }
+                }
+                if(!$valid_dir){
+                    $skipped[] = $name . ' => File is not located within any set upload directories';
+                    continue;
+                }
+
+                // Check extension
+                if(!in_array(strtolower($fileinfo['extension']), $dirs_and_exts['exts'])){
+                    $skipped[] = $name . ' => File extension is not allowed';
+                    continue;
+                }
+
+                // Check if file is already registered
+                if(fileGetByFileName($this->system, $file) > 0){
+                    $exists ++;
+                    continue;
+                }
+
+                $ulf_ID = fileRegister($this->system, $file); //@todo convert this function to method of this class
+                if($ulf_ID > 0){
+                    $created[] = $name . ' => Indexed file as #' . $ulf_ID;
+                }else{
+                    $msg = $this->system->getError();
+                    $error[] = $name . ' => Unable to register file' . (is_array($msg) && array_key_exists('message', $msg) ? ', <br>' . $msg['message'] : '');
+                }
+            }
+
+            $ret = array();
+
+            if(!empty($created)){
+                $ret[] = 'Created:<br>' . implode('<br>', $created);
+            }
+            if($exists > 0){
+                $ret[] = 'Already registered: ' . $exists;
+            }
+            if(!empty($skipped)){
+                $ret[] = 'Skipped:<br>' . implode('<br>', $skipped);
+            }
+            if(!empty($error)){
+                $ret[] = 'Errors:<br>' . implode('<br>', $error);
+            }
+            
+            $ret = implode('<br><br>', $ret);
+            
+            return $ret;
+    }
+    
+    
     //
     // Bulk register base64 encoded (i.e. starts with data:image) images
     //

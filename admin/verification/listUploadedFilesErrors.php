@@ -28,7 +28,9 @@ define('PDIR','../../');//need for proper path to js and css
 
 require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 require_once dirname(__FILE__).'/../../hserv/records/search/recordFile.php';
-require_once dirname(__FILE__).'/../../import/fieldhelper/harvestLib.php';
+
+use hserv\filestore\FilestoreHarvest;
+
 
 $mysqli = $system->getMysqli();
 
@@ -479,11 +481,11 @@ $mysqli = $system->getMysqli();
 
     //check for non-registered files in mediafolders
     // $reg_info - global array to be filled in doHarvest
-    $reg_info = array('reg'=>array(), 'nonreg'=>array());
-    $dirs_and_exts = getMediaFolders( $mysqli );
-    doHarvest($system, $dirs_and_exts, false, 1);
-
-    $files_notreg = $reg_info['nonreg'];
+    $fileStore = new FilestoreHarvest($system);
+    
+    $dirs_and_exts = $fileStore->getMediaFolders();
+    $fileStore->doHarvest($dirs_and_exts, false, 1);
+    $files_notreg = $fileStore->getRegInfoResult()['nonreg'];
 
     //count($files_duplicates)+
     $is_found = (count($files_unused_remote)+count($files_unused_local)+count($files_notfound)+count($files_notreg) > 0);
@@ -703,7 +705,7 @@ $mysqli = $system->getMysqli();
 
                         let request = {
                             'a': 'batch',
-                            'entity': that.options.entity.entityName,
+                            'entity': 'recUploadedFiles',
                             'request_id': window.hWin.HEURIST4.util.random(),
                             'bulk_reg_filestore': 1
                         };
@@ -712,7 +714,7 @@ $mysqli = $system->getMysqli();
                             // Add checked files
                             let files = [];
                             $selected_files.each((idx, input) => {
-                                files.push(input.parentNode.textContent);
+                                files.push(input.getAttribute('data-id'));
                             });
                             request['files'] = JSON.stringify(files);
                         }
@@ -733,7 +735,7 @@ $mysqli = $system->getMysqli();
 
                                 selected_only ? $selected_files.closest('.msgline').remove() : $('#files_notreg, a[href="#file_notreg"]').remove();
 
-                            }}, {title: 'Refresh indexes results', 'OK': window.HR('OK')}, {default_palette_class: 'ui-heurist-admin', dialogId: 'refresh-file-indexes'});
+                            }}, {title: 'Refresh indexes results', 'OK': window.hWin.HR('OK')}, {default_palette_class: 'ui-heurist-admin', dialogId: 'refresh-file-indexes'});
                         });
                     }
                 <?php
@@ -863,7 +865,7 @@ $mysqli = $system->getMysqli();
                     <h3>Non-registered files</h3>
                     <div style="padding-bottom:10px;font-weight:bold"><?php echo count($files_notreg);?> entries</div>
                     <div>
-                    Use Populate > Create media records to add these to the database as Digital Media records. Or
+                    Use Populate > Create media records to register and add these to the database as Digital Media records. Or
                     select all or some entries and click the button
                     <button onclick="doRepairAction('files_notreg')">Remove non-registered files</button>
                     to delete files from system.</div>
