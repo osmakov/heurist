@@ -935,6 +935,8 @@ if(!($is_map_popup || $without_header)){
 
                 hint_popup = new HintDiv('mapPopup', 300, 300, '<div id="recviewer_map_popup" style="width:100%;height:100%;"></div>');
 
+                $('.login-viewer').on('click', () => window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();}));
+
             });
 
             /*NOT USED
@@ -1270,8 +1272,8 @@ function print_details($bib) {
 
         $system->userLogActivity('viewRec', $bib['rec_ID']);// log action
     }else{
-
-        print 'Sorry, your group membership does not allow you to view the content of this record';
+        $login_link = $system->hasAccess() ? '' : '<br><br><a onclick="window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();})" href="#">Click here to login</a>';
+        print "Sorry, your group membership does not allow you to view the content of this record{$login_link}";
     }
 
 }
@@ -1313,6 +1315,8 @@ function print_header_line($bib) {
                 <img class="rv-editpencil" src="<?php echo HEURIST_BASE_URL;?>hclient/assets/edit-pencil.png" alt="Edit record" title="Edit record" style="vertical-align: top"></a>
             </span>
 
+        <?php }else{ ?>
+            <span class="login-viewer ui-icon ui-icon-sign-in" title="Sign-in to gain full access" style="cursor: pointer;"></span>
         <?php }
         if(!empty($wfs_details)){
 

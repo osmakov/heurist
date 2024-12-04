@@ -3204,7 +3204,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
             //show rec_URL 
             let ele = that._editing.getFieldByName('rec_URL');
             let hasURLfield = ($Db.rty(rectypeID, 'rty_ShowURLOnEditForm')=='1');
-            if(hasURLfield){
+            if(hasURLfield && ele?.length == 1){
                 ele.show();
 
                 // special case  - show separator between parent record field and other fields
@@ -5138,7 +5138,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
 
         // check for url field, move to new fieldset if set to display
         let $url_field = this._editing.getFieldByName('rec_URL');
-        if($url_field.length == 1){
+        if($url_field?.length == 1){
 
             $url_field.find('div.header').css({'font-size': '12px'}).addClass('recommended');
 
@@ -5850,18 +5850,25 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                 + '<div style="margin: 10px 25px;">OR</div>'
                 + `Create a new term for field: ${field_name} (vocab: ${$Db.trm(vocab_id, 'trm_Label')})<br><br>`;
 
+        let lbl_len = org_label.length < 20 ? 20 : org_label.length;
+        lbl_len = lbl_len > 50 ? 50 : lbl_len;
+        let code_len = trm_details['code'].length < 20 ? 20 : trm_details['code'].length;
+        code_len = code_len > 50 ? 50 : code_len;
+        let uri_len = trm_details['uri'].length < 20 ? 20 : trm_details['uri'].length;
+        uri_len = uri_len > 50 ? 50 : uri_len;
+
         msg += '<fieldset>'
             + '<div>'
-                + `<div class="header"><label>Label: </label></div> <input type="text" id="new_term_label" value="${org_label}">`
+                + `<div class="header"><label>Label: </label></div> <input type="text" id="new_term_label" value="${org_label}" size="${lbl_len}">`
             + '</div><br>'
             + '<div>'
                 + `<div class="header" style="vertical-align: top;"><label>Description: </label></div> <textarea cols="50" rows="2" id="new_term_desc">${trm_details['desc']}</textarea>`
             + '</div><br>'
             + '<div>'
-                + `<div class="header"><label>Code: </label></div> <input type="text" id="new_term_code" value="${trm_details['code']}">`
+                + `<div class="header"><label>Code: </label></div> <input type="text" id="new_term_code" value="${trm_details['code']}" size="${code_len}">`
             + '</div><br>'
             + '<div>'
-                + `<div class="header"><label>Semantic URI: </label></div> <input type="text" id="new_term_uri" value="${trm_details['uri']}">`
+                + `<div class="header"><label>Semantic URI: </label></div> <input type="text" id="new_term_uri" value="${trm_details['uri']}" size="${uri_len}">`
             + '</div>'
         + '</fieldset>';
 

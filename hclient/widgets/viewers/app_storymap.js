@@ -386,13 +386,6 @@ $.widget( "heurist.app_storymap", {
             this.options.storyPlaceholder = 'Please select a story in the list';
         }
 
-        if(window.hWin.HEURIST4.util.isempty(this.options.def_map_symbology)){
-            this.options.def_map_symbology = {"stroke":"1","color":"#00009b","fill":"1","fillColor":"#0000fa", "fillOpacity":"0.8"}; //blue
-        }
-        if(window.hWin.HEURIST4.util.isempty(this.options.def_story_symbology)){
-            this.options.def_story_symbology = this.options.def_map_symbology;
-        }
-
         this._initCompleted();
         
     }, //end _create
@@ -484,9 +477,22 @@ $.widget( "heurist.app_storymap", {
                 
             });
         }
-        
+
+        if(window.hWin.HEURIST4.util.isempty(this.options.def_map_symbology)){
+
+            let storymap_def = {"stroke":"1","color":"#00009b","fill":"1","fillColor":"#0000fa", "fillOpacity":"0.8"}; //blue
+            try{
+                let mapwidget = this._mapping?.app_timemap('getMapping');
+                this.options.def_map_symbology = mapwidget && mapwidget.options.default_style ? mapwidget.options.default_style : storymap_def;
+            }catch{
+                this.options.def_map_symbology = storymap_def;
+            }
+        }
+        if(window.hWin.HEURIST4.util.isempty(this.options.def_story_symbology)){
+            this.options.def_story_symbology = this.options.def_map_symbology;
+        }
+
         this.options.init_completed = true;
-        
     },
 
     //

@@ -79,6 +79,10 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
             nakala_author: {
                 lookup: 'https://api.nakala.fr/authors/search?q=John&order=asc&page=1&limit=15',
                 service: 'https://nakala.fr/'
+            },
+            opentheso: {
+                lookup: 'https://pactols.frantiq.fr/opentheso/openapi/v1/concept/th17/search?q=Fid',
+                service: 'https://pactols.frantiq.fr/index.xhtml'
             }
         };
         
@@ -438,7 +442,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
         let that = this;
 
-        const handled_services = ['bnfLibrary', 'bnfLibraryAut', 'tlcmap', 'geoName', 'postalCodeSearch', 'nomisma', 'nakala', 'nakala_author'];
+        const handled_services = ['bnfLibrary', 'bnfLibraryAut', 'tlcmap', 'geoName', 'postalCodeSearch', 'nomisma', 'nakala', 'nakala_author', 'opentheso'];
 
         this._$('#example_records').hide();
 
@@ -482,7 +486,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
 
             window.hWin.HAPI4.RecordMgr.lookup_external_service(request, function(response){
 
-                if(response.status != window.hWin.ResponseStatus.OK){
+                if(response.status && response.status != window.hWin.ResponseStatus.OK){
                     return;
                 }
 
@@ -789,7 +793,7 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
                 }
                 
                 let sel = window.hWin.HEURIST4.ui.createRectypeDetailSelect(ele, rty_ID, 
-                    ['freetext','blocktext','enum','date','geo','float','year','integer','resource','file','relmaker'], '...',
+                    ['freetext','blocktext','enum','date','geo','float','year','integer','resource','file','relmarker'], '...',
                     {show_latlong:true, show_dt_name:true, selectedValue:dty_ID} );
                     
                 that._on($(sel), {change:function(){that._updateStatus();}});
@@ -803,15 +807,14 @@ $.widget("heurist.lookupConfig", $.heurist.baseConfig, {
             this._$('#service_mapping').hide();
             this.btnApply.hide();
         }
-        
-        
+
         if(this._isNewCfg && this._current_cfg.label){
 
             let s = `${this._current_cfg.label}<span class="ui-icon ui-icon-arrowthick-1-e"></span> ` 
                     +  (rty_ID>0?$Db.rty(rty_ID, 'rty_Name'):'select record type');
             this.serviceList.find('li[data-service-id="new"]').html(s);
         }
-        
+
         this._displayTestResults(this.selectServiceType.val());
     },
 

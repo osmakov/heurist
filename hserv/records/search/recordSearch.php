@@ -2845,7 +2845,7 @@ function recordSearch($system, $params, $relation_query=null)
                                         'ulf_ObfuscatedFileID'=>$row[7],
                                         'ulf_MimeExt'=>$row[8],
                                         'ulf_Caption'=>$row[9],
-                                        'ulf_WhoCanView'=>$ow[10]
+                                        'ulf_WhoCanView'=>$row[10]
                                     ];
 
                                 }else{
