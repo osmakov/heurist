@@ -928,7 +928,7 @@ function getWebImageCache($system, $fileinfo, $return_url=true){
     $skip_file = isNotLocalFile(@$fileinfo['ulf_OrigFileName']);
 
     if($skip_file || @$fileinfo['ulf_FileSizeKB'] < 500){ // skip
-        return false;
+       return false;
     }
 
     $file_path = resolveFilePath( @$fileinfo['fullPath'] );
@@ -956,7 +956,7 @@ function getWebImageCache($system, $fileinfo, $return_url=true){
     //return basename with extension
     $file_name_cached = $file_path_info['filename'].'.jpg';
 
-    $file_url_cached = $system->getSysUrl('DIR_WEBIMAGECACHE').$file_name_cached;
+    $file_url_cached = $system->getSysUrl(DIR_WEBIMAGECACHE).$file_name_cached;
     $file_path_cached =  $web_cache_dir.'/'.$file_name_cached;
       //fileWithGivenExt( $web_cache_dir , $file_path_info['basename'] );
 
