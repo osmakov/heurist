@@ -236,7 +236,7 @@ $.widget( "heurist.editing_input", {
                     .appendTo( this.element );
 
                 //translation for text field only    
-                let rec_translate = this.options.recordset && this.options.recordset.entityName == 'Records' && !is_translation
+                let rec_translate = this.options?.recordset?.entityName == 'Records' && !is_translation
                                     && (this.detailType == 'freetext' || this.detailType == 'blocktext');
 
                 let styles = {
@@ -480,7 +480,7 @@ $.widget( "heurist.editing_input", {
         // Add extended description, if available, viewable via clicking more... and collapsible with less...
         let extend_help_text = window.hWin.HEURIST4.util.htmlEscape(this.f('rst_DisplayExtendedDescription'));
         if(help_text && !this.options.suppress_prompts 
-            && extend_help_text && this.options.recordset && this.options.recordset.entityName == 'Records'){
+            && extend_help_text && this.options?.recordset?.entityName == 'Records'){
 
             let $extend_help_eles = $("<span id='show_extended' style='color:blue;cursor:pointer;'> more...</span>"
                 + "<span id='extended_help' style='display:none;font-style:italic;'><br>"+ extend_help_text +"</span>"
@@ -594,7 +594,9 @@ $.widget( "heurist.editing_input", {
 
             this.input_cell.attr('title', 'This field has been marked as non-editable');
 
-            $('<span>', {text: 'Read-only field', style: 'color: limegreen; cursor: default; padding-left: 20px;'}).insertAfter(this.input_cell);
+            if(this.options?.recordset?.entityName == 'Records'){
+                $('<span>', {text: 'Read-only field', style: 'color: limegreen; cursor: default; padding-left: 20px;'}).insertAfter(this.input_cell);
+            }
         }
     }, //end _create------------------------------------------------------------
 
@@ -864,7 +866,7 @@ $.widget( "heurist.editing_input", {
 
         if(this.options.is_faceted_search) return;
 
-        let units = this.options.recordset && this.options.recordset.entityName == 'Records' ? 'ch' : 'ex';
+        let units = this.options?.recordset?.entityName == 'Records' ? 'ch' : 'ex';
         let $parent_container = this.inputs.length > 0 ? $(this.inputs[0]).parents('.editForm.recordEditor') : [];
 
         //auto width
@@ -1046,7 +1048,7 @@ $.widget( "heurist.editing_input", {
                 
                 let $btn_edit_switcher;
 
-                if(this.options.recordset && this.options.recordset.entityName == 'Records'){
+                if(this.options?.recordset?.entityName == 'Records'){
 
                     let $clear_container = $('<span id="btn_clear_container"></span>').appendTo( $inputdiv );
 
@@ -4267,8 +4269,8 @@ $.widget( "heurist.editing_input", {
         let vis_mode = this.f('rst_NonOwnerVisibility');
 
         if(this.options.showedit_button && this.detailType!="relmarker" &&
-           (this.options.recordset && this.options.recordset.entityName == 'Records') && 
-           (!window.hWin.HEURIST4.util.isempty(vis_mode)))
+           this.options?.recordset?.entityName == 'Records' && 
+           !window.hWin.HEURIST4.util.isempty(vis_mode))
         {
         
             let that = this;

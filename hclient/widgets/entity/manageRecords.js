@@ -5909,7 +5909,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
 
             new_record['trm_Description'] =  $dlg.find('#new_term_desc').text();
             new_record['trm_Code'] =  $dlg.find('#new_term_code').val();
-            new_record['trm_URI'] =  $dlg.find('#new_term_uri').val();
+            new_record['trm_SemanticReferenceURL'] =  $dlg.find('#new_term_uri').val();
 
             let request = {
                 a: 'save',
