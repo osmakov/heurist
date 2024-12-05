@@ -184,7 +184,9 @@ $allowWebAccessUploadedFiles = false;
 $allowWebAccessEntityFiles = false;
 
 // use [base_url]/[database]/view/[rec_id] links - Need to define RewriteRule in httpd.conf
+// see heuristConfigIni.php for more information
 $useRewriteRulesForRecordLink = false;
+
 
 // system default file - if a heuristConfigIni.php file exists in the parent directory of the installation,
 // the configIni.php in the installation does not need to be configured. This allows unconfigured ConfigIni.php files
