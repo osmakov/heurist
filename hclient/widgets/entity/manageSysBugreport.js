@@ -108,6 +108,15 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
             return null;
         }
 
+        res['2-38'] = [];
+        let $img_div = this._editing.getFieldByName('2-38');
+        $img_div.find('img').each((idx, img) => {
+            let matches = img.src.match(/(~\d*)\.png/);
+            if(matches.length == 2){
+                res['2-38'].push(matches[1]);
+            }
+        });
+
         return res;
     },
     

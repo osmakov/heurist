@@ -18,10 +18,10 @@
             "dtID": "2-1",
             "dtFields":{
                 "dty_Type":"freetext",
-                "dty_Size":60,
+                "dty_Size":80,
                 "rst_DisplayWidth":70,
                 "rst_DisplayName": "Concise summary",
-                "rst_DisplayHelpText": "Please give a concise but descriptive title for the bug or feature request.<br><strong><em>Limit of 60 characters</em></strong>",
+                "rst_DisplayHelpText": "Please give a concise but descriptive title for the bug or feature request.<br><strong><em>Limit of 80 characters</em></strong>",
                 "rst_RequirementType":"required"
             }
         },
