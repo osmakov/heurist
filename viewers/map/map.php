@@ -64,6 +64,12 @@ if(isLocalHost()){
 <script type="text/javascript" src="<?php echo PDIR;?>external/leaflet.plugins/leaflet.circle.topolygon-src.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>external/leaflet.plugins/leaflet-iiif.js"></script>
 
+<!--  geotiff support plugin is more than 1MB - it is loaded on demand
+<script src="https://unpkg.com/proj4"></script>
+<script src="https://unpkg.com/georaster"></script>
+<script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+-->
+ 
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/temporalObjectLibrary.js"></script>
 
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/accessTokens.php"></script>

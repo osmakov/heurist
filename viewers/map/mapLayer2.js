@@ -172,10 +172,9 @@ function HMapLayer2( _options ) {
             
             setTimeout(function(){ _triggerLayerStatus( 'visible' ); },200);
 
-        }else if(rectypeID == window.hWin.HAPI4.sysinfo['dbconst']['RT_GEOTIFF_SOURCE']){
+        }else if(rectypeID == window.hWin.HAPI4.sysinfo['dbconst']['RT_GEOTIFF_SOURCE']){ //RT_IMAGE_SOURCE
 
             _addImage();                              
-
             setTimeout(function(){ _triggerLayerStatus( 'visible' ); },200);
             
         }else if(rectypeID == window.hWin.HAPI4.sysinfo['dbconst']['RT_KML_SOURCE'] ||
@@ -309,6 +308,27 @@ function HMapLayer2( _options ) {
     }
     
     //
+    // loads geotiff plugin
+    //
+    function _getGeoRasterScripts(){
+        
+        let path = window.hWin.HAPI4.baseURL + 'external/leaflet.plugins/georaster/';
+        let scripts = [
+                        'proj4-src.js',
+                        'georaster.browser.bundle.min.js',
+                        'georaster-layer-for-leaflet.min.js'
+                        ];
+        let  that = this;
+        $.getMultiScripts2(scripts, path)
+        .then(function() {  //OK! js has been loaded
+            _addImage();
+        }).catch(function(error) {
+            window.hWin.HEURIST4.msg.showMsg_ScriptFail();
+        });
+                
+    }    
+    
+    //
     // add image
     //
     function _addImage(){
@@ -324,6 +344,20 @@ function HMapLayer2( _options ) {
 
         let image_url = window.hWin.HAPI4.baseURL + '?db=' + window.hWin.HAPI4.database + '&file='+
                 file_info[0];
+                
+        if(file_info[1]=='tif' || file_info[1]=='tiff'){
+        
+            if(typeof GeoRasterLayer !== 'function'){
+                 _getGeoRasterScripts();
+                 return;
+            }
+            
+            _nativelayer_id = options.mapwidget.mapping('addGeoTiffImageOverlay', 
+                                                        image_url, 
+                                                        (layer_id)=>{_nativelayer_id=layer_id} );
+            return;
+        }
+                
 
         let worldFileData = _recordset.fld(_record, window.hWin.HAPI4.sysinfo['dbconst']['DT_MAP_IMAGE_WORLDFILE']);
 

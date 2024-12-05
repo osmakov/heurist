@@ -2720,7 +2720,7 @@ function recordSearch($system, $params, $relation_query=null)
                     $chunk_rec_ids = array_slice($all_rec_ids, $offset, 1000);
                     $offset = $offset + 1000;
 
-                    $ulf_fields = 'f.ulf_ObfuscatedFileID, f.ulf_Parameters';//5,6
+                    $ulf_fields = 'f.ulf_ObfuscatedFileID, f.ulf_MimeExt';//5,6  was ulf_Parameters
 
                     //search for specific details
                     if($fieldtypes_ids!=null && $fieldtypes_ids!=''){
@@ -2813,7 +2813,7 @@ function recordSearch($system, $params, $relation_query=null)
                                         $row[10] = $fileinfo['ulf_WhoCanView'];
                                     }else{
                                         $row[5] = $fileinfo['ulf_ObfuscatedFileID'];
-                                        $row[6] = '';
+                                        $row[6] = $fileinfo['ulf_MimeExt'];
                                     }
                                 }
 

@@ -1004,7 +1004,44 @@ $.widget( "heurist.mapping", {
         
         return new_layer._leaflet_id;
     },
-    
+
+
+
+    //
+    // adds geotiff image overlay to map
+    //
+    addGeoTiffImageOverlay: function(url_to_geotiff_file, callback){
+
+//        url_to_geotiff_file = 'https://s3.amazonaws.com/geotiff.io/PuertoRicoTropicalFruit.tiff';
+//        url_to_geotiff_file = "https://raw.githubusercontent.com/GeoTIFF/test-data/main/files/LisbonElevation.tif";
+      
+        fetch(url_to_geotiff_file)
+                .then(res => res.arrayBuffer())
+                .then(arrayBuffer => {
+        parseGeoraster(arrayBuffer).then(georaster => {          
+        //direct load: parseGeoraster(url_to_geotiff_file).then(georaster => {
+                console.log("georaster:", georaster);
+
+                var new_layer = new GeoRasterLayer({
+                    //attribution: "Unknown",  
+                    georaster: georaster,
+                    //opacity: 0.7,
+                    resolution: 512 // optional parameter for adjusting display resolution  256, 128
+                });
+                
+                new_layer.addTo(this.nativemap);
+
+                //this.nativemap.fitBounds(new_layer.getBounds());
+                
+                this.all_layers[new_layer._leaflet_id] = new_layer;
+                
+                this._updatePanels();
+                
+                callback.call(this, new_layer._leaflet_id);
+          })
+        });        
+    },
+
     
     // if to_pixels is true 
     // for simple crs - from latlong to pixels
@@ -1906,8 +1943,9 @@ $.widget( "heurist.mapping", {
         }
 
         return !affected_layer 
-            || affected_layer instanceof L.ImageOverlay 
-            || affected_layer instanceof L.TileLayer;    
+            || affected_layer instanceof L.ImageOverlay
+            || affected_layer instanceof L.TileLayer
+            || (typeof GeoRasterLayer === 'function' && affected_layer instanceof GeoRasterLayer);
     },
     
     //
@@ -1927,23 +1965,29 @@ $.widget( "heurist.mapping", {
         let affected_layer = this.all_layers[layer_id];
         
         if(this.isImageLayer(affected_layer)){
-
+            
+            if( affected_layer instanceof GeoRasterLayer ){
+                L.setOptions(affected_layer, newStyle);
+                return;
+            }
             // Get html element (img => non-tiled)
             let element = affected_layer instanceof L.ImageOverlay ? affected_layer.getElement() : affected_layer.getContainer();
 
             // Get class list, look for class that starts with heurist-imageoverlay-
-            let classes = $(element).attr('class').split(' ');
-            let layer_class = '';
+            if($(element).attr('class')){
+                let classes = $(element).attr('class').split(' ');
+                let layer_class = '';
 
-            for(const class_name of classes){
-                if(class_name.match(/heurist-imageoverlay-/)){
-                    layer_class = class_name;
-                    break;
+                for(const class_name of classes){
+                    if(class_name.match(/heurist-imageoverlay-/)){
+                        layer_class = class_name;
+                        break;
+                    }
                 }
-            }
 
-            if(!window.hWin.HEURIST4.util.isempty(layer_class)){
-                this.applyImageMapFilter(layer_class, newStyle); // apply image filter
+                if(!window.hWin.HEURIST4.util.isempty(layer_class)){
+                    this.applyImageMapFilter(layer_class, newStyle); // apply image filter
+                }
             }
 
             return;  

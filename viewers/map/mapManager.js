@@ -1083,6 +1083,8 @@ function HMapManager( _options )
                             style = layer_rec['d'][DT_SYMBOLOGY];
                             if(style){
                                 style = window.hWin.HEURIST4.util.isJSON(style[0]);
+                            }else{
+                                style = {opacity:1};
                             }
 
                             opacity = style?.opacity ? parseFloat(style.opacity) : 1;
@@ -1125,6 +1127,10 @@ function HMapManager( _options )
                         }
 
                         const updateStyle = () => {
+                            
+                            if(!style){
+                                style = {};
+                            }
                             
                             style['opacity'] = parseFloat($container.find('[name="opacity"]').val());
                             $container.find('#opacity-slider-val').text(style['opacity']);

@@ -277,6 +277,7 @@ function hMapDocument( _options )
 
 //{"any":[{"ids":mapdoc_id},{"all":{"t":RT_MAP_LAYER,"linkedfrom":mapdoc_id}}]},    //mapdoc and layer linked to given mapdoc     
 //{"t":RT_MAP_LAYER,"linkedfrom":mapdoc_id},  //layers linked to given mapdoc
+
             let request = {
                         w: 'a',
                         detail: 'detail',
