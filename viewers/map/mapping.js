@@ -1022,7 +1022,7 @@ $.widget( "heurist.mapping", {
         //direct load: parseGeoraster(url_to_geotiff_file).then(georaster => {
                 console.log("georaster:", georaster);
 
-                var new_layer = new GeoRasterLayer({
+                let new_layer = new GeoRasterLayer({
                     //attribution: "Unknown",  
                     georaster: georaster,
                     //opacity: 0.7,

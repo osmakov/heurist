@@ -69,8 +69,7 @@ function editCMS2(website_document){
         
     let _keep_EditPanelWidth = 0;  
     
-    let _editor_panel_frame,
-        _editor_panel = null,
+    let _editor_panel = null,
         _ws_doc = website_document, //website document
         _ws_body = $(website_document).find('body');
     
@@ -321,12 +320,6 @@ function editCMS2(website_document){
     // Edit home page content
     //
     function _initEditControls(need_callback){
-        
-        if(!_editor_panel){
-            let innerDoc = _editor_panel_frame[0].contentDocument || _editor_panel_frame[0].contentWindow.document;
-            
-            _editor_panel = $(innerDoc.body);
-        }
        
         _editor_panel.find('.btn-website-homepage').on('click',_editHomePage);
         if(!isWebPage){

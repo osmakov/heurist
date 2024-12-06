@@ -128,9 +128,9 @@ function handleSettingsInUI() {
     //-------------------------------
     
     $('#btnSingleSelect').button({icon:'ui-icon-cursor' , showLabel:false})
-        .on('click', function(){ selectionMode = 'single'; $("#d3svg").css("cursor", "default"); _syncUI();});
+        .on('click', function(){ window.selectionMode = 'single'; $("#d3svg").css("cursor", "default"); _syncUI();});
     $('#btnMultipleSelect').button({icon: 'ui-icon-select', showLabel:false})
-        .on('click', function(){ selectionMode = 'multi'; $("#d3svg").css("cursor", "crosshair"); _syncUI();});
+        .on('click', function(){ window.selectionMode = 'multi'; $("#d3svg").css("cursor", "crosshair"); _syncUI();});
     $('#selectMode').controlgroup();
         
     $('#btnViewModeIcon').button({icon: 'ui-icon-circle' , showLabel:false})

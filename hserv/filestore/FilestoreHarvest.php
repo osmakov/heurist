@@ -55,7 +55,7 @@ class FilestoreHarvest
 
         $mediaExts = explode(',', $mediaExts);
 
-        if (empty($dirs)) {
+        if (empty($mediaFolders)) {
             //It seems that there are no media folders specified for this database
             $dirs = array($this->system->getSysDir('file_uploads'));// default to the data folder for this database
         }
