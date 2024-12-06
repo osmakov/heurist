@@ -22,7 +22,7 @@ $.widget( "heurist.recordUploadedFilesIndex", $.heurist.recordAction, {
     // default options
     options: {
     
-        height: 780,
+        height: 500,
         width:  800,
         modal:  true,
         title:  'Index uploaded files / external transfers',
@@ -47,9 +47,17 @@ $.widget( "heurist.recordUploadedFilesIndex", $.heurist.recordAction, {
         
         this._$('#mediaexts').text(window.hWin.HAPI4.sysinfo['media_ext_index'] ?? window.hWin.HAPI4.sysinfo['media_ext']);
         
-        this._$('.btnAction').button();
-        
-        this._on(this._$('.btnAction'), {click:this.doAction});
+        if(this.options.isdialog)
+        { 
+            this._$('#div_result').css('margin-top',0);
+            this._$('.btnAction').hide();
+            window.hWin.HEURIST4.util.setDisabled( this.element.parents('.ui-dialog').find('.btnDoAction'), false );  
+        }else{
+            
+            this._$('.btnAction').button();
+            this._on(this._$('.btnAction'), {click:this.doAction});           
+        }    
+
         
         return this._super();
     },

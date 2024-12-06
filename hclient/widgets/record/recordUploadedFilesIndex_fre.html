@@ -1,0 +1,44 @@
+<div id="div_header" class="ent_wrapper" style="margin:10px 10px 0px 40px;font-size:0.95em">
+
+<h2>UTILISATEURS AVANCÉS</h2>
+<p style="font-weight:bold;font-size:larger;padding:10 0">
+Indexer les fichiers téléchargés / transferts externes
+</p>
+
+<p>Cette fonction analyse les dossiers multimédias et ajoute les fichiers manquants aux fichiers multimédias.
+<br>
+<ul>
+<li>Les fichiers déjà indexés restent inchangés.</li>
+<li>Les miniatures seront créées automatiquement</li>
+<li>Pour créer des enregistrements multimédias associés à ces fichiers, utilisez « Créer des enregistrements multimédias »</li>
+</ul>
+</p>
+<p style="max-width: 740px;">
+Les fichiers doivent être téléchargés via Remplir > Télécharger des fichiers multimédias/images (limité normalement à 30 M) ou par accès sftp direct au répertoire file_uploads ou aux sous-répertoires sur le serveur pour les fichiers plus volumineux ou les téléchargements en masse très volumineux (disponible uniquement pour les administrateurs système).
+</p>
+
+<p>
+<b>Dossiers à analyser :</b>
+<select id="mediafolders"></select>
+</p>
+<p>
+<b style="vertical-align: top;">Extensions à analyser :</b>
+<span id="mediaexts" style="max-width: 640px;display: inline-block;word-wrap: break-word;"></span>
+</p>
+<p>
+<a href="#" onclick="{window.hWin.HEURIST4.ui.showEntityDialog('sysIdentification');return false;}" title="Ouvrir le formulaire pour modifier les propriétés qui déterminent la gestion des fichiers et des répertoires dans les dossiers de téléchargement de la base de données">
+Cliquez ici pour définir les dossiers multimédias
+</a>
+</p>
+<p>
+<button class="ui-button-action btnAction">Continuer</button>
+</p>
+
+</div>
+
+<div id="div_result" class="ent_wrapper" style="padding:40px;margin-top:75px;overflow:auto; display: none;">
+<h3 style="margin:0">Rapport :</h3>
+<br>
+<div id="div_result_msg">
+</div>
+</div>

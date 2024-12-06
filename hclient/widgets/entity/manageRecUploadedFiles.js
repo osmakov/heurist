@@ -1741,42 +1741,9 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
     //
     //
     _refreshIndex: function(){
-
         let that = this;
-
-        if(!this._checkUserPermissions(1)){
-            return;
-        }
-
-        let request = {
-            'a': 'batch',
-            'entity': that.options.entity.entityName,
-            'request_id': window.hWin.HEURIST4.util.random(),
-            'bulk_reg_filestore': 1
-        };
-
-        window.hWin.HEURIST4.msg.bringCoverallToFront($('body'));
-
-        window.hWin.HAPI4.EntityMgr.doRequest(request, 
-        function(response){
-
-            window.hWin.HEURIST4.msg.sendCoverallToBack();
-
-            if(response.status == window.hWin.ResponseStatus.OK){
-
-                if(window.hWin.HEURIST4.util.isempty(response.data)){
-                    window.hWin.HEURIST4.msg.showMsgFlash('No new files to index', 3000);
-                }else{
-
-                    let $dlg = window.hWin.HEURIST4.msg.showMsgDlg(response.data, {'OK': function(){
-                        $dlg.dialog('close');
-                        that.searchForm.searchRecUploadedFiles('searchRecent', null); // refresh
-                    }}, {title: 'Refresh indexes results', 'OK': window.HR('OK')}, {default_palette_class: 'ui-heurist-admin'});
-                }
-            }else{
-                window.hWin.HEURIST4.msg.showMsgErr(response);
-            }
-        });
+        window.hWin.HEURIST4.ui.showRecordActionDialog('recordUploadedFilesIndex',
+            {onClose:()=>that.searchForm.searchRecUploadedFiles('searchRecent', null)});
     },
     
     _getSelected: function(limit){

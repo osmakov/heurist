@@ -281,7 +281,6 @@ $.widget( "heurist.baseAction", {
             if(options['width']>maxw) options['width'] = maxw*0.95;
             let maxh = (window.hWin?window.hWin.innerHeight:window.innerHeight);
             if(options['height']>maxh) options['height'] = maxh*0.95;
-            
             let $dlg = this.element.dialog({
                 autoOpen: false ,
                 //element: this.element[0],
