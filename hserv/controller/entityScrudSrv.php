@@ -139,7 +139,7 @@
             elseif($entity_name=='dtg') {$entity_name = 'defDetailTypeGroups';}
             elseif($entity_name=='rty') {$entity_name = 'defRecTypes';}
             elseif($entity_name=='dty') {$entity_name = 'defDetailTypes';}
-            elseif($entity_name=='trm' || $entity_name=='term') {$entity_name = 'defTerms';}
+            elseif($entity_name=='trm' || $entity_name=='term' || $entity_name=='vocabulary') {$entity_name = 'defTerms';}
             elseif($entity_name=='vcg') {$entity_name = 'defVocabularyGroups';}
             elseif($entity_name=='rst') {$entity_name = 'defRecStructure';}
             elseif($entity_name=='rem') {$entity_name = 'dbUsrReminders';}
