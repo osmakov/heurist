@@ -80,6 +80,7 @@ if (isLocalHost() && !@$_REQUEST['embed'])  {
 
     var page_first_not_empty = 0;
     var home_page_record_id=<?php echo $home_page_on_init; ?>;
+    var is_main_website=<?php echo $def_rec_id == $home_page_on_init ? 'true' : 'false'; ?>;
     var init_page_record_id=<?php echo $open_page_or_record_on_init; ?>;
     var isWebPage = <?php echo $isWebPage ?'true':'false';?>;
     var current_page_id = 0;
