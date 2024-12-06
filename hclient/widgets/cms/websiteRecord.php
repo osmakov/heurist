@@ -142,22 +142,21 @@ if(isPositiveInt(@$_REQUEST['recID'])) {
     $rec_id = intval(@$_REQUEST['id']);
 }
 
-if(!isPositiveInt($rec_id))
-{
-    //if recID is not defined - find fist available "CMS home" record
+$res = recordSearch($system, array('q'=>array('t'=>RT_CMS_HOME), 'detail'=>'ids'));
+$def_rec_id = 0;
+if(@$res['status']==HEURIST_OK){
+    $def_rec_id = @$res['data']['records'][0];
+}
+if(!isPositiveInt($rec_id)){
+    // if recID is not defined - use fist available "CMS home" record
+    $rec_id = $def_rec_id;
+    if(@$res['status'] == HEURIST_OK && !isPositiveInt($rec_id)){
+        $try_login = $system->getCurrentUser() == null;
+        $message = 'Sorry, there are no publicly accessible websites defined for this database. '
+        .'Please ' . ($try_login ? '<a class="login-link">login</a> or' : '') . ' ask the owner to publish their website(s).';
 
-    $res = recordSearch($system, array('q'=>array('t'=>RT_CMS_HOME), 'detail'=>'ids'));
-    if(@$res['status']==HEURIST_OK){
-        $rec_id = @$res['data']['records'][0];
-        if(!isPositiveInt($rec_id)){
-
-            $try_login = $system->getCurrentUser() == null;
-            $message = 'Sorry, there are no publicly accessible websites defined for this database. '
-            .'Please ' . ($try_login ? '<a class="login-link">login</a> or' : '') . ' ask the owner to publish their website(s).';
-
-            include_once ERROR_REDIR;
-            exit;
-        }
+        include_once ERROR_REDIR;
+        exit;
     }else{
 
         include_once ERROR_REDIR;

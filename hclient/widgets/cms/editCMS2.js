@@ -155,7 +155,8 @@ function editCMS2(website_document){
                         +'<div class="ent_wrapper editStructure" id="tabsEditCMS">' 
 
                             +(!isWebPage ? '<span class="btn-website-edit" style="font-weight:normal !important;">Website layout / properties</span>' : '')
-                            +`<a href="#" class="btn-website-url" style="display:inline-block;padding-left:10px;font-size: ${isWebPage ? '12' : '9'}px;color: black;">Get website URL</a>`
+                            +`<span class="btn-website-url" style="display:inline-block;font-size:9px;color:black;margin-bottom:5px;padding-right:5px;">Website URL</span>`
+                            +`<a href="#" class="website-url truncate" style="font-size:9px;color: blue;display: inline-block;width: ${isWebPage ? '65' : '70'}%;vertical-align: -1px;"></a>`
 
                             +'<span style="position:absolute;top:22px;width:32px;height:24px;font-size:29px;cursor:pointer;'+(options.editor_pos=='west'?'right:5px':'')+'" '
                             +'class="bnt-cms-hidepanel ui-icon ui-icon-carat-2-'+(options.editor_pos=='west'?'w':'e')+'"></span>'
@@ -164,7 +165,7 @@ function editCMS2(website_document){
                                 +'<li><a href="#treeWebSite">Site</a></li><li><a href="#treePage">Page</a></li>'
                             +'</ul>'
 
-                            +'<div id="treeWebSite" style="display:none;top:70px;" class="ent_wrapper ui-cms-mainmenu">'
+                            +'<div id="treeWebSite" style="display:none;top:80px;" class="ent_wrapper ui-cms-mainmenu">'
                                 +'<div class="toolbarWebSite ent_header" style="height:85px;padding-top:15px;">'
 
                                     +'<span style="display:block;border-top:1px solid gray;padding:4px 8px;margin:4px 0px;">'
@@ -187,7 +188,7 @@ function editCMS2(website_document){
                                 
                                 +'<div class="treeWebSite ent_content_full" style="top:80px;padding:3px 10px;"></div>' //treeview - edit website menu
                             +'</div>'
-                            +'<div id="treePage" style="font-size:0.9em;top:70px;" class="ent_wrapper ui-widget-content">'
+                            +`<div id="treePage" style="font-size:0.9em;top:${isWebPage ? '50' : '80'}px;" class="ent_wrapper ui-widget-content">`
                             
                                 +'<div class="treePageHeader ent_header" style="height:85px;line-height:normal;">'
                                     
@@ -331,19 +332,24 @@ function editCMS2(website_document){
         if(!isWebPage){
             _editor_panel.find('.btn-website-edit')
                          .button({classes:{'ui-button': 'ui-button-action'}})
-                         .css({'padding':'5px','font-size':'9px'})
+                         .css({'padding':'5px','font-size':'9px','margin-bottom':'5px'})
                          .on('click', _editHomePageRecord);
         }else{
             _editor_panel.find('.btn-website-edit').on('click',_editHomePageRecord);
         }
         _editor_panel.find('.btn-website-addpage').on('click',_addNewRootMenu); // button({icon:'ui-icon-plus'}).
-        _editor_panel.find('.btn-website-url').on('click', function(){ // save website url to clipboard
 
-            let url_part = window.hWin.HAPI4.sysinfo.use_redirect ? 
-                                `${window.hWin.HAPI4.database}/web/${home_page_record_id}` : 
-                                `?db=${window.hWin.HAPI4.database}&website&id=${home_page_record_id}`;
+        let url_part = window.hWin.HAPI4.sysinfo.use_redirect ?
+                            `${window.hWin.HAPI4.database}` :
+                            `?db=${window.hWin.HAPI4.database}&website`;
 
-            window.hWin.HEURIST4.util.copyStringToClipboard(`${window.hWin.HAPI4.baseURL_pro}${url_part}`);
+        let url = `${window.hWin.HAPI4.baseURL_pro}${url_part}`;
+        url = window.hWin.HAPI4.sysinfo.use_redirect ? url.replace('heurist/', '') : url;
+        url += window.hWin.HAPI4.sysinfo.use_redirect && !is_main_website ? `/web/${home_page_record_id}` : '';
+        url += !window.hWin.HAPI4.sysinfo.use_redirect && !is_main_website ? `&id=${home_page_record_id}` : '';
+
+        _editor_panel.find('.website-url').text(url).attr('title', `Click to copy ${url} to clipboard`).on('click', function(){ // save website url to clipboard
+            window.hWin.HEURIST4.util.copyStringToClipboard(`${url}`);
             window.hWin.HEURIST4.msg.showMsgFlash('Website URL saved to clipboard', 3000);
         });
 
