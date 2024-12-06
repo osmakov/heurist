@@ -70,7 +70,7 @@ class DbDefTerms extends DbEntityBase
         if(@$this->data['withimages']==1){
 
             $ids = $this->data['trm_ID'];
-            $new_lib_dir = HEURIST_FILESTORE_DIR . 'entity/defTerms/thumbnail/';
+            $new_lib_dir = $this->system->getSysDir() . 'entity/defTerms/thumbnail/';
             $files = array();
 
             foreach ($ids as $id){
@@ -221,6 +221,24 @@ class DbDefTerms extends DbEntityBase
         return $matches;
 
     }
+    
+    //
+    // get list of icons ids
+    //
+    public function getTermIcons(){
+        
+        $res = [];
+        $dir = $this->system->getSysDir() . 'entity/defTerms/thumbnail/';
+        $all_files = scandir($dir);
+        foreach ($all_files as $filename){
+             $filename = strstr(basename($filename),'.',true);
+             if(intval($filename)>0){
+                 $res[] = $filename;
+             }
+        }
+        
+       return $res;
+    }    
 
     //
     // trm_Label may have periods. Periods are taken as indicators of hierarchy.

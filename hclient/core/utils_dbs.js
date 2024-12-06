@@ -1812,6 +1812,12 @@ window.hWin.HEURIST4.dbs = {
         }
         return null;
     },
+    
+    trmHasIcon: function(term_id){
+        let ids = window.hWin.HAPI4.EntityMgr.getEntityData2('trm_Icons');
+        return window.hWin.HEURIST4.util.isempty(ids)   //temp - remove later
+            || window.hWin.HEURIST4.util.findArrayIndex(term_id, ids)>=0; //ids.indexOf(term_id)>=0;
+    },
 
     
     //

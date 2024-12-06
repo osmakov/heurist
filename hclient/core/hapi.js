@@ -1043,6 +1043,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
                         window.hWin.HAPI4.EntityMgr.createRstIndex();
                     } else if (entityName == 'defTerms') {
                         entity_data['trm_Links'] = data[entityName]['trm_Links'];
+                        entity_data['trm_Icons'] = data[entityName]['trm_Icons'] ?? [];
                     }
 
                     if (data[entityName]['config']) {

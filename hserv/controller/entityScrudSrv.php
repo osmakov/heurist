@@ -124,6 +124,7 @@
                 }
                 if($entity_name == 'defTerms'){
                     $res[$entity_name]['trm_Links'] = $entity->getTermLinks();
+                    $res[$entity_name]['trm_Icons'] = $entity->getTermIcons();
                 }
             }
         }
