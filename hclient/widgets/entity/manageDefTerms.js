@@ -359,13 +359,13 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 let btn_array2 = [
                     {showLabel:false, icon:'ui-icon-menu', text:window.hWin.HR('Show as plain list'),
                         css:{'margin-right':'0.5em','display':'inline-block'}, class:'btnViewMode_List',
-                        click: function() { that._onActionListener(null, 'viewmode-list'); }},
+                        click: function(event) { event.target.blur(); that._onActionListener(null, 'viewmode-list'); }},
                     /*{showLabel:false, icon:'ui-icon-structure', text:window.hWin.HR('Show as tree'),
                     css:{'margin-right':'0.5em','display':'inline-block'}, class:'btnViewMode_Tree',
                     click: function() { that._onActionListener(null, 'viewmode-tree'); }},*/
                     {showLabel:false, icon:'ui-icon-view-icons', text:window.hWin.HR('Show as images'),
                         css:{'margin-right':'0.5em','display':'inline-block'}, class:'btnViewMode_List',
-                        click: function() { that._onActionListener(null, 'viewmode-thumbs'); }}
+                        click: function(event) { event.target.blur(); that._onActionListener(null, 'viewmode-thumbs'); }}
                 ];
 
                 this._toolbar = this.searchForm;
@@ -580,9 +580,11 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                         if(that._cachedUsages[trmid]){ // add usage count
                             content += `<p>Usage count: ${that._cachedUsages[trmid]}</p>`;
                         }
+                        if(window.hWin.HEURIST4.util.isPositiveInt(trmid) && $Db.trmHasIcon(trmid)){ // add term image
 
-                        if(Number.isInteger(+trmid) && trmid > 0){ // add term image
-
+                            let icon = window.hWin.HAPI4.getImageUrl(that._entityName, trmid, 'icon', null, null, true);
+                            content += `<br><img src='${window.hWin.HAPI4.baseURL}hclient/assets/16x16.gif' style='background-size:contain; background-repeat:no-repeat; background-image: url("${icon}")' height=64 width=64 />`;
+                            /*
                             const ele_context = this;
 
                             window.hWin.HAPI4.checkImage(that._entityName, trmid, 'icon', function(response){
@@ -596,6 +598,7 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                             });
 
                             return '';
+                            */
                         }
 
                         return content;
@@ -1076,18 +1079,21 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 +'<p style=&quot;color:orange&quot;>The term can only be edited in that vocabulary.</p>';
             }
             sHint = sHint + '"';
+            
+            const hasIcon = $Db.trmHasIcon(recID);
 
-            let recIcon = window.hWin.HAPI4.getImageUrl(this._entityName, recID, 'icon', null, null, true);
+            let recIcon = hasIcon?window.hWin.HAPI4.getImageUrl(this._entityName, recID, 'icon', null, null, true):'';
 
             recTitle = '<div class="item truncate label_term rolloverTooltip"'
             +' style="'+sFontSize+sWidth+sBold+'" '+sHint+'>'
             +sLabel+'&nbsp;&nbsp;'
-            +`<img src='${window.hWin.HAPI4.baseURL}hclient/assets/16x16.gif' style='background-image: url("${recIcon}"); background-size:contain; background-repeat:no-repeat; vertical-align:bottom;' />`
-            +'&nbsp;&nbsp;<span class="term_usage"></span></div>';
+            //+`<img src='${window.hWin.HAPI4.baseURL}hclient/assets/16x16.gif' style='background-image: url("${recIcon}"); background-size:contain; background-repeat:no-repeat; vertical-align:bottom;' />`
+            //+'&nbsp;&nbsp;'
+            +'<span class="term_usage"></span></div>';
 
             let html_thumb = '';
             
-            let recThumb = window.hWin.HAPI4.getImageUrl(this._entityName, recID, 'thumb', null, null, true);
+            let recThumb = hasIcon?window.hWin.HAPI4.getImageUrl(this._entityName, recID, 'thumb', null, null, true):'';
 
             html_thumb = '<div class="recTypeThumb" style="background-image: url(&quot;'
                     +recThumb+'&quot;);opacity:1;top:45px;"></div>';
