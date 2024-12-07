@@ -160,12 +160,23 @@ $.widget( "heurist.search", {
         .css({
             'max-width':'99%',
             'resize':'none', 
-            'padding':'2px 50px 2px 5px',
+            'padding':'2px 50px 2px 17.5px',
             'line-height': '14px', 
             'min-width':'80px', 'width':'100%' }) 
         .addClass("text ui-widget-content ui-corner-all")
         .uniqueId()
-        .appendTo(  this.div_search_input );
+        .appendTo( this.div_search_input );
+
+        // Icon to bring up the query as plain text
+        let $query_icon = $('<span>', {class: 'icon_view_query ui-icon ui-icon-circle-b-help', style: 'font-size: 12px; position: absolute; cursor: pointer;'}).appendTo(this.div_search_input);
+        setTimeout(() => $query_icon.position({ my: 'left+2 top+2', at: 'left top', of: this.input_search }), 1000);
+        this._on($query_icon, {
+            click: () => {
+                if(!window.hWin.HEURIST4.util.isempty(this._query_as_plain)){
+                    window.hWin.HEURIST4.msg.showMsgDlg(this._query_as_plain, null, {title: 'Current query'}, {default_palette_class: 'ui-heurist-explore'});
+                }
+            }
+        });
 
         let isNotFirefox = (navigator.userAgent.indexOf('Firefox')<0);
 
@@ -197,7 +208,6 @@ $.widget( "heurist.search", {
         }
 
         // Search textarea
-        let $tooltip = null;
         this._on( this.input_search, {
             click: function(){
                 if(this.input_search_prompt2.is(':visible')){
@@ -205,11 +215,20 @@ $.widget( "heurist.search", {
                 }
             },
             keyup: this._showhide_input_prompt, 
-            change: this._showhide_input_prompt,
+            change: this._showhide_input_prompt
+        });
+
+        let $tooltip = null;
+        this._on(this.input_search.parent(), {
             mouseenter: () => {
+
+                if(window.hWin.HEURIST4.util.isempty(this._query_as_plain)){
+                    return;
+                }
+
                 $tooltip = this.input_search.tooltip({
                     show: {
-                        delay: 2000,
+                        delay: 500,
                         duration: 0
                     },
                     content: this._query_as_plain,
@@ -266,12 +285,13 @@ $.widget( "heurist.search", {
 
                 let cur_rows = parseInt(context.input_search.attr('rows'), 10);
 
-                let row_height = context.input_search.attr('rows', '1').height();
+                let row_height = context.input_search.prop('rows', '1').height();
                 let content_height = context.input_search[0].scrollHeight;
                 let rows_count = Math.ceil(content_height / row_height) + 1;
-                rows_count = (rows_count > 10) ? 10 : rows_count;
+                rows_count = rows_count > 10 ? 10 : rows_count;
+                rows_count = rows_count < 2 ? 2 : rows_count;
 
-                context.input_search.attr('rows', rows_count);
+                context.input_search.prop('rows', rows_count);
 
                 if(rows_count != cur_rows){
                     $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_LAYOUT_RESIZE);
@@ -288,7 +308,6 @@ $.widget( "heurist.search", {
             });
         }
 
-
         let menu_h = window.hWin.HEURIST4.util.em(1); //get current font size in em
 
         this.input_search.data('x', this.input_search.outerWidth());
@@ -299,13 +318,13 @@ $.widget( "heurist.search", {
 
                 if (this.input_search.outerWidth() != this.input_search.data('x') || this.input_search.outerHeight() != this.input_search.data('y')) {
 
-                    if(this.input_search.outerHeight()<25){                   
-                        this.input_search.height(23);
-                    }else{
+                    let new_height = that.element.height() - menu_h - 8;
+                    new_height = new_height < 30 ? 30 : new_height;
 
-                        if(this.input_search.outerHeight()> that.element.height()-menu_h-8){    //, 'max-height': (this.element.height()-12)+':px'
-                            this.input_search.height(that.element.height()-menu_h-10);
-                        }
+                    if(this.input_search.outerHeight() < 30){
+                        this.input_search.height(30);
+                    }else if(this.input_search.outerHeight() > new_height){
+                        this.input_search.height(new_height - 2);
                     }
 
                     $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_LAYOUT_RESIZE);
@@ -706,6 +725,11 @@ $.widget( "heurist.search", {
         }
 
         this._query_as_plain = window.hWin.HEURIST4.query.jsonQueryToPlainText(this.input_search.val(), false);
+        if(!window.hWin.HEURIST4.util.isempty(this._query_as_plain)){
+            this.div_search_input.find('.icon_view_query').show();
+        }else{
+            this.div_search_input.find('.icon_view_query').hide();
+        }
     },
 
     /* EXPERIMENTAL

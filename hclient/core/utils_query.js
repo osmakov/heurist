@@ -585,7 +585,7 @@ window.hWin.HEURIST4.query = {
         function handleRectype(rty_IDs){
 
             if(rty_IDs.match(/\d, ?\d/)){
-                rty_IDs = window.hWin.HEURIST4.util.isPositiveInt(id) ? [id] : rty_IDs.split(',').filter((id) => window.hWin.HEURIST4.util.isPositiveInt(id) && id > 0);
+                rty_IDs = window.hWin.HEURIST4.util.isPositiveInt(rty_IDs) ? [rty_IDs] : rty_IDs.split(',').filter((id) => window.hWin.HEURIST4.util.isPositiveInt(id) && id > 0);
             }else{
                 rty_IDs = [rty_IDs];
             }
@@ -610,8 +610,24 @@ window.hWin.HEURIST4.query = {
                 field = field_name;
             }
 
-            if(key.startsWith('link') || key.startsWith('related')){
-                //linked_to,linkedfrom,related_to,relatedfrom,links
+            if(key === 'r' && !field){ // Relation type field handling
+
+                let cond = value.startsWith('-') ? 'not' : '';
+                if(window.hWin.HEURIST4.util.isPositiveInt(value) || value.match(/\d, ?\d/)){
+                    value = value.split(',');
+                    value = value.filter((id) => window.hWin.HEURIST4.util.isPositiveInt(id));
+                    value = value.map((id) => $Db.trm(id, 'trm_Label'));
+                    value = value.filter((trm) => !window.hWin.HEURIST4.util.isempty(trm)).join(', ');
+                }
+
+                conditional = `<em>Relationship type</em> that is ${cond} a match or is ${cond} a child of "${value}"`;
+            }else if(key === 'r' || key === 'relf' || key === 'rf'){ // Relation field
+                field = $Db.rst(window.hWin.HAPI4.sysinfo.dbconst.RT_RELATION, window.hWin.HAPI4.sysinfo.dbconst.DT_RELATION_TYPE, 'rst_DisplayName');
+                field = `Relationship ${field}`;
+            } // other
+
+            if(key.startsWith('link') || key.startsWith('related')){ // linked_to,linkedfrom,related_to,relatedfrom,links
+
                 let sub_query = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
                 let linking = key.indexOf('link') >= 0 ? 'Linked' : 'Related';
                 let direction = key.indexOf('from') >= 0 ? 'from' : 'to';
@@ -708,7 +724,7 @@ window.hWin.HEURIST4.query = {
 
                 default:
 
-                    //key === 'f' || key === 'field' || key === 'fc' || key === 'count'
+                    // key === 'f' || key === 'field' || key === 'fc' || key === 'count'
                     [field, cond, type] = handleDefault(key, parts.join(':'), value);
                     break;
             }
@@ -759,7 +775,7 @@ window.hWin.HEURIST4.query = {
             res += 'records that have a <em>__FIELD__</em> value';
         }else if(value.startsWith('=') || value.startsWith('-')){
             val = value.substring(1);
-            res += `${ext} that ${value.startsWith('-') ? 'does not' : ''} extactly match "<em>${val}</em>"`;
+            res += `${ext} that ${value.startsWith('-') ? 'do not' : ''} extactly match "<em>${val}</em>"`;
         }else if(value.startsWith('@++') || value.startsWith('@--')){
             val = value.substring(3);
             res = `${ext} that contain ${value.startsWith('@++') ? 'all' : 'none'} of the words in "<em>${val}</em>"`;
