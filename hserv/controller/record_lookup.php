@@ -1017,7 +1017,9 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
     $def_lang = getLangCode2($def_lang);
     $def_lang = !$def_lang ? 'fr' : strtolower($def_lang);
 
-    $remote_data = json_decode($remote_data, true);
+    $is_error = strpos($remote_data, 'Une erreur est survenue') !== false ? 'database' : false;
+    $is_error = $is_error && strpos($remote_data, 'Connexion à la base donnée : OK! Connected') ? 'request' : $is_error;
+    $remote_data = !$is_error ? $remote_data : json_decode($remote_data, true);
 
     $type_idx = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
     $trm_uri = 'http://www.w3.org/2004/02/skos/core#Concept';
@@ -1031,7 +1033,7 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
 
     $results = array();
 
-    if(json_last_error() === JSON_ERROR_NONE){
+    if(!$is_error && json_last_error() === JSON_ERROR_NONE){
 
         foreach ($remote_data as $uri => $details) {
             if($details[$type_idx][0]['value'] != $trm_uri){ // not a term
@@ -1072,7 +1074,21 @@ if(@$params['serviceType'] == 'geonames' || @$params['serviceType'] == 'tlcmap')
             $results[] = ['term_label' => $label, 'term_desc' => $desc, 'term_code' => $code, 'term_uri' => $uri, 'term_translations' => $translated_labels, 'editor_notes' => $notes, 'geopoint' => $geopoint];
         }
     }else{
-        $system->errorExitApi('An error occurred while attempting to process the search results from Opentheso', HEURIST_UNKNOWN_ERROR);
+
+        $error_msg = $is_error === 'database' ?
+            'Opentheso reported an error with it trying to connect to their internal database, please check that the selected server is currently available before re-trying in a few moments.' :
+            'Please report this to the Heurist team, and include your Opentheso request (Selected server, thesaurus and search)';
+
+        $error_msg = $is_error === 'request' ?
+            'Opentheso reported an error when trying to run your request, please check that your data can be download as JSON (the link can be found when viewing your concept in Opentheso, then the form row labelled "Exporter le concept en SKOS") before re-trying.' :
+            $error_msg;
+
+        $error_msg = json_last_error() !== JSON_ERROR_NONE ? 'The response from Opentheso was not in JSON format, please report this to the Heurist team and include your request (Opentheso server, thesaurus and search)' : $error_msg;
+
+        $error_status = $is_error === 'database' ? HEURIST_ACTION_BLOCKED : HEURIST_UNKNOWN_ERROR;
+        $error_status = $is_error === 'request' ? HEURIST_INVALID_REQUEST : $error_status;
+
+        $system->errorExitApi("<br>{$error_msg}", $error_status);
     }
 
     $remote_data = json_encode($results);
