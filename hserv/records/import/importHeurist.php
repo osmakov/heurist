@@ -1117,7 +1117,7 @@ EOD;
                                 //download to scratch folder
 
                                 $tmp_file = tempnam(HEURIST_SCRATCH_DIR, '_temp_');
-                                $newfilename = USanitize::sanitizeFileName($value['ulf_OrigFileName']);
+                                $newfilename = USanitize::sanitizeFileName($value['ulf_OrigFileName'], false);
 
                                 //source on the same server as target
                                 if(strpos($source_url, HEURIST_SERVER_URL)===0 && @$value['fullPath'])

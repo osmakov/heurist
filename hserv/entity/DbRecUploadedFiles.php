@@ -1174,12 +1174,12 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
             }
 
             if(file_exists($tmp_name)){
-                $fileinfo = pathinfo($tmp_name);
+                $fileinfo = pathinfo($newname??$tmp_name);
 
                 $file = new \stdClass();
                 //name with ext
-                $file->original_name = $newname?$newname:$fileinfo['basename'];//was filename
-                $file->name = $file->original_name;
+                $file->original_name = $fileinfo['basename'];//was filename
+                $file->name = $newname; //$file->original_name;
                 $file->size = getFileSize($tmp_name);//UFile
                 $file->type = @$fileinfo['extension'];
 
@@ -1214,7 +1214,7 @@ When we open "iiif_image" in mirador viewer we generate manifest dynamically.
 
                 $ret = array(
                 'ulf_OrigFileName' => $name,
-                'ulf_MimeExt' => $extension?$extension:$file->type, //extension or mimetype allowed
+                'ulf_MimeExt' => $extension??$file->type, //extension or mimetype allowed
                 'ulf_FileSizeKB' => ($file->size<1024?1:intval($file->size/1024)),
                 'ulf_FilePath' => DIR_FILEUPLOADS,   //relative path to $this->system->getSysDir() - db root
                 'ulf_TempFile' => $tmp_name);//file in scratch to be copied

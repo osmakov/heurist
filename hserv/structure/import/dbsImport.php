@@ -462,6 +462,11 @@ class DbsImport {
             $all_fieldtypes = @$data['fieldtypes'];//[$local_id]['name']
             if(!isEmptyArray($all_fieldtypes)){
                 foreach ($all_fieldtypes as $ftId => $field){
+                    
+                    if(is_string($ftId) && strpos($ftId, '-')>0){
+                        $ftId = $this->_getLocalCode('detailtype', $this->source_defs, $ftId);
+                    }
+                    
                     if(!(@$this->fields_correspondence[$ftId] || in_array($ftId, $this->imp_fieldtypes) )){
 
                             $ccode = $def_dts[$ftId]['commonFields'][$idx_ccode];
@@ -719,7 +724,7 @@ $idx_dt_grp = $def_dts['fieldNamesToIndex']['dty_DetailTypeGroupID'];
 
 foreach ($this->imp_fieldtypes as $ftId){
     $src_group = [];
-    $grp_id = $def_dts[$ftId]['commonFields'][$idx_dt_grp];
+    $grp_id = $def_dts[$ftId]['commonFields'][$idx_dt_grp];//get from source
     $grp_name = "";
     if(@$group_ft_ids[$grp_id]){ //already found
         continue;
