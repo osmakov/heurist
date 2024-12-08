@@ -378,10 +378,10 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
         //
         // init layout
         //
-        //window.hWin.HAPI4.LayoutMgr.appInitAll( window.hWin.HAPI4.sysinfo['layout'], "#layout_panes");
+        window.hWin.HAPI4.LayoutMgr.appInitAll( window.hWin.HAPI4.sysinfo['layout'], "#layout_panes");
 
-        const layout_cfg = window.hWin.HAPI4.LayoutMgr2.layoutGetById('H6Default2');
-        window.hWin.HAPI4.LayoutMgr2.layoutInit(layout_cfg, "#layout_panes" );
+        //2024-12-08 const layout_cfg = window.hWin.HAPI4.LayoutMgr2.layoutGetById('H6Default2');
+        //2024-12-08 window.hWin.HAPI4.LayoutMgr2.layoutInit(layout_cfg, "#layout_panes" );
 
         
         onInitCompleted_PerformSearch();

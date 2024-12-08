@@ -670,6 +670,7 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
                         if(l_cfg){
                             let new_content = tinymce.activeEditor.getContent();
                             page_was_modified = (page_was_modified || l_cfg.content!=new_content);
+
                             _onPageChange();
                             
                             let lang = $(tinymce.activeEditor.targetElm).attr('data-lang');
@@ -677,6 +678,11 @@ const sMsg = '<p>The internal storage format of web pages has changed for greate
                                 lang = '';
                             }
                             l_cfg['content'+lang] = new_content;    
+                            
+                            //update in editCMS_ElementCfg                            
+                            if(_edit_Element){
+                                _edit_Element.updateContent(new_content, lang);
+                            }
                             
                             
                         }else{
@@ -2075,7 +2081,7 @@ function(value){
         let newval = window.hWin.HEURIST4.util.cloneJSON(_layout_content);
         let contents = [];
         
-        //remove keys and titles,  extract "content" into separate set of values
+        //@todo remove keys and titles,  extract "content" into separate set of values
         // each content:lang value will be saved in separate detail
         function __cleanLayout(items){
             

@@ -749,7 +749,7 @@ function editCMS_ElementCfg( element_cfg, _layout_content, _layout_container, $c
 
 
     //
-    // init codemirror editor
+    // init codemirror editor - direct html editor
     //
     function _initCodeEditor() {
         
@@ -1004,7 +1004,7 @@ function editCMS_ElementCfg( element_cfg, _layout_content, _layout_container, $c
     //    
     function _warningOnExit( callback ){
         
-        if(!$container.find('.btn-save-element').prop('disabled')){
+        if($container.find('.btn-save-element').attr('disabled')!='disabled'){
             
             let $dlg;
             let _buttons = [
@@ -1057,7 +1057,12 @@ function editCMS_ElementCfg( element_cfg, _layout_content, _layout_container, $c
         },
         
         isModified: function(){
-            return !$container.find('.btn-save-element').prop('disabled');
+            return $container.find('.btn-save-element').attr('disabled')!='disabled';
+        },
+        
+        //update from main editor
+        updateContent: function(new_content, lang){
+            l_cfg['content'+lang] = new_content;            
         },
         
         onContentChange: function(){

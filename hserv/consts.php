@@ -555,7 +555,7 @@ function dataOutput($data, $filename=null, $mimeType=null)
 
 function includeJQuery(){
 
-   $useVersion3 =  true;
+   $useVersion3 =  false;
 
    if ($useVersion3) {
            // integrity has been got with https://www.srihash.org/

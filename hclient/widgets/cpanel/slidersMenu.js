@@ -1368,9 +1368,9 @@ $.widget( "heurist.slidersMenu", {
 
                 
             //init explore container    
-            //window.hWin.HAPI4.LayoutMgr.appInitAll('SearchAnalyze3', this.containers[section] );
-            const layout_cfg = window.hWin.HAPI4.LayoutMgr2.layoutGetById('SearchAnalyze4');
-            window.hWin.HAPI4.LayoutMgr2.layoutInit(layout_cfg, this.containers[section] );
+            window.hWin.HAPI4.LayoutMgr.appInitAll('SearchAnalyze3', this.containers[section] );
+            //2024-12-08 const layout_cfg = window.hWin.HAPI4.LayoutMgr2.layoutGetById('SearchAnalyze4');
+            //2024-12-08 window.hWin.HAPI4.LayoutMgr2.layoutInit(layout_cfg, this.containers[section] );
         }
         
         let that = this;
