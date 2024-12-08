@@ -39,6 +39,7 @@ class DbsImport {
 
     private $imp_fieldtypes;
     private $fields_correspondence;
+    private $fields_not_found; //defintion not found
 
     private $imp_terms;  //ids of source vocabularies to be imported
     private $terms_correspondence;
@@ -457,14 +458,25 @@ class DbsImport {
                 }
             }//for
 
+            
+            $this->fields_not_found = array();
             //5. some field types may not belong to recordtypes, they should be imported too
             // {id: '1', name: 'Titre', code: '2-1'}
             $all_fieldtypes = @$data['fieldtypes'];//[$local_id]['name']
             if(!isEmptyArray($all_fieldtypes)){
                 foreach ($all_fieldtypes as $ftId => $field){
                     
-                    if(is_string($ftId) && strpos($ftId, '-')>0){
-                        $ftId = $this->_getLocalCode('detailtype', $this->source_defs, $ftId);
+                    $local_src_ftId = $ftId; 
+                    
+                    if(is_string($ftId) && strpos($ftId, '-')>0){ //concept code
+                        $local_src_ftId = $this->_getLocalCode('detailtype', $this->source_defs, $ftId);
+                    }
+
+                    if($local_src_ftId>0 && @$def_dts[$local_src_ftId]){
+                        $ftId = intval($local_src_ftId);
+                    }else{
+                        $this->fields_not_found[] = $ftId;
+                        continue;
                     }
                     
                     if(!(@$this->fields_correspondence[$ftId] || in_array($ftId, $this->imp_fieldtypes) )){
