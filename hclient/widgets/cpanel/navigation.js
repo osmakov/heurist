@@ -304,10 +304,11 @@ $.widget( "heurist.navigation", {
                 let menuName = resdata.fld(record, DT_NAME, this.options.language);
                 let menuTitle = resdata.fld(record, DT_SHORT_SUMMARY, this.options.language);
                 let menuIcon = resdata.fld(record, DT_THUMBNAIL);
+
                 let menuFormat = resdata.fld(record, DT_CMS_MENU_FORMAT);
 
                 if(Array.isArray(menuIcon)){ // remove empty indexes
-                    menuIcon = menuIcon.filter((icon) => !window.hWin.HEURIST4.util.isempty(icon));
+                    menuIcon = menuIcon.filter((icon) => icon?.length>4);//!window.hWin.HEURIST4.util.isempty(icon);
                 }
 
                 //target and position
