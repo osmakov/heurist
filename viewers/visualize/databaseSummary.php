@@ -134,9 +134,7 @@ require_once dirname(__FILE__).'/../../hclient/framecontent/initPage.php';
 
                     var request = {source: 'dbsummary', w:'a',
                                         q:  't:'+rt_ID};
-                    if(window.hWin.HAPI4.sysinfo['layout']=='H4Default'){
-                        window.hWin.HAPI4.LayoutMgr.putAppOnTopById('FAP');
-                    }
+
                     window.hWin.HAPI4.RecordSearch.doSearch( $(window.hWin.document), request );
 
                     if(window.hWin.HAPI4.sysinfo['layout']!='H4Default'){

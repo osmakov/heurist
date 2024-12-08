@@ -239,7 +239,56 @@ window.cfg_layouts = [
                                 css:{overflow:'hidden'}}}
             ]}]
         }
-    }
+    },    
+    
+    
+    {id:'H6Default2', name:'Heurist Def v6', theme:'heurist', type:'group', children:[
+        {appid:'heurist_controlPanel', css:{position:'absolute', top:0,left:0,height:'50px',right:'-2px', 
+                     'min-width':'77em'} },
+        {appid:'heurist_slidersMenu', css:{position:'absolute', top:'50px',left:0,bottom:'0.1em',right:'2px'}}
+        ]
+    },
+        
+    {id:'SearchAnalyze4', name:'Search Analyze Publish2', theme:'heurist', type:'cardinal', 
+    css:{height:'100%', width:'100%', position:'abdolute'},
+    children:[
+    {type:"center","children":[
+        {appid:'heurist_resultList', hasheader:false,
+                     css:{'background-color':'white','font-size':'0.9em',height:'100%'}, //AO 2020-01-30 ,'font-size':'12px'
+                     options:{empty_remark:null, show_menu:true, support_collection:true, is_h6style:true, show_fancybox_viewer:true,
+                     XXXrecordDivEvenClass: 'ui-widget-content',
+                     show_savefilter:false, show_search_form:true, show_inner_header:true, 
+                     show_url_as_link:true} }    
+    ],"folder":true, "options":{minSize:509}},
+    {"type":"east","children":[
+        {type:"tabs","children":[
+                    {appid:'heurist_resultListExt', name: 'Record', 
+                                options:{url: 'viewers/record/renderRecordData.php?recID=[recID]&db=[dbname]', 
+                                is_single_selection:true, 'data-logaction':'open_Record',css:{overflow:'hidden'}}
+                    },    // H3 record viewer
+                    {appid:'heurist_resultListDataTable', name: 'List View', 
+                        options:{ dataTableParams:{}, show_export_buttons:true } },
+                    {appid:'heurist_Map2', name:'Map', options:{'data-logaction':'open_MapTime', leaflet:true
+                        , layout_params:{legend:'search,-basemaps,-mapdocs,250,off', ui_main:true} }}, 
+                    
+                    {appid:'heurist_reportViewer', name: 'Report'},
+                        
+                    {appid:'heurist_Frame', name: 'Export',
+                        options:{url: 'hclient/framecontent/exportMenu.php?db=[dbname]',
+                                         isframe:true, 'data-logaction':'open_Export'}
+                        ,css:{position:'absolute', top:0,left:0,bottom:0,right:0,'min-width':'75em'}},
+                        
+                    {appid:'heurist_Graph', name:'Network', options:{title:'Network',
+                                     url: 'hclient/framecontent/visualize/springDiagram.php?db=[dbname]',
+                                     'data-logaction':'open_Network'}},
+ 
+                    {appid:'heurist_resultListExt', name: 'Crosstabs', options:{title:'Crosstabs', 
+                                url: 'viewers/crosstab/crosstabs.php?db=[dbname]','data-logaction':'open_Crosstabs',
+                                css:{overflow:'hidden'}}}        
+        
+        ],"folder":true, css:{height:'100%'}},
+    ],"folder":true, "options":{"init":"initally open","resizable":true, size:"50%"},"folder":true}],"folder":true} 
+        
 
 ];
 

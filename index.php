@@ -373,20 +373,17 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
         ?>
 
         var lt = window.hWin.HAPI4.sysinfo['layout'];
-
         window.hWin.HAPI4.is_publish_mode = (lt=='WebSearch');
-
-        if(lt=='WebSearch'){
-            $('#layout_panes').css({'height':'100%',width:'100%',position:'absolute'});
-            $(window.hWin.document.body).css({'margin':'0px',overflow:'hidden'});
-        }
 
         //
         // init layout
         //
-        window.hWin.HAPI4.LayoutMgr.appInitAll( window.hWin.HAPI4.sysinfo['layout'], "#layout_panes");
+        //window.hWin.HAPI4.LayoutMgr.appInitAll( window.hWin.HAPI4.sysinfo['layout'], "#layout_panes");
 
+        const layout_cfg = window.hWin.HAPI4.LayoutMgr2.layoutGetById('H6Default2');
+        window.hWin.HAPI4.LayoutMgr2.layoutInit(layout_cfg, "#layout_panes" );
 
+        
         onInitCompleted_PerformSearch();
     }
 
@@ -419,17 +416,6 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
     // Performs inital search: parameters from request or from user preferences
     //
     function onInitCompleted_PerformSearch(){
-
-        if(window.hWin.HAPI4.sysinfo['layout']=='H4Default'
-            && window.hWin.HAPI4.sysinfo.db_total_records>0){
-            //switch to FAP tab if q parameter is defined
-            window.hWin.HAPI4.LayoutMgr.putAppOnTopById('FAP');
-
-            var active_tab = '<?php echo addslashes(htmlspecialchars(@$_REQUEST['tab'], ENT_NOQUOTES));?>';
-            if(active_tab){
-                window.hWin.HAPI4.LayoutMgr.putAppOnTop(active_tab);
-            }
-        }
 
         if(!window.hWin.HAPI4.is_publish_mode)
         {
@@ -501,25 +487,6 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
 
             $('body').css({'overflow':'hidden'});
 
-        }
-
-
-        //perform search in the case that parameter "q" is defined - see controlPanel.js function _performInitialSearch
-
-        var lt = window.hWin.HAPI4.sysinfo['layout'];
-        if(lt=='WebSearch'){
-            var active_tab = '<?php echo htmlspecialchars(str_replace("'","\'",@$_REQUEST['views']),ENT_NOQUOTES);?>';
-            if(active_tab){
-
-                active_tab = active_tab.split(',')
-                if (!(active_tab.indexOf('map')<0 && active_tab.indexOf('list')<0)){
-                    if(active_tab.indexOf('map')<0)
-                        window.hWin.HAPI4.LayoutMgr.visibilityAppById('map', false);
-                    if(active_tab.indexOf('list')<0)
-                        window.hWin.HAPI4.LayoutMgr.visibilityAppById('list', false);
-                    window.hWin.HAPI4.LayoutMgr.putAppOnTopById(active_tab[0]);//by layout_id
-                }
-            }
         }
 
         $(document).trigger(window.hWin.HAPI4.Event.ON_SYSTEM_INITED, []);

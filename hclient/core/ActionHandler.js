@@ -555,8 +555,11 @@ class ActionHandler {
                 break;
                 
             case "menu-subset-set":
-            
-                window.hWin.HAPI4.LayoutMgr.executeCommand('resultList','callResultListMenu', 'menu-subset-set');
+                //see menu Explore
+                let widget = window.hWin.HAPI4.LayoutMgr.getWidgetByName('resultList');
+                if(widget){
+                    widget.resultList('callResultListMenu', 'menu-subset-set'); //call method
+                }
                 break;
            
             case "menu-help-acknowledgements":

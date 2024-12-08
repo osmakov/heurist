@@ -1,0 +1,41 @@
+Directory:    /hclient/assets
+
+Overview: UI Images and localization resources
+
+Updated:     25th Nov 2024
+
+----------------------------------------------------------------------------------------------------------------
+
+/**
+* @package     Heurist academic knowledge management system
+* @link        https://HeuristNetwork.org
+* @copyright   (C) 2005-2023 University of Sydney
+* @author      Artem Osmakov   <osmakov@gmail.com>
+* @author      Ian Johnson     <ian.johnson.heurist@gmail.com>
+* @license     http://www.gnu.org/licenses/gpl-3.0.txt GNU License 3.0
+* @version     6
+*/
+
+/*
+* Licensed under the GNU License, Version 3.0 (the "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at http://www.gnu.org/licenses/gpl-3.0.txt
+* Unless required by applicable law or agreed to in writing, software distributed under the License is
+* distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
+* See the License for the specific language governing permissions and limitations under the License.
+*/
+
+Summary of current status with UI translations:
+
+- Widgets labels, messages - string pairs in htclient/assets/localization/localization_[lang].txt
+            #Show All#Tout afficher                         
+            Todo: add widget name prefix for key.
+            @resultList#Select Record#Merci de sélectionner au moins un enregistrement pour cette action
+
+- Widgets text content - htm snippets (only text and tags) - stored along widget js files
+
+- Context help - content for popups. htm snippets (only text and tags) - stored in context_help
+
+- Entities edit forms - localised version of entity configuration json. It does not duplicate the entire json -  only translated label values like rst_DisplayName or rst_DisplayHelpText
+
+
+All of these methods can be easily automated and used for CMS translations also

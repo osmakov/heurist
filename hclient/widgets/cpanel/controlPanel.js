@@ -132,7 +132,7 @@ $.widget( "heurist.controlPanel", {
         let that = this;
         
         // Set the basic CSS for the control panel
-        this.element.css({'height':'100%'}).addClass('ui-heurist-header2')
+        this.element.addClass('ui-heurist-header2')  //.css({'height':'100%'})
             .disableSelection();// prevent double click to select text
 
         this.div_logo = $('div.logo');
