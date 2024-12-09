@@ -87,7 +87,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
     function _init(_db, _oninit, _baseURL) { //, _currentUser) {
 
         that.SystemMgr = new HSystemMgr(that);
-        that.LayoutMgr2 = new HLayoutMgr();
+        //2024-12-08 that.LayoutMgr2 = new HLayoutMgr();
 
         //@todo - take  database from URL
         if (_db) {
