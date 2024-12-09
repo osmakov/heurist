@@ -153,7 +153,7 @@ function editCMS2(website_document){
                 _editor_panel = $('<div class="ui-layout-'+options.editor_pos+'">'
                         +'<div class="ent_wrapper editStructure" id="tabsEditCMS">' 
 
-                            +(!isWebPage ? '<span class="btn-website-edit" style="font-weight:normal !important;">Website layout / properties</span>' : '')
+                            +(!isWebPage ? '<div class="btn-website-edit" style="font-weight:normal !important; width: fit-content;">Website layout / properties</div><br>' : '')
                             +`<span class="btn-website-url" style="display:inline-block;font-size:9px;color:black;margin-bottom:5px;padding-right:5px;">Website URL</span>`
                             +`<a href="#" class="website-url truncate" style="font-size:9px;color: blue;display: inline-block;width: ${isWebPage ? '65' : '70'}%;vertical-align: -1px;"></a>`
 
@@ -256,8 +256,8 @@ function editCMS2(website_document){
                             }
                         },
                         onresize_end: function(){
-                            let margin_top = _ws_body.layout().state['west']['outerWidth'] > 275 ? '12.5px' : '';
-                            _editor_panel.find('ul.ui-tabs-nav').css('margin-top', margin_top);
+                            let width = _ws_body.layout().state['west']['outerWidth'] <= 215 ? '60%' : '70%';
+                            _editor_panel.find('a.website-url').css('width', width);
                         },
                         togglerContent_open:    '<div class="ui-icon ui-icon-triangle-1-'+(options.editor_pos=='west'?'w':'e')+'"></div>',
                         togglerContent_closed:  '<div class="ui-icon ui-icon-carat-2-'+(options.editor_pos=='west'?'e':'w')+'"></div>',
@@ -320,7 +320,7 @@ function editCMS2(website_document){
     // Edit home page content
     //
     function _initEditControls(need_callback){
-       
+
         _editor_panel.find('.btn-website-homepage').on('click',_editHomePage);
         if(!isWebPage){
             _editor_panel.find('.btn-website-edit')
@@ -382,7 +382,8 @@ function editCMS2(website_document){
         });
         
         _tabControl.addClass('ui-heurist-publish');
-        _tabControl.find('.ui-tabs-nav').css('background','none');
+        _tabControl.find('.ui-tabs-nav')[0].style.setProperty('background', 'none', 'important');
+        _tabControl.find('.ui-tabs-nav')[0].style.setProperty('padding', '0px', 'important');
         
         if(isWebPage){
             _tabControl.find('.ui-tabs-tab[aria-controls="treeWebSite"]').hide();
