@@ -622,7 +622,6 @@ window.hWin.HEURIST4.query = {
 
                 conditional = `<em>Relationship type</em> that is ${cond} a match or is ${cond} a child of "${value}"`;
             }else if(key === 'r' || key === 'relf' || key === 'rf'){ // Relation field
-                field = $Db.rst(window.hWin.HAPI4.sysinfo.dbconst.RT_RELATION, window.hWin.HAPI4.sysinfo.dbconst.DT_RELATION_TYPE, 'rst_DisplayName');
                 field = `Relationship ${field}`;
             } // other
 
@@ -656,7 +655,13 @@ window.hWin.HEURIST4.query = {
             let value = part[key];
             let cond = '';
 
-            let parts = key.split(':');
+            let parts = null;
+            try{                
+                parts = key.split(':');
+            }catch{
+                continue;
+            }
+
             key = parts.shift();
 
             let field = '';
@@ -775,7 +780,7 @@ window.hWin.HEURIST4.query = {
             res += 'records that have a <em>__FIELD__</em> value';
         }else if(value.startsWith('=') || value.startsWith('-')){
             val = value.substring(1);
-            res += `${ext} that ${value.startsWith('-') ? 'do not' : ''} extactly match "<em>${val}</em>"`;
+            res += `${ext} that ${value.startsWith('-') ? 'doesn\'t' : ''} extactly match "<em>${val}</em>"`;
         }else if(value.startsWith('@++') || value.startsWith('@--')){
             val = value.substring(3);
             res = `${ext} that contain ${value.startsWith('@++') ? 'all' : 'none'} of the words in "<em>${val}</em>"`;
