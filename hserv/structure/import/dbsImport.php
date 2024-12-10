@@ -80,6 +80,8 @@ class DbsImport {
     private $def_translations;
     private $translations_report;
 
+    private $url_from_reference = false;
+
     //  $data =
     public function __construct( $system ) {
         $this->system = $system;
@@ -214,8 +216,10 @@ class DbsImport {
             // 1. get database url by database id
             $database_url = DbRegis::registrationGet(array('dbID'=>$db_reg_id));
             if(!$database_url){
-                $this->system->addErrorMsg('Can not obtain database url. ');
+                $this->system->addErrorMsg("Registration of database #{$db_reg_id} not found in Heurist Reference Index, failed to retrieve database URL.");
             }
+            
+            $this->url_from_reference = true;
 
         }else{
             $this->source_db_reg_id = $db_reg_id;
@@ -1140,17 +1144,17 @@ $mysqli->commit();
         $remote_dbname = $match[1];
 
         if(!$remote_dbname || !$remote_url){
+            $url_part = $this->url_from_reference ? 'location from reference record: ' : 'location shown in file: ';
             $this->system->addError(HEURIST_ERROR,
-                "Heurist Reference Index returns incorrect data for registered database # $database_id<br>"
-                ."The page may contain an invalid database reference<br>"
-                ."URL requested: $database_url<br><br>");
+                "Registration of database #{$database_id} not found in Heurist Reference Index,<br>"
+                ."{$url_part}{$database_url} <br><br>");
             return false;
         }
 
         $message = '<p>Unable to contact the selected source database (ID # '.$database_id
             .'). This might indicate one of the following:</p>'
             .'<ol><li>the database is no longer online;</li>'
-            .'<li>the registration in the Heurist reference index is missing or points to the wrong URL '
+            .'<li>Database reference in Heurist Reference Index points to an invalid address: '
             .$remote_url
             .'<br>(check registration in Heurist Reference Index);</li>'
             .((strpos($remote_url, HEURIST_SERVER_URL)===0)
