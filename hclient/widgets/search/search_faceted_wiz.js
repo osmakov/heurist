@@ -1536,7 +1536,7 @@ $.widget( "heurist.search_faceted_wiz", {
         let facets = this.options.params.facets;
 
         let tree = $.ui.fancytree.getTree(treediv);
-
+        
         if(facets && facets.length>0){
             tree.visit(function(node){
                 if(!window.hWin.HEURIST4.util.isArrayNotEmpty(node.children)){ //this is leaf
@@ -1590,10 +1590,13 @@ $.widget( "heurist.search_faceted_wiz", {
 
             let rectypes = this.options.params.rectypes;
             let idx_replace = rectypes[0]?.length ? rectypes[0].length : rectypes[0].toString().length;
-            let final_list = [...fieldIds];
+            let final_list = [];//[...fieldIds]; //clone
+
+            let allRectypesIds = rectypes.join(',');
 
             for(let i = 1; i < rectypes.length; i++){
-
+            }
+            
                 for(let j = 0; j < fieldIds.length; j++){
 
                     if(window.hWin.HEURIST4.util.isArrayNotEmpty(fieldIds[j].children)){ // skip
@@ -1601,11 +1604,12 @@ $.widget( "heurist.search_faceted_wiz", {
                     }
 
                     let node = fieldIds[j].toDict();
-                    node.data.code = rectypes[i] + node.data.code.slice(idx_replace);
+                    node.data.code = allRectypesIds + node.data.code.slice(idx_replace); //was rectypes[i] 
 
+                    //final_list.push(node);
                     final_list.push(node);
                 }
-            }
+            
 
             fieldIds = final_list;
             len = fieldIds.length;

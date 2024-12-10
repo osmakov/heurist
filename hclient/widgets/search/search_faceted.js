@@ -1439,7 +1439,6 @@ $.widget( "heurist.search_faceted", {
                 }
 
         }//for
-
         return res;                
     }
     
