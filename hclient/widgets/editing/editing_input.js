@@ -3301,7 +3301,7 @@ $.widget( "heurist.editing_input", {
                         $input.prop('type','file').hide();
                         
                         //temp file name  it will be renamed on server to recID.png on save
-                        let newfilename = '~'+window.hWin.HEURIST4.util.random();
+                        //let newfilename = '~'+window.hWin.HEURIST4.util.random();
 
                         //crate progress dialog
                         let $progress_dlg = $('<div title="File Upload"><div class="progress-label">Starting upload...</div>'
@@ -3349,7 +3349,7 @@ $.widget( "heurist.editing_input", {
                 {name:'maxsize', value:this.configMode.size}, //dimension
                 {name:'registerAtOnce', value:this.configMode.registerAtOnce},
                 {name:'recID', value:that.options.recID}, //need to verify permissions
-                {name:'newfilename', value:newfilename }], //unique temp name
+                {name:'usetempname', value:1 }], //unique temp name
     //acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
     //autoUpload: true,
     //multipart: (window.hWin.HAPI4.sysinfo['is_file_multipart_upload']==1),
@@ -3422,7 +3422,6 @@ $.widget( "heurist.editing_input", {
                                 that.newvalues[that.linkedImgInput.attr('id')] = file.ulf_ID;
                             }
                         }else{
-                            
                             let urlThumb =
                             (that.configMode.entity=='recUploadedFiles'
                                 ?file.url
@@ -3436,7 +3435,7 @@ $.widget( "heurist.editing_input", {
                             if(that.configMode.entity=='recUploadedFiles'){
                                 that.newvalues[$input.attr('id')] = file;
                             }else{
-                                that.newvalues[$input.attr('id')] = newfilename;  //keep only tempname
+                                that.newvalues[$input.attr('id')] = file.tempname;  //keep tempname, it will be renamed on save
                             }
                         }
                         $input.attr('title', file.name);

@@ -50,10 +50,9 @@ if(intval($_SERVER['CONTENT_LENGTH'])>$post_max_size){
     $registerAtOnce = (@$params['registerAtOnce']==1);
     $tiledImageStack = (@$params['tiledImageStack']==1);//unzip archive and copy to uploaded_tilestacks
 
-    $new_file_name = @$params['newfilename'];
-    if($new_file_name){
-        $new_file_name = basename($new_file_name);
-        $new_file_name = USanitize::sanitizeFileName($new_file_name, false);
+    $temp_file_name = null;
+    if(@$params['usetempname']==1){
+        $temp_file_name = '~'.time(); 
     }
 
     if(@$params['entity']){
@@ -147,7 +146,7 @@ if($response!=null){
                 'upload_dir' => $scratchDir,
                 'upload_url' => $scratchUrl,
                 'unique_filename' => false,
-                'newfilename' => $new_file_name,
+                'newfilename' => $temp_file_name,
                 'correct_image_extensions' => true,
                 'image_versions' => array(
                     ''=>array(
@@ -180,7 +179,7 @@ if($response!=null){
                 'upload_dir' => $entityDir,
                 'upload_url' => $system->getSysUrl(DIR_ENTITY.$entity_name),
                 'unique_filename' => false,
-                'newfilename' => $new_file_name,
+                'newfilename' => $temp_file_name,
                 'correct_image_extensions' => true,
                 'image_versions' => array(
                     ''=>array(
@@ -263,11 +262,12 @@ if($response!=null){
                     }
                 }elseif(!@$file->thumbnailUrl){ //if UploadHandler does not create thumb - creates it as image with text (file extension)
 
-                    $thumb_file = HEURIST_SCRATCH_DIR.DIR_THUMBS.$new_file_name;
+                    $thumb_file = HEURIST_SCRATCH_DIR.DIR_THUMBS.$temp_file_name;
                     $img = UImage::createFromString($file->type?$file->type:'XXX!');
                     imagepng($img, $thumb_file);//save into file
                     imagedestroy($img);
-                    $res['files'][$idx] ->thumbnailUrl = $scratchUrl.DIR_THUMBS.$new_file_name;
+                    $res['files'][$idx] ->thumbnailUrl = $scratchUrl.DIR_THUMBS.$temp_file_name;
+                    
                 }
 
             }
@@ -285,6 +285,9 @@ if($response!=null){
                         $res['files'][$idx]->csv_params = $csv_params;
                     }
                 }
+            }
+            elseif($temp_file_name && @$res['files'][$idx]){
+                $res['files'][$idx]->tempname = $temp_file_name;
             }
         }
     }
