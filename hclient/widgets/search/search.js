@@ -726,7 +726,9 @@ $.widget( "heurist.search", {
 
         this._query_as_plain = window.hWin.HEURIST4.query.jsonQueryToPlainText(this.input_search.val(), false);
         if(!window.hWin.HEURIST4.util.isempty(this._query_as_plain)){
-            this.div_search_input.find('.icon_view_query').show();
+            this.div_search_input.find('.icon_view_query').show().position({
+                my: 'left+2 top+2', at: 'left top', of: this.input_search
+            });
         }else{
             this.div_search_input.find('.icon_view_query').hide();
         }
