@@ -1193,7 +1193,8 @@ $mysqli->commit();
                 global $glb_curl_error;
                 $error_code = (!empty($glb_curl_error)) ? $glb_curl_error : 'Error code: 500 Heurist Error';
 
-                $this->system->addError(HEURIST_ERROR, "Unable to connect Heurist Reference Index, possibly due to timeout or proxy setting<br>"
+                $url_part = $this->url_from_reference ? 'Heurist Reference Index' : 'provided file';
+                $this->system->addError(HEURIST_ERROR, "Database reference in {$url_part} points to an invalid address: <br>"
                     . $error_code . "<br>"
                     ."a) URL requested: $remoteURL<br><br>");//$database_url
             }
