@@ -1197,7 +1197,7 @@ class HLayoutMgr {
   */
   layoutInit(layout, container, supp_options) 
   {
-console.log(layout, supp_options);  
+//console.log(layout, supp_options);  
    
     this._supp_options = supp_options || {};
     return this.#layoutInitFromJSON(layout, container, false, true);

@@ -149,6 +149,9 @@ if($_is_new_cms_editor){
 <!-- script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cms/hLayoutMgr.js"></script -->
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/HLayoutMgr.js"></script>
 
+<link rel="stylesheet" type="text/css" href="<?php echo PDIR;?>external/jquery.fancybox/jquery.fancybox.css" />
+<script type="text/javascript" src="<?php echo PDIR;?>external/jquery.fancybox/jquery.fancybox.js"></script>
+
 <style>
 .tox-toolbar{
     background-color: #b4eeff !important;
@@ -659,11 +662,11 @@ function loadRecordContent(url_or_record_id, target){
         return;
     }
     var url, is_smarty = false;
-    if(!isNaN(parseInt(url_or_record_id)) && url_or_record_id>0){
+    if(window.hWin.HEURIST4.util.isPositiveInt(url_or_record_id)){
 
         var record_id = url_or_record_id;
 
-        if(record_view_smarty_template!=null && record_view_smarty_template!=''){
+        if(!window.hWin.HEURIST4.util.isempty(record_view_smarty_template)){
 
             url = window.hWin.HAPI4.baseURL+window.hWin.HAPI4.database+'/tpl/'+record_view_smarty_template+'/'+record_id;
 
@@ -722,7 +725,7 @@ function loadRecordContent(url_or_record_id, target){
             }
         }
 
-        //default case
+        //default case - in new window page
         if(!target) target = '_blank';
         window.open(url, target);
     }

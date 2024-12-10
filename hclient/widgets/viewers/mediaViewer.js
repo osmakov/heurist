@@ -439,7 +439,7 @@ $.widget( "heurist.mediaViewer", {
         });
         
         
-        let fancy_opts = { selectorParentEl: this.mediacontent, //$('body'), 
+        let fancy_opts = { selectorParentEl:this.mediacontent, 
                             selector : '[data-myfancybox="fb-images"]', 
                             loop:true};
         $('body').off("click.fb-start"); //was unbind

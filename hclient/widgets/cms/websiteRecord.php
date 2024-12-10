@@ -133,7 +133,7 @@ if(isPositiveInt(@$_REQUEST['initid'])) {
     $open_page_or_record_on_init = intval(@$_REQUEST['pageid']);
 }
 
-$rec_id = 0;
+$rec_id = 0;  //home record id
 if(isPositiveInt(@$_REQUEST['recID'])) {
     $rec_id = intval(@$_REQUEST['recID']);
 }elseif(isPositiveInt(@$_REQUEST['recid'])) {
@@ -406,7 +406,7 @@ if(!$isWebPage){  //not standalone web page
 
     $record_view_smarty_template = defined('DT_SMARTY_TEMPLATE')?__getValue($rec, DT_SMARTY_TEMPLATE):null;
     $record_view_target = defined('DT_CMS_TARGET')?__getValue($rec, DT_CMS_TARGET):null;
-    if($record_view_target=='recordview') {$record_view_target='main-recordview';}
+    if($record_view_target=='recordview') {$record_view_target='main-recordview';} //blank(_blank),popup,recordview(main-recordview)
 
     //backward capability
     if($custom_website_php_template==null && strpos($record_view_smarty_template, 'cmsTemplate')===0){
