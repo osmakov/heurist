@@ -40,11 +40,9 @@ if(!$system->init(@$_REQUEST['db'])){
 $mysqli = $system->getMysqli();
 
 $rec_id = 0;
-$bkm_ID = 0;
 
-
-if (@$_REQUEST['bkmk_id']>0) {  //find record by bookmark id
-    $bkm_ID = $_REQUEST['bkmk_id'];
+$bkm_ID = intval($_REQUEST['bkmk_id']);
+if ($bkm_ID>0) {  //find record by bookmark id
     $rec_id = mysql__select_value($mysqli, 'select * from usrBookmarks where bkm_ID = ' . $bkm_ID);
     if(!($rec_id>0)){
         $_REQUEST['error'] = 'Can\'t find record by bookmark ID';
@@ -52,7 +50,7 @@ if (@$_REQUEST['bkmk_id']>0) {  //find record by bookmark id
         exit;
     }
 } else {
-    $rec_id = @$_REQUEST['recID'];
+    $rec_id = intval(@$_REQUEST['recID']);
     if(!($rec_id>0)){
         $_REQUEST['error'] = 'Parameter recID not defined';
         include_once ERROR_INCLUDE;
