@@ -1212,13 +1212,13 @@
     function hash_it ($passwd) {
         //$pwd_peppered = hash_hmac("sha256", $passwd, $pepper);
         $options = ['cost' => 12];
-        return password_hash($passwd, PASSWORD_BCRYPT, $options); //PASSWORD_DEFAULT
+        //new way return password_hash($passwd, PASSWORD_BCRYPT, $options); //PASSWORD_DEFAULT
         
-        /* old way
+        /* old way */
         $s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
         $salt = $s[random_int(0, strlen($s)-1)] . $s[random_int(0, strlen($s)-1)];
         return crypt($passwd, $salt);
-        */
+        
     }
     
     function passwordCheck ($passwd, $passwd_hashed, $mysqli=null, $ugr_ID=0) {
