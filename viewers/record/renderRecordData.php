@@ -177,7 +177,14 @@ if(!($is_map_popup || $without_header)){
 
         <script type="text/javascript" src="<?=HEURIST_BASE_URL?>hclient/core/hintDiv.js"></script> <!-- for mapviewer roolover -->
         <script type="text/javascript" src="<?=HEURIST_BASE_URL?>hclient/core/detectHeurist.js"></script>
-
+<?php
+if(!$system->hasAccess()){
+?>
+    <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/hapi.js"></script>
+    <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/HSystemMgr.js"></script>
+<?php
+}
+?>
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils.js"></script>
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils_msg.js"></script>
         <script type="text/javascript" src="<?php echo PDIR;?>hclient/core/utils_ui.js"></script>
@@ -188,6 +195,9 @@ if(!($is_map_popup || $without_header)){
 
         <script type="text/javascript">
 
+            if(!window.hWin.HAPI4 && typeof hAPI === 'function'){
+                window.hWin.HAPI4 = new hAPI('<?php echo HEURIST_DBNAME; ?>', $.noop);
+            }
             if(typeof window.hWin.HR !== 'function'){
                 window.hWin.HR = (res) => res; // to allow dialog creation
             }
@@ -448,10 +458,10 @@ if(!($is_map_popup || $without_header)){
                     prefVal = (prefVal!=1)?1:0;
 
                     //save in prefs
-                    if(event!=null && window.hWin && window.hWin.HAPI4){
+                    if(event!=null && window.hWin?.HAPI4){
                         window.hWin.HAPI4.save_pref('recordData_PrivateInfo', prefVal);
                     }
-                }else if(window.hWin && window.hWin.HAPI4){
+                }else if(window.hWin?.HAPI4){
                     prefVal = window.hWin.HAPI4.get_prefs_def('recordData_PrivateInfo',1);
                 }
                 ele.attr('data-expand',prefVal);
@@ -642,7 +652,7 @@ if(!($is_map_popup || $without_header)){
                 //2021-12-17 fancybox viewer is disabled IJ doesn't like it - Except iiif and 3dhop
                 if(rec_Files_IIIF_and_3D.length>0){
 
-                    if(window.hWin && window.hWin.HAPI4){
+                    if(window.hWin?.HAPI4){
                         $('.thumbnail2.main-media').mediaViewer({rec_Files:rec_Files_IIIF_and_3D,
                                 showLink:true, database:database, baseURL:baseURL});
                     }else{
@@ -654,7 +664,7 @@ if(!($is_map_popup || $without_header)){
                 }
                 if(rec_Files_IIIF_and_3D_linked.length>0){
 
-                    if(window.hWin && window.hWin.HAPI4){
+                    if(window.hWin?.HAPI4){
                         $('.thumbnail2.linked-media').mediaViewer({rec_Files:rec_Files_IIIF_and_3D_linked,
                                 showLink:true, database:database, baseURL:baseURL});
                     }else{
@@ -683,7 +693,7 @@ if(!($is_map_popup || $without_header)){
                     //verify annotation record type
                     let evt = event;
 
-                    if(evt.already_checked!==true && window.hWin && window.hWin.HAPI4 && window.hWin.HAPI4.has_access()){
+                    if(evt.already_checked!==true && window.hWin.HAPI4?.has_access()){
                         window.hWin.HAPI4.SystemMgr.checkPresenceOfRectype('2-101', 2,
                             'In order to add Annotation to image you have to import "Annotation" record type',
                             function(){
@@ -872,7 +882,7 @@ if(!($is_map_popup || $without_header)){
                     }
                 });
 
-                window.hWin.HAPI4?.save_pref('recordData_HiddenFields', show_hidden_fields);
+                window.hWin?.HAPI4?.save_pref('recordData_HiddenFields', show_hidden_fields);
             }
             function onWindowResize(){
 
@@ -935,7 +945,12 @@ if(!($is_map_popup || $without_header)){
 
                 hint_popup = new HintDiv('mapPopup', 300, 300, '<div id="recviewer_map_popup" style="width:100%;height:100%;"></div>');
 
-                $('.login-viewer').on('click', () => window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();}));
+                let $login_icon = $('.login-viewer');
+                if(window.hWin?.HAPI4){
+                    $login_icon.on('click', () => window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();}));
+                }else{
+                    $login_icon.hide();
+                }
 
             });
 
