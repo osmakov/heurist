@@ -111,17 +111,17 @@ class System {
             return false;
         }
 
-
         if($this->dbnameFull && !defined('HEURIST_DBNAME')){
             //init once for first system - preferable use methods
             define('HEURIST_DBNAME', $this->dbname);
             define('HEURIST_DBNAME_FULL', $this->dbnameFull);
         }
-
-        if(!$init_session_and_constants){
+        
+        if(!$this->dbnameFull && !$dbrequired){
+            $this->isInited = true; 
+        }elseif(!$init_session_and_constants){
             $this->isInited = true;
         }elseif($this->startMySession( $this->needFullSessionCheck )
-            && $this->dbnameFull
             && $this->initPathConstants()){
 
             if($this->needFullSessionCheck){
