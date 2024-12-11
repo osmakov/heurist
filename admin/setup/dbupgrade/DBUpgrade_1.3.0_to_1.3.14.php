@@ -29,9 +29,11 @@
 use hserv\structure\ConceptCode;
 
 
-    function updateDatabseTo_v1_3_16($system, $dbname=null){
+    function updateDatabseTo_v1_3_17($system, $dbname=null){
 
         $mysqli = $system->getMysqli();
+        
+        $currentSubSubVersion = 17;
 
         if($dbname){
             mysql__usedatabase($mysqli, $dbname);
@@ -46,7 +48,7 @@ use hserv\structure\ConceptCode;
 
         $report[] = 'Db version : '.$dbVer.'.'.$dbVerSub.'.'.$dbVerSubSub;
 
-        if(!($dbVer==1 && $dbVerSub==3 && $dbVerSubSub<16)) {return $report;}
+        if(!($dbVer==1 && $dbVerSub==3 && $dbVerSubSub<$currentSubSubVersion)) {return $report;}
 
        try{
 
@@ -210,6 +212,14 @@ EXP
             $report[] = 'Upgraded to 1.3.16';
        }
 
+       if($dbVerSubSub<17){
+           
+            list($is_added,$report[]) = alterTable($system, 'sysUGrps', 'ugr_Password', "ALTER TABLE `sysUGrps` ADD COLUMN `ugr_Password` varchar(255) NOT NULL COMMENT 'Encrypted password string'", true);
+
+            $report[] = 'Upgraded to 1.3.17';
+       }
+       
+       
        }catch(Exception $exception){
             return false;
        }
@@ -224,8 +234,8 @@ EXP
 
 
             //update version
-            if($dbVerSubSub<16){
-                $mysqli->query('UPDATE sysIdentification SET sys_dbVersion=1, sys_dbSubVersion=3, sys_dbSubSubVersion=16 WHERE 1');
+            if($dbVerSubSub<$currentSubSubVersion){
+                $mysqli->query('UPDATE sysIdentification SET sys_dbVersion=1, sys_dbSubVersion=3, sys_dbSubSubVersion='.$currentSubSubVersion.' WHERE 1');
             }
 
             /* date index created in upgradeDatabase.php

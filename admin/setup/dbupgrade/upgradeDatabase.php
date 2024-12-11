@@ -135,9 +135,9 @@ if(!defined('PDIR')){
                                     $rep = updateDatabseTo_v3($system);//PHP
                                 }elseif($src_min==3 && $src_sub<$trg_sub){
 
-                                    if($src_sub<16){
+                                    if($src_sub<17){
                                         include_once $filename;
-                                        $rep = updateDatabseTo_v1_3_16($system);
+                                        $rep = updateDatabseTo_v1_3_17($system);
 
                                         if($rep!==false && $src_sub<14){ //for db_utils.php
                                             $rep2 = recreateRecDetailsDateIndex($system, true, true);

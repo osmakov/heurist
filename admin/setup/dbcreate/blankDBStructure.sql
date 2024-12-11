@@ -718,7 +718,7 @@ CREATE TABLE sysUGrps (
   ugr_Name varchar(63) NOT NULL COMMENT 'The unique user/login/group name, user name defaults to email address',
   ugr_LongName varchar(128) default NULL COMMENT 'An optional longer descriptive name for a Workgroup',
   ugr_Description varchar(1000) default NULL COMMENT 'Extended description of a Workgroup displayed on homepage',
-  ugr_Password varchar(40) NOT NULL COMMENT 'Encrypted password string',
+  ugr_Password varchar(255) NOT NULL COMMENT 'Encrypted password string',
   ugr_eMail varchar(100) NOT NULL COMMENT 'Contact email address of the user/group',
   ugr_FirstName varchar(40) default NULL COMMENT 'Person''s first name, only for Users, not Workgroups',
   ugr_LastName varchar(63) default NULL COMMENT 'Person''s last name, only for Users, not Workgroups',
@@ -1031,7 +1031,7 @@ CREATE TABLE usrWorkingSubsets (
   sys_dbSubSubVersion,sys_eMailImapServer,sys_eMailImapPort,
   sys_eMailImapProtocol,sys_eMailImapUsername,sys_eMailImapPassword,
   sys_UGrpsdatabase,sys_OwnerGroupID,sys_ConstraintDefaultBehavior,sys_MediaFolders)
-  VALUES (1,0,1,3,16,NULL,NULL,NULL,NULL,NULL,NULL,1,'locktypetotype','uploaded_files');
+  VALUES (1,0,1,3,17,NULL,NULL,NULL,NULL,NULL,NULL,1,'locktypetotype','uploaded_files');
 
   -- Note: database sub version updated manually to '1' at 6pm 22/8/12
   -- 0 is everyone, 1 is the owning admins group, 2 is default dbAdmin user
