@@ -643,11 +643,11 @@ class DbSysUsers extends DbEntityBase
         $overwrite_status = null;
         if($import_from_login && count($userIDs) == 1){
 
-            $usr_id = $userIDs[0];
+            $usr_id = intval($userIDs[0]);
 
             $usr_pwd = mysql__select_value($sytem_source->getMysqli(), "SELECT ugr_Password FROM sysUGrps WHERE ugr_ID = $usr_id");
 
-            if(!$usr_pwd || !hash_equals(crypt($provided_pwd, $usr_pwd), $usr_pwd)){
+            if(!$usr_pwd || !passwordCheck($provided_pwd, $usr_pwd, $sytem_source->getMysqli(), $usr_id)){
 
                 $src_db = $sytem_source->dbname();
                 $err_type = !$usr_pwd ? HEURIST_DB_ERROR : HEURIST_ACTION_BLOCKED;

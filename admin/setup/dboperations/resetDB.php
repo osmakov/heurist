@@ -22,6 +22,7 @@
 use hserv\utilities\DbUtils;
 
 require_once dirname(__FILE__).'/../../../autoload.php';
+require_once dirname(__FILE__).'/../../../hserv/structure/dbsUsersGroups.php';
 
 
 define('DEMO_DB', 'hdb_demo');

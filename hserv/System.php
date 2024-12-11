@@ -1527,7 +1527,7 @@ class System {
 
             $this->addError(HEURIST_REQUEST_DENIED,  "Your user profile is not active. Please contact database owner");
 
-        }elseif ($skip_pwd_check || hash_equals(crypt($password, $user['ugr_Password']), $user['ugr_Password']) ) {
+        }elseif ($skip_pwd_check || passwordCheck($password, $user['ugr_Password'], $this->mysqli, $user['ugr_ID']) ) {
 
             $this->doLoginSession($user['ugr_ID'], $session_type);
 

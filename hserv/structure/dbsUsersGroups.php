@@ -177,7 +177,7 @@
                     return false;
                 }
 
-                $new_passwd = generate_passwd();
+                $new_passwd = passwordGenerate();
 
                 //, "From: ".$dbowner_Email
                 $dbowner_Email = user_getDbOwner($mysqli, 'ugr_eMail');
@@ -194,8 +194,7 @@
                 $rv = sendEmail($user['ugr_eMail'], $email_title, $email_text);
                 if($rv){
 
-                    $record = array("ugr_ID"=>$user['ugr_ID'], "ugr_Password"=>hash_it($new_passwd) );
-                    $res= mysql__insertupdate($mysqli, "sysUGrps", "ugr_", $record);
+                    $res = userUpdatePassword($mysqli, $user['ugr_ID'], hash_it($new_passwd));
                     if(is_numeric($res)>0){
                             return true;
                     }else{
@@ -291,7 +290,7 @@
 
             if($check_pin && $_SESSION[$db]['reset_pins'][$user_id]['expire'] > $now){ // pin check requested, and valid pin in session
 
-                if(!hash_equals(crypt($pin, $_SESSION[$db]['reset_pins'][$user_id]['pin']), $_SESSION[$db]['reset_pins'][$user_id]['pin'])){
+                if(!passwordCheck($pin, $_SESSION[$db]['reset_pins'][$user_id]['pin'])){
                     $system->addError(HEURIST_ACTION_BLOCKED, 'Invalid pin provided');
                     return false;
                 }
@@ -302,7 +301,7 @@
             }
 
             // create/re-send pin, save in session
-            $new_pin = generate_passwd();// generate pin
+            $new_pin = passwordGenerate();// generate pin
             $has_pin = !empty(@$_SESSION[$db]['reset_pins'][$user_id]['pin']);
             $response = true;
             $test_captcha = true;
@@ -427,7 +426,7 @@
             $system->addError(HEURIST_ERROR, 'An error has occurred with changing your password using a reset pin.<br>Please contact the Heurist team');
             return false;
         }
-        if(!hash_equals(crypt($pin, $_SESSION[$db]['reset_pins'][$user_id]['pin']), $_SESSION[$db]['reset_pins'][$user_id]['pin'])){ // check the pins match
+        if(!passwordCheck($pin, $_SESSION[$db]['reset_pins'][$user_id]['pin'])){ // check the pins match
             $system->addError(HEURIST_ACTION_BLOCKED, 'Invalid reset pin');
             return false;
         }
@@ -437,8 +436,7 @@
         }
 
         // Update password
-        $record = array("ugr_ID"=>$user['ugr_ID'], "ugr_Password"=>hash_it($password));// prepare record
-        $res = mysql__insertupdate($mysqli, "sysUGrps", "ugr_", $record);
+        $res = userUpdatePassword($mysqli, $user['ugr_ID'], hash_it($password));
 
         if(is_numeric($res) > 0){
 
@@ -449,6 +447,18 @@
 
         $system->addError(HEURIST_ERROR, 'We were unable to reset your password, an error occurred while updating your user account details');
         return false;
+    }
+    
+    /**
+    * Update password field in database
+    * 
+    * @param mixed $mysqli
+    * @param mixed $ugr_ID
+    * @param mixed $ugr_Password - hashed password
+    */
+    function userUpdatePassword($mysqli, $ugr_ID, $ugr_Password){
+        $record = array("ugr_ID"=>intval($ugr_ID), "ugr_Password"=>$ugr_Password);// prepare record
+        return mysql__insertupdate($mysqli, "sysUGrps", "ugr_", $record);
     }
 
     /**
@@ -1189,7 +1199,7 @@
         return $messages;
     }
 
-    function generate_passwd ($length = 8) {
+    function passwordGenerate ($length = 8) { //private
         $passwd = '';
         $possible = '023456789bcdfghjkmnpqrstvwxyz';
         while (strlen($passwd) < $length) {
@@ -1200,10 +1210,38 @@
     }
 
     function hash_it ($passwd) {
+        //$pwd_peppered = hash_hmac("sha256", $passwd, $pepper);
+        $options = ['cost' => 12];
+        return password_hash($passwd, PASSWORD_BCRYPT, $options); //PASSWORD_DEFAULT
+        
+        /* old way
         $s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
         $salt = $s[random_int(0, strlen($s)-1)] . $s[random_int(0, strlen($s)-1)];
         return crypt($passwd, $salt);
+        */
     }
+    
+    function passwordCheck ($passwd, $passwd_hashed, $mysqli=null, $ugr_ID=0) {
+        //$passwd = hash_hmac("sha256", $passwd, $pepper);
+        $res = password_verify($passwd, $passwd_hashed);
+        
+        if(false && $res && $mysqli!=null && $ugr_ID>0){ //DISABLED TILL production version will be upgraded
+            $algorithm = PASSWORD_BCRYPT;
+            // bcrypt's cost parameter can change over time as hardware improves
+            $options = ['cost' => 12];
+            if (password_needs_rehash($passwd_hashed, $algorithm, $options)) {
+                // If so, create a new hash, and replace the old one
+                $passwd_hashed_new = password_hash($passwd, $algorithm, $options);        
+                
+                userUpdatePassword($mysqli, $ugr_ID, $passwd_hashed_new);
+            }
+        }
+        
+        //old way hash_equals(crypt($passwd, $passwd_hashed), $passwd_hashed)
+        
+        return $res;
+    }
+    
 
     //==========================================================================
     //

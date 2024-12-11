@@ -224,8 +224,7 @@ class DbRegis {
         $valid_password = !empty($usrPassword);
         if($valid_password && $user_id > 0){
             $user_pwd = mysql__select_value($mysqli, 'select ugr_Password from sysUGrps where ugr_ID=' . intval($user_id));
-            $valid_password = hash_equals($usrPassword, $user_pwd);
-            //hash_equals(crypt($usrPassword, $user_pwd), $user_pwd);
+            $valid_password = passwordCheck($usrPassword, $user_pwd);
         }
 
         // Unable to retrieve existing user or provided password is wrong
