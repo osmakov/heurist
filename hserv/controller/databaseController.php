@@ -55,7 +55,7 @@ if($action==null){
 
 $session_id = intval(@$req_params['session']);
 
-if(!$system->init(@$req_params['db'], ($action!='create'))){ //db required, except create
+if(!$system->init(@$req_params['db'], ($action!='create'), ($action!='create'))){ //db required, except create
     //get error and response
     $response = $system->getError();
 }else{
