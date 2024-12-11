@@ -3349,7 +3349,7 @@ $.widget( "heurist.editing_input", {
                 {name:'maxsize', value:this.configMode.size}, //dimension
                 {name:'registerAtOnce', value:this.configMode.registerAtOnce},
                 {name:'recID', value:that.options.recID}, //need to verify permissions
-                {name:'usetempname', value:1 }], //unique temp name
+                {name:'usetempname', value:1 }], //unique temp name to store uploaded file before record save - then it will be renamed to recId.ext
     //acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
     //autoUpload: true,
     //multipart: (window.hWin.HAPI4.sysinfo['is_file_multipart_upload']==1),
@@ -3435,7 +3435,8 @@ $.widget( "heurist.editing_input", {
                             if(that.configMode.entity=='recUploadedFiles'){
                                 that.newvalues[$input.attr('id')] = file;
                             }else{
-                                that.newvalues[$input.attr('id')] = file.tempname;  //keep tempname, it will be renamed on save
+                                //unique temp name to store uploaded file before record's save - then it will be renamed to recId.ext
+                                that.newvalues[$input.attr('id')] = file.tempname;  //it will be renamed on save
                             }
                         }
                         $input.attr('title', file.name);
