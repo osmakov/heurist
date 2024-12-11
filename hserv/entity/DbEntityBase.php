@@ -268,8 +268,11 @@ abstract class DbEntityBase
         $operation = $action['operation'];
         $content = @$action['content'];
         $filename = @$action['file'];
+        if($filename!=null){
+            $filename = basename($filename);
+        }
         $entity_name = $this->config['entityName'];
-        $rec_ID = @$action['rec_ID'];
+        $rec_ID = intval(@$action['rec_ID']);
 
         //available values are hardcoded - prevent
         if($entity_name!='defRecTypes'){
