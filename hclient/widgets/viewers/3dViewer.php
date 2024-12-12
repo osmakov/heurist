@@ -165,9 +165,18 @@ $url = str_replace('&amp;','&',htmlspecialchars($url));
 <meta content="charset=UTF-8"/>
 <title>3D Viewer</title>
 <script type="text/javascript" src="<?php echo EDIR;?>o3dv.min.js"></script>
+<style>
+body{
+    margin:0px;
+}
+#online_3d_viewer{
+    position:absolute;
+    width:99%;height:99%;    
+}
+</style>
 </head>
 <body>
-<div id="online_3d_viewer" class="online_3d_viewer" style="width:100%;height:100%;">
+<div id="online_3d_viewer" class="online_3d_viewer">
 </div>
 </body>
 <script type="text/javascript">

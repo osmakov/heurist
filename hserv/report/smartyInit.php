@@ -44,7 +44,7 @@ class HeuristSecurityPolicy extends Security {
                     'lower','nl2br',
                     'preg_match_all','print_r', 'printf','replace',
                     'range', 'regex_replace', 'round',
-                    'sort',
+                    'ksort','sort',
                     'setlocale','spacify', 'strcmp',
                     'strip', 'strstr', 'substr', 'strpos', 'string_format', 'strlen', 'strip_tags',
                     'arraysortby',
