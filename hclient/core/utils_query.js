@@ -570,7 +570,7 @@ window.hWin.HEURIST4.query = {
         return result;
     },
 
-    jsonQueryToPlainText: function(query, is_sub_query = false){
+    jsonQueryToPlainText: function(query, is_sub_query = false, use_or = false){
 
         let plain_text = '';
         if(window.hWin.HEURIST4.util.isempty(query) || !window.hWin.HEURIST4.util.isJSON(query)){
@@ -603,6 +603,12 @@ window.hWin.HEURIST4.query = {
 
             let type = '';
             let conditional = '';
+
+            if(field.indexOf(':') > 0){
+                field = field.split(':');
+                field = field[field.length-1];
+            }
+
             if(window.hWin.HEURIST4.util.isPositiveInt(field)){
                 type = $Db.dty(field, 'dty_Type');
                 let field_name = $Db.rst(rty_ID, field, 'rst_DisplayName');
@@ -638,8 +644,9 @@ window.hWin.HEURIST4.query = {
         }
 
         function handleAnyAll(type, value){
-            let sub_text = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true) ?? 'Missing sub query';
-            deconstructed.push(`${type === 'any' ? 'Meets one of the following filters:<div style="margin-left:5px;">' : ''}${sub_text}${type === 'any' ? '</div>' : ''}`);
+            let is_any = type === 'any';
+            let sub_text = window.hWin.HEURIST4.query.jsonQueryToPlainText(value, true, is_any) ?? 'Missing sub query';
+            deconstructed.push(`${is_any ? 'Meets one of the following filters:<div style="margin-left:5px;">' : ''}${sub_text}${is_any ? '</div>' : ''}`);
         }
 
         let idx = query.findIndex((obj) => Object.hasOwn(obj, 't'));
@@ -752,7 +759,7 @@ window.hWin.HEURIST4.query = {
             plain_text = `Searching all records${deconstructed.length > 0 ? ', refined by:<br>' : ''}`;
         }
 
-        plain_text += deconstructed.join(', AND <br>');
+        plain_text += deconstructed.join(`, ${use_or ? 'OR' : 'AND'} <br>`);
 
         return window.hWin.HEURIST4.util.stripTags(plain_text, 'br, em, b, strong, u, i, div');
     },
@@ -780,7 +787,7 @@ window.hWin.HEURIST4.query = {
             res += 'records that have a <em>__FIELD__</em> value';
         }else if(value.startsWith('=') || value.startsWith('-')){
             val = value.substring(1);
-            res += `${ext} that ${value.startsWith('-') ? 'doesn\'t' : ''} extactly match "<em>${val}</em>"`;
+            res += `${ext} that ${value.startsWith('-') ? 'do not' : ''} extactly match "<em>${val}</em>"`;
         }else if(value.startsWith('@++') || value.startsWith('@--')){
             val = value.substring(3);
             res = `${ext} that contain ${value.startsWith('@++') ? 'all' : 'none'} of the words in "<em>${val}</em>"`;
