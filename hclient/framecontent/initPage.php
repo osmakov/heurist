@@ -140,7 +140,6 @@ if(!$system->hasAccess() && !empty(@$_REQUEST['user']) && !empty(@$_REQUEST['pwd
     }
 }
 
-$login_warning = 'To perform this action you must be logged in';
 $invalid_access = true;
 
 $is_admin = $system->isAdmin();
@@ -151,18 +150,22 @@ $is_admin = $system->isAdmin();
 if(defined('LOGIN_REQUIRED') && !$system->hasAccess()){
     //No Need to show error message when login is required, login popup will be shown
     //$message = $login_warning
-
     exit;
+}elseif(defined('MANAGER_MEMBER_REQUIRED') && 
+        !($system->isDbOwner() || $system->isMember([$system->settings->get('sys_OwnerGroupID')]))){
+    $message = 'as member of group \'Database Managers\'';     
 }elseif(defined('MANAGER_REQUIRED') && !$is_admin){ //A member should also be able to create and open database
-    $message = $login_warning.' as Administrator of group \'Database Managers\'';
-    include_once ERROR_REDIR;
-    exit;
+    $message = 'as Administrator of group \'Database Managers\'';
 }elseif(defined('OWNER_REQUIRED') && !$system->isDbOwner()){
-    $message = $login_warning.' as Database Owner';
-    include_once ERROR_REDIR;
-    exit;
+    $message = 'as Database Owner';
 }else{
     $invalid_access = false;
+}
+
+if($invalid_access){
+    $message = 'To perform this action you must be logged in '.$message;
+    include_once ERROR_REDIR;
+    exit;
 }
 
 // Check if current user has the necessary permissions

@@ -32,7 +32,7 @@
 */
 
 // Add checks for required access + permission
-define('MANAGER_REQUIRED', 1);
+define('MANAGER_MEMBER_REQUIRED', 1);
 define('CREATE_RECORDS', 1);
 define('DELETE_RECORDS', 1);
 

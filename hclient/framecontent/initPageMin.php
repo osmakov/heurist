@@ -65,6 +65,9 @@ $is_admin = $system->isAdmin();
 // @todo replacec with userCheckAccess
 if(defined('LOGIN_REQUIRED') && !$system->hasAccess()){
     $message = $login_warning;
+}elseif(defined('MANAGER_MEMBER_REQUIRED') && 
+        !($system->isDbOwner() || $system->isMember([$system->settings->get('sys_OwnerGroupID')]))){
+    $message = $login_warning.' as member of group \'Database Managers\'';     
 }elseif(defined('MANAGER_REQUIRED') && !$is_admin ){ //A member should also be able to create and open database
     $message = $login_warning.' as Administrator of group \'Database Managers\'';
 }elseif(defined('OWNER_REQUIRED') && !$system->isDbOwner()){
