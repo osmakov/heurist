@@ -177,6 +177,7 @@ $.widget( "heurist.search_faceted", {
     _hasLocation: null, //has primary rt geo fields or linked location - for spatial search
     
     _currentRecordset:null,
+    _current_recordset_ids :null,
     
     _use_sup_filter:null, 
     
@@ -1674,7 +1675,7 @@ $.widget( "heurist.search_faceted", {
 
         let query = window.hWin.HEURIST4.util.cloneJSON( this.options.params.q ); //clone 
         let isform_empty = this._fillQueryWithValues(query);
-        
+
         if(isform_empty && 
             window.hWin.HEURIST4.util.isempty(this.options.params.add_filter) && 
             window.hWin.HEURIST4.util.isempty(this.options.params.spatial_filter) &&
@@ -1784,6 +1785,8 @@ $.widget( "heurist.search_faceted", {
      
 //@todo need to check that the sequence is not called more than once - otherwise we get multiple controls on facets
         
+        
+let s_time = new Date().getTime() / 1000;        
        
         // this._currentquery
         // this._resultset
@@ -1806,6 +1809,8 @@ $.widget( "heurist.search_faceted", {
 
             // Re-display all facets
             this.facets_list.find("[id^='fv_']").show();
+            
+            this._current_recordset_ids = this._currentRecordset.getMainSet().join(',');
         }
         if(this._terminateFacetCalculation){
             field_index  = this.options.params.facets.length;
@@ -1904,27 +1909,26 @@ $.widget( "heurist.search_faceted", {
                                         (this._use_sup_filter)?this.options.params.sup_filter:'',   //suplementary filter defined in wiz
                                         this.options.params.add_filter,
                                         this._prepareSpatial(this.options.params.spatial_filter));  //dynaminc addition filter
-                        
+
                     }else{
-                        
+
                         //replace with list of ids, and add rectype id
 
                         let rtyid = field?.rtyid !== undefined ? field.rtid : null;
                         rtyid = !rtyid ? field.code.split(':')[0] : rtyid;
 
-                        query = {t: rtyid, ids: this._currentRecordset.getMainSet().join(',')};
+                        query = {t: rtyid, ids: this._current_recordset_ids};
                     }
                 
                     needcount = 1;
                     
                 }else{
                     query = window.hWin.HEURIST4.util.cloneJSON(field['facet']); //clone 
-                    
                     //change $IDS for current set of target record type
                     __fillQuery(query);                
                     
                 }
-
+                
                 let count_query = window.hWin.HEURIST4.util.cloneJSON(this.options.params.q);
                 count_query = count_query.splice(1); //remove t:XX                
                 
@@ -1998,7 +2002,7 @@ $.widget( "heurist.search_faceted", {
                 if(this.options.ispreview){
                     request['limit'] = 1000;    
                 }
-                                     
+                    
                 // try to find in cache by facet index and query string
                 
                 let hashQuery = window.hWin.HEURIST4.util.hashString(JSON.stringify(request.count_query));
@@ -2010,16 +2014,16 @@ $.widget( "heurist.search_faceted", {
                 field.last_count_query = hashQuery;
 
                 window.HAPI4.RecordMgr.get_facets(request, function(response){ 
-                    
+
                     //ignore results of passed sequence
                     if(response.request_id != that._request_id){
-                        
                         if(response.status != window.hWin.ResponseStatus.OK){
                             console.error('ERROR: get_facets', response.message);
                         }
                         return;
                     }
-                    that._redrawFacets(response, true) 
+
+                    that._redrawFacets(response, true);
                 });                                            
                 break;
             }

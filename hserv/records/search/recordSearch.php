@@ -446,6 +446,11 @@ function recordSearchFacets($system, $params){
         } else {
             $params['use_user_wss'] = false;
         }
+        
+        $recIDs = null;
+        if(@$params['q']['ids']){
+            $recIDs = $params['q']['ids'];
+        }
 
         //get SQL clauses for current query
         $qclauses = get_sql_query_clauses_NEW($mysqli, $params, $currentUser);
@@ -568,6 +573,7 @@ function recordSearchFacets($system, $params){
             }
 
         }
+
         elseif(($dt_type=="enum" || $dt_type=="reltype") && $facet_groupby=='firstlevel' && $vocabulary_id!=null){
 
             $params_enum = null;
@@ -648,11 +654,29 @@ function recordSearchFacets($system, $params){
 
                 $select_field = "cast($select_field as DECIMAL)";
 
+            /*}elseif($dt_type=="enum"){
+        
+                $select_field = 'dt0.rdi_Value';
+                $detail_link = ', recDetailsEnumIndex dt0';
+                $details_where = " AND (dt0.rdi_RecID=r0.rec_ID and dt0.rdi_DetailTypeID $compare_field) ";
+            */    
             }elseif($step_level==0 && $dt_type=="freetext"){
 
                 $select_field = 'SUBSTRING(trim('.$select_field.'), 1, 1)';//group by first charcter                }
             }
+            
+            /*if($recIDs!=null && $dt_type=="enum"){
 
+                $select_clause = "SELECT $select_field as rng, count(DISTINCT dt0.rdi_RecID) as cnt ";
+                if($grouporder_clause==""){
+                    $grouporder_clause = " GROUP BY $select_field ORDER BY $select_field";
+                }
+                $qclauses["from"] = ' FROM recDetailsEnumIndex dt0 ';
+                $detail_link = '';
+                $details_where = '';
+                $qclauses["where"] = 'dt0.rdi_RecID IN ('.$recIDs.')';
+                
+            }else */
             if($params['needcount']==1){
 
                 $select_clause = "SELECT $select_field as rng, count(DISTINCT r0.rec_ID) as cnt ";
@@ -698,8 +722,20 @@ function recordSearchFacets($system, $params){
         }
         */
 
-        //$res = $mysqli->query($query);
+/*  performance test        
+$rustart = getrusage();
+$time_start = microtime(true);         
+*/
+
         $res = mysql__select($mysqli, $query);
+  
+/* performance test        
+$ru = getrusage();
+$time_end = microtime(true);
+$s = USystem::rutime($ru, $rustart, "utime");
+error_log(($time_end - $time_start)/60);
+*/
+        
         if (!$res){
             $response = $system->addError(HEURIST_DB_ERROR, $savedSearchName
                 .'Facet query error(B). '.$query);// 'Parameters:'.print_r($params, true), $mysqli->error);
@@ -775,8 +811,8 @@ function recordSearchFacets($system, $params){
 
             $response = array("status"=>HEURIST_OK, "data"=> $data, "svs_id"=>@$params['svs_id'],
                 "request_id"=>@$params['request_id'], //'dbg_query'=>$query,
-                "facet_index"=>@$params['facet_index'],
-                'q'=>$params['q'], 'count_query'=>$count_query );
+                "facet_index"=>@$params['facet_index']);
+                //'q'=>$params['q'], 'count_query'=>$count_query );
             $res->close();
         }
 

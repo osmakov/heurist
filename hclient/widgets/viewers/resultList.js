@@ -1755,7 +1755,7 @@ $.widget( "heurist.resultList", {
         // Apply user pref font size
         let usr_font_size = window.hWin.HAPI4.get_prefs_def('userFontSize', 0);
         let title_font_size = '';
-        if(usr_font_size != 0){
+        if(usr_font_size != 0 && !this._is_publication){
             usr_font_size = (usr_font_size < 8) ? 8 : (usr_font_size > 18) ? 18 : usr_font_size;
             title_font_size = ' style="font-size: '+usr_font_size+'px"';
         }

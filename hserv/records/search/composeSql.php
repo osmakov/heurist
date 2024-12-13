@@ -1465,17 +1465,13 @@ class HPredicate {
         $p = '';
 
         $several_ids = prepareIds($this->field_id);//getCommaSepIds - returns validated string
-        if(!isEmptyArray($several_ids)){
-            $this->field_id = $several_ids[0];
+        $is_multi_field = !empty($several_ids) && count($several_ids)>1;
+        
+        if($is_multi_field){
+            $field_id_filter = SQL_IN.implode(',',$several_ids).')';
         }else{
+            $field_id_filter = '='.$this->field_id;
             $several_ids = null;
-        }
-
-        $field_id_filter = '='.$this->field_id;
-        if(!isEmptyArray($several_ids)){
-            $field_id_filter = (count($several_ids)>1
-                    ?SQL_IN.implode(',',$several_ids).')'
-                    :'='.$several_ids[0]);
         }
 
         if($this->pred_type=='count' || $this->pred_type=='cnt' || $this->pred_type=='fc'){
@@ -1496,7 +1492,7 @@ class HPredicate {
 
         $field_condition = '';
 
-        if(!$is_admin){
+        if(!$is_admin){  //field visibility per user
 
             $field_condition = ' AND rst_DetailTypeID '.$field_id_filter
                                 .' AND rst_RecTypeID = r'.$this->qlevel.'.rec_RecTypeID'
@@ -1653,14 +1649,27 @@ class HPredicate {
 
                 if($this->field_type=='date' && trim($this->value)!=''){
 
-                    $res = "EXISTS (SELECT rdi_DetailID FROM recDetailsDateIndex WHERE $recordID=rdi_RecID AND "
+                    $res = "EXISTS (SELECT rdi_DetailID FROM `recDetailsDateIndex` WHERE $recordID=rdi_RecID AND "
                     .'rdi_DetailTypeID';
 
                     $field_name = '';
+                    $this->fulltext = false;
                     //$val = $this->getFieldValue();
 
                     $res .= $field_id_filter;
 
+                /*}elseif($this->field_type=='enum' && trim($this->value)!=''){  //!$is_multi_field && 
+                //experimental    
+
+                    $res = "EXISTS (SELECT rdi_DetailID FROM `recDetailsEnumIndex` WHERE $recordID=rdi_RecID AND "
+                    .'rdi_DetailTypeID';
+
+                    $field_name = 'rdi_Value';
+                    $this->fulltext = false;
+                    //$val = $this->getFieldValue();
+
+                    $res .= $field_id_filter;
+                */    
                 }elseif($this->fulltext){
 
 
