@@ -484,7 +484,7 @@ function predicateRecordVisibility($dst='trg'){
     global $system, $ACCESSABLE_OWNER_IDS, $PUBONLY;
 
 
-    return  (!empty($ACCESSABLE_OWNER_IDS) && !$PUBONLY
+    return  SQL_AND.(!empty($ACCESSABLE_OWNER_IDS) && !$PUBONLY
             ? '('.$dst.'.rec_OwnerUGrpID in (' .join(',', prepareIds($ACCESSABLE_OWNER_IDS, true)) . ') OR '
             : '(') .
     (($system->hasAccess() && !$PUBONLY) ? 'NOT '.$dst.'.rec_NonOwnerVisibility = "hidden")' : $dst.'.rec_NonOwnerVisibility = "public")');
@@ -524,7 +524,7 @@ function findPointers($qrec_ids, &$recSet, $depth, $rtyIDs, $dtyIDs) {
     'LEFT JOIN Records trg on trg.rec_ID = dtl_Value ' .
     'WHERE dtl_RecID in (' . join(',', prepareIds($qrec_ids)) . ') AND (trg.rec_FlagTemporary=0) '
     . predicateRtyDtyFilters($rtyIDs, $dtyIDs)
-    . 'AND dty_Type = "resource" AND '
+    . 'AND dty_Type = "resource" '
         .predicateRecordVisibility();
 
 
@@ -607,7 +607,7 @@ function findReversePointers($qrec_ids, &$recSet, $depth, $rtyIDs, $dtyIDs) {
     .' WHERE dty_Type = "resource" ' . 'AND dtl_Value IN (' .
         join(',', prepareIds($qrec_ids)) . ') ) AND (trg.rec_FlagTemporary=0) '
     . predicateRtyDtyFilters($rtyIDs, $dtyIDs)
-    . "AND trg.rec_RecTypeID != $relRT AND "
+    . "AND trg.rec_RecTypeID != $relRT "
     . predicateRecordVisibility();
 
     $res = $mysqli->query($query);
