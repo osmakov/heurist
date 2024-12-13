@@ -156,12 +156,10 @@ class DbSysBugreport extends DbEntityBase
         $bug_descr = htmlspecialchars($record['2-3']);
         if(!empty($bug_descr)){
 
-            $bug_descr = str_replace("\n","&#13;",$bug_descr);
-            $bug_descr = str_replace("\"","\\\"",$bug_descr);
+            $bug_descr = '<p>' . str_replace("\n",'<br>', $bug_descr) . '</p>';
 
             $new_record['details']['3'] = $bug_descr;
-
-            $sMessage = '<p>'.str_replace("\n",'<br>', htmlspecialchars($record['2-3'])).'</p>';
+            $sMessage = $bug_descr;
         }
 
         $repro_steps = $record['2-4'];
