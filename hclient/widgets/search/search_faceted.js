@@ -294,9 +294,9 @@ $.widget( "heurist.search_faceted", {
         
         $('<span>', {id: 'facet_process_msg', class: 'heurist-helper2', 'data-interrupt': 0})
             .text(window.hWin.HR('filter_facet_processing'))
-            .css({display: 'inline-block', 'padding-right': '10px'})
+            .css({display: 'inline-block', 'padding-right': '10px', color: 'black'})
             .insertBefore(this.btn_terminate).hide();
-        
+
         this._on( this.btn_submit, { click: "doSearch" });
         this._on( this.btn_reset, { click: "doResetAll" });
         this._on( this.btn_save, { click: "doSaveSearch" });
@@ -310,6 +310,8 @@ $.widget( "heurist.search_faceted", {
                             .css('color', 'red').insertBefore(this.btn_close);
 
             this._terminateFacetCalculation = true; 
+            
+            this.btn_reset.show();
         }});
 
         this.facets_list_container = $( "<div>" )
@@ -529,10 +531,10 @@ $.widget( "heurist.search_faceted", {
  
             if((hasHistory || !isform_empty) && !this.options.params.ui_spatial_filter) {
                 if(this.options.showresetbutton && this.btn_reset){
-                    this.btn_reset.show()   
+                    this.btn_reset.show();
                 }
             }else{
-                if(this.btn_reset) this.btn_reset.hide()   
+                if(this.btn_reset && this.div_toolbar.find('#facet_process_msg').attr('data-interrupt') != 1) this.btn_reset.hide();  
                 this.btn_save.hide(); 
             }
             
@@ -710,6 +712,12 @@ $.widget( "heurist.search_faceted", {
 
     ,doResetAll: function(){
        
+        if(this.btn_reset) this.btn_reset.hide();
+        this.div_toolbar.find('#facet_process_msg')
+                            .attr('data-interrupt', 0)
+                            .text(window.hWin.HR('filter_facet_processing'))
+                            .css('color', 'black').hide();
+        
         this.options.params.add_filter = null;
         this.options.params.add_filter_original = null;
         this._last_term_value = null; // reset last selected term(s)
@@ -824,7 +832,7 @@ $.widget( "heurist.search_faceted", {
         
         this._refreshTitle();
 
-        if(this.btn_reset) this.btn_reset.hide()   
+        if(this.btn_reset) this.btn_reset.hide();
         this.btn_save.hide(); 
        
        
@@ -1799,7 +1807,7 @@ let s_time = new Date().getTime() / 1000;
             this._terminateFacetCalculation = false;
             this.btn_terminate.show();
             this.div_toolbar.find('#facet_process_msg').show();
-            if(this.btn_reset) this.btn_reset.hide()    
+            if(this.btn_reset) this.btn_reset.hide();
             this.btn_close.hide();
 
             let div_facets = this.facets_list.find(".facets");
