@@ -866,10 +866,7 @@ $.widget( "heurist.editing_input", {
 
         if(this.options.is_faceted_search) return;
 
-        let dwidth = this.f('rst_DisplayWidth');
-        dwidth = parseFloat(dwidth) > 0 ? Math.round(parseFloat(dwidth)) : 600;
-
-        let units = this.options.recordset && this.options.recordset.entityName == 'Records' ? 'ch' : 'ex';
+        let units = this.options?.recordset?.entityName == 'Records' ? 'ch' : 'ex';
         let $parent_container = this.inputs.length > 0 ? $(this.inputs[0]).parents('.editForm.recordEditor') : [];
 
         //auto width
@@ -881,17 +878,13 @@ $.widget( "heurist.editing_input", {
                 input = $(input);
 
                 let ow = input.width(); // current width
-                let max_w = $parent_container.length > 0 ? $parent_container.parent().width() - 330 : dwidth;
-                max_w = !max_w || max_w <= 0 ? dwidth : max_w;//|| max_w < dwidth
+                let max_w = $parent_container.length > 0 ? $parent_container.width() - 280 : 600;
+                max_w = !max_w || max_w <= 0 ? 600 : max_w;
 
-                if(Math.ceil(ow) < Math.floor(max_w) && input.val().length > 0){
+                if(Math.ceil(ow) < Math.floor(max_w)){
 
-                    let input_length = input.val().length;
-                    let remove_cnt = input.val().match(/[`!$^*()_\-+={}[\]:;"',.|\s]+/g);
-                    input_length -= !remove_cnt ? 0 : remove_cnt.length; // remove smaller characters from consideration (Heurist doesn't use monospace fonts)
-
-                    let nw = `${input_length}${units}`;
-                    input.css('width', nw);
+                    let nw = `${input.val().length+3}${units}`;
+                    $(input).css('width', nw);
 
                     if(input.width() < ow) input.width(ow); // we can only increase - restore
                     else if(input.width() > max_w) input.width(max_w); // set to max
@@ -4048,7 +4041,14 @@ $.widget( "heurist.editing_input", {
         }else if ( this.detailType=='freetext' || this.detailType=='url' || this.detailType=='blocktext'  
                 || this.detailType=='integer' || this.detailType=='float') {  
 
-            this._setAutoWidth();
+              //if the size is greater than zero
+              let nw = (this.detailType=='integer' || this.detailType=='float')?40:120;
+              if (parseFloat( dwidth ) > 0){ 
+                  nw = Math.round( 3+Number(dwidth) );
+                   
+              }
+              $input.css({'min-width':nw+'ex','width':nw+'ex'}); //was *4/3
+
         }
         
         if(this.options.is_faceted_search){
