@@ -296,7 +296,8 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
                         title: ("Manage Membership for User #"+user_ID),
                         //before close - count for membership and refresh
                         beforeClose:function(){
-                            
+
+                            let membership_popup = this;
                             //count user memebrship in groups
                             let request = {
                                 'a'          : 'search',
@@ -313,8 +314,8 @@ $.widget( "heurist.manageSysUsers", $.heurist.manageEntity, {
                                         if(cnt>0){
                                             let record = that.getRecordSet().getById(user_ID);
                                             that.getRecordSet().setFld(record, 'ugr_Member', cnt);
-                                            that.recordList.resultList('refreshPage');  
-                                            $('body').find('div[id^="heurist-dialog-SysGroups-"]').manageSysGroups('closeDialog', true);
+                                            that.recordList.resultList('refreshPage');
+                                            $(membership_popup).manageSysGroups('closeDialog', true);
                                         }else{
                                             window.hWin.HEURIST4.msg.showMsgErr({
                                                 message: 'User must belong to one group at least',
