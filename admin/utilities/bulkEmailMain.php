@@ -75,8 +75,51 @@ $has_emails = false;
 $current_db = HEURIST_DB_PREFIX . htmlspecialchars($_REQUEST['db']);
 
 $email_rectype_id = ConceptCode::getRecTypeLocalID("2-9");
-if (empty($email_rectype_id)) {
-    print "Unable to retrieve the id for the Email record type.<br>Please download this record type from the Heurist Core Definitions database, available via Design > Browser templates.";
+if(empty($email_rectype_id)){
+
+    includeJQuery();
+    ?>
+
+    <link rel="stylesheet" type="text/css" href="../../h4styles.css">
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="../../hclient/core/detectHeurist.js"></script>
+    <script type="text/javascript" src="../../hclient/core/hapi.js"></script>
+    <script type="text/javascript" src="../../hclient/core/HSystemMgr.js"></script>
+    <script type="text/javascript" src="../../hclient/core/recordset.js"></script>
+    
+    <script type="text/javascript" src="../../hclient/core/utils.js"></script>
+    <script type="text/javascript" src="../../hclient/core/utils_dbs.js"></script>
+    <script type="text/javascript" src="../../hclient/core/utils_ui.js"></script>
+    <script type="text/javascript" src="../../hclient/core/utils_msg.js"></script>
+
+    <script>
+        if(!window.hWin.HAPI4 && typeof hAPI === 'function'){
+            window.hWin.HAPI4 = new hAPI('<?php echo HEURIST_DBNAME; ?>', $.noop);
+        }
+
+        $(document).ready(() => {
+
+            window.hWin.HAPI4.EntityMgr.refreshEntityData('rty');
+
+            $('a').on('click', () => {
+                window.hWin.HAPI4.SystemMgr.checkPresenceOfRectype('2-9', 2, false, () => {
+                    window.hWin.HEURIST4.msg.showMsgDlg(
+                        'The Email record type has been downloaded.<br><br>'
+                      + 'You will now need to create an email record and then you can return to this function (simply refresh the page once the new record has been saved).',
+                        null,
+                        {title: 'Email record type downloaded successfully'}
+                    );
+                });
+            });
+        });
+    </script>
+
+    <?php
+    print "Unable to retrieve the id for the Email record type.<br><br>"
+        . "You can choose to download the required record type <a href='#'>here</a>, or,<br>"
+        . "manually download it from the Heurist Core Definitions database, available via Design > Browser templates.<br><br>"
+        . "Afterwards, you will need to create a new email record to use the bulk mailer, then you can simply refresh this page (<strong>once the record has been saved</strong>).";
     exit;
 }
 
