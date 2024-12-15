@@ -32,7 +32,7 @@
 */
 
 // Add checks for required access + permission
-define('MANAGER_MEMBER_REQUIRED', 1);
+define('LOGIN_REQUIRED', 1);
 define('CREATE_RECORDS', 1);
 define('DELETE_RECORDS', 1);
 
@@ -160,11 +160,13 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                 $('input[type="button"]').button();
                 $('input[type="submit"]').addClass('ui-button-action').button();
 
-                let $merge = $('input[name="merge"]');
-                if($merge.length == 1 && $('input[name="duplicate[]"]').length == 2){
-                    // automatically merge if there is only two records listed
-                    $merge.trigger('click');
-                    return;
+                if($('tr.rec-no-access').count==0){
+                    let $merge = $('input[name="merge"]');
+                    if($merge.length == 1 && $('input[name="duplicate[]"]').length == 2){
+                        // automatically merge if there is only two records listed
+                        $merge.trigger('click');
+                        return;
+                    }
                 }
 
                 let $popup = $(window.frameElement).parent('div.ui-dialog-content');//[role="dialog"]
@@ -192,7 +194,40 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
             -->
         </script>
     </head>
+<?php
+        
+                        $rtyNameLookup = mysql__select_assoc2($mysqli,
+                            'select rty_ID, rty_Name from Records left join defRecTypes on rty_ID=rec_RecTypeID '
+                            .'where rec_ID in ('.$bib_ids_list.')');
 
+                        //get requirements for details
+                        $res = $mysqli->query('select rst_RecTypeID,rst_DetailTypeID, rst_DisplayName, rst_RequirementType, rst_MaxValues from defRecStructure where rst_RecTypeID in ('.join(',',array_keys($rtyNameLookup)).')');
+                        $rec_requirements =  array();
+
+                        while ($req = $res->fetch_assoc()) {
+                            $rec_requirements[$req['rst_RecTypeID']][$req['rst_DetailTypeID']]= $req;
+                        }
+                        $res->close();
+
+                        $is_admin = $system->isAdmin();
+                        
+                        $query2 = 'select * from Records where rec_ID in ('.$bib_ids_list.') order by find_in_set(rec_ID, "'.$bib_ids_list.'")';
+                        $res = $mysqli->query($query2);
+                        $records = array();
+                        $records_noaccess = array();
+                        $counts = array();
+                        $rec_references = array();
+                        $invalid_rec_references = array();
+                        while ($rec = $res->fetch_assoc()) {
+                            $records[$rec['rec_ID']] = $rec;    
+                            if(!($is_admin || $system->isMember([$rec['rec_OwnerUGrpID']]))){
+                                $records_noaccess[] = intval($rec['rec_ID']);
+                            }
+                        }
+                        $res->close();
+        
+        
+?>    
     <body class="popup" width="800" height="600">
         <form>
         <div class="ent_wrapper">
@@ -205,6 +240,18 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                         'data with the master record.<br><br>'.
                         'Bookmarks, Tags and Relationships from deleted records are added to the master record.<br><br>'.
                         'None of these data are duplicated if they already exist in the master record.';
+                        
+                        if(count($records_noaccess)>0){
+                            
+                            print '<p style="color:red">';
+                            print 'You may only merge records for which you are the owner or an administrator of the owner group.<br>Other records are shown in grey and disabled';
+    
+                            if(count($records)-2<=count($records_noaccess)){
+                                print '<br><b>Sorry, you need a minimum of two records to merge</b>';
+                            }
+                            print '</p>';
+                        }
+                        
                     } else{
                         print 'Select the data items which should be retained, added or replaced in the master records.'.
                         ' Repeatable (multi-valued)fields are indicated by checkboxes and single value fields are '.
@@ -213,9 +260,7 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                         'the changes.';
                     }
                     ?>
-                </div><br><hr>
-
-                <table role="presentation"><tbody id="tb">
+                </div><br><hr><table role="presentation"><tbody id="tb">
                         <?php
 
                         if($master_rec_id>0){
@@ -225,41 +270,24 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                             print '<input type="hidden" name="finished_merge" value="1">';
                         }
 
-
                         print '<input type="hidden" name="bib_ids" value="'.htmlspecialchars($bib_ids_list).'">';
 
-                        $rtyNameLookup = mysql__select_assoc2($mysqli,
-                            'select rty_ID, rty_Name from Records left join defRecTypes on rty_ID=rec_RecTypeID '
-                            .'where rec_ID in ('.$bib_ids_list.')');
+                        //print TR_S.TR_E;
 
-                        print TR_S.TR_E;
-
-                        //get requirements for details
-                        $res = $mysqli->query('select rst_RecTypeID,rst_DetailTypeID, rst_DisplayName, rst_RequirementType, rst_MaxValues from defRecStructure where rst_RecTypeID in ('.join(',',array_keys($rtyNameLookup)).')');
-                        $rec_requirements =  array();
-
-                        while ($req = $res->fetch_assoc()) {
-                            $rec_requirements[$req['rst_RecTypeID']][$req['rst_DetailTypeID']]= $req;
-                        }
-                        $res->close();
-
-                        $query2 = 'select * from Records where rec_ID in ('.$bib_ids_list.') order by find_in_set(rec_ID, "'.$bib_ids_list.'")';
-                        $res = $mysqli->query($query2);
-                        $records = array();
-                        $counts = array();
-                        $rec_references = array();
-                        $invalid_rec_references = array();
-                        while ($rec = $res->fetch_assoc()) {
-                            $records[$rec['rec_ID']] = $rec;
-                        }
-                        $res->close();
-
+                        
                         foreach($records as $index => $record){
+                            
+                            $rec_ID = intval($records[$index]['rec_ID']);
+                            
+                            if(in_array($rec_ID, $records_noaccess)){
+                                $counts[$index] = 0;
+                                continue;   
+                            }
 
                             //Note - it searches only reverse references
                             //search rec_IDs that links to this record
                             $rec_references = mysql__select_list2($mysqli,
-                                    'select dtl_RecID from recDetails WHERE dtl_Value='.intval($records[$index]['rec_ID'])
+                                    'select dtl_RecID from recDetails WHERE dtl_Value='.$rec_ID
                                     .' and dtl_DetailTypeID in ('.join(',', array_keys($reference_bdts)).')');
                             if ($rec_references){
                                 // only store the references that are actually records
@@ -276,7 +304,7 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                             $details = array();
                             $res = $mysqli->query('select dtl_DetailTypeID, dtl_Value, dtl_ID, dtl_UploadedFileID, if(dtl_Geo is not null, ST_AsWKT(dtl_Geo), null) as dtl_Geo, trm_Label
                                 from recDetails  left join defTerms on trm_ID = dtl_Value
-                                where dtl_RecID = ' . intval($records[$index]['rec_ID']) . '
+                                where dtl_RecID = ' . $rec_ID . '
                             order by dtl_DetailTypeID, dtl_ID');
 
                             $records[$index]['details'] = array();
@@ -296,41 +324,63 @@ $reference_bdts = mysql__select_assoc2($mysqli,'select dty_ID, dty_Name from def
                             }
                             $counts[$index] = $res->num_rows;
                             $res->close();
-                        }
-                        //Output records in order of most fiel values - first is the default 'master' record
+                        }//for records
+                        
+                        //Output records in order of most field values - first is the default 'master' record
                         $rec_keys = array_keys($records);
                         if (! @$master_rec_id){
                             array_multisort($counts, SORT_NUMERIC, SORT_DESC, $rec_keys );
                             $master_rec_id = intval($rec_keys[0]);
                         }
                         if (! @$do_merge_details){  // display a page to user for selecting which record should be the master record
+                        
                             //    foreach($records as $index) {
                             foreach($records as $record) {
 
                                 $rec_ID = intval($record['rec_ID']);
+                                $has_access = !in_array($rec_ID, $records_noaccess);
+
                                 $is_master = ($rec_ID== $master_rec_id);
-                                print '<tr'. ($is_master && !$finished_merge ? ' style="background-color: #EEE;" ': '').' id="row'.$rec_ID.'">';
-                                $checkKeep =  $is_master? "checked" : "";
-                                $checkDup = !$is_master && count($records) < 5 ? "checked" : "";
-                                $disableDup = $is_master? "none" : "block";
-                                if (!$finished_merge) {
-                                    print <<<EXP
-<td><input type="checkbox" name="duplicate[]" $checkDup value="$rec_ID" title="Check to mark this as a duplicate record for deletion"
-    id="duplicate$rec_ID" style="display:$disableDup" onclick="if (this.checked) delete_bib($rec_ID); else undelete_bib($rec_ID);">
-    <div style="font-size: 70%; display:$disableDup;">DUPLICATE</div></td>'
-EXP;
+                                
+                                if($has_access){
+                                    $style = ($is_master && !$finished_merge ? ' style="background-color: #EEE;" ': '').' id="row'.$rec_ID.'"';
+                                }else{
+                                    $style = ' class="rec-no-access" style="background-color: #DDD;color:#AAA;"';
                                 }
-                                print '<td style="width: 500px;">';
-                                if (!$finished_merge) {
-                                    print <<<EXP
-<input type="radio" name="keep" $checkKeep value="$rec_ID" title="Click to select this record as the Master record"
-    id="keep$rec_ID" onclick="keep_bib($rec_ID);">
-EXP;
+                                
+                                print '<tr'.$style.'>';
+                                
+                                if(!$has_access){
+                                    print '<td style="font-size: 70%;">NO ACCESS</td><td style="width: 500px;">';
+                                }else{
+                                
+                                    $checkKeep =  $is_master? "checked" : "";
+                                    $checkDup = !$is_master && count($records) < 5 ? "checked" : "";
+                                    $disableDup = $is_master? "none" : "block";
+                                    if (!$finished_merge) {
+
+                                        print <<<EXP
+    <td><input type="checkbox" name="duplicate[]" $checkDup value="$rec_ID" title="Check to mark this as a duplicate record for deletion"
+        id="duplicate$rec_ID" style="display:$disableDup" onclick="if (this.checked) delete_bib($rec_ID); else undelete_bib($rec_ID);">
+        <div style="font-size: 70%; display:$disableDup;">DUPLICATE</div></td>'
+    EXP;
+                                    }
+                                    print '<td style="width: 500px;">';
+                                    if (!$finished_merge) {
+                                        if($disableDup){
+                                        print <<<EXP
+    <input type="radio" name="keep" $checkKeep value="$rec_ID" title="Click to select this record as the Master record"
+        id="keep$rec_ID" onclick="keep_bib($rec_ID);">
+    EXP;
+                                        }
+                                    }
                                 }
+                                
                                 print '<span style="font-size: 120%;">'
                                     .edit_link($rec_ID,$rec_ID.' <b>'.htmlspecialchars(strip_tags($record['rec_Title'])).'</b>', false, false)
                                     .' - <span style="background-color: #EEE;">'. htmlspecialchars($rtyNameLookup[$record['rec_RecTypeID']]).'</span></span>';
                                 print TABLE_S;
+                                
                                 foreach ($record['details'] as $rd_type => $detail) {
                                     if (! $detail) {continue;}    //FIXME  check if required and mark it as missing and required
                                     if(!@$rec_requirements[$record['rec_RecTypeID']][$rd_type]) {continue;}
@@ -387,7 +437,7 @@ EXP;
 
                                     print TD_E;
                                 }
-
+                                
                                 if ($record['rec_URL']) {print '<tr><td>URL</td><td><a href="'.$record['rec_URL'].'">'.htmlspecialchars($record['rec_URL']).'</a></td></tr>';}
 
                                 if ($record['rec_Added']) {print '<tr><td>Added</td><td style="padding-left:10px;">'.htmlspecialchars(substr($record['rec_Added'], 0, 10)).TR_E;}
@@ -729,11 +779,27 @@ function detail_str($rd_type, $rd_val)
     return $rd_val;
 }
 
-// ---------------------------------------------- //
+// ---------------------------------------------- 
+//
 // function to actually fix stuff on form submission
+//
 function do_fix_dupe()
 {
-    global $mysqli, $master_rec_id, $finished_merge, $enum_bdts, $bib_ids_list, $bib_ids, $instant_merge;
+    global $system, $mysqli, $master_rec_id, $finished_merge, $enum_bdts, $bib_ids_list, $bib_ids, $instant_merge;
+    
+    $is_admin = $system->isAdmin();
+    $query1 = 'select rec_ID,rec_OwnerUGrpID from Records where rec_ID in ('.$bib_ids_list.')';
+    $res = $mysqli->query($query1);
+    while ($rec = $res->fetch_assoc()) {
+        if(! ($is_admin || $system->isMember([$rec['rec_OwnerUGrpID']])) ){
+            $records_no_access[] = $rec['rec_ID'];
+        }
+    }
+    $bib_ids = array_diff($bib_ids, $records_no_access);
+    if(count($bib_ids)<2 || !in_array($master_rec_id, $bib_ids)){
+        //reload with flag that operation is NOT completed
+        redirectURL('combineDuplicateRecords.php?db='.HEURIST_DBNAME.'&finished_merge=0&bib_ids='.$bib_ids_list);
+    }
 
     $finished_merge = true;
 
