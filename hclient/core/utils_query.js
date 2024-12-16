@@ -578,6 +578,7 @@ window.hWin.HEURIST4.query = {
         }
 
         query = window.hWin.HEURIST4.util.isJSON(query);
+        query = Array.isArray(query) ? query : [query];
         let rty_ID = null;
         let deconstructed = [];
         let sortby = [];
