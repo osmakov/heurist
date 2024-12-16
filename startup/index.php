@@ -25,6 +25,7 @@ if (!defined('PDIR')){
 // init main system class
 //$system = new hserv\System();
 //$system->defineConstants();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -157,7 +158,7 @@ if (!defined('PDIR')){
 
                     $('#showConditions').on({click: function(){
                         if($('#divConditions').is(':empty')){
-                            $('#divConditions').load('../documentation_and_templates/terms_and_conditions.html #content');
+                            $('#divConditions').load(`${baseURL}?disclaimer=terms_and_conditions.html #content`);
                         }
                         _showStep(7);
                         return false;
