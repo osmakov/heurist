@@ -73,6 +73,8 @@ class SystemEmailExt {
     private $user_options = array("owner", "admin", "manager", "user");// available user options
     private $substitute_vals = array("##firstname##", "##lastname##", "##email##", "##database##", "##dburl##", "##records##", "##lastmodified##");// available email body substitutions
 
+    private $add_gdpr = true;// add GDPR statement to end
+
     /*
     * Process the data received
     *
@@ -112,8 +114,11 @@ class SystemEmailExt {
         $this->receipt = null;
         $this->error_msg = "";
 
-        if(@$data["use_native"]==1){
+        if(@$data["use_native"] == 1){
             $this->use_native_mail_function = true;
+        }
+        if(@$data["add_gdpr"] == 1){
+            $this->add_gdpr = true;
         }
 
         $rtn = $this->createUserList();// save user information; first and last name, email, and list of databases
@@ -166,6 +171,7 @@ class SystemEmailExt {
     }
 
     private function validateUserInput($data) {
+
         if (isset($data["users"]) && in_array($data["users"], $this->user_options)) {
             $this->users = $data["users"];
         } else {
@@ -183,7 +189,45 @@ class SystemEmailExt {
         }
 
         $this->email_body = $data["emailBody"];
+
+        $this->addGDPRStatement();
+
         return true;
+    }
+
+    /**
+     * Add data disclaimer to end of email, attach it here so substitutions can be made later
+     */
+    private function addGDPRStatement(){
+
+        if(!$this->add_gdpr){
+            return;
+        }
+
+        $GDPRFile = __DIR__ . '/../../../GDPR.html';
+        if(file_exists($GDPRFile) || !is_readable($GDPRFile) || filesize($GDPRFile) == 0){
+            $GDPRFile = __DIR__ . '/../../movetoparent/GDPR.html';
+        }
+
+        if(!file_exists($GDPRFile) || !is_readable($GDPRFile) || filesize($GDPRFile) == 0){
+            return;
+        }
+
+        $DOM = new \DOMDocument();
+        $DOM->loadHTMLFile($GDPRFile, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
+
+        foreach($DOM->getElementsByTagName('title') as $node){
+            $node->parentNode->removeChild($node);
+        }
+        foreach($DOM->getElementsByTagName('meta') as $node){
+            $node->parentNode->removeChild($node);
+        }
+
+        $GDPR = $DOM->saveHTML();
+
+        if(!empty($GDPR)){
+            $this->email_body .= "<br><br>{$GDPR}";
+        }
     }
 
     /*

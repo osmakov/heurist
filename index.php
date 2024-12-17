@@ -191,6 +191,30 @@ if( @$_REQUEST['isalive']==1){
         readfile($host_logo);
         return;
     }
+}elseif(@$_REQUEST['disclaimer']){
+    // disclaimers are stored in either parent/root directory or movetoparent (backup)
+
+    $params = USanitize::sanitizeInputArray();
+
+    $name = $_REQUEST['disclaimer'];
+
+    $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+    if(empty($extension)){
+        $name .= '.html';
+    }
+
+    $file = '../' . basename($name);
+    $backupFile = 'movetoparent/' . basename($name);
+    if(!file_exists($file)){
+        $file = $backupFile;
+    }
+
+    if(file_exists($file)){
+        header("Location: {$file}");
+        return;
+    }else{
+        exit('Document not found: ' . htmlspecialchars($name));
+    }
 }
 
 

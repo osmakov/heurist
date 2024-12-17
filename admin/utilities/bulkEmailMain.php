@@ -1298,6 +1298,10 @@ if(!$has_emails || empty($emails)) {
 
                         <label><input type="checkbox" name="use_native" id="use_native" value="1"/>use native mail</label>
 
+                        <label style="padding-left: 10px;" title="Include the content in GDPR.html (using one located in the Heurist parent directory, otherwise the one in /movetoparent)">
+                            <input type="checkbox" name="add_gdpr" id="add_gdpr" value="1" checked="checked"/>include GDPR statement
+                        </label>
+
                     </div>
 
                     <div style="margin-top: 10px;">

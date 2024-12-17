@@ -331,7 +331,7 @@ if(!$system->hasAccess()){
 
                         let cur_params = window.hWin.HEURIST4.util.getUrlParams(location.href);
                         if(Object.hasOwn(cur_params, 'privateDetails')){
-                            href += `?privateDetails=${cur_params['privateDetails']}`;
+                            href += `${href.indexOf('?') > 0 ? '&' : '?'}privateDetails=${cur_params['privateDetails']}`;
                         }
 
                         let cur_dlg = window.frameElement?.parentElement.parentElement; // dialog's widget
@@ -1969,7 +1969,7 @@ function print_public_details($bib) {
     foreach ($bds as $bd) {
         if(defined('DT_PARENT_ENTITY') && $bd['dty_ID']==DT_PARENT_ENTITY){
 
-            print '<div class="detailRow" style="width:100%;border:none 1px #00ff00;">'
+            print '<div class="detailRow" style="width:100%;">'
             .'<div class=detailType>Parent record</div><div class="detail">'
             .' '.($bd['val']).DIV_E.DIV_E;// htmlentities
             break;
