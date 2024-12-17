@@ -524,7 +524,7 @@ window.hWin.HEURIST4.query = {
         if(need_query===true){  //not direct input
 
             //create query to search facet values
-            function __crt( idx ){
+            function __crt( idx, depth ){
                 let res = null;
                 if(idx>0){  //this is relation or link
 
@@ -538,6 +538,7 @@ window.hWin.HEURIST4.query = {
                         res.push(qp);
                     }
 
+                    //for facet queries direction will be reverted
                     let fld = code[idx-1]; //link field
                     if(fld.indexOf('lf')==0){
                         pref = 'linked_to';    
@@ -548,9 +549,13 @@ window.hWin.HEURIST4.query = {
                     }else if(fld.indexOf('rt')==0){
                         pref = respect_relation_direction?'relatedfrom':'related';
                     }
+                     
+                    if(depth==0){
+                        result['relation_direction'] = pref;
+                    }
 
                     qp = {};
-                    qp[pref+':'+fld.substr(2)] = __crt(idx-2);    
+                    qp[pref+':'+fld.substr(2)] = __crt(idx-2, depth+1);    
                     res.push(qp);
                 }else{ //this is simple field
                     res = '$IDS';
@@ -561,7 +566,7 @@ window.hWin.HEURIST4.query = {
             /*if(code.length-2 == 0){
             res['facet'] = {ids:'$IDS'};
             }else{}*/
-            result['facet'] = __crt( code.length-2 );
+            result['facet'] = __crt( code.length-2, 0 );
         }
 
         code.pop();

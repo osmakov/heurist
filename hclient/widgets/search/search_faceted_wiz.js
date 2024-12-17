@@ -1838,6 +1838,13 @@ $.widget( "heurist.search_faceted_wiz", {
                     
                 }
                 
+                if(facets[k].code.indexOf(':rt')>0 || facets[k].code.indexOf(':rf')>0){
+                    sGroupBy = sGroupBy
+                        +'<label><input type="checkbox" data-direction="1" data-id="'
+                        + idd+'" style="vertical-align: middle;margin-left:16px">'
+                        + window.hWin.HR("Respect relation direction")+"</label>";
+                }
+                
                 if(includeDropdown){
                     sContent = sContent + '<button label="dropdown" class="btnset_radio" data-idx="'+idd+'" data-value="1" data-type="dropdown"/>';
                 }
@@ -1930,7 +1937,7 @@ $.widget( "heurist.search_faceted_wiz", {
                 listdiv.find('input[data-sort="desc"][data-id="'+idd+'"]').prop('checked', (facets[k].orderby=='desc'));
                 listdiv.find('input[data-search="between"][data-id="'+idd+'"]').prop('checked', (facets[k].srange=='between'));
                 listdiv.find('input[data-search="text"][data-id="'+idd+'"]').prop('checked', (facets[k].srange=='text'));
-
+                listdiv.find('input[data-direction][data-id="'+idd+'"]').prop('checked', (facets[k].relation=='directed'));
                
                 listdiv.find('button.btnset_radio[data-idx="'+idd+'"]').removeClass('ui-heurist-btn-header1');
 
@@ -2077,7 +2084,6 @@ $.widget( "heurist.search_faceted_wiz", {
             }});
             
             this._on( listdiv.find('input[data-search]'), {change: function(e){
-                this._assignFacetParams();
                 this._refresh_FacetsPreview();
             }});
             
@@ -2120,8 +2126,14 @@ $.widget( "heurist.search_faceted_wiz", {
                     this.options.params.facets[k].trm_tree = false;
                 }
                 this.options.params.facets[k].isfacet = facet;
-
                 this.options.params.facets[k].orderby = null;    
+                
+                if(listdiv.find('input[data-direction][data-id="'+idd+'"]').is(':checked')){
+                    this.options.params.facets[k].relation = 'directed';    
+                }else{
+                    this.options.params.facets[k].relation = null;    
+                }
+                
                 if(listdiv.find('input[data-sort="count"][data-id="'+idd+'"]').is(':checked'))
                 {
                     this.options.params.facets[k].orderby = 'count';    
@@ -2169,9 +2181,6 @@ $.widget( "heurist.search_faceted_wiz", {
     // old version it updates parms only (from UI to options.params)
     //
     ,_refresh_FacetsPreview: function(){
-        
-        this._assignFacetParams();
-        this._defineDomain();
 
         if( this.facetPreview_reccount < 10000 ){
             this._refresh_FacetsPreviewReal();
@@ -2186,6 +2195,9 @@ $.widget( "heurist.search_faceted_wiz", {
     //
     ,_refresh_FacetsPreviewReal: function(){
 
+        this._assignFacetParams();
+        this._defineDomain();
+        
         let listdiv = $(this.step3).find("#facets_preview2");
 
         let noptions = { query_name:"test", params: JSON.parse(JSON.stringify(this.options.params)), ispreview: true}

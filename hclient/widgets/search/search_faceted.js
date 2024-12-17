@@ -157,7 +157,7 @@ $.widget( "heurist.search_faceted", {
         svs_ID: null,
         onclose: null,// callback
         is_publication: false,
-        respect_relation_direction: false,
+        respect_relation_direction: false, //global otherwise use facet.relation=='directed'
         language: 'def',  //use default
 
         hide_no_value_facets: true, // hide facets with no values, default true
@@ -588,14 +588,16 @@ $.widget( "heurist.search_faceted", {
 
             //value is defined - it will be used to create query
             if( !window.hWin.HEURIST4.util.isnull(field['var']) && field['code']){
+                
                 //1. creates query to retrieve facet values
                 let res = window.hWin.HEURIST4.query.createFacetQuery(field['code'], 
                                                     (field['isfacet']!=that._FT_INPUT),
-                                                    that.options.respect_relation_direction);
+                that.options.respect_relation_direction || field['relation']=='directed');
+
                 field['id'] = res['id']; //last id in the code - dty_ID
                 field['rtid'] = res['rtid'];
                 if(res['facet']) field['facet'] = res['facet'];
-                
+                if(res['relation_direction']){ field['relation_direction'] = res['relation_direction']; } //to be send to server
                 //
                 // 2. creates main JSON query
                 //
@@ -663,9 +665,9 @@ $.widget( "heurist.search_faceted", {
                     let slink = null;
 
                     if(linktype=='rt'){
-                        slink = (that.options.respect_relation_direction?'related_to':'related')+':';
+                        slink = (that.options.respect_relation_direction || field['relation']=='directed'?'related_to':'related')+':';
                     }else if(linktype=='rf'){
-                        slink = (that.options.respect_relation_direction?'relatedfrom':'related')+':'; 
+                        slink = (that.options.respect_relation_direction || field['relation']=='directed'?'relatedfrom':'related')+':'; 
                     }else if(linktype=='lt'){
                         slink = "linked_to:";
                     }else if(linktype=='lf'){
@@ -706,7 +708,7 @@ $.widget( "heurist.search_faceted", {
 
             }
         });
-
+        
         this.options.params['q'] = mainquery;
     }
 
@@ -1818,7 +1820,7 @@ let s_time = new Date().getTime() / 1000;
             // Re-display all facets
             this.facets_list.find("[id^='fv_']").show();
             
-            this._current_recordset_ids = this._currentRecordset.getMainSet().join(',');
+            this._current_recordset_ids = this._currentRecordset?.getMainSet().join(',');
         }
         if(this._terminateFacetCalculation){
             field_index  = this.options.params.facets.length;
@@ -1841,7 +1843,9 @@ let s_time = new Date().getTime() / 1000;
                 
                 let subs_value = null; //either initial query OR rectype+current result set
                 
-                if(this.options.params.ui_temporal_filter_initial || this._isInited || (field.multisel && field.selectedvalue!=null)){ 
+                if(this.options.params.ui_temporal_filter_initial || this._isInited ||
+                     this._current_recordset_ids == null ||
+                     (field.multisel && field.selectedvalue!=null)){ 
                     //replace with current query   - @todo check for empty 
                     subs_value = window.hWin.HEURIST4.query.mergeHeuristQuery(this._first_query, 
                                     (this._use_sup_filter)?this.options.params.sup_filter:'',
@@ -1852,7 +1856,7 @@ let s_time = new Date().getTime() / 1000;
                     
                     //replace with list of ids
                     subs_value = window.hWin.HEURIST4.query.mergeHeuristQuery(this._first_query,
-                                        {ids:this._currentRecordset.getMainSet().join(',')});
+                                        {ids:this._current_recordset_ids});
                     
                 }
                 
@@ -1908,7 +1912,7 @@ let s_time = new Date().getTime() / 1000;
                 let query, needcount = 2;
                 if( (typeof field['facet'] === 'string') && (field['facet'] == '$IDS') ){ //this is field form target record type
                 
-                    if(this.options.params.ui_temporal_filter_initial || this._isInited){
+                    if(this.options.params.ui_temporal_filter_initial || this._isInited || this._current_recordset_ids==null){
                         //replace with current query   - @todo check for empty 
                         query = this._first_query;
 
@@ -1944,7 +1948,6 @@ let s_time = new Date().getTime() / 1000;
                 // it is combination of a) currect first query plus ids of result OR first query plus supplementary filters
                 // b) facets[i].query  with replacement of $Xn to value
                 count_query = window.hWin.HEURIST4.query.mergeHeuristQuery(subs_value, count_query)
-
                 
                
                 this._fillQueryWithValues( count_query, field['multisel']?-1:i );
@@ -1993,7 +1996,7 @@ let s_time = new Date().getTime() / 1000;
                 }else if(fieldid==1  && that._use_multifield){
                     fieldid = '1,18,231,304';
                 }
-                
+
                 let request = {q: query, count_query:count_query, w: 'a', a:'getfacets',
                                      facet_index: i, 
                                      field:  fieldid,
@@ -2003,6 +2006,7 @@ let s_time = new Date().getTime() / 1000;
                                      facet_groupby: field['groupby'], //by first char for freetext, by year for dates, by level for enum
                                      vocabulary_id: vocabulary_id, //special case for firstlevel group - got it from field definitions
                                      needcount: needcount,         
+                                     relation_direction: field['relation_direction'],
                                      qname:this.options.query_name,
                                      request_id:this._request_id,
                                      source:this.element.attr('id') }; //, facets: facets
@@ -2116,6 +2120,8 @@ let s_time = new Date().getTime() / 1000;
     //
     , _redrawFacets: function( response, keep_cache ) {
         
+            let that = this;
+        
                 if(this.options.params.viewport==0){
                     this.options.params.viewport = Number.MAX_SAFE_INTEGER;
                 }else if(!(this.options.params.viewport>0)){
@@ -2135,7 +2141,8 @@ let s_time = new Date().getTime() / 1000;
                     
                     let $input_div = $(this.element).find("#fv_"+field['var']);
                     let needsDropdown = false;
-                   
+
+                    this.options.params.facets[facet_index]['suppress_counts'] = (response['suppress_counts']===true);
 
                     //create fasets container if it does not exists
                     let $facet_values = $input_div.find('.facets');
@@ -2298,7 +2305,7 @@ let s_time = new Date().getTime() / 1000;
                         function __calcTerm(term, level, groupby){
                             
                             let res_count = 0;
-                            term.supress_count_draw = false;
+                            term.suppress_count_draw = false;
                             
                             if(window.hWin.HEURIST4.util.isArrayNotEmpty(term.children)){ //is root or has children
 
@@ -2313,7 +2320,7 @@ let s_time = new Date().getTime() / 1000;
                                     }
                                 }
                                 
-                                term.supress_count_draw = (ch_cnt==1);
+                                term.suppress_count_draw = (that.options.params.ui_counts_mode=='none') || (ch_cnt==1);
                                 
                                 //
                                 // some of children have counts 
@@ -2423,7 +2430,7 @@ let s_time = new Date().getTime() / 1000;
                        
                         //calculate the total number of terms with value
                         let tot_cnt = __calcTerm(term, 0, field['groupby']);
-                        term.supress_count_draw = true; //for root
+                        term.suppress_count_draw = true; //for root
                         let as_list = (field['isfacet']==this._FT_COLUMN || field['isfacet']==this._FT_LIST);    //is list
                                             //is dropdown but too many entries
 //this feature is remarked on 2017-01-26 || (field['isfacet']==2 && tot_cnt > that._MIN_DROPDOWN_CONTENT)); 
@@ -2530,7 +2537,7 @@ let s_time = new Date().getTime() / 1000;
                                 let rtID = cterm[0];
                                 let f_link = this._createFacetLink(facet_index, 
                                     {title:$Db.rty(rtID,'rty_Name'), query:rtID, count:cterm[1]}, 'inline-block');
-                                $("<div>").css({"display":"inline-block","padding":"0px"})
+                                $("<div>").css({"display":"inline-block","padding-right":"5px"})
                                   .addClass('facet-item')
                                   .append(f_link).appendTo($facet_values);
                             }
@@ -3417,9 +3424,10 @@ let s_time = new Date().getTime() / 1000;
                                 && !window.hWin.HEURIST4.util.isnull(field['selectedvalue'])){
                         
                                     let cterm = field.selectedvalue;
-                                    let f_link = this._createFacetLink(facet_index, {title:cterm.title, value:cterm.value, count:'reset'}, 'block');
+                                    let f_link = this._createFacetLink(facet_index, 
+                                            {title:cterm.title, value:cterm.value, count:'reset'}, 'block');
                         
-                        let ditem = $("<div>").css({'display':'block',"padding":"0px"})
+                        let ditem = $("<div>").css({'display':'block',"padding-right":"0px"})
                                                 .addClass('facet-item')
                                                 .append(f_link).appendTo($facet_values);
                     }
@@ -3608,7 +3616,9 @@ let s_time = new Date().getTime() / 1000;
                 }
                 
                 let ditem = $("<div>").css({'display':(this.terms_drawn>this.options.params.viewport?'none':display_mode),
-                                'padding':"0 0px 0 "+((level-1)*10)+"px"})
+                                'padding':'0px '
+                                + (display_mode=='block'?'0':'5')
+                                + 'px 0px '+((level-1)*10)+'px'})
                         .addClass('facet-item')        
                         .append(f_link)
                         .appendTo($container);
@@ -3812,12 +3822,13 @@ let s_time = new Date().getTime() / 1000;
 
     ,_createOption: function(facet_index, indent, cterm){
 
-        let hist = this.options.params.facets[facet_index].history;
+        let field = this.options.params.facets[facet_index];
+        let hist = field.history;
         if(!hist) hist = [];
         let step = hist.length+1;
         
         let lbl = cterm.title; //(new Array( indent + 1 ).join( " . " )) + 
-        if(cterm.count>0){
+        if(cterm.count>0 && this.options.params.ui_counts_mode!='none' && field['suppress_counts']!==true){
             lbl =  lbl + " ("+cterm.count+")";
         } 
 
@@ -3871,7 +3882,7 @@ let s_time = new Date().getTime() / 1000;
                 content_max_width = 250;
             }
         } 
-
+                
         let field = this.options.params.facets[facet_index];
        
         let hist = field.history;
@@ -3939,7 +3950,7 @@ let s_time = new Date().getTime() / 1000;
             let txt = '';
             if(cterm.count=='reset'){
                 txt = 'X';
-            }else if(cterm.count>0 && cterm.supress_count_draw!==true){
+            }else if(cterm.count>0 && cterm.suppress_count_draw!==true && field['suppress_counts']!==true){
                 txt = cterm.count;
             }
             

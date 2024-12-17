@@ -385,6 +385,7 @@ function recordSearchFacets($system, $params){
     $ft_Select = 1;
     $ft_List = 2;
     $ft_Column = 3;
+    $suppress_counts = false;
 
     $mysqli = $system->getMysqli();
 
@@ -677,20 +678,35 @@ function recordSearchFacets($system, $params){
                 $qclauses["where"] = 'dt0.rdi_RecID IN ('.$recIDs.')';
                 
             }else */
-            if($params['needcount']==1){
+            if(@$params['needcount']!=2){
 
                 $select_clause = "SELECT $select_field as rng, count(DISTINCT r0.rec_ID) as cnt ";
                 if($grouporder_clause==""){
                     $grouporder_clause = " GROUP BY $select_field ORDER BY $select_field";
                 }
 
-            }else{ //count for related  if($params['needcount']==2)
+            }else{ //count for related records (in both directions) if($params['needcount']==2)
 
                 $tab = 'r0';
                 while(strpos($qclauses["from"], 'Records '.$tab.'_0')>0){
                     $tab = $tab.'_0';
                 }
-                $select_clause = "SELECT $select_field as rng, count(DISTINCT ".$tab.".rec_ID) as cnt ";
+                $recordID_field = $tab.'.rec_ID';
+                
+                if( strpos($qclauses["from"], 'recLinks rl0x1')>0 ){
+                    if(@$params['relation_direction']=='relatedfrom'){
+                        $recordID_field = 'rl0x1.rl_SourceID';
+                    }elseif(@$params['relation_direction']=='related_to'){
+                        $recordID_field = 'rl0x1.rl_TargetID';
+                    }elseif(@$params['relation_direction']=='related'){
+                        //not directional - suppress counts in ui
+                        //due to complexity of query and it is not possible to find facet count for both-directions relationship
+                        //@todo - possible solution use relmarker field id in recLinks
+                        $suppress_counts = true;
+                    }
+                }
+                
+                $select_clause = "SELECT $select_field as rng, count(DISTINCT $recordID_field) as cnt ";
 
                 if($grouporder_clause==""){
                     $grouporder_clause = " GROUP BY $select_field ORDER BY $select_field";
@@ -811,7 +827,8 @@ error_log(($time_end - $time_start)/60);
 
             $response = array("status"=>HEURIST_OK, "data"=> $data, "svs_id"=>@$params['svs_id'],
                 "request_id"=>@$params['request_id'], //'dbg_query'=>$query,
-                "facet_index"=>@$params['facet_index']);
+                "facet_index"=>@$params['facet_index'],
+                'suppress_counts'=>$suppress_counts);
                 //'q'=>$params['q'], 'count_query'=>$count_query );
             $res->close();
         }
