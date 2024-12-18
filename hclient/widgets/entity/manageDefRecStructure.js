@@ -1683,20 +1683,6 @@ console.log('onEditFormChange @todo check buttons!!!');
             
             this.editForm.show();
             this._editing.setFocus();
-            
-           
-            
-            // Temporary Solution: Sometimes, after using the 'Add new base field' popup, the requirement type dropdown loads incorrectly
-            // The menu widget is loaded behind the record editor popup and lacks the populate highlight for the hover event on menu options
-            let requirement_sel = this._editing.getFieldByName('rst_RequirementType').find('select');
-            if(requirement_sel.hSelect('instance') != undefined){
-                window.hWin.HEURIST4.ui.initHSelect(requirement_sel.get(0), false);
-            }
-            let vis_sel = this._editing.getFieldByName('rst_NonOwnerVisibility').find('select');
-            if(vis_sel.hSelect('instance') != undefined){
-                window.hWin.HEURIST4.ui.initHSelect(vis_sel.get(0), false);
-            }
-
         }
             
         //----------
@@ -2009,6 +1995,16 @@ console.log('onEditFormChange @todo check buttons!!!');
         
         this._super();
         
+        $.each(this.editForm.find('select'), (idx, select) => {
+            select = $(select);
+            if(select.hSelect('instance') === undefined){
+                return;
+            }
+
+            select.hSelect('destroy');
+            window.hWin.HEURIST4.ui.initHSelect(select, false);
+        });
+
         //change default styles
         this.editForm.find('.text').css({background: '#ECF1FB'});
         this.editForm.find('.entity_selector').css({background: '#ECF1FB'});

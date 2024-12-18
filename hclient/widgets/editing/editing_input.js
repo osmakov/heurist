@@ -89,6 +89,8 @@ $.widget( "heurist.editing_input", {
         callback: null
     }, // pre-select a record target, possible relation type and setup a callback for relmarkers handled from external lookup
 
+    _isForRecords: false, // is the current entity Records (i.e. the Record Editor)
+
     // the constructor
     _create: function() {
 
@@ -158,7 +160,9 @@ $.widget( "heurist.editing_input", {
             this.configMode= {entity:'records'};
         }
 
-        this.isFileForRecord = (this.detailType=='file' && this.configMode.entity=='records');
+        this._isForRecords = this.options?.recordset?.entityName == 'Records' || this.configMode?.entity == 'records';
+
+        this.isFileForRecord = (this.detailType=='file' && this._isForRecords);
         if(this.isFileForRecord){
             this.configMode = {
                     entity:'recUploadedFiles',
@@ -236,7 +240,7 @@ $.widget( "heurist.editing_input", {
                     .appendTo( this.element );
 
                 //translation for text field only    
-                let rec_translate = this.options?.recordset?.entityName == 'Records' && !is_translation
+                let rec_translate = this._isForRecords && !is_translation
                                     && (this.detailType == 'freetext' || this.detailType == 'blocktext');
 
                 let styles = {
@@ -399,7 +403,7 @@ $.widget( "heurist.editing_input", {
             
             
             if(this.options.dtID != 'rst_DefaultValue_resource'){
-                if(this.detailType=="resource" && this.configMode.entity=='records'){
+                if(this.detailType=="resource" && this._isForRecords){
                     
                     $('<div style="float:right;padding-top:1px;width: 14px;"><span class="ui-icon ui-icon-triangle-1-e"></span></div>')                
                         .appendTo( this.header );
@@ -480,7 +484,7 @@ $.widget( "heurist.editing_input", {
         // Add extended description, if available, viewable via clicking more... and collapsible with less...
         let extend_help_text = window.hWin.HEURIST4.util.htmlEscape(this.f('rst_DisplayExtendedDescription'));
         if(help_text && !this.options.suppress_prompts 
-            && extend_help_text && this.options?.recordset?.entityName == 'Records'){
+            && extend_help_text && this._isForRecords){
 
             let $extend_help_eles = $("<span id='show_extended' style='color:blue;cursor:pointer;'> more...</span>"
                 + "<span id='extended_help' style='display:none;font-style:italic;'><br>"+ extend_help_text +"</span>"
@@ -594,7 +598,7 @@ $.widget( "heurist.editing_input", {
 
             this.input_cell.attr('title', 'This field has been marked as non-editable');
 
-            if(this.options?.recordset?.entityName == 'Records'){
+            if(this._isForRecords){
                 $('<span>', {text: 'Read-only field', style: 'color: limegreen; cursor: default; padding-left: 20px;'}).insertAfter(this.input_cell);
             }
         }
@@ -869,7 +873,7 @@ $.widget( "heurist.editing_input", {
         let dwidth = this.f('rst_DisplayWidth');
         dwidth = parseFloat(dwidth) > 0 ? Math.round(parseFloat(dwidth)) : 600;
 
-        let units = this.options.recordset && this.options.recordset.entityName == 'Records' ? 'ch' : 'ex';
+        let units = this._isForRecords ? 'ch' : 'ex';
         let $parent_container = this.inputs.length > 0 ? $(this.inputs[0]).parents('.editForm.recordEditor') : [];
 
         //auto width
@@ -1055,7 +1059,7 @@ $.widget( "heurist.editing_input", {
                 
                 let $btn_edit_switcher;
 
-                if(this.options?.recordset?.entityName == 'Records'){
+                if(this._isForRecords){
 
                     let $clear_container = $('<span id="btn_clear_container"></span>').appendTo( $inputdiv );
 
@@ -1612,7 +1616,7 @@ $.widget( "heurist.editing_input", {
         if(this.detailType=='enum' || this.detailType=='relationtype'){//--------------------------------------
 
             let dwidth;
-            if(this.configMode && this.configMode.entity!='records'){
+            if(!this._isForRecords){
                 dwidth = this.f('rst_DisplayWidth');
                 if(parseFloat(dwidth)>0){
                     dwidth = dwidth+'ex';
@@ -1727,8 +1731,6 @@ $.widget( "heurist.editing_input", {
 
                     browseTerms(this, $input, value);
 
-                    
-                    
                     $input.hSelect({
                         'open': (e) => {
                             window.hWin.HEURIST4.util.stopEvent(e);
@@ -1868,7 +1870,7 @@ $.widget( "heurist.editing_input", {
             }//allow edit terms only for true defTerms enum
             
             // Display term selector as radio buttons/checkboxes
-            let asButtons = this.options.recordset && this.options.recordset.entityName=='Records' && this.f('rst_TermsAsButtons') == 1;
+            let asButtons = this._isForRecords && this.f('rst_TermsAsButtons') == 1;
             if(asButtons && this.child_terms  && this.child_terms.length<=20){
 
                     this.enum_buttons = (Number(this.f('rst_MaxValues')) != 1) ? 'checkbox' : 'radio';
@@ -2282,7 +2284,7 @@ $.widget( "heurist.editing_input", {
                 
 
         }
-        else if(this.detailType=='resource' && this.configMode.entity=='records'){//---------------------------------
+        else if(this.detailType=='resource' && this._isForRecords){//---------------------------------
 
             /*
             if(value=='' && this.element.find('.sel_link2').is(':visible')){
@@ -2713,7 +2715,7 @@ $.widget( "heurist.editing_input", {
 
                 let css = 'display: block; font-size: 0.8em; color: #999999; padding: 0.3em 0px;';
 
-                if(this.options.recordset?.entityName=='Records' && this.element.find('.extra_help').length == 0){
+                if(this._isForRecords && this.element.find('.extra_help').length == 0){
                     // Add additional controls to insert yesterday, today or tomorrow
 
                     let $help_controls = $('<div>', { style: css, class: 'extra_help' })
@@ -2793,21 +2795,21 @@ $.widget( "heurist.editing_input", {
                             rec_ID: f_id,
                             default_palette_class: 'ui-heurist-populate',
                             width: 950,
-                            onClose: function(recset){
+                            onClose: function(recordset){
 
                                 // update external reference, if necessary
-                                if(window.hWin.HEURIST4.util.isRecordSet(recset)){
+                                if(window.hWin.HEURIST4.util.isRecordSet(recordset)){
 
-                                    let record = recset.getFirstRecord();
+                                    let record = recordset.getFirstRecord();
 
                                     let newvalue = {
-                                        ulf_ID: recset.fld(record,'ulf_ID'),
-                                        ulf_ExternalFileReference: recset.fld(record,'ulf_ExternalFileReference'),
-                                        ulf_OrigFileName: recset.fld(record,'ulf_OrigFileName'),
-                                        ulf_MimeExt: recset.fld(record,'fxm_MimeType'),
-                                        ulf_ObfuscatedFileID: recset.fld(record,'ulf_ObfuscatedFileID'),
-                                        ulf_Caption: recset.fld(record,'ulf_Caption'),
-                                        ulf_WhoCanView: recset.fld(record,'ulf_WhoCanView')
+                                        ulf_ID: recordset.fld(record,'ulf_ID'),
+                                        ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
+                                        ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
+                                        ulf_MimeExt: recordset.fld(record,'fxm_MimeType'),
+                                        ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
+                                        ulf_Caption: recordset.fld(record,'ulf_Caption'),
+                                        ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
                                     };
 
                                     that.newvalues[$input.attr('id')] = newvalue;
@@ -3145,27 +3147,25 @@ $.widget( "heurist.editing_input", {
                     default_palette_class: 'ui-heurist-populate',
                     onselect:function(event, data){
 
-                    if(data){
-                        
-                            if( window.hWin.HEURIST4.util.isRecordSet(data.selection) ){
-                                let recordset = data.selection;
-                                let record = recordset.getFirstRecord();
-                                
-                                let newvalue = {
-                                    ulf_ID: recordset.fld(record,'ulf_ID'),
-                                    ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
-                                    ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
-                                    ulf_MimeExt: recordset.fld(record,'fxm_MimeType'),
-                                    ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
-                                    ulf_Caption: recordset.fld(record,'ulf_Caption'),
-                                    ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
-                                };
-                                
-                                that.newvalues[$input.attr('id')] = newvalue;
-                                that._findAndAssignTitle($input, newvalue);
-                            }
-                        
-                    }//data
+                        if(data && window.hWin.HEURIST4.util.isRecordSet(data.selection)){
+
+                            let recordset = data.selection;
+                            let record = recordset.getFirstRecord();
+
+                            let newvalue = {
+                                ulf_ID: recordset.fld(record,'ulf_ID'),
+                                ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
+                                ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
+                                ulf_MimeExt: recordset.fld(record,'fxm_MimeType'),
+                                ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
+                                ulf_Caption: recordset.fld(record,'ulf_Caption'),
+                                ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
+                            };
+
+                            that.newvalues[$input.attr('id')] = newvalue;
+                            that._findAndAssignTitle($input, newvalue);
+
+                        }//data
 
                     }
                 };//popup_options
@@ -4144,7 +4144,7 @@ $.widget( "heurist.editing_input", {
     						
                         }
     					
-                        if(that.detailType=="resource" && that.configMode.entity=='records' 
+                        if(that.detailType=="resource" && that._isForRecords
                                 && that.f('rst_CreateChildIfRecPtr')==1){
                             that._clearChildRecordPointer( input_id );
                         }else{
@@ -4276,7 +4276,7 @@ $.widget( "heurist.editing_input", {
         let vis_mode = this.f('rst_NonOwnerVisibility');
 
         if(this.options.showedit_button && this.detailType!="relmarker" &&
-           this.options?.recordset?.entityName == 'Records' && 
+           this._isForRecords && 
            !window.hWin.HEURIST4.util.isempty(vis_mode))
         {
         
@@ -4668,24 +4668,25 @@ $.widget( "heurist.editing_input", {
                         
                         window.hWin.HAPI4.EntityMgr.doRequest(request,
                             function(response){
-                                if(response.status == window.hWin.ResponseStatus.OK){
+                                if(response.status != window.hWin.ResponseStatus.OK){
+                                    return;
+                                }
 
-                                    let recordset = new HRecordSet(response.data);
-                                    let record = recordset.getFirstRecord();
+                                let recordset = new HRecordSet(response.data);
+                                let record = recordset.getFirstRecord();
 
-                                    if(record){
-                                        let newvalue = {
-                                            ulf_ID: recordset.fld(record,'ulf_ID'),
-                                            ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
-                                            ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
-                                            ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
-                                            ulf_Caption: recordset.fld(record,'ulf_Caption'),
-                                            ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
-                                        };
+                                if(record){
+                                    let newvalue = {
+                                        ulf_ID: recordset.fld(record,'ulf_ID'),
+                                        ulf_ExternalFileReference: recordset.fld(record,'ulf_ExternalFileReference'),
+                                        ulf_OrigFileName: recordset.fld(record,'ulf_OrigFileName'),
+                                        ulf_ObfuscatedFileID: recordset.fld(record,'ulf_ObfuscatedFileID'),
+                                        ulf_Caption: recordset.fld(record,'ulf_Caption'),
+                                        ulf_WhoCanView: recordset.fld(record,'ulf_WhoCanView')
+                                    };
 
-                                        that.newvalues[ele.attr('id')] = newvalue;
-                                        that._findAndAssignTitle(ele, newvalue, selector_function);
-                                    }
+                                    that.newvalues[ele.attr('id')] = newvalue;
+                                    that._findAndAssignTitle(ele, newvalue, selector_function);
                                 }
                             });
                  }
@@ -4695,7 +4696,7 @@ $.widget( "heurist.editing_input", {
             
             window.hWin.HEURIST4.ui.setValueAndWidth(ele, value, 10);
             
-        }else if(this.configMode.entity==='records'){     //RECORD
+        }else if(this._isForRecords){     //RECORD
         
                 let isChildRecord = that.f('rst_CreateChildIfRecPtr');
         
@@ -4791,29 +4792,29 @@ $.widget( "heurist.editing_input", {
                 ele.parent().find('.sel_link2').show();
                 
             }else{
-                window.hWin.HAPI4.EntityMgr.getTitlesByIds(this.configMode.entity, value,
-                   function( display_value ){
-                       ele.empty();
-                       let hasValues = false;
-                       if(display_value && display_value.length>0){
-                           for(let i=0; i<display_value.length; i++){
-                               if(display_value[i]){
-                                    $('<div class="link-div">'+display_value[i]+'</div>').appendTo(ele);     
-                                    hasValues = true;
-                               }
-                           }
-                       }
-                       if(hasValues){
-                           ele.show();
-                           ele.parent().find('.sel_link').show();
-                           ele.parent().find('.sel_link2').hide();
-                       }else{
-                           ele.hide();
-                           ele.parent().find('.sel_link').hide();
-                           ele.parent().find('.sel_link2').show();
-                       }
-                       
-                   });
+                window.hWin.HAPI4.EntityMgr.getTitlesByIds(this.configMode.entity, value, function(display_value){
+
+                    ele.empty();
+                    let hasValues = false;
+                    if(display_value?.length > 0 && value[0] !== '0'){
+                        for(let i = 0; i < display_value.length; i++){
+                            if(display_value[i]){
+                                $('<div class="link-div">'+display_value[i]+'</div>').appendTo(ele);     
+                                hasValues = true;
+                            }
+                        }
+                    }
+                    if(hasValues){
+                        ele.show();
+                        ele.parent().find('.sel_link').show();
+                        ele.parent().find('.sel_link2').hide();
+                    }else{
+                        ele.hide();
+                        ele.parent().find('.sel_link').hide();
+                        ele.parent().find('.sel_link2').show();
+                    }
+
+                });
             }
         }
         
@@ -6504,7 +6505,7 @@ $.widget( "heurist.editing_input", {
         let that = this;
 
         this.child_terms = $Db.trm_TreeData(vocab_id, 'set'); //refresh
-        let asButtons = this.options.recordset && this.options.recordset.entityName=='Records' && this.f('rst_TermsAsButtons') == 1;
+        let asButtons = this._isForRecords && this.f('rst_TermsAsButtons') == 1;
 
         if(asButtons && this.child_terms.length <= 20){ // recreate buttons/checkboxes
 
