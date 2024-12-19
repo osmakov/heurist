@@ -739,5 +739,114 @@ class USystem {
         return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
         -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));        
     }
+
+    //
+    // Functions to check if webstites are dummies or worth referencing
+    //
+
+    // Uses cURL to fetch HTML page content.
+    function fetchPageContent($url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $content = curl_exec($ch);
+        curl_close($ch);
+        return $content;
+    }
+
+    // Extracts links from HTML page using DOMDocument.
+    function extractLinks($url, $content) {
+        $dom = new DOMDocument();
+        @$dom->loadHTML($content);
+        $links = [];
+
+        foreach ($dom->getElementsByTagName('a') as $link) {
+            $href = $link->getAttribute('href');
+
+            // Convert relative URLs to absolute URLs.
+            if (!filter_var($href, FILTER_VALIDATE_URL)) {
+                $href = rtrim($url, '/') . '/' . ltrim($href, '/');
+            }
+
+            // Add only valid URLs.
+            if (filter_var($href, FILTER_VALIDATE_URL)) {
+                $links[] = $href;
+            }
+        }
+
+        return array_unique($links);
+    }
+
+    // Crawls the pages of a website from a "startpoint" URL and checks for content.
+    function analyzeSite($startUrl) {
+        $visited = [];
+        $toVisit = [$startUrl];
+        $emptyPages = 0;
+
+        while (!empty($toVisit)) {
+            $url = array_shift($toVisit);
+
+            if (in_array($url, $visited)) {
+                continue;
+            }
+
+            echo "Counting characters: $url\n";
+            $content = fetchPageContent($url);
+            $charCount = strlen(strip_tags($content));
+
+            if ($charCount < 500) {
+                $emptyPages++;
+            }
+
+            $visited[] = $url;
+            $links = extractLinks($url, $content);
+
+            foreach ($links as $link) {
+                if (!in_array($link, $visited) && !in_array($link, $toVisit)) {
+                    $toVisit[] = $link;
+                }
+            }
+        }
+
+        return $emptyPages;
+    }
+
+    // Checks pages for specific dummy strings.
+    function isDummy($startUrl) {
+        $visited = [];
+        $toVisit = [$startUrl];
+        $dummyPages = 0;
+
+        while (!empty($toVisit)) {
+            $url = array_shift($toVisit);
+
+            if (in_array($url, $visited)) {
+                continue;
+            }
+
+            echo "Browsing: $url\n";
+            $content = fetchPageContent($url);
+            $contentAsString = strip_tags($content);
+
+            // Check for specific dummy content markers.
+            if (strpos($contentAsString, "UNCONFIGURED TITLE") !== false ||
+                strpos($contentAsString, "Use this page to provide contact and location information for the project.") !== false ||
+                strpos($contentAsString, "Please retain this page in your websiteE") !== false) {
+                $dummyPages++;
+            }
+
+            $visited[] = $url;
+            $links = extractLinks($url, $content);
+
+            foreach ($links as $link) {
+                if (!in_array($link, $visited) && !in_array($link, $toVisit)) {
+                    $toVisit[] = $link;
+                }
+            }
+        }
+
+        return $dummyPages;
+    }
 }
 

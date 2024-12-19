@@ -37,37 +37,47 @@
     - Last record update and last structure update
 */
 
-define('DBPAGES_DIR','db-html-pages');
+// Define the database pages directory (DBPAGES_DIR constant) as "db-html-pages"
+define('DBPAGES_DIR', 'db-html-pages');
 
 // Default values for arguments
-$arg_database = null; // databases
-$eol = "\n";
-$tabs = "\t\t";
-$tabs0 = '';
+$arg_database = null; // Database names or paths??
+$eol = "\n"; // End-of-line character (default for CLI)
+$tabs = "\t\t"; // Default tab spacing for formatting
+$tabs0 = ''; // Initial tab value?? 
 
-if (@$argv) {
-
-    // handle command-line queries
-    $ARGV = array();
-    $i = 0;
-    while ($i < count($argv)) {
-        if ($argv[$i][0] === '-') {
-            if (@$argv[$i + 1] && $argv[$i + 1][0] != '-') {
-                $ARGV[$argv[$i]] = $argv[$i + 1];
-                ++$i;
-            } elseif(strpos($argv[$i],'-db=')===0){
-                $ARGV['-db'] = substr($argv[$i],4);
-            }
-        } else {
-            array_push($ARGV, $argv[$i]);
-        }
-        ++$i;
-    }
-
-    if (@$ARGV['-db']) {$arg_database = explode(',', $ARGV['-db']);}
-
-}else{
-    /*web browser
+// Check if the script is run from the command line
+if (isset($argv)) {
+	$ARGV = []; // Stores parsed command-line arguments
+	$i = 0;
+	
+	// Parse command-line arguments
+	while ($i < count($argv)) {
+		// Handle arguments starting with '-'
+		if ($argv[$i][0] === '-') {
+			// Check for arguments with values, e.g., -key value
+			if (isset($argv[$i + 1]) && $argv[$i + 1][0] !== '-') {
+				$ARGV[$argv[$i]] = $argv[$i + 1];
+				++$i; // Skip the next value as it's already assigned
+			} 
+				
+			// Handle inline argument formats like -db=value
+			elseif (strpos($argv[$i], '-db=') === 0) {
+				$ARGV['-db'] = substr($argv[$i], 4);
+			}
+		} else {
+			// Add standalone arguments to the list
+			$ARGV[] = $argv[$i];
+		}
+		++$i;
+	}
+	
+	// Parse the database argument (-db)
+	if (isset($ARGV['-db'])) {
+		$arg_database = explode(',', $ARGV['-db']);
+	}
+} else {
+	/*web browser
     $eol = "</div><br>";
     $tabs0 = '<div style="min-width:300px;display:inline-block;">';
     $tabs = DIV_E.$tabs0;
@@ -75,51 +85,65 @@ if (@$argv) {
     if(array_key_exists('db', $_REQUEST)){
         $arg_database = explode(',',$_REQUEST['db']);
     }*/
-    exit('This function is for command line execution');
+
+	exit('This function is for command line execution');
 }
 
-define('HEURIST_DIR', dirname(__FILE__).'/../../');
+// Define base directory
+define('HEURIST_DIR', dirname(__FILE__) . '/../../');
 
+// Import necessary utilities and functions
 use hserv\utilities\USystem;
 
-require_once dirname(__FILE__).'/../../autoload.php';
+// Include the autoloader to load classes and interfaces if they are currently not defined (by include/require).
+require_once HEURIST_DIR . 'autoload.php';
 
-require_once dirname(__FILE__).'/../../hserv/records/search/recordFile.php';
+// Include the file that's handling functions for recUploadedFiles
+require_once HEURIST_DIR . 'hserv/records/search/recordFile.php';
 
-//retrieve list of databases
+// Establish a connection to the SQL server to retrieve list of databases
 $system = new hserv\System();
-if( !$system->init(null, false, false) ){
-    exit("Cannot establish connection to sql server\n");
+
+if (!$system->init(null, false, false)) {
+	exit("Cannot establish connection to SQL server\n");
 }
 
 // Setup server name
-if(!defined('HEURIST_SERVER_NAME') && isset($serverName)) {define('HEURIST_SERVER_NAME', $serverName);}//'heurist.huma-num.fr'
-
-if(!defined('HEURIST_SERVER_NAME') || empty(HEURIST_SERVER_NAME)){ // filter_var(HEURIST_SERVER_NAME, FILTER_VALIDATE_IP)
-    exit('The script was unable to determine the server\'s name, please define it within heuristConfigIni.php then re-run this script.');
+if (!defined('HEURIST_SERVER_NAME') && isset($serverName)) {
+	define('HEURIST_SERVER_NAME', $serverName); // 'heurist.huma-num.fr'
+	}
+	
+// Validate server name
+if (!defined('HEURIST_SERVER_NAME') || empty(HEURIST_SERVER_NAME)) {
+	exit("The script was unable to determine the server's name, please define it within heuristConfigIni.php then re-run this script.\n");
 }
-
+	
 // Setup Base URL
 $base_url = '';
-if(defined('HEURIST_BASE_URL_PRO')){
-    $base_url = HEURIST_BASE_URL_PRO;
-}else{
-    $base_url = HTTPS_SCHEMA . HEURIST_SERVER_NAME . HEURIST_DEF_DIR;
+	
+if (defined('HEURIST_BASE_URL_PRO')) {
+	$base_url = HEURIST_BASE_URL_PRO;
+} else {
+	$base_url = HTTPS_SCHEMA . HEURIST_SERVER_NAME . HEURIST_DEF_DIR; }
+		
+// Setup Base URL Root
+if (defined('HEURIST_SERVER_URL')) {
+	$base_url_root = HEURIST_SERVER_URL . '/';
+} else {
+	$base_url_root = HTTPS_SCHEMA . HEURIST_SERVER_NAME . '/';
 }
-if(defined('HEURIST_SERVER_URL')){
-    $base_url_root = HEURIST_SERVER_URL.'/';
-}else{
-    $base_url_root = HTTPS_SCHEMA . HEURIST_SERVER_NAME . '/';
+	
+// Validate the base URL
+if (empty($base_url) || strcmp($base_url, 'http://') == 0 || strcmp($base_url, HTTPS_SCHEMA) == 0) {
+	exit("The script was unable to determine the base URL, please define it within heuristConfigIni.php then re-run this script.\n");
 }
-
-if(empty($base_url) || strcmp($base_url, 'http://') == 0 || strcmp($base_url, HTTPS_SCHEMA) == 0){
-    exit('The script was unable to determine the server\'s name, please define it within heuristConfigIni.php then re-run this script.');
+	
+// Ensure the base URL ends with a slash
+if (substr($base_url, -1) !== '/') {
+	$base_url .= '/';
 }
-
-if(substr($base_url, -1, 1) != '/'){
-    $base_url .= '/';
-}
-
+	
+// Retrieve the list of databases
 $mysqli = $system->getMysqli();
 $databases = mysql__getdatabases4($mysqli, false);
 
@@ -396,6 +420,17 @@ foreach ($databases as $idx=>$db_name){
     $values[6] = $vals['db_id'];
     $values[8] = $vals['db_dname'];
 
+    // Check if the meta description is valid and has a minimum length.
+    if (!isset($values[1]) || !is_string($values[1])) {
+        exit('Meta description is missing or invalid.');
+    }
+
+    $metaDescription = strip_tags(trim($values[1])); // Remove HTML tags and trim whitespace.
+
+    if (strlen($metaDescription) < 50) {
+        exit('Meta description is empty or not valid.'); // Exit if the description is too short.
+    }
+
     // Replace missing/placeholder values
     if(empty($values[8]) || $values[8] == 'Please enter a DB name ...'){
         $values[8] = $db_name;
@@ -429,6 +464,20 @@ foreach ($databases as $idx=>$db_name){
                 $cms_links[] = array($prime_url, strstr($rec_Date,' ',true));
             }
             $values[3] = implode('<br>', $cms_homes);
+
+            // Split the input values to extract URLs for analysis.
+            $startUrls = explode("<br>", $values[3]);
+
+            foreach ($startUrls as $startUrl) {
+                // Analyze the website and determine if it's a dummy site.
+                $siteScore = analyzeSite($startUrl); // Get the number of empty pages.
+                $dummyScore = isDummy($startUrl);    // Check the number of dummy pages.
+
+                // Check if the website fails the thresholds for being valuable.
+                if ($siteScore > 5 || $dummyScore > 3) {
+                    exit('Not a valuable website.'); // Exit if the website doesn't qualify.
+                }
+            }
         }
     }
 
