@@ -709,7 +709,24 @@ window.hWin.HEURIST4.dbs = {
                 $children.push({code:'recRelationNotes', title:'Relation Notes'});
                 $children.push({code:'recRelationStartDate', title:'Relation StartDate'});
                 $children.push({code:'recRelationEndDate', title:'Relation EndDate'});
-                
+
+                if($mode == 7){
+
+                    let skip = [
+                        window.hWin.HAPI4.sysinfo.dbconst.DT_PRIMARY_RESOURCE, window.hWin.HAPI4.sysinfo.dbconst.DT_TARGET_RESOURCE,
+                        window.hWin.HAPI4.sysinfo.dbconst.DT_RELATION_TYPE, window.hWin.HAPI4.sysinfo.dbconst.DT_SHORT_SUMMARY,
+                        window.hWin.HAPI4.sysinfo.dbconst.DT_START_DATE, window.hWin.HAPI4.sysinfo.dbconst.DT_END_DATE
+                    ];
+                    $Db.rst(window.hWin.HAPI4.sysinfo.dbconst.RT_RELATION).each2((dty_ID, rst_Fields) => {
+
+                        if(skip.indexOf(dty_ID) >= 0){
+                            return;
+                        }
+
+                        $children.push({code: dty_ID, title: `Relation ${rst_Fields.rst_DisplayName}`})
+                    });
+                }
+
                 $res['children'] = $children;
                 
             }else if($mode==5 || $mode==6) //----------------------------------- for query builder and facet search tree

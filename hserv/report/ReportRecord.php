@@ -256,6 +256,8 @@ class ReportRecord
                 $record["recRelationStartDate"] = \Temporal::toHumanReadable($value['StartDate']) ?? null;
                 $record["recRelationEndDate"] = \Temporal::toHumanReadable($value['EndDate']) ?? null;
 
+                $record["relationRecord"] = $this->getRecord($value['recID']);
+
                 array_push($res, $record);
             }
         }

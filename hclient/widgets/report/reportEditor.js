@@ -990,12 +990,17 @@ this_id       : "term"
                         
                         if(codes[0]=='Relationship'){ //_nodep.type == 'relationship'){
                             this._insertGetRelatedRecords();
+                            prefix = '';
                             if(_varname!='') {
                                 if(inloop!=1) inloop = 2; //Relationship will be without prefix $r
                             }else if(codes[1]){
                                 _varname = codes[1];
                             }
-                            
+
+                            if(Number.isInteger(+_varname)){
+                                _varname = `relationRecord.f${_varname}`;
+                            }
+
                             _varname = codes[0]+(_varname!=''?('.'+_varname):'');
                         }else{
 
