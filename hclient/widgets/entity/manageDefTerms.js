@@ -3011,9 +3011,8 @@ $.widget( "heurist.manageDefTerms", $.heurist.manageEntity, {
                 }
 
                 const id = $parent_div.attr('recid');
-                const lbl = $Db.trm(id, 'trm_Label');
 
-                let query = `[{"f":"=${id}"},{"f":"=${lbl}"}]`;
+                let query = `[{"f":"=${id}"}]`;
                 window.open(window.hWin.HAPI4.baseURL + '?db=' + window.hWin.HAPI4.database + '&q=' + encodeURIComponent(query), '_blank');
             }
         });
