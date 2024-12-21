@@ -79,7 +79,7 @@ if($is_own_domain){
 if(count($requestUri)==1 && ($requestUri[0]=='heurist' || $requestUri[0]=='h6-alpha')){
 
     //redirectURL2('/'.rawurlencode($requestUri[0]).'/index.php');
-    include_once '../index.php';
+    include_once '../index.php';  //root index that goes to startup
     exit;
 
 }elseif ((count($requestUri)==1)
@@ -103,6 +103,9 @@ if(count($requestUri)==1 && ($requestUri[0]=='heurist' || $requestUri[0]=='h6-al
 $isMediaRequest = false;
 
 // --------------- RECORD VIEW   in format db/record/[rec-id] 
+
+// Universal record resolver. Record id is concept code DBID+RECORD ID.
+// It returns in format specified by Content-type or by parameter fmt=
 
 // db/record/2312-123  or  db/record/2312-123.rdf  or db/record/123?db=somedb&fmt=rdf
 if(count($requestUri)==3 && $requestUri[0]=='db' && ($requestUri[1]=='record' || $requestUri[1]=='file')){
@@ -189,7 +192,7 @@ $requestUri:
         $action = filter_var($requestUri[2]);
         $redirect = '';
 
-        if($database=='MBH'){
+        if($database=='MBH'){ //special case
             $database='MBH_Manuscripta_Bibliae_Hebraicae';
         }elseif($database=='heurist' || $database=='h6-alpha'){
             redirectURL2('/'.rawurlencode($database).'/index.php');
@@ -278,9 +281,10 @@ $requestUri:
                 }
 
             }
-            elseif($action=='adm'){
+            elseif($action=='adm'){  //admin user interface
 
                 $redirect = $redirect.'?db='.$database;
+                $params['db'] = $database;
 
                 $query = null;
                 if(@$requestUri[3]){
@@ -296,8 +300,11 @@ $requestUri:
                     $redirect = $redirect.'&q='.$query;
                 }
                 
+                // in case to keep url as   domain/database/adm remove these remarks
+                //define('PDIR', $host_params['baseURL']);
+                //$rewrite_path = dirname(__FILE__).'/../index.php';
             }
-            elseif($action=='tpl'){
+            elseif($action=='tpl'){ // call FrontController from index.php
                 $query = null;
 
                 if(@$requestUri[3]){
@@ -428,7 +435,7 @@ if ($database_id>0) {
 // for definitions
 //      xml - xml template
 // for records
-//      web, website  - redirect ot website
+//      web, website  - redirect ot website - TO BE REMOVED
 //      edit - redirect to edit
 //      hml (default)
 //      xml - record_output
@@ -470,7 +477,7 @@ if($database_url!=null){ //redirect to resolver for another database
     }
 
 
-}elseif($format=='web' || $format=='website'){ //redirect to website
+}elseif($format=='web' || $format=='website'){ //redirect to website  - deprecated to be removed
 
     $redirect = "hclient/widgets/cms/websiteRecord.php?db=$database&recID=$recid";
     if(@$_REQUEST['field']>0){

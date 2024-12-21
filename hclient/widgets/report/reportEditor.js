@@ -335,6 +335,9 @@ $.widget( "heurist.reportEditor", $.heurist.baseAction, {
         }else
         // null means new template
         if(this._currentTemplate!=this.options.template){
+            
+            window.hWin.HAPI4.SystemMgr.user_log('cms_EditSmarty');            
+            
             this._currentTemplate = this.options.template;
 
             let that = this;

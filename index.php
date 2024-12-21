@@ -238,48 +238,48 @@ require_once dirname(__FILE__).'/hclient/framecontent/initPage.php';
 -->
 
 <!-- array of possible layouts -->
-<script type="text/javascript" src="layout_default.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>layout_default.js"></script>
 
-<script type="text/javascript" src="hclient/widgets/baseAction.js"></script>
-<script type="text/javascript" src="hclient/widgets/baseConfig.js"></script>
-<script type="text/javascript" src="hclient/widgets/database/dbAction.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/baseAction.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/baseConfig.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/database/dbAction.js"></script>
 
-<script type="text/javascript" src="hclient/widgets/record/recordAction.js"></script>
-<script type="text/javascript" src="hclient/widgets/record/recordAccess.js"></script>
-<script type="text/javascript" src="hclient/widgets/record/recordAdd.js"></script>
-<script type="text/javascript" src="hclient/widgets/record/recordAddLink.js"></script>
-<script type="text/javascript" src="hclient/widgets/record/recordExportCSV.js"></script>
-<script type="text/javascript" src="hclient/widgets/record/recordTemplate.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordAction.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordAccess.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordAdd.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordAddLink.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordExportCSV.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordTemplate.js"></script>
 
-<script type="text/javascript" src="hclient/widgets/report/reportViewer.js"></script>
-<script type="text/javascript" src="hclient/widgets/report/reportEditor.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/report/reportViewer.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/report/reportEditor.js"></script>
 
-<script type="text/javascript" src="hclient/widgets/viewers/recordListExt.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/search_faceted.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/search_faceted_wiz.js"></script>
-<script type="text/javascript" src="hclient/widgets/viewers/app_timemap.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/search.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/searchByEntity.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/searchBuilder.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/searchBuilderItem.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/searchBuilderSort.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/recordListExt.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/search_faceted.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/search_faceted_wiz.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/app_timemap.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/search.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/searchByEntity.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/searchBuilder.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/searchBuilderItem.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/searchBuilderSort.js"></script>
 
-<script type="text/javascript" src="hclient/core/ActionHandler.js"></script>
-<script type="text/javascript" src="hclient/widgets/cpanel/controlPanel.js"></script>
-<script type="text/javascript" src="hclient/widgets/cpanel/buttonsMenu.js"></script>
-<script type="text/javascript" src="hclient/widgets/cpanel/slidersMenu.js"></script>
-<script type="text/javascript" src="hclient/widgets/cpanel/navigation.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/core/ActionHandler.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cpanel/controlPanel.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cpanel/buttonsMenu.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cpanel/slidersMenu.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cpanel/navigation.js"></script>
 
-<script type="text/javascript" src="hclient/widgets/search/svs_edit.js"></script>
-<script type="text/javascript" src="hclient/widgets/search/svs_list.js"></script>
-<script type="text/javascript" src="hclient/widgets/viewers/resultList.js"></script>
-<script type="text/javascript" src="hclient/widgets/viewers/resultListMenu.js"></script>
-<script type="text/javascript" src="hclient/widgets/viewers/resultListCollection.js"></script>
-<script type="text/javascript" src="hclient/widgets/viewers/resultListDataTable.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/svs_edit.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/search/svs_list.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/resultList.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/resultListMenu.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/resultListCollection.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/resultListDataTable.js"></script>
 
-<script type="text/javascript" src="hclient/widgets/viewers/staticPage.js"></script>
-<script type="text/javascript" src="hclient/widgets/viewers/connections.js"></script>
-<script type="text/javascript" src="hclient/widgets/profile/profile_login.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/staticPage.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/viewers/connections.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/profile/profile_login.js"></script>
 
 <!-- edit entity -->
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/editing/selectFile.js"></script>
@@ -397,7 +397,7 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
         ?>
 
         var lt = window.hWin.HAPI4.sysinfo['layout'];
-        window.hWin.HAPI4.is_publish_mode = (lt=='WebSearch');
+        window.hWin.HAPI4.is_publish_mode = (lt=='WebSearch'); //deprecated
 
         //
         // init layout
@@ -407,6 +407,7 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
         //2024-12-08 const layout_cfg = window.hWin.HAPI4.LayoutMgr2.layoutGetById('H6Default2');
         //2024-12-08 window.hWin.HAPI4.LayoutMgr2.layoutInit(layout_cfg, "#layout_panes" );
 
+        window.hWin.HAPI4.SystemMgr.matomoTrackInit('adm');
         
         onInitCompleted_PerformSearch();
     }
@@ -533,9 +534,11 @@ if(@$_SERVER['REQUEST_METHOD']=='POST'){
         }
 
     } //onInitCompleted_PerformSearch
-
+    
 </script>
-
+<?php
+    USystem::insertLogScript();
+?>     
 </head>
 <body style="background-color:#c9c9c9;">
 

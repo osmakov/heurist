@@ -388,6 +388,34 @@ class USystem {
 
         return $ret;
     }
+    
+    /**
+    * Return clinet IPv4 address
+    * 
+    */
+    public static function getUserIP(){
+        
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED'])) {
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        } elseif (isset($_SERVER['HTTP_FORWARDED_FOR'])) {
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_FORWARDED'])) {
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $ipaddress = null;
+        }
+        
+        $ipaddress = filter_var($ipaddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)??'Unknown';
+        
+        return $ipaddress;        
+    }
 
     //
     //host organization logo and url (specified in root installation folder next to heuristConfigIni.php)
@@ -738,6 +766,48 @@ class USystem {
     public static function rutime($ru, $rus, $index='utime'){
         return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
         -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));        
+    }
+    
+    public static function insertLogScript($pageType=null){
+        global $matomoUrl, $matomoSiteId;
+        
+        if(!(isset($matomoSiteId) && isset($matomoUrl))){
+            return;
+        }
+?>        
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */                      
+
+  <?php if($pageType=='startup'){?>
+       //per page  
+      _paq.push(['setCustomDimension', 1, '' ]);  
+      _paq.push(['setCustomDimension', 2, 'startup' ]);
+      _paq.push(['setCustomDimension', 3, 'eng' ]);  
+      //per visit
+      _paq.push(['resetUserId']);
+      _paq.push(['setCustomDimension', 5, 'visitor' ]);
+  
+      _paq.push(['setCustomUrl', '/startup' ]);
+  <?php } ?>
+  
+  _paq.push(['trackPageView']);
+//  _paq.push(['enableLinkTracking']);  
+  
+  
+  (function() {
+    var u="//<?php echo $matomoUrl;?>/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '<?php echo $matomoSiteId;?>']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+  
+  
+</script>
+<!-- End Matomo Code -->
+<?php        
     }
 }
 

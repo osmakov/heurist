@@ -112,6 +112,7 @@
         "data": {
             "user-admin-status": "1",
             "user-experience-level": "1",
+            "logaction": "db_Delete",
             "pwd-nonowner": "DatabaseDeletion",
             "icon": "ui-icon-trash",
             "header": "Delete Database",
@@ -148,7 +149,7 @@
         
         "data": {
             "container": "admin",
-            "logaction": "verify_st",
+            "logaction": "db_VerifyIntegrity",
             "user-admin-status": "1",
             "user-experience-level": "1",
             "icon": "ui-icon-check",
@@ -348,6 +349,7 @@
         "id": "menu-structure-rectypes",
         
         "data": {
+            "logaction": "st_RecTypes",
             "entity": "defRecTypes",
             "user-admin-status": "1",
             "icon": "ui-icon-list",
@@ -359,6 +361,7 @@
         "id": "menu-structure-vocabterms",
         
         "data": {
+            "logaction": "st_Vocabularies",
             "entity": "defTerms",
             "user-admin-status": "1",
             "icon": "ui-icon-list",
@@ -370,6 +373,7 @@
         "id": "menu-structure-fieldtypes",
         
         "data": {
+            "logaction": "st_FieldTypes",
             "entity": "defDetailTypes",
             "user-admin-status": "1",
             "icon": "ui-icon-list",
@@ -381,6 +385,7 @@
         "id": "menu-structure-workflowstages",
         
         "data": {
+            "logaction": "st_WorkflowRules",
             "entity": "sysWorkflowRules",
             "user-admin-status": "1",
             "icon": "ui-icon-list",
@@ -393,7 +398,7 @@
         
         "data": {
             "user-admin-status": "1",
-            "logaction": "imp_st",
+            "logaction": "imp_Structure",
             "container": "design",
             "icon": "ui-icon-cloud-download"
         },
@@ -404,7 +409,7 @@
         "href": "viewers/visualize/databaseSummary.php",
         "data": {
             "user-admin-status": "-1",
-            "logaction": "st_Vis",
+            "logaction": "st_Visualization",
             "icon": "ui-icon-eye",
             "container": "design",
             "header": "Structure > Visualization of links between record types"
@@ -415,6 +420,7 @@
         "id": "menu-structure-mimetypes",
         
         "data": {
+            "logaction": "st_MimeTypes",
             "entity": "defFileExtToMimetype",
             "user-admin-status": "1",
             "user-experience-level": "1",
@@ -431,6 +437,7 @@
         "text": "Shortcuts bar",
         
         "data": {
+            "logaction": "prof_Dashboard",
             "entity": "sysDashboard",
             "icon": "ui-icon-redo",
             "container": "design"
@@ -440,9 +447,9 @@
         "id": "menu-structure-refresh",
         
         "data": {
+            "logaction": "st_Refresh",
             "icon": "ui-icon-refresh",
-            "user-admin-status": "0",
-            "logaction": "refresh_st"
+            "user-admin-status": "0"
         },
         "text": "Refresh memory"
     },
@@ -450,6 +457,7 @@
         "id": "menu-structure-duplicates",
         
         "data": {
+            "logaction": "rec_FindDuplicates",
             "icon": "ui-icon-grip-solid-vertical",
             "user-permissions": "add delete",
             "container": "admin"
@@ -551,6 +559,7 @@
         "href": "hserv/structure/export/getDBStructureAsXML.php",
         "target": "_blank",
         "data": {
+            "logaction": "st_ExportXML",
             "user-experience-level": "1",
             "icon": "ui-icon-extlink"
         },
@@ -561,6 +570,7 @@
         "href": "hserv/structure/export/getDBStructureAsSQL.php?pretty=1",
         "target": "_blank",
         "data": {
+            "logaction": "st_ExportSQL",
             "user-experience-level": "1",
             "icon": "ui-icon-extlink"
         },
@@ -624,6 +634,7 @@
         "text": "Bug report/feature request",
         
         "data": {
+            "logaction": "hlp_BugReport",
             "entity": "sysBugreport",
             "user-admin-status": "0"
         }
@@ -662,7 +673,7 @@
       "text": "Add record",
       "title": "Add new record of specified record type",
       "data": {
-        "logaction": "add_Record",
+        "logaction": "rec_Add",
         "header": "Add new record",
         "icon": "ui-icon-file-plus"
       }
@@ -744,6 +755,7 @@
       "id": "menu-files-index",
       "text": "Index external transfers",
       "data": {
+        "logaction": "imp_IndexFiles",
         "user_admin_status": "1",
         "size": "medium",
         "header": "Import > Index uploaded files / external transfers",
@@ -756,6 +768,7 @@
       "id": "menu-files-index-and-records",
       "text": "Create media records",
       "data": {
+        "logaction": "imp_MediaRecords",
         "user_admin_status": "1",
         "size": "medium",
         "header": "Import > Create media records",
@@ -767,6 +780,7 @@
       "id": "menu-files-annotations",
       "text": "Import Annotations from IIIF manifests",
       "data": {
+        "logaction": "imp_Annotations",
         "user_admin_status": "1",
         "size": "medium",
         "icon": "ui-icon-tags",
@@ -791,7 +805,7 @@
       "id": "menu-files-data",
       "text": "Import file data from CSV",
       "data": {
-        "logaction": "imp_FileData",
+        "logaction": "imp_FileDataCSV",
         "user_admin_status": "1",
         "size": "medium",
         "header": "Import > Media data for existing files",

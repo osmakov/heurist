@@ -188,9 +188,14 @@ $allowWebAccessEntityFiles = false;
 $useRewriteRulesForRecordLink = false;
 
 
+// matomo tracking server
+$matomoUrl = null; // for example 'domain.com/matomo'
+$matomoSiteId = null; // ID of tracked heurist domain in matomo configuration
+
 // system default file - if a heuristConfigIni.php file exists in the parent directory of the installation,
 // the configIni.php in the installation does not need to be configured. This allows unconfigured ConfigIni.php files
 // to exist in multiple experimental codebases on a single server and avoids accidental distribution of passwords etc.
+
 $parentIni = dirname(__FILE__)."/../heuristConfigIni.php";
 
 // parent directory configuration file is optional, hence include not required

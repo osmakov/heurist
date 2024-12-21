@@ -17,6 +17,8 @@
 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
 * See the License for the specific language governing permissions and limitations under the License.
 */
+use hserv\utilities\USystem;
+
 if (!defined('PDIR')){
     define('PDIR','../');
     require_once dirname(__FILE__).'/../autoload.php';
@@ -726,7 +728,9 @@ a{
 }
 </style>
 
-
+<?php
+    USystem::insertLogScript('startup');
+?>     
 </head>
 <body>
     <div class="ent_wrapper" style="min-height:675px;">

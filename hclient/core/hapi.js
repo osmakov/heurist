@@ -1241,7 +1241,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
                 delete window.hWin.HAPI4.sysinfo.db_usergroups[groupID];
             }
         },
-
+        
         // is_admin, is_member, has_access - verify credentials on client side
         // they have to be used internally in widgets and loop operations to avoid server/network workload
         // However, before start any action or open widget popup need to call 
@@ -1287,6 +1287,30 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
 
         },
 
+        /**
+        * Returns type of current user
+        * 
+        * @returns {String}
+        */
+        getUserType: function(){
+            
+            if( that.has_access(2) ){
+               userType = 'owner'; 
+            }else if( window.hWin.HAPI4.is_admin() ){
+               userType = 'admin'; 
+            }else if( window.hWin.HAPI4.is_member(window.hWin.HAPI4.sysinfo.db_managers_groupid) ){
+               userType = 'manager';  
+            }else if(  window.hWin.HAPI4.is_guest_user() ){
+               userType = 'guest';
+            }else if( that.currentUser['ugr_ID']>0 ){
+               userType = 'user';
+            }else {
+               userType = 'visitor';
+            }
+            
+            return userType;
+        },
+        
         /**
         * Returns TRUE if currentUser satisfies to required level
         *

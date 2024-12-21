@@ -45,7 +45,7 @@ use hserv\structure\ConceptCode;
     *  trim_item
     *  stripAccents
     *  prepareIds
-    * prepareStrIds
+    *  prepareStrIds
     *  predicateId - prepare field compare with one or more ids
     *
     *  checkMaxLength - check max length for TEXT field
@@ -53,10 +53,12 @@ use hserv\structure\ConceptCode;
     *
     *  recreateRecLinks
     *  recreateRecDetailsDateIndex
+    * 
+    *  createTable
+    *  alterTable
     *  hasTable - Returns true if table exists in database
     *  hasColumn - Returns true if column exists in given table
     *  checkUserStatusColumn - Checks that sysUGrps.ugr_Enabled has proper set - @todo remove
-    *
     *
     * @package     Heurist academic knowledge management system
     * @link        https://HeuristNetwork.org
@@ -1855,6 +1857,14 @@ SELECT dtl_RecID, dtl_DetailTypeID, dtl_ID, dtl_Value FROM recDetails, defDetail
         }
     }
 
+    /**
+    * 
+    * 
+    * @param mixed $system
+    * @param mixed $table_name
+    * @param mixed $query
+    * @param mixed $recreate
+    */
     function createTable($system, $table_name, $query, $recreate = false){
 
         $mysqli = $system->getMysqli();
@@ -1876,6 +1886,14 @@ SELECT dtl_RecID, dtl_DetailTypeID, dtl_ID, dtl_Value FROM recDetails, defDetail
         return $res;
     }
 
+    /**
+    * 
+    * 
+    * @param mixed $mysqli
+    * @param mixed $table_name
+    * @param mixed $db_name
+    * @return mixed
+    */
     function alterTable($system, $table_name, $field_name, $query, $modify_if_exists = false){
 
         $mysqli = $system->getMysqli();
@@ -1909,7 +1927,6 @@ SELECT dtl_RecID, dtl_DetailTypeID, dtl_ID, dtl_Value FROM recDetails, defDetail
 
         return $res;
     }
-
 
     /**
     * Returns true if table exists in database
