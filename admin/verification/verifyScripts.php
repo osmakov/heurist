@@ -25,8 +25,8 @@
     * @package     Heurist academic knowledge management system
     * @subpackage  !!!subpackagename for file such as Administration, Search, Edit, Application, Library
     */
-//print 'disabled';
-//exit;
+print 'disabled';
+exit;
 ini_set('max_execution_time', '0');
 
 

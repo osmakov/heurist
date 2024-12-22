@@ -19,6 +19,8 @@
     * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
     * See the License for the specific language governing permissions and limitations under the License.
     */
+    //ini_set('max_execution_time', '0');
+    set_time_limit(120);
 
     require_once dirname(__FILE__).'/../../autoload.php';
     require_once dirname(__FILE__).'/../records/edit/recordModify.php';
