@@ -923,6 +923,9 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
 
         let classes = `recordDiv${this._selectAllFiles ? ' selected' : ''}`;
 
+        let view_mode = this.recordList.resultList('option', 'view_mode');
+        let left_pos = view_mode == 'list' ? 102 : 86;
+
         let html = '<div class="'+classes+'" id="rd'+recID+'" recid="'+recID+'" rectype="'+rectype+'">'
         + html_thumb
         + '<div class="recordSelector"><input type="checkbox" /></div>'
@@ -930,11 +933,15 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
         +     '<img src="'+window.hWin.HAPI4.baseURL+'hclient/assets/16x16.gif'
         +     '" style="background-image: url(&quot;'+recIcon+'&quot;);">'   //class="rt-icon" 
         + '</div>'
-        + '<div class="recordTitle" title="'+recTitleHint+'">'
+        + `<div class="recordTitle" title="${recTitleHint}" style="left: ${left_pos}px">`
         +     recTitle
         + '</div>';
         
         let action_style = 'style="height:20px;margin-left:0px;"';
+        let url_icon = `<div title="Click to copy the file\'s Heurist URL" ${action_style} role="button" aria-disabled="false" data-key="url" `
+            + 'class="action-button logged-in-only ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">'
+                + '<span class="ui-button-icon-primary ui-icon ui-icon-link"></span><span class="ui-button-text"></span>'
+            + '</div>';
         // add edit/remove action buttons
         if(this.options.select_mode=='manager' && this.options.edit_mode!='none'){
 
@@ -943,6 +950,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                 +   'class="action-button logged-in-only ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">'
                 +     '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span><span class="ui-button-text"></span>'
                 + '</div>&nbsp;&nbsp;'
+                + `${url_icon}&nbsp;&nbsp;`
                 + `<div title="Click to delete file" ${action_style} role="button" aria-disabled="false" data-key="delete" `
                 +   'class="action-button logged-in-only ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">'
                 +     '<span class="ui-button-icon-primary ui-icon ui-icon-circle-close"></span><span class="ui-button-text"></span>'
@@ -952,7 +960,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
             html += `<div title="Click to view file" ${action_style} role="button" aria-disabled="false" data-key="view" `
                 +   'class="action-button logged-in-only ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">'
                 +     '<span class="ui-button-icon-primary ui-icon ui-icon-search"></span><span class="ui-button-text"></span>'
-                + '</div>';
+                + `</div>&nbsp;&nbsp;${url_icon}`;
         }
         
         /*+ '<div title="Click to view record (opens in popup)" '
@@ -979,19 +987,42 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
         let ulf_ID = action.recID;
         action = action.action;
 
-        if(action == 'view'){
-            let popup_opts = {
-                isdialog: true, 
-                select_mode: 'manager',
-                edit_mode: 'editonly',
-                rec_ID: ulf_ID,
-                default_palette_class: 'ui-heurist-populate',
-                width: 950
-            };
+        is_resolved = true;
 
-            window.hWin.HEURIST4.ui.showEntityDialog('recUploadedFiles', popup_opts);
+        switch (action) {
 
-            is_resolved = true;
+            case 'view':
+
+                let popup_opts = {
+                    isdialog: true, 
+                    select_mode: 'manager',
+                    edit_mode: 'editonly',
+                    rec_ID: ulf_ID,
+                    default_palette_class: 'ui-heurist-populate',
+                    width: 950
+                };
+
+                window.hWin.HEURIST4.ui.showEntityDialog('recUploadedFiles', popup_opts);
+
+                break;
+
+            case 'url':
+
+                let recordset = this.getRecordSet();
+                let record = recordset.getById(ulf_ID);
+                let ulf_ObfuscatedFileID = recordset.fld(record, 'ulf_ObfuscatedFileID');
+
+                window.hWin.HEURIST4.util.copyStringToClipboard(`${window.hWin.HAPI4.baseURL_pro}?db=${window.hWin.HAPI4.database}&file=${ulf_ObfuscatedFileID}`);
+
+                window.hWin.HEURIST4.msg.showMsgFlash('Copied URL to clipboard', 3000);
+
+                break;
+
+            default:
+
+                is_resolved = false;
+
+                break;
         }
 
         return is_resolved;
