@@ -804,9 +804,8 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
             return;               
         }
 
-  
         window.hWin.HEURIST4.msg.showMsgFlash('Getting resource type', false);
-  
+
         let that = this;
 
         let url = that._previousURL;
@@ -815,48 +814,46 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
         that._requestForMimeType = true;                          
         //request server to detect content type
         window.hWin.HAPI4.SystemMgr.get_url_content_type(url, function(response){
-            
+
             that._requestForMimeType = false;
             let ele2 = that._editing.getFieldByName('ulf_MimeExt');
-            
+
             let ext = '';
             if(response.status == window.hWin.ResponseStatus.OK){
                 ext = response.data.extension;
-                
+
                 if(response.data.needrefresh){
                     let cfg = ele2.editing_input('getConfigMode');
                     window.hWin.HAPI4.EntityMgr.clearEntityData( cfg.entity );
                 }
-                
+
             }
             if(ext==null) ext = '';
 
-            
             let msg_error = that._validateExt( ext );
-            
+
             ele2.editing_input('setValue', ext );
             ele2.show();
             that.onEditFormChange();
-            
+
             if(msg_error){
                 ele2.editing_input('showErrorMsg', msg_error);    
                 that.editForm.animate({scrollTop: ele2.offset().top}, 1);
             }else{
                 ele2.editing_input('showErrorMsg', ''); //hide
             }
-            /*
-            let ele = that._toolbar;
-            if(ele){
-                ele.find('.btnRecSave').css('visibility', msg_error?'hidden':'visible');
-            }*/
-            
-    
+
+            let $img = that.mediaviewer.find('img');
+            if(window.hWin.HEURIST4.util.isempty(msg_error) && !window.hWin.HEURIST4.util.isempty(ext) &&
+               response.data.mimeType.indexOf('image') === 0 && $img.length > 0){
+
+                $('<h4 style="padding: 15px 75px;position: absolute;cursor: default;">Preview image:</h4>').insertBefore(that.mediaviewer);
+                that.mediaviewer.find('img').attr('src', url);
+            }
+
             window.hWin.HEURIST4.msg.closeMsgFlash();
-            
-            
+
         });
-        
-        
     },
         
     //----------------------
@@ -938,7 +935,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
         + '</div>';
         
         let action_style = 'style="height:20px;margin-left:0px;"';
-        let url_icon = `<div title="Click to copy the file\'s Heurist URL" ${action_style} role="button" aria-disabled="false" data-key="url" `
+        let url_icon = `<div title="Click to copy the file's Heurist URL" ${action_style} role="button" aria-disabled="false" data-key="url" `
             + 'class="action-button logged-in-only ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">'
                 + '<span class="ui-button-icon-primary ui-icon ui-icon-link"></span><span class="ui-button-text"></span>'
             + '</div>';
@@ -991,7 +988,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
 
         switch (action) {
 
-            case 'view':
+            case 'view': {
 
                 let popup_opts = {
                     isdialog: true, 
@@ -1005,8 +1002,8 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                 window.hWin.HEURIST4.ui.showEntityDialog('recUploadedFiles', popup_opts);
 
                 break;
-
-            case 'url':
+            }
+            case 'url': {
 
                 let recordset = this.getRecordSet();
                 let record = recordset.getById(ulf_ID);
@@ -1017,12 +1014,11 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                 window.hWin.HEURIST4.msg.showMsgFlash('Copied URL to clipboard', 3000);
 
                 break;
-
-            default:
-
+            }
+            default: {
                 is_resolved = false;
-
                 break;
+            }
         }
 
         return is_resolved;

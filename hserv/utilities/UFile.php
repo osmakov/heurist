@@ -1344,7 +1344,7 @@ function recognizeMimeTypeFromURL($mysqli, $url, $use_default_ext = true){
         if($extension==null && $use_default_ext) {
             $extension = 'bin';
         }
-        $res = array('extension'=>$extension, 'needrefresh'=>$needrefresh);
+        $res = array('extension'=>$extension, 'mimeType' => $mimeType, 'needrefresh'=>$needrefresh);
 
         return $res;
 }

@@ -287,7 +287,7 @@ window.cfg_layouts = [
                                 css:{overflow:'hidden'}}}        
         
         ],"folder":true, css:{height:'100%'}},
-    ],"folder":true, "options":{"init":"initally open","resizable":true, size:"50%"},"folder":true}],"folder":true} 
+    ],"folder":true, "options":{"init":"initally open","resizable":true, size:"50%"}}],"folder":true} 
         
 
 ];
