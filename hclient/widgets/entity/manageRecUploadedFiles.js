@@ -804,9 +804,8 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
             return;               
         }
 
-  
         window.hWin.HEURIST4.msg.showMsgFlash('Getting resource type', false);
-  
+
         let that = this;
 
         let url = that._previousURL;
@@ -815,48 +814,46 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
         that._requestForMimeType = true;                          
         //request server to detect content type
         window.hWin.HAPI4.SystemMgr.get_url_content_type(url, function(response){
-            
+
             that._requestForMimeType = false;
             let ele2 = that._editing.getFieldByName('ulf_MimeExt');
-            
+
             let ext = '';
             if(response.status == window.hWin.ResponseStatus.OK){
                 ext = response.data.extension;
-                
+
                 if(response.data.needrefresh){
                     let cfg = ele2.editing_input('getConfigMode');
                     window.hWin.HAPI4.EntityMgr.clearEntityData( cfg.entity );
                 }
-                
+
             }
             if(ext==null) ext = '';
 
-            
             let msg_error = that._validateExt( ext );
-            
+
             ele2.editing_input('setValue', ext );
             ele2.show();
             that.onEditFormChange();
-            
+
             if(msg_error){
                 ele2.editing_input('showErrorMsg', msg_error);    
                 that.editForm.animate({scrollTop: ele2.offset().top}, 1);
             }else{
                 ele2.editing_input('showErrorMsg', ''); //hide
             }
-            /*
-            let ele = that._toolbar;
-            if(ele){
-                ele.find('.btnRecSave').css('visibility', msg_error?'hidden':'visible');
-            }*/
-            
-    
+
+            let $img = that.mediaviewer.find('img');
+            if(window.hWin.HEURIST4.util.isempty(msg_error) && !window.hWin.HEURIST4.util.isempty(ext) &&
+               response.data.mimeType.indexOf('image') === 0 && $img.length > 0){
+
+                $('<h4 style="padding: 15px 75px;position: absolute;cursor: default;">Preview image:</h4>').insertBefore(that.mediaviewer);
+                that.mediaviewer.find('img').attr('src', url);
+            }
+
             window.hWin.HEURIST4.msg.closeMsgFlash();
-            
-            
+
         });
-        
-        
     },
         
     //----------------------
