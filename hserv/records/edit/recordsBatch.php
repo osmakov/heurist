@@ -3016,5 +3016,121 @@ public methods
         return $res?$this->result_data:false;
     }
 
+    
+    /**
+     * Replaces newline to <br> for blocktext fields
+     *
+     * @return false|array - false on error | array with keys processed (records with updated vaules), 
+     *                                                        undefined (no values or unchanged) and 
+     *                                                        errors (encountered an SQL error)
+     */
+    public function nl2brConversion(){
+
+        if(!$this->_validateParamsAndCounts()){
+            return false;
+        }elseif (isEmptyArray(@$this->recIDs)){
+            return $this->result_data;
+        }
+
+        $mysqli = $this->system->getMysqli();
+        $date_mode = date(DATE_8601);// for tags, rec_modified and dtl_modified
+
+        // Field details
+        $dtyID = intval($this->data['dtyID']);
+        $dtyName = (@$this->data['dtyName'] ? "'".$this->data['dtyName']."'" : "id:".$this->data['dtyID']);
+        $baseTag = "~replace nl2br $dtyName $date_mode";
+
+        // Check field is freetext or blocktext
+        $fld_type = $this->getDetailType($dtyID);
+        if($dtyID < 1 || ($fld_type != 'blocktext')){
+            $this->system->addError(HEURIST_INVALID_REQUEST, 'Multiline to HTML conversion only works on valid blocktext fields');
+            return false;
+        }
+
+        //$keep_autocommit = mysql__begin_transaction($mysqli);
+
+        // Setup report variable
+        $completed_recs = array();
+        $skipped_recs = array();
+        $sql_errors = array();
+
+        // Cycle through records
+        foreach ($this->recIDs as $recID){
+
+            $res = $mysqli->query("SELECT dtl_ID, dtl_Value FROM recDetails WHERE dtl_DetailTypeID = $dtyID AND dtl_RecID = $recID");
+
+            if(!$res){
+                $sql_errors[$recID] = $mysqli->error;
+                continue;
+            }elseif($res->num_rows == 0){ // no values within field
+                array_push($skipped_recs, $recID);
+                continue;
+            }
+
+            $sql_errors[$recID] = array();
+
+            // Cycle through values
+            while($values = $res->fetch_row()){
+
+                $value = '';
+
+                if($values[1] == strip_tags($values[1])){ // skip values with HTML
+                    $value = nl2br(str_replace('  ', '&nbsp; ', $values[1]));
+                    
+                    if($value==$values[1]){
+                        array_push($skipped_recs, $recID);
+                        continue;
+                    }
+                    //replace repeated <br> with <p>
+                    $value2 = preg_replace('#(?:<br\s*/?>\s*?){2,}#', '</p><p>', $value);
+                    if($value!=$value2){
+                        //remove empty para
+                        $value = "<p>$value2</p>";    
+                        $pattern = "/<p[^>]*>\s*<\/p[^>]*>/";
+                        $value = preg_replace($pattern, '', $value);
+                    }
+                }
+
+                if(empty($value)){ // ensure there is a value to save
+                    array_push($skipped_recs, $recID);
+                    continue;
+                }
+
+                // Update details value + modified
+                $dtl_rec = array('dtl_ID' => intval($values[0]), 'dtl_Value' => $value, 'dtl_Modified' => $date_mode);
+
+                $ret = mysql__insertupdate($mysqli, 'recDetails', 'dtl', $dtl_rec);
+                if(!is_numeric($ret)){
+                    $sql_errors[$recID][] = $ret;
+                    continue;
+                }
+
+                // Update record modified
+                $ret = mysql__insertupdate($mysqli, 'Records', 'rec', array('rec_ID' => $recID, 'rec_Modified' => $date_mode));
+                if(!is_numeric($ret)){
+                    $sql_errors[$recID][] = $ret;
+                }
+            }//for
+
+            array_push($completed_recs, $recID);
+            if(!empty($sql_errors[$recID])){
+                $sql_errors[$recID] = implode(' ;', $sql_errors[$recID]);
+            }else{
+                unset($sql_errors[$recID]);
+            }
+        }
+
+        // Final touches to report
+        $this->_assignTagsAndReport('processed', $completed_recs, $baseTag);
+        $this->_assignTagsAndReport('undefined', $skipped_recs, $baseTag);
+        $this->_assignTagsAndReport('errors',  $sql_errors, $baseTag);
+
+        $this->result_data['undefined'] = count($skipped_recs);
+        $this->result_data['undefined_list'] = $skipped_recs;
+
+        return $this->result_data;
+    }
+
+    
 }
 ?>

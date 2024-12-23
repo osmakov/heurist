@@ -489,6 +489,11 @@ $.widget( "heurist.resultListMenu", {
 
             this.detailBatchEditPopup('case_conversion');
 
+        }else if(action == "menu-selected-nl2br"){
+
+            this.detailBatchEditPopup('nl2br');
+
+            
         }else if(action == "menu-selected-translation"){
 
             

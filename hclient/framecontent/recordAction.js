@@ -232,6 +232,7 @@ function hRecordAction(_action_type, _scope_type, _field_type, _field_value) {
             case 'url_to_file':
             case 'local_to_repository':
             case 'case_conversion':
+            case 'nl2br':
             case 'translation':
                 $('#div_sel_fieldtype').show();
                 _fillSelectFieldTypes();
@@ -309,7 +310,7 @@ function hRecordAction(_action_type, _scope_type, _field_type, _field_value) {
            
             allowed.splice(allowed.indexOf("file"),1);
             
-            if(action_type=='extract_pdf'){
+            if(action_type=='extract_pdf' || action_type=='nl2br'){
                 allowed = ['blocktext'];    
             }else if(action_type=='url_to_file' || action_type=='local_to_repository'){
                 allowed = ['file'];    
@@ -845,7 +846,7 @@ function hRecordAction(_action_type, _scope_type, _field_type, _field_value) {
 
                     $('#cb_sub_string').is(':checked') ? request['substr'] = 1 : request['wholeval'] = 1;
                 }
-            }else if(action_type=='extract_pdf'){
+            }else if(action_type=='extract_pdf' || action_type=='nl2br'){
                 
                 request['a'] = action_type;
             }else if(action_type=='case_conversion'){
