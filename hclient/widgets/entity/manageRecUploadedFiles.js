@@ -935,7 +935,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
         + '</div>';
         
         let action_style = 'style="height:20px;margin-left:0px;"';
-        let url_icon = `<div title="Click to copy the file\'s Heurist URL" ${action_style} role="button" aria-disabled="false" data-key="url" `
+        let url_icon = `<div title="Click to copy the file's Heurist URL" ${action_style} role="button" aria-disabled="false" data-key="url" `
             + 'class="action-button logged-in-only ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">'
                 + '<span class="ui-button-icon-primary ui-icon ui-icon-link"></span><span class="ui-button-text"></span>'
             + '</div>';
@@ -988,7 +988,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
 
         switch (action) {
 
-            case 'view':
+            case 'view': {
 
                 let popup_opts = {
                     isdialog: true, 
@@ -1002,8 +1002,8 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                 window.hWin.HEURIST4.ui.showEntityDialog('recUploadedFiles', popup_opts);
 
                 break;
-
-            case 'url':
+            }
+            case 'url': {
 
                 let recordset = this.getRecordSet();
                 let record = recordset.getById(ulf_ID);
@@ -1014,12 +1014,11 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                 window.hWin.HEURIST4.msg.showMsgFlash('Copied URL to clipboard', 3000);
 
                 break;
-
-            default:
-
+            }
+            default: {
                 is_resolved = false;
-
                 break;
+            }
         }
 
         return is_resolved;
