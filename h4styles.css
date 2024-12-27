@@ -1654,6 +1654,7 @@ span.fancytree-checkbox{
 }
 .rtt-tree .fancytree-has-children span.fancytree-expander{
     display: inline-block;
+    transform: scale(1.5) translate(1px, -1px);
 }
 
 /* Fancytree: Change individual checkboxes to radio buttons */
