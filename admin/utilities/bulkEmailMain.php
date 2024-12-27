@@ -27,86 +27,88 @@ use hserv\structure\ConceptCode;
 require_once dirname(__FILE__).'/../../hclient/framecontent/initPageMin.php';
 require_once dirname(__FILE__).'/bulkEmailSystem.php';
 
-$sysadmin_pwd = USanitize::getAdminPwd();
+// Retrieve the System Administrator password securely.
+$sysadminPwd = USanitize::getAdminPwd();
 
-if (@$_REQUEST["exportCSV"] == 1) {
-
-    if($system->verifyActionPassword($sysadmin_pwd, $passwordForServerFunctions)){
-        echo "The System Administrator password is invalid, please re-try in the previous tab/window";
-    }else{
-        getCSVDownload($_REQUEST);
+// Handle CSV export functionality.
+if (isset($_REQUEST["exportCSV"]) && $_REQUEST["exportCSV"] == 1) {
+    if ($system->verifyActionPassword($sysadminPwd, $passwordForServerFunctions)) {
+        echo "The System Administrator password is invalid, please re-try in the previous tab/window.";
+    } else {
+        getCSVDownload($_REQUEST); // Trigger CSV download if verification succeeds.
     }
     exit;
 }
 
-if ( !isset($_REQUEST['db']) || $system->verifyActionPassword($sysadmin_pwd, $passwordForServerFunctions) ){
-    ?>
-
-    <h3> A Heurist database and Server Manager password are required to enter this function </h3>
-
-    <?php
+// Check for required parameters and verify the system password.
+if (!isset($_REQUEST['db']) || $system->verifyActionPassword($sysadminPwd, $passwordForServerFunctions)) {
+    echo '<h3>A Heurist database and Server Manager password are required to enter this function.</h3>';
     exit;
-} elseif (isset($_REQUEST['databases']) && isset($_REQUEST['users']) && isset($_REQUEST['emailBody'])
-            && isset($_REQUEST['db']) && isset($sysadmin_pwd)) {
+}
 
-    if($system->verifyActionPassword($sysadmin_pwd, $passwordForServerFunctions)){
-
-        echo "The System Administrator password is invalid, please re-try in the previous tab/window";
+// Validate all required inputs for the email functionality.
+if (
+    isset($_REQUEST['databases'], $_REQUEST['users'], $_REQUEST['emailBody'], $_REQUEST['db'], $sysadminPwd)
+) {
+    if ($system->verifyActionPassword($sysadminPwd, $passwordForServerFunctions)) {
+        echo "The System Administrator password is invalid, please re-try in the previous tab/window.";
         exit;
     } else {
-
+        // Attempt to send the system email.
         $rtn = sendSystemEmail($_REQUEST);
 
-        if ($rtn["status"] == "ok") {
+        // Check the result of the email sending process.
+        if ($rtn["status"] === "ok") {
             echo "<br><br><div>A receipt of the process has been saved as a Notes Record<br><br>Record ID => "
-                    . $rtn["data"] ."<br>Record Title => ". $rtn["rec_Title"] .DIV_E;
+                . htmlspecialchars($rtn["data"]) . "<br>Record Title => " . htmlspecialchars($rtn["rec_Title"]) . "</div>";
         }
 
         exit;
     }
 }
 
+// Retrieve the mysqli object for database operations.
 $mysqli = $system->getMysqli();
 
-$emails = array();
+$emails = [];
+$hasEmails = false;
 
-$has_emails = false;
+// Get the current database name.
+$currentDb = HEURIST_DB_PREFIX . htmlspecialchars($_REQUEST['db']);
 
-$current_db = HEURIST_DB_PREFIX . htmlspecialchars($_REQUEST['db']);
+// Retrieve the record type ID for "Email".
+$emailRecTypeId = ConceptCode::getRecTypeLocalID("2-9");
 
-$email_rectype_id = ConceptCode::getRecTypeLocalID("2-9");
-if(empty($email_rectype_id)){
-
+if (empty($emailRecTypeId)) {
     includeJQuery();
     ?>
 
+    <!-- Include styles and scripts -->
     <link rel="stylesheet" type="text/css" href="../../h4styles.css">
-
-    <!-- Scripts -->
     <script type="text/javascript" src="../../hclient/core/detectHeurist.js"></script>
     <script type="text/javascript" src="../../hclient/core/hapi.js"></script>
     <script type="text/javascript" src="../../hclient/core/HSystemMgr.js"></script>
     <script type="text/javascript" src="../../hclient/core/recordset.js"></script>
-    
     <script type="text/javascript" src="../../hclient/core/utils.js"></script>
     <script type="text/javascript" src="../../hclient/core/utils_dbs.js"></script>
     <script type="text/javascript" src="../../hclient/core/utils_ui.js"></script>
     <script type="text/javascript" src="../../hclient/core/utils_msg.js"></script>
 
     <script>
-        if(!window.hWin.HAPI4 && typeof hAPI === 'function'){
+        // Initialize the HAPI4 library if not already available.
+        if (!window.hWin.HAPI4 && typeof hAPI === 'function') {
             window.hWin.HAPI4 = new hAPI('<?php echo HEURIST_DBNAME; ?>', $.noop);
         }
 
         $(document).ready(() => {
-
             window.hWin.HAPI4.EntityMgr.refreshEntityData('rty');
 
+            // Handle the download link click event.
             $('a').on('click', () => {
                 window.hWin.HAPI4.SystemMgr.checkPresenceOfRectype('2-9', 2, false, () => {
                     window.hWin.HEURIST4.msg.showMsgDlg(
                         'The Email record type has been downloaded.<br><br>'
-                      + 'You will now need to create an email record and then you can return to this function (simply refresh the page once the new record has been saved).',
+                        + 'You will now need to create an email record and then you can return to this function (simply refresh the page once the new record has been saved).',
                         null,
                         {title: 'Email record type downloaded successfully'}
                     );
@@ -116,51 +118,87 @@ if(empty($email_rectype_id)){
     </script>
 
     <?php
-    print "Unable to retrieve the id for the Email record type.<br><br>"
-        . "You can choose to download the required record type <a href='#'>here</a>, or,<br>"
-        . "manually download it from the Heurist Core Definitions database, available via Design > Browser templates.<br><br>"
-        . "Afterwards, you will need to create a new email record to use the bulk mailer, then you can simply refresh this page (<strong>once the record has been saved</strong>).";
+    // Display user instructions for downloading the required record type.
+    echo "Unable to retrieve the ID for the Email record type.<br><br>"
+       . "You can choose to download the required record type <a href='#'>here</a>, or,<br>"
+       . "manually download it from the Heurist Core Definitions database, available via Design > Browser templates.<br><br>"
+       . "Afterwards, you will need to create a new email record to use the bulk mailer, then you can simply refresh this page (<strong>once the record has been saved</strong>).";
     exit;
 }
 
-$query = "SELECT rec_ID, rec_Title FROM Records WHERE rec_RecTypeID = "
-            . $email_rectype_id
-            . " AND rec_Title != '' AND rec_Title IS NOT NULL AND rec_FlagTemporary != 1";
+// Build the query to retrieve email records.
+$query = "
+    SELECT rec_ID, rec_Title 
+    FROM Records 
+    WHERE rec_RecTypeID = ? 
+      AND rec_Title != '' 
+      AND rec_Title IS NOT NULL 
+      AND rec_FlagTemporary != 1
+";
 
-$email_list = $mysqli->query($query);
-if (!$email_list) {
-    print "Either unable to retrieve Email records from the current database, Error => " . $mysqli->error. ", Query => " .$query;
+// Prepare the statement to prevent SQL injection.
+$stmt = $mysqli->prepare($query);
+
+if (!$stmt) {
+    // Log the error and display a user-friendly message.
+    error_log("Failed to prepare statement: " . $mysqli->error);
+    echo "Unable to retrieve Email records from the current database. Please try again later.";
     exit;
 }
 
-while($email = $email_list->fetch_row()){
+// Bind the email record type ID as a parameter.
+$stmt->bind_param('i', $emailRecTypeId);
 
-    if(empty($email[1])) {
-        continue;
+// Execute the statement.
+if (!$stmt->execute()) {
+    // Log the error and display a user-friendly message.
+    error_log("Failed to execute query: " . $stmt->error);
+    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    exit;
+}
+
+// Fetch the result set.
+$result = $stmt->get_result();
+
+if (!$result) {
+    // Log the error and display a user-friendly message.
+    error_log("Failed to fetch result set: " . $stmt->error);
+    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    exit;
+}
+
+// Process the email records.
+while ($email = $result->fetch_assoc()) {
+    if (empty($email['rec_Title'])) {
+        continue; // Skip records with an empty title.
     }
 
-    $emails[$email[0]] = $email[1];//id -> title
-
-    $has_emails = true;
+    $emails[$email['rec_ID']] = $email['rec_Title']; // Map ID to title.
+    $hasEmails = true;
 }
 
-if(!$has_emails || empty($emails)) {
-    print "<br><br>This function sends bulk emails based on text in a selected <i>Email</i> record<br><br>"
-    . "<strong>" . $current_db . " contains no valid Email records.</strong><br><br>"
+if (empty($emails)) {
+    $safeDb = htmlspecialchars($currentDb, ENT_QUOTES, 'UTF-8'); // Sanitize database name
+    print "<br><br>This function sends bulk emails based on text in a selected <i>Email</i> record.<br><br>"
+    ."<strong>" . $safeDb . " contains no valid Email records.</strong><br><br>"
     . "<strong>Please create an Email record in the database containing the text<br>"
     . "you want to send out, using ##xxxx## markers for values to be inserted.</strong><br><br>"
     . "The Email record to be used must contain a title field and a short summary field - the latter will be used as the email's body. The title and body can be edited before sending. <br>"
-    . "If you want to create your email on-the-fly simply create a dummy record with placeholders for title and body to enable this function. <br><br>"
+    . "If you want to create your email on-the-fly, simply create a dummy record with placeholders for title and body to enable this function. <br><br>"
     . "Placeholders that will be replaced with proper values (case insensitive):<br><br>"
-    . "##firstname## &rarr; User's First Name,<br>"
-    . "##lastname## &rarr; User's Last Name,<br>"
-    . "##email## &rarr; User's Email,<br>"
-    . "##database## &rarr; Database Name,<br>"
-    . "##dburl## &rarr; Database URL,<br>"
-    . "##records## &rarr; Record Count, and<br>"
-    . "##lastmodified## &rarr; Date of the Last Modified Record<br>";
+    . "##firstname## &rarr User's First Name,<br>"
+    . "##lastname## &rarr User's Last Name,<br>"
+    . "##email## &rarr User's Email,<br>"
+    . "##database## &rarr Database Name,<br>"
+    . "##dburl## &rarr Database URL,<br>"
+    . "##records## &rarr Record Count, and<br>"
+    . "##lastmodified## &rarr Date of the Last Modified Record<br>";
     exit;
 }
+
+// Free resources.
+$stmt->close();
+
 ?>
 <!DOCTYPE html>
 <html lang="en" xml:lang="en">
@@ -710,6 +748,7 @@ if(!$has_emails || empty($emails)) {
                                 lastmod_logic: $("#recModifiedLogic").val(),
                                 lastmod_period: $("#recModified").val(),
                                 lastmod_unit: $("#recModifiedSel").val()
+                                //filterIncompleteDesc: $("#filterIncompleteDesc").is(":checked") ? 1 : 0 // New filter
                             },
                             req_id: window.hWin.HEURIST4.util.random()
                         }
@@ -1210,6 +1249,11 @@ if(!$has_emails || empty($emails)) {
                             Ago
                         </span>
 
+                        <!-- New Checkbox for Incomplete Descriptions 
+                        <label>
+                            <input type="checkbox" name="filterIncompleteDesc" id="filterIncompleteDesc" value="1">
+                            Include databases with incomplete descriptions
+                        </label>-->
                     </span>
 
                     <span style="margin-left: 15px;">

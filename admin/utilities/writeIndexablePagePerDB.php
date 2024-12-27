@@ -266,7 +266,7 @@ $template_page = <<<EXP
         <meta name="keywords" content="Heurist, Heurist database, Digital Humanitites, Database management, {db_name}, {db_dname}, {db_owner}">
         <meta name="author" content="{db_owner}">
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Heurist DB {db_name} on {server_host} updated {date_now}</title>
+        <title>{db_dname} - a Heurist Database by {db_owner}</title>
 
         <style>
             .dtl_row{display: table-row}
@@ -277,6 +277,32 @@ $template_page = <<<EXP
             .db_logo{ max-width: 120px; max-height: 120px; padding-left: 20px; }
             .heurist_logo{ background-color: #364050; max-width: 150px; max-height: 40px; margin-right: 10px; border-radius: 25px; }
         </style>
+
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          "name": "{db_dname}",
+          "description": "{db_desc}",
+          "url": "{db_url}",
+          "creator": {
+            "@type": "Organization",
+            "name": "{db_owner}"
+          },
+          "about": {
+            "@type": "Dataset",
+            "name": "Entity Types and Record Types Dataset",
+              "description": "A collection of various entity types and record types in the database.",
+              "includedInDataCatalog": {
+                "@type": "DataCatalog",
+                "name": "Heurist Data Catalog",
+                "entityTypes": "{struct_names}"
+              }
+            }
+          "dateModified": "{rec_last}"
+        }
+        </script>
+
     </head>
 
     <body>
@@ -286,9 +312,24 @@ $template_page = <<<EXP
              (<a href="https://HeuristNetwork.org" target="_blank" rel="noopener">https://HeuristNetwork.org</a>)
         </div>
 
+        <div class="dtl_row">        
+            <span class="dtl_head"></span>
+            <h1 class="dtl_value">{db_dname} <img class="db_logo" src="{db_logo}" alt="{db_dname} Logo"></img></h1>
+        </div>
+
         <div class="dtl_row">
-            <span class="dtl_head">Database name:</span>
-            <span class="dtl_value">{db_name} <img class="db_logo" src="{db_logo}" alt="Database logo"></img></span>
+            <h2 class="dtl_head">Database name:</h2>
+            <span class="dtl_value">{db_name}</span>
+        </div>
+
+        <div class="dtl_row">
+            <h2 class="dtl_head">Description:</h2>
+            <span class="dtl_value">{db_desc}</span>
+        </div>
+
+        <div class="dtl_row">
+            <h2 class="dtl_head">Generated website(s):</h2>
+            <span class="dtl_value">{db_website}</span>
         </div>
 
         <div class="dtl_row">
@@ -299,21 +340,6 @@ $template_page = <<<EXP
         <div class="dtl_row">
             <span class="dtl_head">Database access:</span>
             <span class="dtl_value"><a href="{db_url}" target=_blank>{db_url}</a></span>
-        </div>
-
-        <div class="dtl_row">
-            <span class="dtl_head">Generated website(s):</span>
-            <span class="dtl_value">{db_website}</span>
-        </div>
-
-        <div class="dtl_row">
-            <span class="dtl_head">Display name:</span>
-            <span class="dtl_value">{db_dname}</span>
-        </div>
-
-        <div class="dtl_row">
-            <span class="dtl_head">Description:</span>
-            <span class="dtl_value">{db_desc}</span>
         </div>
 
         <div class="dtl_row">

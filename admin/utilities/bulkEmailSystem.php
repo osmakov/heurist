@@ -59,6 +59,7 @@ class SystemEmailExt {
     public $rec_lastmod_period;// time period, default: 6
     public $rec_lastmod_unit; // unit of time, default: MONTH
     public $rec_lastmod_logic; // logic, default: <=
+    //public $filterIncompleteDesc; //New filter for databases w/ incomplete descriptions.
 
     private $records; // array of records+last modified information
 
@@ -75,73 +76,76 @@ class SystemEmailExt {
 
     private $add_gdpr = true;// add GDPR statement to end
 
-    /*
-    * Process the data received
-    *
-    * Param: $data => (int) Passed Form Data
-    *
-    * Return: VOID || Error Code
-    */
-
+    /**
+     * Processes form data for bulk emailing databases owners.
+     *
+     * @param array $data Form input data.
+     * @return int Returns 0 on success, or an error code on failure.
+     */
     public function processFormData($data) {
-
         global $system;
 
-        $rtn = 0;
+        $rtn = 0; // Default return value indicating success.
 
+        // Reset databases property to null for a fresh start.
         $this->databases = null;
 
+        // Validate database input from form data; return error code -1 if invalid.
         if (!$this->validateDatabaseInput($data)) {
             return -1;
         }
 
+        // Validate user-related input; return error code -1 if invalid.
         if (!$this->validateUserInput($data)) {
             return -1;
         }
 
-        // Get record filtering options, use defaults if none supplied
-        $this->rec_count = (isset($data["recTotal"]) && is_numeric($data["recTotal"]) && $data["recTotal"] >= 0) ? $data["recTotal"] : "none";
+        // Set record filtering options, applying defaults if not provided.
+        $this->rec_count = (isset($data["recTotal"]) && is_numeric($data["recTotal"]) && $data["recTotal"] >= 0) 
+            ? $data["recTotal"] 
+            : "none";
 
-        $this->rec_lastmod_period = (isset($data["recModVal"]) && is_numeric($data["recModVal"]) && $data["recModVal"] > 0) ? $data["recModVal"] : 6;
-        $this->rec_lastmod_unit = isset($data["recModInt"]) ? $data["recModInt"] : "MONTH";
-        $this->rec_lastmod_logic = isset($data["recModLogic"]) ? $data["recModLogic"] : "<=";
+        $this->rec_lastmod_period = (isset($data["recModVal"]) && is_numeric($data["recModVal"]) && $data["recModVal"] > 0) 
+            ? $data["recModVal"] 
+            : 6;
 
-        // Initialise other variables
-        $this->user_details = array();
-        $this->user_invalid_email = array();
+        $this->rec_lastmod_unit = $data["recModInt"] ?? "MONTH";
+        $this->rec_lastmod_logic = $data["recModLogic"] ?? "<=";
 
+        // Initialize arrays and variables for user details and error handling.
+        $this->user_details = [];
+        $this->user_invalid_email = [];
         $this->log = "";
         $this->receipt = null;
         $this->error_msg = "";
 
-        if(@$data["use_native"] == 1){
-            $this->use_native_mail_function = true;
-        }
-        if(@$data["add_gdpr"] == 1){
-            $this->add_gdpr = true;
-        }
+        // Set email processing options based on form input.
+        $this->use_native_mail_function = !empty($data["use_native"]);
+        $this->add_gdpr = !empty($data["add_gdpr"]);
 
-        $rtn = $this->createUserList();// save user information; first and last name, email, and list of databases
-
+        // Create a list of users; return error code if it fails.
+        $rtn = $this->createUserList();
         if ($rtn != 0) {
             return $rtn;
-        }elseif(isEmptyArray($this->user_details)){
+        }
 
+        // Check if any users were retrieved; set an error and return -1 if none.
+        if (isEmptyArray($this->user_details)) {
             $this->set_error('No users have been retrieved, no emails have been sent');
             return -1;
         }
 
-        $rtn = $this->createRecordsList();// save record counts and last modified record dates for each db
-
+        // Create a list of records for each database; return error code if it fails.
+        $rtn = $this->createRecordsList();
         if ($rtn != 0) {
             return $rtn;
         }
 
-        // Retrieve current user's email address
+        // Retrieve the current user's details and email address.
         $this->cur_user = $system->getCurrentUser();
         $this->getUserEmail();
 
-        return 0;
+        return 0; // Return success.
     }
 
     private function validateDatabaseInput($data) {
