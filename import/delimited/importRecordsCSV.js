@@ -805,6 +805,10 @@ function hImportRecordsCSV(_imp_ID, _max_upload_size, _format) {
             }
         } //for
 
+        $('#ignore_rectype').parent().position({
+            my: 'left-15 top', at: 'right top', of: $('#lblPrimaryRecordType').parent()
+        })
+
         $(s).appendTo(ele1);
 
         $('.select_rectype_seq').on('click', function(event){

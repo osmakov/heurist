@@ -87,7 +87,15 @@ class HSystemMgr {
    */
   login(request, callback) {
     if (request) request.a = 'login';
-    window.hWin.HAPI4.callserver('usr_info', request, callback);
+    window.hWin.HAPI4.callserver('usr_info', request, response => {
+           if (response.status == window.hWin.ResponseStatus.OK) {
+               this.matomoTrackLogin();
+           }
+
+           if (window.hWin.HEURIST4.util.isFunction(callback)) {
+               callback(response);
+           }
+       });
   }  
  
   /**
@@ -96,8 +104,8 @@ class HSystemMgr {
    * @param {callserverCallback} callback
    */
   reset_password(request, callback) {
-    if (request) request.a = 'reset_password';
-    window.hWin.HAPI4.callserver('usr_info', request, callback);
+       if (request) request.a = 'reset_password';
+       window.hWin.HAPI4.callserver('usr_info', request, callback); 
   } 
   
   /**
@@ -107,6 +115,9 @@ class HSystemMgr {
     window.hWin.HAPI4.callserver('usr_info', { a: 'logout' }, response => {
       if (response.status == window.hWin.ResponseStatus.OK) {
         window.hWin.HAPI4.setCurrentUser(null);
+        
+        this.matomoTrackLogout();
+        
         $(window.hWin.document).trigger(window.hWin.HAPI4.Event.ON_CREDENTIALS);
 
         if (window.hWin.HEURIST4.util.isFunction(callback)) {
@@ -477,25 +488,192 @@ class HSystemMgr {
   * @param {string} suplementary info
   */
   user_log(activity, suplementary) {
-      const log_actions = ['editRec', 'VisitPage'];
-      const log_prefix = ['db', 'st', 'prof', 'cms', 'imp', 'sync', 'exp'];
+      const log_actions = ['VisitPage']; //'editRec', 
+      const log_prefix = ['db', 'st', 'prof', 'cms', 'imp', 'sync', 'exp', 'configure', 'rec', 'hlp', 'search'];
       const action_parts = activity.indexOf('_') > 0 ? activity.split('_') : [];
 
       if (
           log_actions.includes(activity) ||
           (action_parts.length > 0 && log_prefix.includes(action_parts[0].toLowerCase()))
       ) {
+          let category = ''
           if (action_parts.length > 0) {
+              category = action_parts[0];
+              activity = '';
               for (let i = 1; i < action_parts.length; i++) {
                   action_parts[i] = action_parts[i].charAt(0).toUpperCase() + action_parts[i].slice(1);
+                  activity = activity + action_parts[i];
               }
-              activity = action_parts.join('');
           }
-
-          let request = { a: 'usr_log', activity: activity, suplementary: suplementary, user: window.hWin.HAPI4.user_id() };
-          window.hWin.HAPI4.callserver('usr_info', request);
+          
+          if(window._paq){
+          
+              //matomo
+              if(activity=='VisitPage'){
+                  
+                    this.matomoTrackNewPage('web', suplementary);
+                  
+              }else if(activity!='editRec'){
+                    if(category=='db'){
+                        category='Database';
+                    }else if(category=='st'){
+                        category='Structure';
+                    }else if(category=='prof'){
+                        category='Profile';
+                    }else if(category=='imp'){
+                        category='Import';
+                    }else if(category=='exp'){
+                        category='Export';
+                    }else if(category=='rec'){
+                        category='Record';
+                    }else if(category=='hlp'){
+                        category='Help';
+                    }
+                    
+                    category = category.charAt(0).toUpperCase() + category.slice(1);
+                    
+                    let value;
+                    if(window.hWin.HEURIST4.util.isPositiveInt(suplementary)){
+                        value = suplementary;
+                    }
+                    if(!activity){
+                        activity = 'TBD';
+                    }
+                  
+                    this.matomoTrackEventAction(category, activity, undefined, value);
+              }
+          
+          }else{
+            let request = { a: 'usr_log', activity: (category+activity), suplementary: suplementary, user: this.hapi4.user_id() };
+            this.hapi4.callserver('usr_info', request);
+          }
       }
   }
+
+  /**
+  * 
+  */
+  matomoTrackInit(pageType, value){
+
+      if(!window._paq){
+          return;
+      }
+
+      //?? _paq.push(['setCustomDimension', customDimensionId = 1, customDimensionValue = 'database']);
+      //per page
+      _paq.push(['setCustomDimension', 1, this.hapi4.database ]);  
+      _paq.push(['setCustomDimension', 2, pageType ]); // web|tpl|hml|view|edit|adm
+      _paq.push(['setCustomDimension', 3, this.hapi4.getLocale() ]);  
+
+      //per visit
+      const usrType = this.hapi4.getUserType()
+      if(usrType=='visitor'){
+        _paq.push(['resetUserId']);
+      }else{  
+        _paq.push(['setUserId', this.hapi4.currentUser['ugr_eMail'] ]); //unique email
+      }
+      _paq.push(['setCustomDimension', 5, usrType ]); // owner, admin, manager, user, guest, visitor
+
+
+      // define class name and assign it to download links - to be tracked
+      //_paq.push(['setDownloadClasses', "file-download"]); 
+      // or manually
+      //_paq.push(['trackLink', 'https://heuristref.net/file=d2332423c', 'download']);
+
+      this.matomoTrackNewPage(pageType, value);
+
+  }
+  
+  /**
+  * Track new page view (for smarty, web, recordview, recordedit)
+  * 
+  * @param pageType {string} web|tpl|view|edit|adm (hml) or startup
+  * @param value {string} suplementary info
+  * @param title {string} page title
+  */
+  matomoTrackNewPage(pageType, value, title){
+      
+        if(!window._paq){
+            return;
+        }
+        
+        let pageURL;
+        if(pageType=='adm'){
+            pageURL = '/?db=' + this.hapi4.database;
+        }else if(pageType=='startup'){
+            pageURL = '/startup';
+        }else {
+            pageURL = '/'+this.hapi4.database+'/'+pageType; //this.hapi4.baseURL+
+            if(value){
+                pageURL = pageURL+'/'+value;
+            }
+        }
+      
+        _paq.push(['setCustomUrl', pageURL ]);
+        if(title){
+            _paq.push(['setDocumentTitle', title]);
+        }
+        _paq.push(['trackPageView']);      
+//  _paq.push(['enableLinkTracking']);  
+
+  }
+
+  /**
+  * Track Event Action
+  */
+  matomoTrackEventAction(category, action, name, value){
+        if(!window._paq){
+            return;
+        }
+        //trigger event
+        //Event Category
+        //Event Action
+        //Event Name
+        //Event Value
+        let eventParams = ['trackEvent', category, action, name];
+        if(value>0){
+            eventParams.push(value);
+        }
+        _paq.push(eventParams);      
+  }
+
+  /**
+  * ON LOGOUT
+  */
+  matomoTrackLogout(){
+      if(!window._paq){
+          return;
+      }
+
+      // User has just logged out, we reset the User ID
+      _paq.push(['resetUserId']);
+
+      // we also force a new visit to be created for the pageviews after logout
+      _paq.push(['appendToTrackingUrl', 'new_visit=1']); 
+
+      _paq.push(['trackPageView']);
+
+      // we finally make sure to not again create a new visit afterwards (important for Single Page Applications)
+      _paq.push(['appendToTrackingUrl', '']); 
+
+  }
+
+  matomoTrackLogin(){
+        if(!window._paq){
+            return;
+        }
+
+      const usrType = this.hapi4.getUserType()
+      if(usrType=='visitor'){
+        _paq.push(['resetUserId']);
+      }else{  
+        _paq.push(['setUserId', this.hapi4.currentUser['ugr_eMail'] ]); //unique email
+      }
+      _paq.push(['setCustomDimension', 5, usrType ]); // owner, admin, manager, user, guest, visitor
+
+      _paq.push(['trackPageView']);
+  }
+  
   
   /**
   * Verify special system passwords for password-protected actions

@@ -1,4 +1,6 @@
 <?php
+use hserv\utilities\USystem;
+
  $_is_new_cms_editor = true;
 
     /**
@@ -402,7 +404,8 @@ function onPageInit(success)
 
 
     },300);
-
+    
+    window.hWin.HAPI4.SystemMgr.matomoTrackInit('web', home_page_record_id);
 }
 
 //
@@ -928,17 +931,23 @@ function afterPageLoad(document, pageid, eventdata){
                               && eventdata?.q;
             const handle_recids = remaining_path.length > 0;
 
+            let operator = '/?';
+            
             if(handle_query){
-                surl += `/?q=${eventdata.q}`;
+                surl += `{operator}q=${eventdata.q}`;
+                operator = '&';
             }
 
-            if(handle_recids){
+            if(handle_recids && false){
                 remaining_path = remaining_path.filter((rec_id) => !window.hWin.HEURIST4.util.isempty(rec_id) && rec_id > 0);
-                surl += `${(handle_query ? '/?' : '&')}rec_id=${remaining_path.join(',')}`;
+                if(remaining_path.length>0){
+                    surl += `${operator}rec_id=${remaining_path.join(',')}`;
+                    operator = '&';
+                }
             }
 
             if(current_language && current_language!='def'){ //!= current_language_def
-                surl += `${!handle_query && !handle_recids ? '/?' : '&'}lang=${current_language}`;
+                surl += `${operator}lang=${current_language}`;
             }
 
         }else{
@@ -1039,7 +1048,8 @@ function afterPageLoad(document, pageid, eventdata){
             });
 
     // Log interaction
-    window.hWin.HAPI4.SystemMgr.user_log('VisitPage', pageid);
+    const web_page_id = home_page_record_id+(pageid!=home_page_record_id?('/'+pageid):'');
+    window.hWin.HAPI4.SystemMgr.user_log('VisitPage', web_page_id);
 } //afterPageLoad
 
 //
@@ -1659,4 +1669,6 @@ function _getMenuContent($parent_id, $menuitems, $lvl){
 
             return $res;
 }//_getMenuContent
+
+USystem::insertLogScript('web');
 ?>

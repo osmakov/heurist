@@ -982,7 +982,7 @@ class DbUtils {
             }else{
                 $path = realpath(dirname(__FILE__).'/../../../');
                 $now = getNow();
-                fileAdd($database_name.' # restore '.$now->format('Y-m-d'),
+                fileAdd("{$database_name} # restore {$now->format('Y-m-d')}\n",
                             $path.'/databases_not_to_purge.txt');
             }
 

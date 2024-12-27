@@ -368,8 +368,11 @@ abstract class ExportRecords {
         // OUTPUT
         //
         if(@$params['zip']==1 || @$params['zip']===true){
+            // in case ERR_CONTENT_DECODING_FAILED need to check unwanted outputs
+            // such as spaces after close php brackets 
 
             $output = gzencode(file_get_contents($this->tmp_destination), 6);
+            
             fclose($this->fd);
 
             header('Content-Encoding: gzip');

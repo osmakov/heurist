@@ -142,8 +142,6 @@ $email_list = array();
 $email_list_deleted = array();
 $tot_size = 0;
 
-
-
 foreach ($databases as $idx=>$db_name){
 
     $dir_root = HEURIST_FILESTORE_ROOT.basename($db_name).'/';
@@ -258,7 +256,7 @@ foreach ($databases as $idx=>$db_name){
                             $remove_lines = 0;
                             break;
                         }
-                    }
+                    }//while
 
                     // Destroy file objects
                     unset($org_log);
@@ -358,6 +356,9 @@ echo $tabs0.'finished'.$eol;
 
 if(!$is_command_line) {print '</body></html>';}
 
+//
+//
+//
 function listFolderContent($dir){
 
     $size = 0;

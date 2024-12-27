@@ -388,6 +388,34 @@ class USystem {
 
         return $ret;
     }
+    
+    /**
+    * Return clinet IPv4 address
+    * 
+    */
+    public static function getUserIP(){
+        
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED'])) {
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        } elseif (isset($_SERVER['HTTP_FORWARDED_FOR'])) {
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_FORWARDED'])) {
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $ipaddress = null;
+        }
+        
+        $ipaddress = filter_var($ipaddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)??'Unknown';
+        
+        return $ipaddress;        
+    }
 
     //
     //host organization logo and url (specified in root installation folder next to heuristConfigIni.php)
@@ -739,114 +767,47 @@ class USystem {
         return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
         -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));        
     }
-
-    //
-    // Functions to check if webstites are dummies or worth referencing
-    //
-
-    // Uses cURL to fetch HTML page content.
-    function fetchPageContent($url) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        $content = curl_exec($ch);
-        curl_close($ch);
-        return $content;
-    }
-
-    // Extracts links from HTML page using DOMDocument.
-    function extractLinks($url, $content) {
-        $dom = new DOMDocument();
-        @$dom->loadHTML($content);
-        $links = [];
-
-        foreach ($dom->getElementsByTagName('a') as $link) {
-            $href = $link->getAttribute('href');
-
-            // Convert relative URLs to absolute URLs.
-            if (!filter_var($href, FILTER_VALIDATE_URL)) {
-                $href = rtrim($url, '/') . '/' . ltrim($href, '/');
-            }
-
-            // Add only valid URLs.
-            if (filter_var($href, FILTER_VALIDATE_URL)) {
-                $links[] = $href;
-            }
+    
+    public static function insertLogScript($pageType=null){
+        global $matomoUrl, $matomoSiteId;
+        
+        if(!(isset($matomoSiteId) && isset($matomoUrl))){
+            return;
         }
+?>        
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */                      
 
-        return array_unique($links);
-    }
-
-    // Crawls the pages of a website from a "startpoint" URL and checks for content.
-    function analyzeSite($startUrl) {
-        $visited = [];
-        $toVisit = [$startUrl];
-        $emptyPages = 0;
-
-        while (!empty($toVisit)) {
-            $url = array_shift($toVisit);
-
-            if (in_array($url, $visited)) {
-                continue;
-            }
-
-            echo "Counting characters: $url\n";
-            $content = fetchPageContent($url);
-            $charCount = strlen(strip_tags($content));
-
-            if ($charCount < 500) {
-                $emptyPages++;
-            }
-
-            $visited[] = $url;
-            $links = extractLinks($url, $content);
-
-            foreach ($links as $link) {
-                if (!in_array($link, $visited) && !in_array($link, $toVisit)) {
-                    $toVisit[] = $link;
-                }
-            }
-        }
-
-        return $emptyPages;
-    }
-
-    // Checks pages for specific dummy strings.
-    function isDummy($startUrl) {
-        $visited = [];
-        $toVisit = [$startUrl];
-        $dummyPages = 0;
-
-        while (!empty($toVisit)) {
-            $url = array_shift($toVisit);
-
-            if (in_array($url, $visited)) {
-                continue;
-            }
-
-            echo "Browsing: $url\n";
-            $content = fetchPageContent($url);
-            $contentAsString = strip_tags($content);
-
-            // Check for specific dummy content markers.
-            if (strpos($contentAsString, "UNCONFIGURED TITLE") !== false ||
-                strpos($contentAsString, "Use this page to provide contact and location information for the project.") !== false ||
-                strpos($contentAsString, "Please retain this page in your websiteE") !== false) {
-                $dummyPages++;
-            }
-
-            $visited[] = $url;
-            $links = extractLinks($url, $content);
-
-            foreach ($links as $link) {
-                if (!in_array($link, $visited) && !in_array($link, $toVisit)) {
-                    $toVisit[] = $link;
-                }
-            }
-        }
-
-        return $dummyPages;
+  <?php if($pageType=='startup'){?>
+       //per page  
+      _paq.push(['setCustomDimension', 1, '' ]);  
+      _paq.push(['setCustomDimension', 2, 'startup' ]);
+      _paq.push(['setCustomDimension', 3, 'eng' ]);  
+      //per visit
+      _paq.push(['resetUserId']);
+      _paq.push(['setCustomDimension', 5, 'visitor' ]);
+  
+      _paq.push(['setCustomUrl', '/startup' ]);
+  <?php } ?>
+  
+  _paq.push(['trackPageView']);
+//  _paq.push(['enableLinkTracking']);  
+  
+  
+  (function() {
+    var u="//<?php echo $matomoUrl;?>/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '<?php echo $matomoSiteId;?>']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+  
+  
+</script>
+<!-- End Matomo Code -->
+<?php        
     }
 }
 

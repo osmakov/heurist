@@ -402,6 +402,7 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
         $("head").append(cssLink);
         $("head").append($('<link rel="stylesheet" type="text/css" href="h4styles.css?t='+(new Date().getTime())+'">'));
         */
+
         var layoutid = '<?php echo htmlspecialchars(@$_REQUEST['ll']);?>';
 
         if(window.hWin.HEURIST4.util.isempty(layoutid)){

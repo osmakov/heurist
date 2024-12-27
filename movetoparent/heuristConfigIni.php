@@ -206,5 +206,9 @@ if (!@$needEncodeRecordDetails) {$needEncodeRecordDetails = 0; }
 // if (!@$absolutePathsToRemoveFromWebPages) $absolutePathsToRemoveFromWebPages = array('https://heuristplus.sydney.edu.au');
 $absolutePathsToRemoveFromWebPages = null;
 
-
+//
+// Matomo tracking server configuration
+//
+$matomoUrl = null; //'domain.com/matomo';
+$matomoSiteId = null; //'1';
 ?>

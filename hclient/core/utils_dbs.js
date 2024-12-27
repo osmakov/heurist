@@ -468,39 +468,19 @@ window.hWin.HEURIST4.dbs = {
                                 code:(rt_id+_separator+'r.'+$dtID), name:$dtValue['rst_DisplayName']});
                             
                         });
-/*                        
-                        $rl_children.push({type:'reltype',
-                            title:'Relationship type', 
-                            code:(rt_id+_separator+'r.'+dc['DT_RELATION_TYPE']), name:'Relationship type'}); 
-                        $rl_children.push({type:'date',
-                            title:'Relationship Start Date', 
-                            code:(rt_id+_separator+'r.'+dc['DT_START_DATE']), name:'Start Date'});
-                            
-                        $rl_children.push({type:'date',
-                            title:'Relationship End Date', 
-                            code:(rt_id+_separator+'r.'+dc['DT_END_DATE']), name:'End Date'});
-                        $rl_children.push({type:'freetext',
-                            title:'Relationship Name', 
-                            code:(rt_id+_separator+'r.'+dc['DT_NAME']), name:'Name'});
-                        $rl_children.push({type:'freetext',
-                            title:'Relationship Description', 
-                            code:(rt_id+_separator+'r.'+dc['DT_SHORT_SUMMARY']), name:'Description'});
-                        $rl_children.push({type:'enum',
-                            title:'Relationship interpretation reference', 
-                            code:(rt_id+_separator+'r.'+dc['DT_INTERPRETATION_REFERENCE']), name:'Interpretation Reference'});
-*/                        
+
                         $grouped.push(
                             {title:'<span style="font-style:italic">Relationship Fields</span>', folder:true, 
                                         is_generic_fields:true, children:$rl_children});
                             
-                    }else if($mode==5 && $recTypeId>0 && is_multi_constrained>0){ //for search builder
+                    }else if($mode==5 && $recTypeId>0){ //for search builder
                         
                         const rty_Name = $Db.rty($recTypeId, 'rty_Name');
 
                         $grouped.push( {code:`${$recTypeId}:exists`,
-                            key: 'exists', 
-                            name: rty_Name, 
-                            title: `${rty_Name} records ${is_multi_constrained}`, 
+                            key: 'exists',
+                            name: `${rty_Name} records`,
+                            title: fld_title,
                             type: 'freetext'} );
                     }
 
@@ -709,7 +689,24 @@ window.hWin.HEURIST4.dbs = {
                 $children.push({code:'recRelationNotes', title:'Relation Notes'});
                 $children.push({code:'recRelationStartDate', title:'Relation StartDate'});
                 $children.push({code:'recRelationEndDate', title:'Relation EndDate'});
-                
+
+                if($mode == 7){
+
+                    let skip = [
+                        window.hWin.HAPI4.sysinfo.dbconst.DT_PRIMARY_RESOURCE, window.hWin.HAPI4.sysinfo.dbconst.DT_TARGET_RESOURCE,
+                        window.hWin.HAPI4.sysinfo.dbconst.DT_RELATION_TYPE, window.hWin.HAPI4.sysinfo.dbconst.DT_SHORT_SUMMARY,
+                        window.hWin.HAPI4.sysinfo.dbconst.DT_START_DATE, window.hWin.HAPI4.sysinfo.dbconst.DT_END_DATE
+                    ];
+                    $Db.rst(window.hWin.HAPI4.sysinfo.dbconst.RT_RELATION).each2((dty_ID, rst_Fields) => {
+
+                        if(skip.indexOf(dty_ID) >= 0){
+                            return;
+                        }
+
+                        $children.push({code: dty_ID, title: `Relation ${rst_Fields.rst_DisplayName}`})
+                    });
+                }
+
                 $res['children'] = $children;
                 
             }else if($mode==5 || $mode==6) //----------------------------------- for query builder and facet search tree

@@ -1392,6 +1392,7 @@ class System {
         $this->currentUser = array('ugr_ID'=>intval($userID),
             'ugr_Name'        => @$_SESSION[$this->dbnameFull]['ugr_Name'],
             'ugr_FullName'    => $_SESSION[$this->dbnameFull]['ugr_FullName'],
+            'ugr_eMail'       => $_SESSION[$this->dbnameFull]['ugr_eMail'],
             'ugr_Groups'      => $_SESSION[$this->dbnameFull]['ugr_Groups'],
             'ugr_Permissions' => $_SESSION[$this->dbnameFull]['ugr_Permissions']);
 
@@ -1422,6 +1423,7 @@ class System {
         $_SESSION[$this->dbnameFull]['ugr_ID'] = $userID;
         $_SESSION[$this->dbnameFull]['ugr_Groups']   = user_getWorkgroups( $this->mysqli, $userID );
         $_SESSION[$this->dbnameFull]['ugr_Name']     = $user['ugr_Name'];
+        $_SESSION[$this->dbnameFull]['ugr_eMail']    = $user['ugr_eMail'];
         $_SESSION[$this->dbnameFull]['ugr_FullName'] = $user['ugr_FirstName'] . ' ' . $user['ugr_LastName'];
         $_SESSION[$this->dbnameFull]['ugr_Enabled']  = $user['ugr_Enabled'];
 
@@ -1622,7 +1624,7 @@ class System {
 
         $user_agent = USystem::getUserAgent();
 
-        $addr_IPv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)??'Unknown';
+        $addr_IPv4 = USystem::getUserIP(); //filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)??'Unknown';
 
         $info = array($user_id, $action, $now->format(DATE_8601), $user_agent['os'], $user_agent['browser'], $addr_IPv4);
 

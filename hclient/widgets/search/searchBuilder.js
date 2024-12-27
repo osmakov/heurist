@@ -396,6 +396,8 @@ $.widget( "heurist.searchBuilder", {
             this.field_array.push(ele);
         
             let that = this;
+            let correct_conjunction = false;
+
             ele.searchBuilderItem({
                     //token:  dty_ID>0?'f':dty_ID,
                     hasFieldSelector: !this.is_advanced,
@@ -423,6 +425,15 @@ $.widget( "heurist.searchBuilder", {
                     onchange: function(){
                         that._doCompose();
                         that.sortbySection.find('#sortby_header #sortby_values').text('record title');
+
+                        if(correct_conjunction){
+
+                            that.element.find('.search_conjunction').position({
+                                my: 'right-3 center-3',
+                                at: 'left center',
+                                of: ele.find('span.ui-selectmenu-button')
+                            });
+                        }
                     },
                     onselect_field: function(){
                         let id = this.element.attr('id');
@@ -439,12 +450,12 @@ $.widget( "heurist.searchBuilder", {
             if(this.field_array.length == 2){
 
                 this.element.find('.search_conjunction').position({
-                    my: 'right center',
-                    at: 'right center',
-                    of: ele.find('.field_header')
+                    my: 'right-3 center-3',
+                    at: 'left center',
+                    of: ele.find('span.ui-selectmenu-button')
                 });
 
-                this.element.find('.search_conjunction').css('left', 3);
+                correct_conjunction = true;
             }
         }
         

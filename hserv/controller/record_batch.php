@@ -100,6 +100,10 @@
 
             $res = $dbRecDetails->caseConversion();
 
+        }elseif(@$_REQUEST['a'] == 'nl2br'){
+
+            $res = $dbRecDetails->nl2brConversion();
+
         }elseif(@$_REQUEST['a'] == 'translation'){
 
             $res = $dbRecDetails->fieldTranslation();

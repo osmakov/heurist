@@ -500,10 +500,13 @@ function recordSearchFacets($system, $params){
         }elseif($fieldid=='recModified' || $fieldid=='modified'){
             $select_field = "r0.rec_Modified";
         }else{
+            
+            $compare_field = '';
+            
             if(strpos($fieldid,',')>0 && getCommaSepIds($fieldid)!=null){
                 $compare_field = 'IN ('.$fieldid.')';
-            }else{
-                $compare_field = '='.$fieldid;
+            }elseif(intval($fieldid)>0){
+                $compare_field = '='.intval($fieldid);
             }
 
             $select_field  = "dt0.dtl_Value";

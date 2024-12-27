@@ -82,10 +82,11 @@ of the codebase and rename it to index.html
 // ---------------------------------------------------------------------------------
 // *** DO NOT CHANGE VERSION NUMBER, THIS IS SET BY THE HEURIST DEVELOPMENT TEAM ***
 
-$version = "6.6.2";// sets current program version number, determined by Heurist development lead
+$version = "6.6.3";// sets current program version number, determined by Heurist development lead
 
 // ---------------------------------------------------------------------------------
 
+// 6.6.3  21 Dec 2024
 // 6.6.2  3 Dec 2024
 // 6.5.7  29 May 2024
 // 6.5.6  20 May 2024
@@ -188,9 +189,14 @@ $allowWebAccessEntityFiles = false;
 $useRewriteRulesForRecordLink = false;
 
 
+// matomo tracking server
+$matomoUrl = null; // for example 'domain.com/matomo'
+$matomoSiteId = null; // ID of tracked heurist domain in matomo configuration
+
 // system default file - if a heuristConfigIni.php file exists in the parent directory of the installation,
 // the configIni.php in the installation does not need to be configured. This allows unconfigured ConfigIni.php files
 // to exist in multiple experimental codebases on a single server and avoids accidental distribution of passwords etc.
+
 $parentIni = dirname(__FILE__)."/../heuristConfigIni.php";
 
 // parent directory configuration file is optional, hence include not required

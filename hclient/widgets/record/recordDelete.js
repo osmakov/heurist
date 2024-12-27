@@ -310,7 +310,7 @@ $.widget( "heurist.recordDelete", $.heurist.recordAction, {
             if(check_source!==true){                            
                 request['check_links'] = true;                   
             }
-            window.hWin.HAPI4.SystemMgr.user_log('delete_Record', (scope.length+' recs: '+request.ids.substr(0,100)));
+            window.hWin.HAPI4.SystemMgr.user_log('rec_Delete', scope.length); //+' recs: '+request.ids.substr(0,100)));
             
             window.hWin.HAPI4.RecordMgr.remove(request, 
                     function(response){

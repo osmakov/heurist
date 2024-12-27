@@ -1719,7 +1719,9 @@ function print_public_details($bib) {
 
                 $bd['val'] = html_entity_decode($bd['val']);// @todo: get translation
                 list($lang, $value) = output_chunker($bd['val'], true);
-                $bd['val'] = nl2br(str_replace('  ', NBSP, $value));
+                if($value == strip_tags($value)){
+                    $bd['val'] = nl2br(str_replace('  ', NBSP, $value));
+                }
 
                 if(!empty($primary_language)){
 

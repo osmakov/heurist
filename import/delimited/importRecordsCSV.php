@@ -380,7 +380,7 @@ if(!$format){ $format='csv';}
 
         </div>
 
-        <div style="position: absolute;right: 81px;top: 50px;padding-left:50px;font-size:0.8em">
+        <div style="padding-left:50px;font-size:0.8em">
                 <input type="checkbox" name="ignore_rectype" id="ignore_rectype" value="1" class="text"
                             onchange="{importRecordsCSV.onIgnoreRectype();}">&nbsp;
                 <label for="ignore_rectype" style="display:inline-flex;">
