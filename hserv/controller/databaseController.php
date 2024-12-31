@@ -28,6 +28,7 @@ set_time_limit(0);
 
 use hserv\utilities\DbUtils;
 use hserv\utilities\DbVerify;
+use hserv\utilities\DbVerifyURLs;
 use hserv\utilities\USanitize;
 
 require_once dirname(__FILE__).'/../../autoload.php';
@@ -372,7 +373,22 @@ $sErrorMsg = "Sorry, the database $db_source must be registered with an ID less 
             }
 
         }
+        elseif($action=='verifyurls')
+        {
 
+            if(!$system->isAdmin()){
+                $system->addError(HEURIST_REQUEST_DENIED,
+'To perform this action you must be logged in as Administrator of group \'Database Managers\' or as Database Owner');
+            }else{
+                
+                $isHeuristReferenceIndex = (strcasecmp(HEURIST_DBNAME,'Heurist_Reference_Index')==0);
+                $checker = new DbVerifyURLs($system, HEURIST_SERVER_URL, $isHeuristReferenceIndex);
+                $res = $checker->checkURLs($req_params['verbose'], false, $req_params['limit'], $session_id);
+                
+            }
+            
+            
+        }        
         elseif($action=='verify')
         {
 
@@ -449,7 +465,7 @@ $sErrorMsg = "Sorry, the database $db_source must be registered with an ID less 
         if(is_bool($res) && $res==false){
                 $response = $system->getError();
         }else{
-                $response = array('status'=>HEURIST_OK, 'data'=> $res, 'message'=>$system->getErrorMsg());
+                $response = array('status'=>HEURIST_OK, 'data'=> $res, 'message'=>$system->getErrorMsg());  //last param is termination message
         }
    }
 }

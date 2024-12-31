@@ -94,11 +94,10 @@ if (@$argv) {
 
 use hserv\entity\DbUsrReminders;
 use hserv\controller\ReportController;
+use hserv\utilities\DbVerifyURLs;
 
 require_once dirname(__FILE__).'/../../../autoload.php';
-
 require_once dirname(__FILE__).'/../../../hserv/records/search/recordFile.php';
-require_once dirname(__FILE__).'/../../verification/URLChecker.php';
 
 //retrieve list of databases
 $system = new hserv\System();
@@ -232,7 +231,7 @@ foreach ($databases as $idx=>$db_name){
         }
     }
 
-    $do_url_check = false; //DISABLED TEMP 2024-08-27
+    $do_url_check = false; //DISABLED 2024-08-27. It consumes too much server resources
     if($do_url_check){
 
         $perform_url_check = mysql__select_value($mysqli, 'SELECT sys_URLCheckFlag FROM sysIdentification');
@@ -242,13 +241,13 @@ foreach ($databases as $idx=>$db_name){
 
         echo $eol.$db_name;
 
-        $checkerURL = new URLChecker($mysqli, HEURIST_SERVER_URL, false);
+        $checkerURL = new DbVerifyURLs($system, HEURIST_SERVER_URL, false);
         $url_results = $checkerURL->checkURLs();
 
-        $invalid_rec_urls = $url_results[0];
-        $invalid_fb_urls = $url_results[1];
-        $invalid_file_urls = $url_results[2];
-        $fatal_curl_error = $url_results[3];
+        $invalid_rec_urls = $url_results['record'];  //rec_URL
+        $invalid_fb_urls = $url_results['text'];   //in text fields
+        $invalid_file_urls = $url_results['file']; //
+        $fatal_curl_error = $url_results['curl'];
 
         if(!$fatal_curl_error){
 
@@ -265,7 +264,7 @@ foreach ($databases as $idx=>$db_name){
             if(!empty($invalid_fb_urls)){
 
                     echo $eol.'text fields containing invalid urls: ';
-
+                    //rec_id=>(dty_id=>url)
                     foreach ($invalid_fb_urls as $rec_id => $flds) {
                         echo $eol.intval($rec_id).': ';
                         foreach($flds as $dty_id => $urls){
@@ -279,6 +278,7 @@ foreach ($databases as $idx=>$db_name){
             if(!empty($invalid_file_urls)){
 
                     echo $eol.'file fields contain invalid urls: ';
+                    //rec_id=>(dty_id=>url)
                     foreach ($invalid_file_urls as $rec_id => $flds) {
                         echo $eol.intval($rec_id).': ';
                         foreach($flds as $dty_id => $urls){

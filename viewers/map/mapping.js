@@ -3156,7 +3156,7 @@ $.widget( "heurist.mapping", {
             return __extendBoundsForPoint(ll);
             
         }else{
-            let bnd = layer.getBounds();
+            let bnd = layer?.getBounds();
             if(bnd && bnd.isValid()){
                 let p1 = bnd.getSouthWest();
                 let p2 = bnd.getNorthEast();

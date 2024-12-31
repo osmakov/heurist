@@ -30,7 +30,9 @@ class SystemSettings {
     private $system;
 
     private $settingsInDb = null; //from sysIdentification
-    private $settingsInFiles = array('TinyMCE formats' => 'text_styles.json', 'Webfonts' => 'webfonts.json'); //fromm /settings folder
+    private $settingsInFiles = array('TinyMCE formats' => 'text_styles.json', 
+                                     'Webfonts' => 'webfonts.json',
+                                     'Invalid URLs' => 'invalid_urls.json'); //from /settings folder
 
     public function __construct( $system ) {
         $this->system = $system;
@@ -110,7 +112,7 @@ class SystemSettings {
 
         $existing_settings = $this->getDatabaseSetting($setting_name);
 
-        if(!$existing_settings){
+        if(!$existing_settings && $replace_settings>0){
             return false;
         }
 

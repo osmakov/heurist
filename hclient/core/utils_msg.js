@@ -1427,12 +1427,13 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
     
     //
     // returns session_id
-    // container - container element. if not defined it shows in popup
-    // content - 1)html code 2)false - use given content 3) otherwise fill container with default content
-    // steps - array of labels
+    // options:
+    //      container - container element. if not defined it shows in popup
+    //      content - 1)html code 2)false - use given content 3) otherwise fill container with default content
+    //      steps - array of labels
     //
-    // session_id - unique id of progress session
-    // t_interval - checkout interval
+    //      session_id - unique id of progress session
+    //      t_interval - checkout interval
     //
     showProgress: function( options ){
         if(window.hWin.HEURIST4.msg._progressInterval>0){
@@ -1467,7 +1468,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                 
                 content += '</ol>';
             }else{
-                content = '<div class="loading" style="height:80%"></div>';
+                content = '<div class="loading" style="height:25%;min-height:150px"></div>';
             }
             
             content += '<div style="width:80%;height:40px;padding:5px;text-align:center;margin:auto;margin-top:10px">'
@@ -1493,7 +1494,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
         
         let progress_url = window.hWin.HAPI4.baseURL + "hserv/controller/progress.php";
         
-        let session_id = options.session;
+        let session_id = options.session_id;
         if(!(session_id>0)) session_id = window.hWin.HEURIST4.util.random();
 
         let t_interval = options.interval;
@@ -1534,6 +1535,8 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
             
             window.hWin.HEURIST4.util.sendRequest(progress_url, request, null, function(response){
 
+console.log(session_id, response);                
+                
 //response=='' || 
                 if(response?.status==window.hWin.ResponseStatus.UNKNOWN_ERROR){
                     window.hWin.HEURIST4.msg.hideProgress();
