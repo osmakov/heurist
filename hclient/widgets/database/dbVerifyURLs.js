@@ -19,6 +19,8 @@
 */
 
 $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
+    
+    prevSessionExists: false,
 
     //  
     // invoked from _init after loading of html content
@@ -27,9 +29,67 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
         // init controls
         
         //check that there is previous session
-        
+        this._checkPreviousSession();
         
         return this._super();
+    },
+    
+    //
+    //
+    //
+    _checkPreviousSession: function(){
+        
+        let request = {};
+        request['action'] = this.options.actionName;       
+        request['db'] = window.hWin.HAPI4.database;
+        request['checksession'] = 1;       
+
+        let that = this;
+        
+        window.hWin.HAPI4.SystemMgr.databaseAction( request,  function(response){
+
+                if (response.status == window.hWin.ResponseStatus.OK) {
+                    //returns either info about previous session or session id of current operation 
+                    if(response.data.session_id>0){
+                        //action in progress
+                        
+                    }else if(response.data.total_checked>0){
+                        
+                        that._$('#prevSessionExist').show();
+                        that._$('#prevSessionNotExist').hide();
+                        that._$('#total_checked').text(response.data.total_checked);
+                        that._$('#total_bad').text(response.data.total_bad);
+
+                        that._on(that._$('#btnCSV').button(), {click:that._getPreviousSessionAsCSV});
+
+                        that._prevSessionExists = true;
+                    }else{
+                        that._$('#prevSessionExist').hide();
+                        that._$('#prevSessionNotExist').show();
+                        that._prevSessionExists = false;
+                    }
+                    
+                } else {
+                    window.hWin.HEURIST4.msg.showMsgErr(response);
+                }
+              
+        });
+    },
+    
+    //
+    //
+    //    
+    _getPreviousSessionAsCSV: function(){
+
+        let req = {
+            'action' : this.options.actionName,
+            'getsession': 1,
+            'db': window.hWin.HAPI4.database
+        };
+
+        let url = window.hWin.HAPI4.baseURL + 'hserv/controller/databaseController.php?';
+        window.open(url+$.param(req), '_blank');
+
     },
 
     //
@@ -39,7 +99,9 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
                                                 
         let limit = this._$('#selCheckURLsLimit').val();
         
-        let request = {limit: limit, verbose:true};
+        const mode = this._prevSessionExists?this._$('input[name="mode"]:checked').val():0;
+        
+        let request = {limit: limit, verbose:1, mode:mode};
 
         this._sendRequest(request);        
     },
@@ -76,6 +138,11 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
         let div_res = this._$("#div_result").show();
         
         div_res.html(response?.output);
+        
+        let btnCsv = $('<button id="btnCSV">Download Bad URLs as CSV</button>');
+        btnCsv.button().appendTo(div_res);
+        
+        this._on(btnCsv, {click:this._getPreviousSessionAsCSV});
         
         if(terminatation_message){
 

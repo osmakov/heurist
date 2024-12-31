@@ -383,7 +383,17 @@ $sErrorMsg = "Sorry, the database $db_source must be registered with an ID less 
                 
                 $isHeuristReferenceIndex = (strcasecmp(HEURIST_DBNAME,'Heurist_Reference_Index')==0);
                 $checker = new DbVerifyURLs($system, HEURIST_SERVER_URL, $isHeuristReferenceIndex);
-                $res = $checker->checkURLs($req_params['verbose'], false, $req_params['limit'], $session_id);
+                
+                if(@$req_params['checksession']==1){
+                    $res = $checker->getCurrentSessionInfo();
+                }elseif(@$req_params['getsession']==1){
+                    
+                    $checker->outputSummaryInfoAsCSV();
+                    exit;
+                    
+                }else{
+                    $res = $checker->checkURLs(@$req_params['verbose']==1, false, @$req_params['limit'], @$req_params['mode'], $session_id);
+                }
                 
             }
             

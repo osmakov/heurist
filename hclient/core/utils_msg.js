@@ -1535,8 +1535,6 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
             
             window.hWin.HEURIST4.util.sendRequest(progress_url, request, null, function(response){
 
-console.log(session_id, response);                
-                
 //response=='' || 
                 if(response?.status==window.hWin.ResponseStatus.UNKNOWN_ERROR){
                     window.hWin.HEURIST4.msg.hideProgress();

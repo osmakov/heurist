@@ -107,15 +107,34 @@ class DbVerifyURLs {
         $this->mysqli->query($query);
         $this->passedRecIds = []; // reset the array
     }
+    
+    //
+    // Returns info about previous or current session
+    //
+    public function getCurrentSessionInfo(){
+
+        //load previous result
+        $this->readResultFile();
+        
+        if(@$this->results['session_id']>0){
+            return array('session_id'=>$this->results['session_id']);
+        }elseif(@$this->results['total_checked']>0){
+            return array('total_checked'=>$this->results['total_checked'], 'total_bad'=>$this->results['total_bad']);
+        }
+        
+        return array();
+    }
 
     /**
      * Check URLs in various sources and validate them.
      *
      * @param bool $isVerbose echo results at once
      * @param bool $listOnly Only list the URLs, do not perform any validations.
+     * @param int $maxCountToCheck
+     * @param int $mode - 0 start from last position, 1 check existing bad urls fist, 2 - from scratch
      * @return array Results of the URL validation or boolean.
      */
-    public function checkURLs($isVerbose = false, $listOnly = false, $maxCountToCheck=150, $session_id=0) {
+    public function checkURLs($isVerbose = false, $listOnly = false, $maxCountToCheck=150, $mode=0, $session_id=0) {
 
         $this->passedRecIds = [];
         $this->timeoutDomains = [];
@@ -128,19 +147,18 @@ class DbVerifyURLs {
         $this->isVerbose = $isVerbose || $listOnly;
         $this->listOnly = $listOnly;
         
-        $this->maxCountToCheck = $maxCountToCheck??150;
+        $this->maxCountToCheck = intval($maxCountToCheck)??150;
         $this->checkedCount = 0;
         
         //load previous result
-        $this->readResultFile();
-        
-        //check that action is not in progress
-        //@todo
-        
+        $this->readResultFile($mode==2); //if 2 - reset
         
         //start new session
         $this->isTerminated = false;
         if($session_id>0){
+            $this->results['session_id'] = $session_id;
+            $this->saveResultFile();
+            
             $this->isSession = true;
             DbUtils::setSessionId($session_id);
             ob_start();
@@ -148,14 +166,15 @@ class DbVerifyURLs {
             $session_id = 0;
         }
         
+        $res = true;
         //0. Check record URLs
+  /*
         $res = $this->checkRecordURLs();
-
         if($res && $this->checkedCount<$this->maxCountToCheck && !$this->isTerminated){
             //1. Check free text/block text fields for URLs
             $res = $this->checkTextFieldURLs();
         }
-
+  */
         if($res && $this->checkedCount<$this->maxCountToCheck && !$this->isTerminated){
             //2. Check external URLs in use (e.g., file fields)
             $res = $this->checkExternalFileURLs();
@@ -165,10 +184,21 @@ class DbVerifyURLs {
             //fatal curl error
             $this->results = false;
         }
+        
+        if(@$this->results['session_id']){
+            unset($this->results['session_id']);
+            
+            if(!isPositiveInt(@$this->results['total_checked'])){
+                $this->results['total_checked'] = 0;
+            }
+            $this->results['total_checked'] += $this->checkedCount;
+            $this->results['total_bad'] = $this->getTotalBad();
+        }
             
         $this->saveResultFile();  
         
         if($res && $this->isSession){
+            
             $this->results['output'] = ob_get_clean();
         }        
           
@@ -178,10 +208,73 @@ class DbVerifyURLs {
     //
     //
     //
-    private function readResultFile()
+    private function getTotalBad(){
+        
+        $total = count($this->results['record']);
+        
+        foreach(array('text','file') as $key){
+            if(array_key_exists($key, $this->results) && is_array($this->results[$key])){
+                foreach($this->results[$key] as $recId=>$fields){
+                    foreach($fields as $detailTypeId=>$urls){
+                        if(is_array($urls)){
+                            $total = $total + count($urls);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return $total;
+    }
+
+    //
+    //
+    //
+    public function outputSummaryInfoAsCSV(){
+        
+        $this->readResultFile();
+        
+        $csv_delimiter = ',';
+        $csv_enclosure = '"';
+        
+        $fd = fopen(TEMP_MEMORY, 'w');//less than 1MB in memory otherwise as temp file
+        fputcsv($fd, array('rec_ID','dty_ID','URL'), $csv_delimiter, $csv_enclosure);
+        
+        
+        foreach($this->results['record'] as $recId=>$url){
+            fputcsv($fd, array($recId, 0, $url), $csv_delimiter, $csv_enclosure);
+        }
+
+        foreach(array('text','file') as $key){
+            if(array_key_exists($key, $this->results) && is_array($this->results[$key])){
+                foreach($this->results[$key] as $recId=>$fields){
+                    foreach($fields as $detailTypeId=>$urls){
+                        foreach($urls as $url){
+                            fputcsv($fd, array($recId, $detailTypeId, $url), $csv_delimiter, $csv_enclosure);    
+                        }
+                    }
+                }
+            }
+        }
+
+        rewind($fd);
+        $res = stream_get_contents($fd);
+        fclose($fd);
+        
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=bad_urls.csv');
+        header(CONTENT_LENGTH . strlen($res));
+        exit($res);
+    }
+    
+    
+    //
+    //
+    //
+    private function readResultFile($isReset = false)
     {
         $this->results = $this->system->settings->getDatabaseSetting('Invalid URLs');
-        if(!$this->results){
+        if($isReset || !$this->results){
             $this->results = [];
         }
 
@@ -328,7 +421,7 @@ class DbVerifyURLs {
             
             $this->checkedCount++;
             $passed_cnt++;
-            if($this->checkedCount > $this->maxCountToCheck ||
+            if($this->checkedCount >= $this->maxCountToCheck ||
                $this->updateSessionProgress($this->checkedCount.','.$this->maxCountToCheck))
             {
                 break;                
@@ -438,11 +531,12 @@ class DbVerifyURLs {
                 $this->results['ts_text'] = $dtlID;
                 $passed_cnt++;
                 $this->checkedCount++;
-                if($this->checkedCount > $this->maxCountToCheck ||
+            }
+            
+            if($this->checkedCount >= $this->maxCountToCheck ||
                    $this->updateSessionProgress($this->checkedCount.','.$this->maxCountToCheck))
-                {
-                    break;                
-                }
+            {
+                break;                
             }
         }
         $res->close();
@@ -502,7 +596,7 @@ class DbVerifyURLs {
             $this->results['ts_file'] = $dtlID;
             $passed_cnt++;
             $this->checkedCount++;
-            if($this->checkedCount > $this->maxCountToCheck ||
+            if($this->checkedCount >= $this->maxCountToCheck ||
                $this->updateSessionProgress($this->checkedCount.','.$this->maxCountToCheck))
             {
                 break;                

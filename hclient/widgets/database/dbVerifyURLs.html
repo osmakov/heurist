@@ -6,9 +6,23 @@
 Checking speed is restricted to 30 URLs per minute to avoid blocking the server. We recommend limiting the check to 150 checks (5 minutes), which will return a list of the bad URLs encountered to that point as a CSV file and a search showing the records containing them so that you can correct them. 
         </p>
 
-        <p>
+        <div id="prevSessionNotExist">
+            <p>
 You may then run the function again and it will recheck the bad URLs to ensure they have been corrected, then start up where it left off. Repeat as often as needed to correct the whole database
-        </p>
+            </p>
+        </div>                       
+        
+        <div id="prevSessionExist" style="display:none">
+            <p>
+In previous session(s) <span id="total_checked"></span> URLs have been checked and found <span id="total_bad"></span> bad ones. 
+                <button id="btnCSV">Download Bad URLs as CSV</button>
+            </p>
+            <p>Select mode for next check:</p>
+            <label><input type="radio" value="0" name="mode" checked="checked">Start where it left off</label><br>
+            <label><input disabled type="radio" value="1" name="mode">Check invalid URLs first and then continue where it left off</label><br>
+            <label><input type="radio" value="2" name="mode">Start from scratch</label><br><br>
+                    
+        </div>                       
 
         <div>
             <label for="selCheckURLsLimit">Maximum URLs to check :</label>
