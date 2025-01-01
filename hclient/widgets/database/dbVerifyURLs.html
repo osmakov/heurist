@@ -14,8 +14,8 @@ You may then run the function again and it will recheck the bad URLs to ensure t
         
         <div id="prevSessionExist" style="display:none">
             <p>
-In previous session(s) <span id="total_checked"></span> URLs have been checked and found <span id="total_bad"></span> bad ones. 
-                <button id="btnCSV">Download Bad URLs as CSV</button>
+In previous session(s) <span class="total_checked"></span> URLs have been checked and found <span class="total_bad"></span> bad ones. 
+                <button class="btnCSV">Download Bad URLs as CSV</button>
             </p>
             <p>Select mode for next check:</p>
             <label><input type="radio" value="0" name="mode" checked="checked">Start where it left off</label><br>
@@ -41,7 +41,19 @@ In previous session(s) <span id="total_checked"></span> URLs have been checked a
         
 </div>
 
-<div id="div_result" class="ent_wrapper" style="margin-top:75px;display: none;padding:10px;">
+<div id="div_result" class="ent_wrapper" style="margin-top:75px;display: none;padding:10px; overflow:auto">
+    <div id="session_summary">
+        Last session
+    </div>
+    <div>
+        <hr>
+        Total checked: <span class="total_checked"></span>. Bad URLs: <span class="total_bad"></span>. 
+        <button class="btnCSV">Download Bad URLs as CSV</button>
+        
+        <br><br>
+        <h4 id="all_urls_verified" style="display:none">All URLs in database have been verified</h4>
+        <button class="ui-button-action">Continue Verify URLs</button>
+    </div>
 </div>
 
 <div class="ent_wrapper progressbar_div" style="display: none; background:white;z-index:60001">

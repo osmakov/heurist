@@ -166,17 +166,16 @@ class DbVerifyURLs {
             $session_id = 0;
         }
         
-        $res = true;
         //0. Check record URLs
-  /*
         $res = $this->checkRecordURLs();
+        
+        //1. Check free text/block text fields for URLs
         if($res && $this->checkedCount<$this->maxCountToCheck && !$this->isTerminated){
-            //1. Check free text/block text fields for URLs
             $res = $this->checkTextFieldURLs();
         }
-  */
+  
+        //2. Check external URLs in use (e.g., file fields)
         if($res && $this->checkedCount<$this->maxCountToCheck && !$this->isTerminated){
-            //2. Check external URLs in use (e.g., file fields)
             $res = $this->checkExternalFileURLs();
         }
         
@@ -191,6 +190,7 @@ class DbVerifyURLs {
             if(!isPositiveInt(@$this->results['total_checked'])){
                 $this->results['total_checked'] = 0;
             }
+            $this->results['session_checked'] = $this->checkedCount;
             $this->results['total_checked'] += $this->checkedCount;
             $this->results['total_bad'] = $this->getTotalBad();
         }

@@ -57,10 +57,10 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
                         
                         that._$('#prevSessionExist').show();
                         that._$('#prevSessionNotExist').hide();
-                        that._$('#total_checked').text(response.data.total_checked);
-                        that._$('#total_bad').text(response.data.total_bad);
+                        that._$('span.total_checked').text(response.data.total_checked);
+                        that._$('span.total_bad').text(response.data.total_bad);
 
-                        that._on(that._$('#btnCSV').button(), {click:that._getPreviousSessionAsCSV});
+                        that._on(that._$('.btnCSV').button(), {click:that._getPreviousSessionAsCSV});
 
                         that._prevSessionExists = true;
                     }else{
@@ -137,21 +137,30 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
         this._$('.ent_wrapper').hide();
         let div_res = this._$("#div_result").show();
         
-        div_res.html(response?.output);
+        div_res.find('#session_summary').html(response.output);
         
-        let btnCsv = $('<button id="btnCSV">Download Bad URLs as CSV</button>');
-        btnCsv.button().appendTo(div_res);
+        this._$('span.total_checked').text(response.total_checked);
+        this._$('span.total_bad').text(response.total_bad);
         
-        this._on(btnCsv, {click:this._getPreviousSessionAsCSV});
+        if(response.session_checked==0){
+            this._$('#all_urls_verified').show();
+            this._$('button.ui-button-action').hide();
+        }else{
+            this._$('#all_urls_verified').hide();
+            this._$('button.ui-button-action').show();
+        }
+        
+        this._prevSessionExists = false; //to active mode "continue"
         
         if(terminatation_message){
 
-            let error = window.hWin.HEURIST4.util.isObject(terminatation_message)
-                        ? terminatation_message
-                        : {message: terminatation_message};
-            error['error_title'] = window.hWin.HEURIST4.util.isempty(error['error_title']) ? 'Verification terminated' : error['error_title'];
-
-            window.hWin.HEURIST4.msg.showMsgErr(error)
+            terminatation_message = window.hWin.HEURIST4.util.isObject(terminatation_message)
+                        ? terminatation_message.message
+                        : terminatation_message;
+            //error['error_title'] = window.hWin.HEURIST4.util.isempty(error['error_title']) ? 'Verification terminated' : error['error_title'];
+            //window.hWin.HEURIST4.msg.showMsgErr(error)
+            
+            $(`<h3>${terminatation_message}</h3>`).appendTo(div_res.find('#session_summary'));
         }
     }
 });

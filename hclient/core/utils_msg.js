@@ -1468,10 +1468,10 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                 
                 content += '</ol>';
             }else{
-                content = '<div class="loading" style="height:25%;min-height:150px"></div>';
+                content = '<div class="loading" style="height:80%;min-height:150px"></div>';
             }
             
-            content += '<div style="width:80%;height:40px;padding:5px;text-align:center;margin:auto;margin-top:10px">'
+            content += '<div style="display:none;width:80%;height:40px;padding:5px;text-align:center;margin:auto;margin-top:10px">'
                 +'<div id="progressbar"><div class="progress-label">Processing data...</div></div>'
                 +'<div class="progress_stop" style="text-align:center;margin-top:4px">Abort</div>'
             +'</div>';
@@ -1552,6 +1552,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                         }
                     }else{
                         div_loading.hide();
+                        pbar.parent().show();
                         
                         if(resp.length==3 || resp.length==1){
                             let newStep = resp.shift();
