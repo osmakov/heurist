@@ -1,0 +1,65 @@
+<div id="div_header" class="ent_wrapper" style="margin-left:40px;font-size:0.95em;width:600px">
+
+    <h3>Vérifiez les URL non valides dans les en-têtes d'enregistrement, les champs texte et fichier</h3>
+
+    <p>
+        La vitesse de vérification est limitée à 30 URL par minute pour éviter de bloquer le serveur. Nous recommandons de limiter la vérification à 150 vérifications (5 minutes), ce qui renverra une liste des URL incorrectes rencontrées jusqu'à ce point sous forme de fichier CSV et une recherche affichant les enregistrements les contenant afin que vous puissiez les corriger.
+    </p>
+
+    <div id="prevSessionNotExist">
+        <p>
+            Vous pouvez ensuite exécuter à nouveau la fonction et elle revérifiera les URL incorrectes pour s'assurer qu'elles ont été corrigées, puis reprendra là où elle s'était arrêtée. Répétez aussi souvent que nécessaire pour corriger toute la base de données
+        </p>
+    </div>
+
+    <div id="prevSessionExist" style="display:none">
+        <p>
+            Au cours des sessions précédentes, <span class="total_checked"></span> les URL ont été vérifiées et <span class="total_bad"></span> les URL incorrectes ont été trouvées.
+            <button class="btnCSV">Télécharger les URL incorrectes au format CSV</button>
+        </p>
+        <p>Sélectionner le mode de vérification suivante :</p>
+        <label><input type="radio" value="0" name="mode" checked="checked">Commencer là où il s'est arrêté</label><br>
+        <label><input disabled type="radio" value="1" name="mode">Vérifiez d'abord les URL non valides, puis continuez là où il s'est arrêté</label><br>
+        <label><input type="radio" value="2" name="mode">Commencer à partir de zéro</label><br><br>
+
+    </div>
+
+    <div>
+        <label for="selCheckURLsLimit">Nombre maximal d'URL à vérifier :</label>
+        <select id="selCheckURLsLimit">
+            <option value="30">30 = 1 minute</option>
+            <option value="150" selected="selected">150 = 5 minutes</option>
+            <option value="300">300 = 10 minutes</option>
+            <option value="600">600 = 20 minutes</option>
+        </select>
+    </div>
+
+    <div style="margin-top:20px;text-align:center;width:600px">
+        <button class="ui-button-action">Vérifier les URL</button>
+    </div>
+
+</div>
+
+<div id="div_result" class="ent_wrapper" style="margin-top:75px;display: none;padding:10px; overflow:auto">
+    <div id="session_summary">
+        <h4>Vérification des URL</h4>
+        <p>URL d'enregistrement : Traité : <span class="session_processed_record"></span> Mauvais : <span class="session_bad_record"></span> <span class="record_bad"></span> <span class="links_record"></span></p>
+        <p>Champs texte/mémo : Traité : <span class="session_processed_text"></span> Mauvais : <span class="session_bad_text"></span> <span class="text_bad"></span> <span class="links_text"></span></p>
+        <p>Champs de fichier : Traité : <span class="session_processed_file"></span> Mauvais : <span class="session_bad_file"></span> <span class="file_bad"></span> <span class="links_file"></span></p>
+    </div>
+    <div>
+        <hr>
+        Total traité : <span class="total_checked"></span>. URL incorrectes : <span class="total_bad" style="color:red"></span>.
+        <button class="btnCSV">Télécharger les URL incorrectes au format CSV</button>
+
+        <br><br>
+        <div id="all_urls_verified" style="display:none">
+            <h4>Toutes les URL ont été traitées</h4>
+            <h4 id="all_urls_ok" style="display:none;color:green">Toutes les URL sont OK</h4>
+        </div>
+        <button class="ui-button-action">Continuer la vérification</button>
+    </div>
+</div>
+
+<div class="ent_wrapper progressbar_div" style="display: none; background:white;z-index:60001">
+</div>

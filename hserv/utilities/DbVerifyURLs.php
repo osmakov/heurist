@@ -197,7 +197,7 @@ class DbVerifyURLs {
             
         $this->saveResultFile();  
         
-        if($res && $this->isSession){
+        if($res && $this->isSession && $this->isVerbose){
             
             $this->results['output'] = ob_get_clean();
         }        
@@ -210,20 +210,21 @@ class DbVerifyURLs {
     //
     private function getTotalBad(){
         
-        $total = count($this->results['record']);
+        $this->results['record_bad'] = count($this->results['record']);
         
         foreach(array('text','file') as $key){
+            $this->results[$key.'_bad'] = 0;
             if(array_key_exists($key, $this->results) && is_array($this->results[$key])){
                 foreach($this->results[$key] as $recId=>$fields){
                     foreach($fields as $detailTypeId=>$urls){
                         if(is_array($urls)){
-                            $total = $total + count($urls);
+                            $this->results[$key.'_bad'] = $this->results[$key.'_bad'] + count($urls);
                         }
                     }
                 }
             }
         }
-        
+        $total = $this->results['record_bad'] + $this->results['file_bad'] + $this->results['text_bad'];
         return $total;
     }
 
@@ -284,11 +285,14 @@ class DbVerifyURLs {
     'file' => [],    // Broken external file URLs
     'curl' => ''     //fatal CURL error message - not used
 */        
-        foreach(array('record','text','file','curl') as $key){
+        foreach(array('record','text','file') as $key){
+            $this->results['session_processed_'.$key] = 0;
+            $this->results['session_bad_'.$key] = 0;
             if(!array_key_exists($key, $this->results)){
                 $this->results[$key] = [];
             }
         }
+        $this->results['curl'] = [];
     }
 
     private function saveResultFile(){
@@ -433,6 +437,8 @@ class DbVerifyURLs {
         $this->updateRecordsLastVerified();
 
         $this->results['ts_record'] = (new \DateTime())->format(DATE_8601);
+        $this->results['session_processed_record'] = $passed_cnt;
+        $this->results['session_bad_record'] = count($this->results['record']);
    
         $broken_cnt = count($this->results['record']);
         $this->printFooter($broken_cnt, $passed_cnt, 'Record URLs', 'Search "_BROKEN_" for details', $timestart);
@@ -507,7 +513,9 @@ class DbVerifyURLs {
         $timestart = microtime(true);
 
 
+        $this->results['session_bad_text'] = 0;
         $passed_cnt = 0;
+        
         while ($row = $res->fetch_row()) {
             $recId = $row[0];
             $value = $row[1];
@@ -542,7 +550,8 @@ class DbVerifyURLs {
         $res->close();
 
         $broken_cnt = count($this->results['text']);
-        $this->printFooter($broken_cnt, $passed_cnt, 'Text fields with URLs', '', $timestart);
+        $this->results['session_processed_text'] = $passed_cnt;
+        $this->printFooter($this->results['session_bad_text'], $passed_cnt, 'Text fields with URLs', '', $timestart);
 
         return true;
     }
@@ -578,6 +587,7 @@ class DbVerifyURLs {
         }
 
         $timestart = microtime(true);
+        $this->results['session_bad_file'] = 0;
         $passed_cnt = 0;
         while ($row = $res->fetch_row()) {
             $recId = $row[0];
@@ -604,8 +614,8 @@ class DbVerifyURLs {
         }
         $res->close();
 
-        $broken_cnt = count($this->results['file']);
-        $this->printFooter($broken_cnt, $passed_cnt, 'External URLs (File fields)', '', $timestart);
+        $this->results['session_processed_file'] = $passed_cnt;
+        $this->printFooter($this->results['session_bad_file'], $passed_cnt, 'External URLs (File fields)', '', $timestart);
         
         return true;
     }
@@ -759,6 +769,7 @@ class DbVerifyURLs {
         if ($error_msg!=null) {
 
             $this->results[$field_type_idx][$recId][$detailTypeId][] = $url;
+            $this->results['session_bad_'.$field_type_idx]++;
         
             if($this->isVerbose){
                 $urlMessage = '<div><a href="' . $url . '" target="_blank" rel="noopener">' . $url . '</a>&nbsp;' . htmlspecialchars($error_msg) . '</div>';

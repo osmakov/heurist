@@ -60,7 +60,15 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
                         that._$('span.total_checked').text(response.data.total_checked);
                         that._$('span.total_bad').text(response.data.total_bad);
 
-                        that._on(that._$('.btnCSV').button(), {click:that._getPreviousSessionAsCSV});
+                        let btnCSV = that._$('.btnCSV').button();
+                        that._on(btnCSV, {click:that._getPreviousSessionAsCSV});
+                        
+                        if(response.data.total_bad==0){
+                            btnCSV.hide();
+                        }else{
+                            btnCSV.show();
+                        }
+                        
 
                         that._prevSessionExists = true;
                     }else{
@@ -86,7 +94,7 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
             'getsession': 1,
             'db': window.hWin.HAPI4.database
         };
-
+        
         let url = window.hWin.HAPI4.baseURL + 'hserv/controller/databaseController.php?';
         window.open(url+$.param(req), '_blank');
 
@@ -101,7 +109,7 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
         
         const mode = this._prevSessionExists?this._$('input[name="mode"]:checked').val():0;
         
-        let request = {limit: limit, verbose:1, mode:mode};
+        let request = {limit: limit, verbose:0, mode:mode};
 
         this._sendRequest(request);        
     },
@@ -137,17 +145,54 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
         this._$('.ent_wrapper').hide();
         let div_res = this._$("#div_result").show();
         
-        div_res.find('#session_summary').html(response.output);
+        if(response.output){
+            div_res.find('#session_summary').html(response.output);
+        }
         
+        const isFinished = response.session_checked==0;
+        let that = this;
+        
+        const types = ['record','text','file'];
+        types.forEach(function(key) {
+            
+            that._$(`span.session_processed_${key}`).text(response[`session_processed_${key}`]);
+            //that._$('span.session_bad_text').text(response.session_bad_text);
+            const total_bad = response[`${key}_bad`];
+            let ele_total_bad = that._$(`span.${key}_bad`);
+            ele_total_bad.text(total_bad);
+            ele_total_bad.css('color','red');
+            if(total_bad>0){
+               const ids = Object.keys(response[key]).join(',')
+               const url = window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database+'&q=ids:'+ids;
+               that._$(`span.links_${key}`).html('<a href="'+url+'" target="_blank" style="padding-left:10px;font-size:0.8em">show records as search  <span class="ui-icon ui-icon-linkext"></span></a>');
+            }else if(isFinished){
+                ele_total_bad.text('OK').css('color','green');
+            } 
+            
+        });  
+
         this._$('span.total_checked').text(response.total_checked);
-        this._$('span.total_bad').text(response.total_bad);
+        this._$('span.total_bad').text(isFinished && response.total_bad==0?'OK':response.total_bad);
+        this._$('span.total_bad').css('color',isFinished && response.total_bad==0?'green':'red');
         
-        if(response.session_checked==0){
+        if(isFinished){ //check has been completed
             this._$('#all_urls_verified').show();
+            if(response.total_bad==0){
+                this._$('#all_urls_ok').show();
+            }else{
+                this._$('#all_urls_ok').hide();
+            }
             this._$('button.ui-button-action').hide();
         }else{
             this._$('#all_urls_verified').hide();
             this._$('button.ui-button-action').show();
+        }
+        
+        if(response.total_bad==0){
+            div_res.find('button.btnCSV').hide();
+        }else{
+            div_res.find('button.btnCSV').show();
+            this._on(div_res.find('.btnCSV').button(), {click:this._getPreviousSessionAsCSV});
         }
         
         this._prevSessionExists = false; //to active mode "continue"

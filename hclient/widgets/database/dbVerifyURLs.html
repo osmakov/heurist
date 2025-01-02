@@ -43,16 +43,22 @@ In previous session(s) <span class="total_checked"></span> URLs have been checke
 
 <div id="div_result" class="ent_wrapper" style="margin-top:75px;display: none;padding:10px; overflow:auto">
     <div id="session_summary">
-        Last session
+        <h4>Checking URLs</h4>
+        <p>Record URLs: Processed: <span class="session_processed_record"></span> Bad: <span class="session_bad_record"></span> <span class="record_bad"></span> <span class="links_record"></span></p>
+        <p>Text/Memo fields: Processed: <span class="session_processed_text"></span> Bad: <span class="session_bad_text"></span> <span class="text_bad"></span> <span class="links_text"></span></p>
+        <p>File fields: Processed: <span class="session_processed_file"></span> Bad: <span class="session_bad_file"></span> <span class="file_bad"></span> <span class="links_file"></span></p>
     </div>
     <div>
         <hr>
-        Total checked: <span class="total_checked"></span>. Bad URLs: <span class="total_bad"></span>. 
+        Total processed: <span class="total_checked"></span>. Bad URLs: <span class="total_bad" style="color:red"></span>. 
         <button class="btnCSV">Download Bad URLs as CSV</button>
         
         <br><br>
-        <h4 id="all_urls_verified" style="display:none">All URLs in database have been verified</h4>
-        <button class="ui-button-action">Continue Verify URLs</button>
+        <div id="all_urls_verified" style="display:none">
+            <h4>All URLs have been processed</h4>
+            <h4 id="all_urls_ok" style="display:none;color:green">All URLs OK</h4>
+        </div>
+        <button class="ui-button-action">Continue checking</button>
     </div>
 </div>
 
