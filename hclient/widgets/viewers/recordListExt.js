@@ -55,6 +55,8 @@ $.widget( "heurist.recordListExt", {
         show_export_button: false, // show button to export current record set
         show_print_button: false, // show button to print current record set
         export_options: 'all', // export formats allowed
+
+        fontsize: 0, //base font size for renderRecordData otherwise it takes from user preferences
         
         language: 'def'
     },
@@ -72,7 +74,7 @@ $.widget( "heurist.recordListExt", {
     print_button: null, // print button
 
     _print_frame: null, // for printing
-
+    
     // the constructor
     _create: function() {
 
@@ -89,10 +91,22 @@ $.widget( "heurist.recordListExt", {
             this.div_content.css({width:'100%', height:'100%'}); 
         }
         
+        if(this.options.empty_remark=='def'){
+            this.options.empty_remark = window.hWin.HR('resultListExt_empty_remark');
+        }
+        if(this.options.placeholder_text=='def'){
+            this.options.placeholder_text = window.hWin.HR('resultListExt_placeholder_text');
+        }
        
-        
         if(this.options.css){
             this.div_content.css( this.options.css );
+        }
+        if(this.options.fontsize==0){
+            if(this.element.css('font-size')){
+                this.options.fontsize = parseFloat(this.element.css('font-size'));
+            }else if(this.div_content.css('font-size')){
+                this.options.fontsize = parseFloat(this.div_content.css('font-size'));
+            }
         }
         
         
@@ -610,6 +624,9 @@ $.widget( "heurist.recordListExt", {
                     
                     if(this.options.record_with_custom_styles){
                         newurl = newurl + '&cssid=' + this.options.record_with_custom_styles;
+                    }
+                    if(this.options.fontsize>0){
+                        newurl = newurl + '&fontsize=' + this.options.fontsize;
                     }
                 }
             }
