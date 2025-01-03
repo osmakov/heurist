@@ -37,8 +37,8 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
             empty_remark_def: 'resultList_empty_remark'
         },
         heurist_resultListExt: {
-            placeholder_def: 'Please select a record on the left to view it here...', // is found in context_help/recordSelectMsg.htm
-            empty_remark_def: 'No default'
+            placeholder_def: 'resultListExt_placeholder_text',
+            empty_remark_def: 'resultListExt_empty_remark'
         },
         heurist_resultListDataTable: {
             placeholder_def: 'No default',
@@ -452,7 +452,6 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
                 }
 
                 if(_def_labels[widget_name]){ // fill in default labels
-
                     let def_placeholder = window.hWin.HR(_def_labels[widget_name]['placeholder_def']);
 
                     let def_remark = window.hWin.HR(_def_labels[widget_name]['empty_remark_def']);

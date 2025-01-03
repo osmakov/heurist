@@ -300,6 +300,8 @@
 #resultList_noresult#No results found. Please modify search/filter to return at least one result record.
 #resultList_empty_remark#No entries match the filter criteria (entries may exist but may not have been made visible to the public or to your user profile)
 #resultList_private_record#This record is not publicly visible - user must be logged in to see it
+#resultListExt_empty_remark#No default
+#resultListExt_placeholder_text#Please select a record on the left to view it here...
 #private - hidden from non-owners#
 #visible to any logged-in user#
 #pending (viewable by anyone, changes pending)#
