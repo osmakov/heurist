@@ -197,7 +197,7 @@ window.hWin.HEURIST4.util = {
             return;    
         }
         
-        if(!Array.isArray(element)){
+        if(!Array.isArray(element) && !element.jquery){
             element = [element];
         }
         
