@@ -479,8 +479,10 @@ window.hWin.HEURIST4.dbs = {
 
                         $grouped.push( {code:`${$recTypeId}:exists`,
                             key: 'exists',
-                            name: `${rty_Name} records`,
-                            title: fld_title,
+                            name: rty_Name, 
+                            title: `${rty_Name} records`, // ${is_multi_constrained}                         
+                            //name: `${rty_Name} records`,
+                            //title: fld_title,
                             type: 'freetext'} );
                     }
 
