@@ -786,7 +786,8 @@ function detail_str($rd_type, $rd_val)
 function do_fix_dupe()
 {
     global $system, $mysqli, $master_rec_id, $finished_merge, $enum_bdts, $bib_ids_list, $bib_ids, $instant_merge;
-    
+
+    $records_no_access = [];
     $is_admin = $system->isAdmin();
     $query1 = 'select rec_ID,rec_OwnerUGrpID from Records where rec_ID in ('.$bib_ids_list.')';
     $res = $mysqli->query($query1);

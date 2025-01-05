@@ -2046,7 +2046,7 @@ ORDER BY child.dtl_RecID";
                         }else{
 
                             $row2 = mysql__select_row_assoc($mysqli,'SELECT rec_Title, rec_RecTypeID FROM Records WHERE rec_ID='.$rec_id);
-                            $rst_DisplayName = mysql__select_value($mysqli, 'SELECT rst_DisplayName FROM defRecStructure WHERE rst_DetailType = ? AND rst_RecTypeID = ?', ['ii', $row['dty_ID'], $row['rec_RecTypeID']]);
+                            $rst_DisplayName = mysql__select_value($mysqli, 'SELECT rst_DisplayName FROM defRecStructure WHERE rst_DetailTypeID = ? AND rst_RecTypeID = ?', ['ii', $row['dty_ID'], $row['rec_RecTypeID']]);
                             $row['dty_Name'] = !empty($rst_DisplayName) ? $rst_DisplayName : $row['dty_Type'];
                             $row['rec_Title'] = $row2['rec_Title'];
                             $row['rec_RecTypeID'] = $row2['rec_RecTypeID'];

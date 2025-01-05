@@ -74,6 +74,20 @@ if(array_key_exists('hideImages', $_REQUEST)){
 // How to handle fields set to hidden
 $show_hidden_fields = $is_production || $is_map_popup ? -1 : $system->userGetPreference('recordData_HiddenFields', 0);
 
+//                                                    
+if(array_key_exists('fontsize', $_REQUEST)){
+    $usr_font_size = intval($_REQUEST['fontsize']);    
+}else{
+    $usr_font_size = intval($system->userGetPreference('userFontSize', 0));    
+}
+$font_size = '';
+if(!$is_map_popup && $usr_font_size != 0){
+    $usr_font_size = max(8, min(22, $usr_font_size));
+    $font_size = "font-size:{$usr_font_size}px;"; // !important
+}
+define('FONT_SIZE', $font_size);
+
+
 $rectypesStructure = dbs_GetRectypeStructures($system);//getAllRectypeStructures();//get all rectype names
 
 $defTerms = dbs_GetTerms($system);
@@ -326,7 +340,7 @@ if(!$system->hasAccess()){
                         }
 
                         let rec_title = link.innerHTML.indexOf('- >') === -1 ? link.innerHTML : link.innerHTML.split(' - > ')[1];
-                        let title = `${rec_title} <em style="font-size:10px;font-weight:normal;position:absolute;right:10em;top:25%;">${window.hWin.HR('drag to rescale')}</em>`;
+                        let title = `${rec_title} <em style="font-size:0.9em;font-weight:normal;position:absolute;right:10em;top:25%;">${window.hWin.HR('drag to rescale')}</em>`;
                         let cover = link.innerHTML; //innerText
 
                         let cur_params = window.hWin.HEURIST4.util.getUrlParams(location.href);
@@ -985,6 +999,7 @@ if(!empty($import_webfonts)){
             text-align: left;
             color: #7D9AAA;
             text-transform: uppercase;
+            font-size: 0.9em;
         }
 
         A:hover {
@@ -997,13 +1012,13 @@ if(!empty($import_webfonts)){
         .detailRow {
             display: table;
             padding: 5px 0 5px 0;
-            font-size: 11px;
+            font-size: 0.95em; /*11px;*/
             overflow: visible;
         }
 
         #recID {
             float: right;
-            font-size: 11px;
+            font-size: 0.95em; /*11px;*/
         }
 
         .external-link {
@@ -1043,13 +1058,13 @@ if(!empty($import_webfonts)){
             float: left;
             text-align: right;
             padding: 15px 10px;
-            font-size: 9px;
+            font-size: 0.85em; /*9px;*/
             min-width: 80px;
             cursor: default;
         }
         .prompt {
             color: #999999;
-            font-size: 10px;
+            font-size: 0.9em; /* 10px;  */
             font-weight: normal;
             padding-top: 0.3em;
         }
@@ -1080,7 +1095,7 @@ if(!empty($import_webfonts)){
 
         .media-control {
             font-weight: normal;
-            font-size: 11px;
+            font-size: 0.95em; /*11px;*/
             margin-left: 15px;
             cursor: pointer;
             vertical-align: middle;
@@ -1099,6 +1114,9 @@ if(!empty($font_families)){
 
 if($is_production){
     print '.detailType {width:160px;}';
+}
+if(defined('FONT_SIZE') && FONT_SIZE!==''){
+    echo ' body, body.popup{ '.FONT_SIZE.'} ';
 }
 ?>
 
@@ -1139,7 +1157,7 @@ if($is_production){
         <?php
 } //$is_map_popup
 elseif(!$is_map_popup){
-//    print '<div style="font-size:0.8em">';
+//see mapping.js : $('.leaflet-popup-content').css('font-size':'0.75rem')
 ?>
 <script>
             function printLTime(sdate,ele){
@@ -2190,7 +2208,7 @@ function print_public_details($bib) {
                     'select dtl_Value from recDetails where dtl_RecID='
                     .$bib['rec_ID'].' and dtl_DetailTypeID=347');//DT_WEBSITE_ICON);
     if ($webIcon) {print "<img id=website-icon src='" . $webIcon . "'>";}
-   */
+    */
     if (@$url) {
         print '<div class="detailRow" style="border:none 1px #00ff00;">' //width:100%;
             .'<div class=detailType>URL</div>'
@@ -2204,14 +2222,6 @@ function print_public_details($bib) {
     $always_visible_dt = array(DT_SHORT_SUMMARY);
     if(defined('DT_GEO_OBJECT')){
         $always_visible_dt[] = DT_GEO_OBJECT;
-    }
-
-    $usr_font_size = $system->userGetPreference('userFontSize', 0);
-    $font_size = '';
-    if(!$is_map_popup && $usr_font_size != 0){
-        $usr_font_size = ($usr_font_size < 8) ? 8
-                                              : (($usr_font_size > 18) ? 18 : $usr_font_size);
-        $font_size = "font-size:{$usr_font_size}px;";
     }
 
     $prevLbl = null;
@@ -2257,7 +2267,7 @@ function print_public_details($bib) {
             print '<div class="'. $row_classes .'" '. $ele_id .' style="border:none 1px #00ff00;'   //width:100%;
                     .($is_map_popup && !in_array($bd['dty_ID'], $always_visible_dt)?CSS_HIDDEN:'')
                     .($is_map_popup?'':'width:100%;')
-                    .$font_size
+                    //.FONT_SIZE
                     .'"><div class=detailType>'.($prevLbl==$bd['name']?'':htmlspecialchars($bd['name']))
                 . '</div><div class="detail'.($is_map_popup && ($bd['dty_ID']!=DT_SHORT_SUMMARY)?' truncate':'').$is_cms_content.'">';
         }
@@ -2363,14 +2373,6 @@ function print_relation_details($bib) {
 
     $extra_styling = (!$is_map_popup) ? 'style="max-width: max-content;"' : '';
 
-    $usr_font_size = $system->userGetPreference('userFontSize', 0);
-    $font_size = '';
-    if(!$is_map_popup && $usr_font_size != 0){
-        $usr_font_size = ($usr_font_size < 8) ? 8
-                                              : (($usr_font_size > 18) ? 18 : $usr_font_size);
-        $font_size = "font-size:{$usr_font_size}px;";
-    }
-
     if($from_res){
         while ($reln = $from_res->fetch_assoc()) {
 
@@ -2432,7 +2434,7 @@ function print_relation_details($bib) {
                 $recTitle = 'record id ' . $relatedRecID;
             }
 
-            print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
+            print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.($is_map_popup?CSS_HIDDEN:'').'">';//FONT_SIZE. && $link_cnt>2 linkRow
             $link_cnt++;
             //        print '<span class=label>' . htmlspecialchars($bd['RelationType']) . '</span>';    //saw Enum change
 
@@ -2519,7 +2521,7 @@ function print_relation_details($bib) {
                 $recTitle = 'record id ' . $relatedRecID;
             }
 
-            print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
+            print '<div class="detailRow fieldRow" data-id="'. $bd['recID'] .'" style="'.($is_map_popup?CSS_HIDDEN:'').'">';//FONT_SIZE. && $link_cnt>2 linkRow
             $link_cnt++;
 
             if($field_name === false && array_key_exists('RelTerm',$bd)){
@@ -2608,16 +2610,9 @@ function print_linked_details($bib, $link_cnt)
 
     print_linked_details_header($bib);
 
-    $usr_font_size = $system->userGetPreference('userFontSize', 0);
-    $font_size = '';
-    if(!$is_map_popup && $usr_font_size != 0){
-        $usr_font_size = max(8, min(18, $usr_font_size));
-        $font_size = "font-size:{$usr_font_size}px;";
-    }
-
     while ($row = $res->fetch_assoc()) {
 
-        print '<div class="detailRow fieldRow" style="'.$font_size.($is_map_popup?CSS_HIDDEN:'').'">';// && $link_cnt>2 linkRow
+        print '<div class="detailRow fieldRow" style="'.($is_map_popup?CSS_HIDDEN:'').'">';//FONT_SIZE && $link_cnt>2 linkRow
         $link_cnt++;
 
             print '<div style="display:table-cell;width:28px;height:21px;text-align: right;padding-right:4px">'

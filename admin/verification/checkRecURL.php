@@ -28,8 +28,9 @@ set_time_limit(0);
 
 define('PDIR','../../');
 
+use hserv\utilities\DbVerifyURLs;
+
 require_once dirname(__FILE__).'/../../autoload.php';
-require_once 'URLChecker.php';
 
 $list_only = (@$_REQUEST['list']==1);
 
@@ -60,7 +61,7 @@ if(!$system->isAdmin()){ //  $system->isDbOwner()
 
 
 $isHeuristReferenceIndex = (strcasecmp(HEURIST_DBNAME,'Heurist_Reference_Index')==0);
-$checker = new URLChecker($system->getMysqli(), HEURIST_SERVER_URL, $isHeuristReferenceIndex);
+$checker = new DbVerifyURLs($system, HEURIST_SERVER_URL, $isHeuristReferenceIndex);
 $results = $checker->checkURLs(true, $list_only);
 
 /* heurist instances

@@ -2575,7 +2575,8 @@ $.widget( "heurist.mapping", {
                 $content.css({
                     'max-width': maxw,
                     'max-height': maxh,
-                    'overflow': 'auto'
+                    'overflow': 'auto',
+                    'font-size': '0.75rem'
                 });
 
                 /*if(!(that.mapPopUpTemplate || layer.options.popup_template) && width == 'auto' && height == 'auto'){
@@ -2604,7 +2605,7 @@ $.widget( "heurist.mapping", {
                     $popup_ele.resizable('destroy');
                 }
 
-                this._on($popup_ele.find('.login-viewer'), {
+                that._on($popup_ele.find('.login-viewer'), {
                     click: () => window.hWin.HEURIST4.ui.checkAndLogin(true, () => {location.reload();})
                 });
 
@@ -3156,7 +3157,7 @@ $.widget( "heurist.mapping", {
             return __extendBoundsForPoint(ll);
             
         }else{
-            let bnd = layer.getBounds();
+            let bnd = layer?.getBounds();
             if(bnd && bnd.isValid()){
                 let p1 = bnd.getSouthWest();
                 let p2 = bnd.getNorthEast();

@@ -1,0 +1,66 @@
+<div id="div_header" class="ent_wrapper" style="margin-left:40px;font-size:0.95em;width:600px">
+        
+        <h3>Check for invalid URLs in Record headers, text and file fields</h3>        
+        
+        <p>
+Checking speed is restricted to 30 URLs per minute to avoid blocking the server. We recommend limiting the check to 150 checks (5 minutes), which will return a list of the bad URLs encountered to that point as a CSV file and a search showing the records containing them so that you can correct them. 
+        </p>
+
+        <div id="prevSessionNotExist">
+            <p>
+You may then run the function again and it will recheck the bad URLs to ensure they have been corrected, then start up where it left off. Repeat as often as needed to correct the whole database
+            </p>
+        </div>                       
+        
+        <div id="prevSessionExist" style="display:none">
+            <p>
+In previous session(s) <span class="total_checked"></span> URLs have been checked and found <span class="total_bad"></span> bad ones. 
+                <button class="btnCSV">Download Bad URLs as CSV</button>
+            </p>
+            <p>Select mode for next check:</p>
+            <label><input type="radio" value="0" name="mode" checked="checked">Start where it left off</label><br>
+            <label><input disabled type="radio" value="1" name="mode">Check invalid URLs first and then continue where it left off</label><br>
+            <label><input type="radio" value="2" name="mode">Start from scratch</label><br><br>
+                    
+        </div>                       
+
+        <div>
+            <label for="selCheckURLsLimit">Maximum URLs to check :</label>
+            <select id="selCheckURLsLimit">
+                <option value="30">30 = 1 minutes</option>
+                <option value="150" selected="selected">150 = 5 minutes</option>
+                <option value="300">300 = 10 minutes</option>
+                <option value="600">600 = 20 minutes</option>
+            </select>
+        </div>
+        
+        <div style="margin-top:20px;text-align:center;width:600px"> 
+            <button class="ui-button-action">Verify URLs</button>
+        </div>
+        
+        
+</div>
+
+<div id="div_result" class="ent_wrapper" style="margin-top:75px;display: none;padding:10px; overflow:auto">
+    <div id="session_summary">
+        <h4>Checking URLs</h4>
+        <p>Record URLs: Processed: <span class="session_processed_record"></span> Bad: <span class="session_bad_record"></span> <span class="record_bad"></span> <span class="links_record"></span></p>
+        <p>Text/Memo fields: Processed: <span class="session_processed_text"></span> Bad: <span class="session_bad_text"></span> <span class="text_bad"></span> <span class="links_text"></span></p>
+        <p>File fields: Processed: <span class="session_processed_file"></span> Bad: <span class="session_bad_file"></span> <span class="file_bad"></span> <span class="links_file"></span></p>
+    </div>
+    <div>
+        <hr>
+        Total processed: <span class="total_checked"></span>. Bad URLs: <span class="total_bad" style="color:red"></span>. 
+        <button class="btnCSV">Download Bad URLs as CSV</button>
+        
+        <br><br>
+        <div id="all_urls_verified" style="display:none">
+            <h4>All URLs have been processed</h4>
+            <h4 id="all_urls_ok" style="display:none;color:green">All URLs OK</h4>
+        </div>
+        <button class="ui-button-action">Continue checking</button>
+    </div>
+</div>
+
+<div class="ent_wrapper progressbar_div" style="display: none; background:white;z-index:60001">
+</div>

@@ -50,7 +50,7 @@
 // adm - main admin ui
 //  heurist/database_name/action/param1/param2
 //
-// special case for dicobiosport.huma-num.fr
+// special case for dicobiosport.huma-num.fr and privileges.huma-num.fr
 //
 
 $requestUri = explode('/', trim($_SERVER['REQUEST_URI'],'/'));
@@ -67,11 +67,11 @@ $redirection_path = '../';
 $is_own_domain = (strpos($_SERVER["SERVER_NAME"],'.huma-num.fr')>0 && $_SERVER["SERVER_NAME"]!='heurist.huma-num.fr');
 
 if($is_own_domain){
-    //'dicobiosport'
+    //'dicobiosport' and 'privileges'
     //detect databasename
     $database_name_from_domain = substr($_SERVER["SERVER_NAME"],0,-12);//remove .huma-num.fr
     if(empty($requestUri) || $requestUri[0]!=$database_name_from_domain){
-        array_unshift($requestUri, $database_name_from_domain);
+        array_unshift($requestUri, $database_name_from_domain); //add to beginning of array
     }
 }
 

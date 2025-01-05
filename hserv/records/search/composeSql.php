@@ -1705,7 +1705,7 @@ class HPredicate {
                     $res = predicateId($recordID,$list_ids);
 
                 }else{
-                    $res = $res.SQL_AND.$field_name.$val.$field_condition.')';
+                    $res = $res.SQL_AND.$field_name.$val.$field_condition.' LIMIT 1)';
                 }
             }else{
                 //field id not defined - at the moment used for search via registered file
@@ -2040,7 +2040,7 @@ class HPredicate {
             if($this->field_id){
                 //no pointer field exists among record details
                 $where = (($this->negate)?'':SQL_NOT)." EXISTS (select dtl_ID from recDetails $rd where r$p.rec_ID=$rd.dtl_RecID AND "
-            ."$rd.dtl_DetailTypeID=".$this->field_id.")";
+            ."$rd.dtl_DetailTypeID=".$this->field_id." LIMIT 1)";
 
             }else{
                 //no links at all or any link

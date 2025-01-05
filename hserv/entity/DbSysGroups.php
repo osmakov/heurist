@@ -129,7 +129,7 @@ class DbSysGroups extends DbEntityBase
 
         //$is_ids_only = (count($this->data['details'])==1);
 
-        if($needCount){
+        if($needCount || strpos($orderby, 'ugr_Members')!==false){
             array_push($this->data['details'],
                 '(select count(*) from sysUsrGrpLinks where (ugl_GroupID=ugr_ID)) as ugr_Members');
         }

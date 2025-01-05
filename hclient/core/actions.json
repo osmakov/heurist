@@ -157,6 +157,19 @@
         },
         "text": "Verify integrity"
     },
+    {
+        "id": "menu-database-verifyURLs",
+        
+        "data": {
+            "container": "admin",
+            "logaction": "db_VerifyURLs",
+            "user-admin-status": "1",
+            "user-experience-level": "1",
+            "icon": "ui-icon-check",
+            "header": "Verify URLs in record headers and fields"
+        },
+        "text": "Verify URLs"
+    },
     
     {
         

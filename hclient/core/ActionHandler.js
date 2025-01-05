@@ -434,6 +434,7 @@ class ActionHandler {
             case "menu-database-clone":
             case "menu-database-register":
             case "menu-database-verify":
+            case "menu-database-verifyURLs":
                 window.hWin.HEURIST4.ui.showRecordActionDialog(actionName, popup_dialog_options);
                 break;
             case "menu-lookup-config":

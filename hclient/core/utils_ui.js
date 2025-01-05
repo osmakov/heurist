@@ -2631,8 +2631,13 @@ window.hWin.HEURIST4.ui = {
         let widgetName = actionName;
         
         if(actionName.indexOf('db')===0){
-            widgetName = 'dbAction';
+            if(actionName=='dbVerifyURLs' || actionName=='dbVerify'){
+                widgetName = actionName;
+            }else{
+                widgetName = 'dbAction';    
+            }
             options['actionName'] = actionName;
+            options['path'] = 'widgets/database/'
         }
         
         if(window.hWin.HEURIST4.util.isFunction(doc_body[widgetName])){ //OK! widget script js has been loaded
