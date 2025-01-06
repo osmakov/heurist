@@ -148,120 +148,161 @@ class SystemEmailExt {
         return 0; // Return success.
     }
 
+    /**
+     * Validates database input from the provided form data.
+     *
+     * @param array $data Form input data.
+     * @return bool Returns true if the database input is valid, false otherwise.
+     */
     private function validateDatabaseInput($data) {
+        // Ensure the current database is provided; set an error if missing.
         if (!isset($data["db"])) {
-            $this->set_error('No current database has been provided<br>Please contact the Heurist team if this problem persists.');
+            $this->set_error('No current database has been provided.<br>Please contact the Heurist team if this problem persists.');
             return false;
         }
 
+        // Process the 'databases' input if provided.
         if (isset($data["databases"])) {
+            // Convert a comma-separated string into an array if necessary.
             if (!is_array($data["databases"])) {
                 $data["databases"] = explode(',', $data["databases"]);
             }
 
+            // Validate the provided databases if the array is not empty.
             if (is_array($data["databases"]) && count($data["databases"]) >= 1) {
                 $this->databases = $this->validateDatabases($data["databases"]);
             }
         }
 
+        // Check if valid databases exist after validation; set an error if none.
         if (isEmptyArray($this->databases)) {
             $provided_dbs = is_array($data["databases"]) ? "" : "<br>databases => " . htmlspecialchars($data["databases"]);
             $this->set_error('No valid databases have been provided.' . $provided_dbs);
             return false;
         }
 
+        // Return true if all validations pass.
         return true;
-
     }
 
+    /**
+     * Validates user-related input from the provided form data.
+     *
+     * @param array $data Form input data.
+     * @return bool Returns true if user input is valid, false otherwise.
+     */
     private function validateUserInput($data) {
-
+        // Validate the 'users' field and ensure it matches one of the allowed options.
         if (isset($data["users"]) && in_array($data["users"], $this->user_options)) {
-            $this->users = $data["users"];
+            $this->users = $data["users"]; // Assign valid users.
         } else {
+            // Generate an error message if 'users' is invalid or missing.
             $main_msg = 'No valid users have been provided.<br>users => '
-            . (isset($data["users"]) ? htmlspecialchars(print_r($data["users"], true)) : ' not defined');
+                . (isset($data["users"]) 
+                    ? htmlspecialchars(print_r($data["users"], true)) 
+                    : ' not defined');
             $this->set_error($main_msg);
             return false;
         }
 
-        $this->email_subject = isset($data["emailTitle"]) && is_string($data["emailTitle"]) ? $data["emailTitle"] : null;
+        // Validate the email subject, ensuring it's a string or defaulting to null.
+        $this->email_subject = isset($data["emailTitle"]) && is_string($data["emailTitle"]) 
+            ? $data["emailTitle"] 
+            : null;
 
+        // Ensure the email body is provided and is a string.
         if (!isset($data["emailBody"]) || !is_string($data["emailBody"])) {
             $this->set_error('No email body has been provided');
             return false;
         }
 
-        $this->email_body = $data["emailBody"];
+        $this->email_body = $data["emailBody"]; // Assign the valid email body.
 
+        // Add a GDPR statement to the email body if required.
         $this->addGDPRStatement();
 
-        return true;
+        return true; // All validations passed.
     }
 
     /**
-     * Add data disclaimer to end of email, attach it here so substitutions can be made later
+     * Appends a GDPR disclaimer to the email body.
+     * The disclaimer content is loaded from a predefined HTML file.
      */
-    private function addGDPRStatement(){
-
-        if(!$this->add_gdpr){
+    private function addGDPRStatement() {
+        // Exit early if GDPR addition is not required.
+        if (!$this->add_gdpr) {
             return;
         }
 
-        $GDPRFile = __DIR__ . '/../../../GDPR.html';
-        if(file_exists($GDPRFile) || !is_readable($GDPRFile) || filesize($GDPRFile) == 0){
-            $GDPRFile = __DIR__ . '/../../movetoparent/GDPR.html';
-        }
+        // Define the primary and fallback file paths for the GDPR disclaimer.
+        $primaryGDPRFile = __DIR__ . '/../../../GDPR.html';
+        $fallbackGDPRFile = __DIR__ . '/../../movetoparent/GDPR.html';
 
-        if(!file_exists($GDPRFile) || !is_readable($GDPRFile) || filesize($GDPRFile) == 0){
+        // Determine the appropriate GDPR file to use.
+        $GDPRFile = file_exists($primaryGDPRFile) && is_readable($primaryGDPRFile) && filesize($primaryGDPRFile) > 0
+            ? $primaryGDPRFile
+            : (file_exists($fallbackGDPRFile) && is_readable($fallbackGDPRFile) && filesize($fallbackGDPRFile) > 0
+                ? $fallbackGDPRFile
+                : null);
+
+        // Exit if no valid GDPR file is found.
+        if (!$GDPRFile) {
             return;
         }
 
+        // Load the GDPR HTML content, removing unnecessary tags (e.g., <title>, <meta>).
         $DOM = new \DOMDocument();
         $DOM->loadHTMLFile($GDPRFile, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
 
-        foreach($DOM->getElementsByTagName('title') as $node){
-            $node->parentNode->removeChild($node);
-        }
-        foreach($DOM->getElementsByTagName('meta') as $node){
-            $node->parentNode->removeChild($node);
+        foreach (['title', 'meta'] as $tagName) {
+            $nodes = $DOM->getElementsByTagName($tagName);
+            while ($nodes->length > 0) {
+                $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+            }
         }
 
-        $GDPR = $DOM->saveHTML();
-
-        if(!empty($GDPR)){
-            $this->email_body .= "<br><br>{$GDPR}";
+        // Append the cleaned GDPR content to the email body.
+        $GDPRContent = $DOM->saveHTML();
+        if (!empty($GDPRContent)) {
+            $this->email_body .= "<br><br>{$GDPRContent}";
         }
     }
 
-    /*
-    * Get current user's email
-    *
-    * Param: None
-    *
-    * Return: VOID
-    */
-
+    /**
+     * Retrieves the current user's email address.
+     *
+     * If the email is invalid or not found, defaults to the system admin's email.
+     *
+     * @return void
+     */
     private function getUserEmail() {
-
         global $system;
+
+        // Get the mysqli connection parameters.
         $mysqli = $system->getMysqli();
 
-        $query = "SELECT ugr.ugr_eMail FROM ". HEURIST_DBNAME_FULL .".sysUGrps AS ugr WHERE ugr.ugr_ID = ". $this->cur_user['ugr_ID'];
+        // Prepare the query to fetch the user's email by their ID.
+        $query = "SELECT ugr.ugr_eMail 
+                  FROM " . HEURIST_DBNAME_FULL . ".sysUGrps AS ugr 
+                  WHERE ugr.ugr_ID = ?";
 
+        // Set email default value to false.
         $email = false;
-        $eres = $mysqli->query($query);
-        if($eres){
-            $email = $eres->fetch_row()[0];
-            $email = filter_var($email, FILTER_VALIDATE_EMAIL);
+
+        // Use a prepared statement to prevent SQL injection.
+        if ($stmt = $mysqli->prepare($query)) {
+            $stmt->bind_param('i', $this->cur_user['ugr_ID']); // Bind the user ID as an integer.
+            $stmt->execute();
+            $stmt->bind_result($emailResult);
+            $stmt->fetch();
+            $stmt->close();
+
+            // Validate the fetched email address.
+            $email = filter_var($emailResult, FILTER_VALIDATE_EMAIL);
         }
 
-        if(!$email){
-            //not found or invalid
-            $this->cur_user['ugr_eMail'] = HEURIST_MAIL_TO_ADMIN;
-        }else{
-            $this->cur_user['ugr_eMail'] = $email;
-        }
+        // Set the user's email to the default admin email if invalid or not found.
+        $this->cur_user['ugr_eMail'] = $email ? $email : HEURIST_MAIL_TO_ADMIN;
     }
 
     /*
