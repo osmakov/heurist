@@ -1443,6 +1443,7 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
         
         let $progress_div;
         let content = options?.content;
+        let onComplete = options?.onComplete;
         let is_popup = true;
         
         if(!options){
@@ -1535,7 +1536,6 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
             
             window.hWin.HEURIST4.util.sendRequest(progress_url, request, null, function(response){
 
-//response=='' || 
                 if(response?.status==window.hWin.ResponseStatus.UNKNOWN_ERROR){
                     window.hWin.HEURIST4.msg.hideProgress();
                 }else if(response){
@@ -1546,6 +1546,11 @@ if (! window.hWin.HEURIST4.msg) window.hWin.HEURIST4.msg = {
                     if(response=='terminate' || !(resp.length>=2)){
                         //first or last response
                         if(response=='terminate'){
+                            
+                            if(onComplete){
+                                onComplete.call();    
+                            }
+                            
                             window.hWin.HEURIST4.msg.hideProgress();
                         }else{
                             div_loading.show();    

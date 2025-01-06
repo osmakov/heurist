@@ -117,7 +117,8 @@ class DbVerifyURLs {
         $this->readResultFile();
         
         if(@$this->results['session_id']>0){
-            return array('session_id'=>$this->results['session_id']);
+            //session is in progress
+            return array('session_id'=>$this->results['session_id']); 
         }elseif(@$this->results['total_checked']>0){
             return array('total_checked'=>$this->results['total_checked'], 'total_bad'=>$this->results['total_bad']);
         }

@@ -1370,6 +1370,7 @@ class DbUtils {
                 $tables = $mysqli->query("SHOW TABLES");//get all tables from target db
                 if($tables){
 
+                    // SET unique_checks=0; SET foreign_key_checks=0; 
                     mysql__foreign_check( $mysqli, false );
                     $mysqli->query("SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'");
 

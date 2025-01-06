@@ -39,6 +39,8 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
     //
     _checkPreviousSession: function(){
         
+        this._hideProgress();
+        
         let request = {};
         request['action'] = this.options.actionName;       
         request['db'] = window.hWin.HAPI4.database;
@@ -52,6 +54,8 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
                     //returns either info about previous session or session id of current operation 
                     if(response.data.session_id>0){
                         //action in progress
+                        that._session_id = response.data.session_id;
+                        that._showProgress( that._session_id, false, 1000, that._checkPreviousSession );
                         
                     }else if(response.data.total_checked>0){
                         
@@ -114,13 +118,13 @@ $.widget( "heurist.dbVerifyURLs", $.heurist.dbAction, {
         this._sendRequest(request);        
     },
     
-    _showProgress: function ( session_id, is_autohide, t_interval ){
+    _showProgress: function ( session_id, is_autohide, t_interval, onComplete ){
       
         this._$('.ent_wrapper').hide();
         let progress_div = this._$('.progressbar_div').show();
         
         window.hWin.HEURIST4.msg.showProgress({container: progress_div,
-                        session_id: session_id, t_interval:2000});  
+                        session_id: session_id, t_interval:2000, onComplete:onComplete});  
         
     },
     

@@ -491,7 +491,7 @@ $.widget( "heurist.dbAction", $.heurist.baseAction, {
     //    false - it shows rotating(loading) image for null values and progress bar for n,count values
     //                  in latter case _hideProgress should be called explicitely
     //
-    _showProgress: function ( session_id, is_autohide, t_interval ){
+    _showProgress: function ( session_id, is_autohide, t_interval, onComplete ){
 
         if(!(session_id>0)) {
              this._hideProgress();
