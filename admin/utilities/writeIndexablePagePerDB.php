@@ -448,13 +448,15 @@ foreach ($databases as $idx=>$db_name){
 
     // Check if the meta description is valid and has a minimum length.
     if (!isset($values[1]) || !is_string($values[1])) {
-        exit('Meta description is missing or invalid.');
+        //Meta description is missing or invalid.
+        continue;
     }
 
     $metaDescription = strip_tags(trim($values[1])); // Remove HTML tags and trim whitespace.
 
     if (strlen($metaDescription) < 50) {
-        exit('Meta description is empty or not valid.'); // Exit if the description is too short.
+        //Meta description is empty or not valid
+        continue;
     }
 
     // Replace missing/placeholder values
@@ -491,6 +493,7 @@ foreach ($databases as $idx=>$db_name){
             }
             $values[3] = implode('<br>', $cms_homes);
 
+/* Artem disabled - since analyzeSite and isDummy are missed
             // Split the input values to extract URLs for analysis.
             $startUrls = explode("<br>", $values[3]);
 
@@ -504,6 +507,7 @@ foreach ($databases as $idx=>$db_name){
                     exit('Not a valuable website.'); // Exit if the website doesn't qualify.
                 }
             }
+*/            
         }
     }
 
