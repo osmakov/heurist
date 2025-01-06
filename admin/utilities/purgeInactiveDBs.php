@@ -51,9 +51,11 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
+global $arg_no_action;
+
+$arg_no_action = true;
 // Default values for arguments
 $is_shell =  false;
-global $arg_no_action = true;
 $need_email = true;
 $eol = "\n";
 $tabs = "\t\t";

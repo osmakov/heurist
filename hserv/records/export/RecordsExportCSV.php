@@ -1313,7 +1313,7 @@ private static function writeResults( $streams, $temp_name, $headers, $error_log
         $destination = tempnam(self::$system->getSysDir(DIR_SCRATCH), "zip");
 
         $zip = new \ZipArchive();
-        if (!$zip->open($destination, ZIPARCHIVE::OVERWRITE)) {
+        if (!$zip->open($destination, \ZipArchive::OVERWRITE)) {
             array_push($error_log, "Cannot create zip $destination");
         }else{
             $is_first = true;

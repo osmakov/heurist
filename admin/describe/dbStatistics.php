@@ -175,7 +175,7 @@ if($is_csv){
         $destination = tempnam("tmp", "zip");
 
         $zip = new ZipArchive();
-        if (!$zip->open($destination, ZIPARCHIVE::OVERWRITE)) {
+        if (!$zip->open($destination, ZipArchive::OVERWRITE)) {
             print "Cannot create zip $destination";
         }else{
             // return to the start of the stream
