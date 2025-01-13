@@ -51,6 +51,11 @@ if(@$_REQUEST['type']=='titles'){
 }elseif(@$_REQUEST['type']=='urls'){
     $srcURL = 'checkRecURL.php?db='.$dbname;
     $sTitle = 'Check Records URL';
+}elseif(@$_REQUEST['type']=='entrymask'){
+
+    $srcURL = "rebuildEntryMasks.php?&db={$dbname}" . ($recTypeIDs ? "&recTypeIDs={$recTypeIDs}" : '');
+    $sTitle = 'Re-apply Entry Masks';
+
 }else{
     exit;
 }

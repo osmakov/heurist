@@ -4035,6 +4035,17 @@ $.widget( "heurist.editing_input", {
             }});
                             
         }
+        if(window.hWin.HAPI4.is_admin() && this._isForRecords && this.options.dtID > 0 && (this.detailType == 'freetext' || this.detailType == 'integer' || this.detailType == 'float')){
+
+            let $btn_entrymask = $('<span>', {title: 'Edit value entry mask', class: 'smallicon ui-icon ui-icon-input btn_entry_mask show-onhover', style: 'margin-top: 2px; cursor: pointer;'});
+            $btn_entrymask.appendTo($inputdiv);
+
+            this._on($btn_entrymask, {
+                click: () => {
+                    this._editEntryMask();
+                }
+            })
+        }
         
         
         this.inputs.push($input);
@@ -7015,5 +7026,189 @@ $.widget( "heurist.editing_input", {
         });
 
         window.hWin.HEURIST4.util.setDisabled($doAction, true);
+    },
+
+    _editEntryMask: function(){
+
+        function getTestOutput(to_replace, mask_type, value, length){
+
+            let output = '';
+            let regex = null;
+            let regex_results = null;
+            let regex_size = '';
+
+            switch(mask_type){
+
+                case 'a':
+
+                    regex_size = length > 0 ? `{1,${length}}` : '';
+                    regex = new RegExp(String.raw`[\w]${regex_size}`);
+                    regex_results = value.match(regex);
+
+                    output = regex_results === null ? 'Input is not alphabetic' : mask.replace(to_replace, regex_results[0]);
+
+                    break;
+
+                case 'd': // Number.parseFloat().toFixed();
+                    
+                    output = Number.parseFloat(value);
+                    output = length > 0 ? Number(output).toFixed(length) : output;
+                    temp = Number.parseInt(output);
+
+                    if(output === 'NaN'){
+                        output = 'Input is not a decimal';
+                    }else if(range?.length == 2 && (temp < range[0] || temp > range[1])){
+                        output = `Input is out of range ${range[0]} - ${range[1]}`;
+                    }else{
+                        output = mask.replace(to_replace, output);
+                    }
+
+                    break;
+
+                case 'i':
+
+                    output = Number.parseInt(value);
+
+                    if(output === 'NaN'){
+                        output = 'Input is not an integer';
+                    }else if(range?.length == 2 && (output < range[0] || output > range[1])){
+                        output = `Input is out of range ${range[0]} - ${range[1]}`;
+                    }else{
+                        output = mask.replace(to_replace, output);
+                    }
+
+                    break;
+
+                case 'm':
+                    
+                    regex_size = length > 0 ? `{1,${length}}` : '';
+                    regex = new RegExp(String.raw`[\w\d]${regex_size}`);
+                    regex_results = value.match(regex);
+
+                    output = regex_results === null ? 'Input contains non-alphaetic letters or numbers' : mask.replace(to_replace, regex_results[0]);
+
+                    break;
+
+                case 'n':
+
+                    output = length > 0 ? Number.parseFloat(value).toFixed(length) : Number.parseFloat(value);
+                    temp = Number.parseInt(output);
+
+                    if(output === 'NaN'){
+                        output = 'Input is not numeric';
+                    }else if(range?.length == 2 && (temp < range[0] || temp > range[1])){
+                        output = `Input is out of range ${range[0]} - ${range[1]}`;
+                    }else{
+                        output = mask.replace(to_replace, output);
+                    }
+                    
+                    break;
+
+                default:
+                    output = `Mask's format is invalid`;
+                    break;
+            }
+
+            return output;
+        }
+
+        let that = this;
+        let current_mask = this.f('rst_EntryMask') ?? '';
+
+        let $dlg;
+        let title = 'Configure entry mask';
+        let content = '<div>'
+            + `Define an entry mask to be applied to record values for the <strong>${this.f('rst_DisplayName')}</strong> field<br><br>`
+            + '<span class="heurist-helper2" style="font-size: 0.9em;">'
+                + '<strong>$n$</strong> = numeric (any type of number) <strong>$i$</strong> = integer <strong>$d$</strong> = decimal<br>'
+                + '<strong>$iN$</strong> = integer to N digits ($i3$ integer to 3 digits) <strong>$i(N1,N2)$</strong> = integer ranged from N1 to N2 ($i(1,25) integer range 1 to 25)<br>'
+                + '<strong>$dN$</strong> = decimal to N places ($d2$ decimal to 2 places) <strong>$dN(N1,N2)$</strong> = decimal to N places in range N1 to N2 ($d2(1,25)$ decimal to 2 places in range 1 to 25)<br>'
+                + '<strong>$a$</strong> = alphabetic <strong>$aN$</strong> = alphabetic max N characters ($a5$ alphabetic max 5 characters)<br>'
+                + '<strong>$m$</strong> = both numeric and alphabetic'
+            + '</span><br><br>'
+            + `<label>Entry mask: <input type="text" id="inp_Mask" class="input" size="80"></label><br><hr><br>`
+            + '<h3>Testing</h3>'
+            + '<label>Input: <input type="text" id="inp_TestInput" class="input" size="60"></label>'
+            + '<button style="margin-left: 10px;" id="btn_TestMask">Test</button><br><br>'
+            + '<label>Output: <span id="txt_TestOutput"></span></label>'
+        + '</div>';
+
+        let btns = {};
+        btns[window.hWin.HR('Save mask')] = () => {
+
+            const dty_ID = that.f('rst_DetailTypeID');
+            const rty_ID = that.f('rst_RecTypeID');
+            const mask = $dlg.find('#inp_Mask').val();
+            let req = {
+                a: 'save',
+                entity: 'defRecStructure',
+                fields: {
+                    rst_DetailTypeID: dty_ID,
+                    rst_RecTypeID: rty_ID,
+                    rst_EntryMask: mask
+                },
+                request_id: window.hWin.HEURIST4.util.random()
+            };
+
+            window.hWin.HAPI4.EntityMgr.doRequest(req, (response) => {
+
+                if(response.status != window.hWin.ResponseStatus.OK){
+                    window.hWin.HEURIST4.msg.showMsgErr(response);
+                    return;
+                }
+
+                $Db.rst(rty_ID, dty_ID, 'rst_EntryMask', mask);
+
+                let action_url = `${window.hWin.HAPI4.baseURL}admin/verification/longOperationInit.php?type=entrymask&db=${window.hWin.HAPI4.database}&recTypeIDs=${rty_ID}`;
+
+                window.hWin.HEURIST4.msg.showDialog(action_url, {
+                    "close-on-blur": false,
+                    height: 600,
+                    width: 600
+                });
+
+                $dlg.dialog('close');
+            });
+
+        };
+        btns[window.hWin.HR('Cancel')] = () => {
+            $dlg.dialog('close');
+        };
+
+        $dlg = window.hWin.HEURIST4.msg.showMsgDlg(content, btns, {title: title}, {default_palette_class: 'ui-heurist-design'});
+
+        $dlg.find('#inp_Mask').val(current_mask);
+
+        this._on($dlg.find('#btn_TestMask').button(), {
+            click: () => {
+
+                let mask = $dlg.find('#inp_Mask').val();
+                let test_value = $dlg.find('#inp_TestInput').val();
+                let $output = $dlg.find('#txt_TestOutput').empty();
+
+                let matches = mask.match(/\$(a|d|i|m|n)(\d)*(\(\d,?\d*\))*\$/);
+
+                if(window.hWin.HEURIST4.util.isempty(mask) || !matches){
+                    $output.text(window.hWin.HEURIST4.util.isempty(mask) ? 'Please enter a mask to test.' : 'Invalid mask provided');
+                    return;
+                }
+
+                let length = matches.length > 2 && Number.isInteger(+matches[2]) ? Number.parseInt(matches[2]) : 0;
+
+                let range = matches.length > 2 && matches[2] && !Number.isInteger(+matches[2]) && matches[2][0] == '(' ? matches[2].replaceAll(/\(\)/g, '').split(',') : null;
+                range = matches.length > 3 && matches[3] && !Number.isInteger(+matches[3]) && matches[3][0] == '(' ? matches[3].replaceAll(/\(\)/g, '').split(',') : range;
+
+                let temp = null;
+                if(range?.length == 2 && range[0] > range[1]){
+                    temp = range[0];
+                    range[0] = range[1];
+                    range[1] = temp;
+                }
+
+                let output = getTestOutput(matches[0], matches[1], test_value, length);
+
+                $output.text(output);
+            }
+        });
     }
 });

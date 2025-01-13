@@ -402,6 +402,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
     $is_insert = ($recID<1);
     $is_save_new_record = false;
     $missingParents = [];
+    $entryMaskIssues = [];
 
     // recDetails data
     if ( @$record['details'] ) {
@@ -746,6 +747,8 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
 
         recordUpdateCalcFields( $system, $recID, $rectype );//update calculated fields in this record
 
+        $entryMaskIssues = recordUpdateMaskFields($system, $recID, $rectype);
+
         //check that this record my affect other records with calculated fields
         //1. cfn_RecTypeIDs -> cfn_ID
         //2. defRecStructure where rst_CalcFunctionID  -> rst_RecTypeID+rst_DetailTypeID
@@ -837,6 +840,9 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
 
     if(!empty($missingParents)){
         $rtn['issues']['parents'] = $missingParents;
+    }
+    if(!empty($entryMaskIssues)){
+        $rtn['issues']['entryMask'] = $entryMaskIssues;
     }
 
     return $rtn;
@@ -3450,5 +3456,195 @@ function validateParentRecords($system, $child_record, &$new_child_details){
     }
 
     return $missing_parents;
+}
+
+function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
+
+    $mysqli = $system->get_mysqli();
+    $entryMaskFields = null;
+    $result = [];
+
+    if($recID > 0 && $rtyID <= 0){
+        $rtyID = mysql__select_value($mysqli, "SELECT rec_RecTypeID FROM Records WHERE rec_ID = {$recID}");
+    }
+
+    if($recID > 0 && $rtyID > 0){
+        $entryMaskFields = mysql__select_assoc2($mysqli, "SELECT rst_DetailTypeID, rst_EntryMask FROM defRecStructure WHERE rst_RecTypeID = {$rtyID} AND rst_EntryMask IS NOT NULL");
+    }
+
+    if(empty($entryMaskFields)){
+        return [];
+    }
+
+    $values_updated = 0;
+    $values_skipped = 0;
+    $values_invalid = 0;
+    $mask_invalid = [];
+
+    foreach($entryMaskFields as $dtyID => $mask){
+
+        $cur_vals = mysql__select_assoc2($mysqli, "SELECT dtl_ID, dtl_Value FROM recDetails WHERE dtl_RecID = {$recID} AND dtl_DetailTypeID = {$dtyID}");
+
+        preg_match('~\$(a|d|i|m|n)(\d)*(\(\d,?\d*\))*\$~', $mask, $matches);
+        $allowed_filter = ['a','d','i','m','n'];
+
+        if(count($matches) < 2 || !in_array($matches[1], $allowed_filter)){ // invalid mask
+
+            $values_skipped ++;
+
+            $mask_invalid[$dtyID] = $mask;
+
+            continue;
+        }
+
+        $to_replace = $matches[0]; // mask's logical substring, replaced with value
+        $check_for = substr($mask, 0, strpos($mask, $to_replace)); // used to check if mask has been applied
+        $type = $matches[1]; // mask type [a,d,i,m,n]
+
+        $length = count($matches) > 2 && is_numeric($matches[2]) ? intval($matches[2]) : 0;
+
+        // Number range
+        $range = count($matches) > 2 && is_string($matches[2]) && $matches[2][0] == '(' ? $matches[2] : null;
+        $range = count($matches) > 3 && is_string($matches[3]) && $matches[3][0] == '(' ? $matches[3] : $range;
+        $range = !$range ?? explode(',', str_replace(['(',')'], '', $range));
+
+        if(!empty($range) && count($range) == 1){ // only one number was provided, treat as min
+            $range = null;
+        }elseif(!empty($range) && $range[0] > $range[1]){ // swap min and max
+            $temp = $range[0];
+            $range[0] = $range[1];
+            $range[1] = $temp;
+        }
+
+        foreach($cur_vals as $dtl_ID => $value){
+
+            $reason = '';
+            $invalid_type = false;
+
+            if(strpos($value, $check_for) === 0){ // mask already applied
+                $values_skipped ++;
+                continue;
+            }
+
+            switch($type){
+
+                case 'a': // alphabetic, letters only
+
+                    $leng_regex = $length > 0 ? "{{1,$length}}" : '';
+                    $leng_regex = "~\w{$leng_regex}~";
+
+                    if(preg_match($leng_regex, $value, $word) === 1){
+                        $value = $word[0];
+                    }else{
+                        $reason = 'Not alphabetic';
+                    }
+
+                    break;
+
+                case 'd': // decimal, float point number, will convert integers
+
+                    $num_value = is_numeric($value) ? floatval($value) : null;
+                    $num_value = is_float($num_value) && $length > 0 ? number_format($num_value, $length) : $num_value;
+                    $reason = 'Not a decimal number';
+
+                    if($num_value !== null && count($range) == 2 && ($num_value < $range[0] || $num_value > $range[1])){
+                        $reason = "Out of range: {$range[0]} - {$range[1]}";
+                    }elseif($num_value !== null){
+                        $value = $num_value;
+                        $reason = '';
+                    }
+
+                    break;
+
+                case 'i': // integer, whole number, will conevrt float points
+
+                    $value = is_numeric($value) ? intval($value) : null;
+
+                    if(!is_int($value)){
+                        $reason = 'Not a integer';
+                    }elseif(count($range) == 2 && ($value < $range[0] || $value > $range[1])){
+                        $reason = "Out of range: {$range[0]} - {$range[1]}";
+                    }
+
+                    break;
+
+                case 'm': // mixed, alphanumeric no special characters
+
+                    $leng_regex = $length > 0 ? "{{1,$length}}" : '';
+                    $leng_regex = "~[\w\d]{$leng_regex}~";
+
+                    if(preg_match("~[^\w\d]~", $value) !== 1){
+                        $reason = 'Contains non-alphanumeric characters';
+                    }elseif(preg_match($leng_regex, $value, $mixed) === 1){
+                        $value = $mixed[0];
+                    }
+
+                    break;
+
+                case 'n': // numeric, any type of number
+
+                    $num_value = is_numeric($value) ? floatval($value) : null;
+                    $num_value = is_float($num_value) ? number_format($num_value, $length) : $num_value;
+                    $reason = 'Not numeric';
+
+                    if($num_value !== null && count($range) == 2 && ($num_value < $range[0] || $num_value > $range[1])){
+                        $reason = "Out of range: {$range[0]} - {$range[1]}";
+                    }elseif($num_value !== null){
+                        $value = $num_value;
+                        $reason = '';
+                    }
+
+                    break;
+
+                default:
+
+                    $invalid_type = true;
+                    break;
+            }
+
+            if($invalid_type){ // type not handled
+                $mask_invalid[$dtyID] = $mask;
+                continue;
+            }elseif(!empty($reason)){ // value doesn't match the mask, leave value unchanged
+                if(!array_key_exists($dtyID, $result)){
+                    $result[$dtyID] = [ 'mask' => $mask ];
+                }
+
+                $result[$dtyID][] = ['value' => $value, 'reason' => $reason];
+
+                $values_invalid ++;
+
+                continue;
+            }
+
+            // Valid value, update value using mask
+            $value = str_replace($to_replace, $value, $mask);
+
+            $res = mysql__insertupdate($mysqli, 'recDetails', 'dtl', ['dtl_ID' => $dtl_ID, 'dtl_Value' => $value]);
+            if(!$res){ // failed to update record detail
+                if(!array_key_exists($dtyID, $result)){
+                    $result[$dtyID] = [ 'mask' => $mask ];
+                }
+
+                $result[$dtyID][] = ['value' => $value, 'reason' => 'Failed to update record detail'];
+
+                $values_invalid ++;
+
+                continue;
+            }
+
+            $values_updated ++;
+        }
+    }
+
+    if($verbose){
+        $result['skipped'] = $values_skipped;
+        $result['updated'] = $values_updated;
+        $result['invalid'] = $values_invalid;
+
+        $result['invalid_masks'] = $mask_invalid;
+    }
+
+    return $result;
 }
 ?>
