@@ -60,10 +60,10 @@ if(!$init_client || $session_id > 0){
 
     // Retrieve and prepare list of record IDs via: provided ids, record type ids, or all necessary ids
     $recIDs = [];
-    if(@$request['recIDs']){
+    if(array_key_exists('recIDs', $request) && !empty($request['recIDs'])){
         $recIDs = prepareIds($request['recIDs']);
         $recIDs = array_unique($recIDs); // remove dups to avoid double processing
-    }elseif(@$request['recTypeIDs']){
+    }elseif(array_key_exists('recTypeIDs', $request) && !empty($request['recTypeIDs'])){
 
         $recTypeIDs = prepareIds($request['recTypeIDs']);
         $recIDs = getRecordIDsByRecType($recTypeIDs);
@@ -133,6 +133,7 @@ if(!$init_client || $session_id > 0){
 
             $results['invalid_masks'][$rtyID] = array_merge($results['invalid_masks'][$rtyID], $res['invalid_masks']);
         }
+
     }
 
     setResultRecordIDs($results['records']['updated']);
@@ -205,6 +206,11 @@ if(!$init_client || $session_id > 0){
                 window.hWin.HEURIST4.util.sendRequest(action_url, request, null, (response) => {
                     window.hWin.HEURIST4.msg.hideProgress();
 
+                    if(response.status !== window.hWin.ResponseStatus.OK){
+                        window.hWin.HEURIST4.msg.showMsgErr(response);
+                        return;
+                    }
+
                     let data = response.data;
 
                     $('#fld_total').text(data.total);
@@ -272,6 +278,7 @@ if(!$init_client || $session_id > 0){
         $skipped_url = '#';
         $invalid_url = '#';
         $invalid_titles_url = '#';
+        $invalid_masks = '';
 
         if($init_client){
             if($gettingAllRecords){
@@ -309,7 +316,6 @@ if(!$init_client || $session_id > 0){
                 $invalid_titles_url = HEURIST_BASE_URL . "?w=a&q={$results['records']['title_error']}&db=" . HEURIST_DBNAME;
             }
 
-            $invalid_masks = '';
             if(!empty($results['invalid_masks'])){
         
                 foreach($results['invalid_masks'] as $rtyID => $masks){
@@ -339,7 +345,7 @@ if(!$init_client || $session_id > 0){
 
                 <?php
 
-                echo "<a href='{$updated_url}' id='lnk_updated' style='display:". ($updated_url == '#' ? 'inline' : 'none') ."'>click to view records with updated values</a><br><br>";
+                echo "<br><a href='{$updated_url}' id='lnk_updated' style='display:". ($updated_url == '#' ? 'inline' : 'none') ."'>click to view records with updated values</a><br><br>";
 
                 echo "<a href='{$skipped_url}' id='lnk_skipped' style='display:". ($skipped_url == '#' ? 'inline' : 'none') ."'>click to view records with values skipped</a><br><br>";
 
@@ -402,7 +408,7 @@ function getRecordIDsByRecType($recTypeIDs, $checkRecTypes = true){
 
         // Check for an entry mask before retrieving record IDs
         $query = "SELECT rst_ID FROM defRecStructures WHERE rst_RecTypeID = ? AND rst_EntryMask IS NOT NULL";
-        $rtyIDs = array_filter($recTypeIDs, function($rtyID) use ($mysqli, $query){
+        $recTypeIDs = array_filter($recTypeIDs, function($rtyID) use ($mysqli, $query){
             return mysql__select_value($mysqli, $query, ['i', $rtyID]) <= 0;
         });
 
@@ -415,9 +421,7 @@ function getRecordIDsByRecType($recTypeIDs, $checkRecTypes = true){
 
     $query = "SELECT rec_ID FROM Records WHERE rec_RecTypeID {$recTypeClause} AND NOT rec_FlagTemporary";
 
-    $rtyIDs = mysql__select_list2($mysqli, $query, 'intval');
-
-    return $rtyIDs;
+    return mysql__select_list2($mysqli, $query, 'intval');
 }
 
 /**

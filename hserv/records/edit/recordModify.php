@@ -3458,9 +3458,19 @@ function validateParentRecords($system, $child_record, &$new_child_details){
     return $missing_parents;
 }
 
-function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
+/**
+ * Update field entry values for the provided record, reporting those that have been updated, skipped or are invalid (value or entry mask)
+ *
+ * @param hserv\System $system Initialised Heurist system instance and connected to the necessary database
+ * @param int $recID Record ID for the record being checked and updated
+ * @param int $rtyID Record type for the record
+ * @param bool $verbose Whether to include counts for action (values skipped, updated, or invalid)
+ *
+ * @return array resulting counts, for verbose = false an empty array means success
+ */
+function recordUpdateMaskFields($system, $recID, $rtyID = 0, $verbose = false){
 
-    $mysqli = $system->get_mysqli();
+    $mysqli = $system->getMysqli();
     $entryMaskFields = null;
     $result = [];
 
@@ -3485,13 +3495,11 @@ function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
 
         $cur_vals = mysql__select_assoc2($mysqli, "SELECT dtl_ID, dtl_Value FROM recDetails WHERE dtl_RecID = {$recID} AND dtl_DetailTypeID = {$dtyID}");
 
-        preg_match('~\$(a|d|i|m|n)(\d)*(\(\d,?\d*\))*\$~', $mask, $matches);
-        $allowed_filter = ['a','d','i','m','n'];
+        preg_match('~\$([adimn])(\d)*(\(\d,?\d*\))*\$~', $mask, $matches);
 
-        if(count($matches) < 2 || !in_array($matches[1], $allowed_filter)){ // invalid mask
+        if(count($matches) < 2){ // invalid mask
 
             $values_skipped ++;
-
             $mask_invalid[$dtyID] = $mask;
 
             continue;
@@ -3504,13 +3512,13 @@ function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
         $length = count($matches) > 2 && is_numeric($matches[2]) ? intval($matches[2]) : 0;
 
         // Number range
-        $range = count($matches) > 2 && is_string($matches[2]) && $matches[2][0] == '(' ? $matches[2] : null;
+        $range = count($matches) > 2 && is_string($matches[2]) && $matches[2][0] == '(' ? $matches[2] : [];
         $range = count($matches) > 3 && is_string($matches[3]) && $matches[3][0] == '(' ? $matches[3] : $range;
-        $range = !$range ?? explode(',', str_replace(['(',')'], '', $range));
+        $range = empty($range) ? [] : explode(',', str_replace(['(',')'], '', $range));
 
-        if(!empty($range) && count($range) == 1){ // only one number was provided, treat as min
+        if(count($range) !== 2){ // only one number was provided
             $range = null;
-        }elseif(!empty($range) && $range[0] > $range[1]){ // swap min and max
+        }elseif(count($range) == 2 && $range[0] > $range[1]){ // swap min and max
             $temp = $range[0];
             $range[0] = $range[1];
             $range[1] = $temp;
@@ -3518,91 +3526,17 @@ function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
 
         foreach($cur_vals as $dtl_ID => $value){
 
-            $reason = '';
-            $invalid_type = false;
-
             if(strpos($value, $check_for) === 0){ // mask already applied
                 $values_skipped ++;
                 continue;
             }
 
-            switch($type){
+            $org_value = $value;
+            $reason = false;
 
-                case 'a': // alphabetic, letters only
+            [$value, $reason] = updateMaskFields($type, $value, $length, $range);
 
-                    $leng_regex = $length > 0 ? "{{1,$length}}" : '';
-                    $leng_regex = "~\w{$leng_regex}~";
-
-                    if(preg_match($leng_regex, $value, $word) === 1){
-                        $value = $word[0];
-                    }else{
-                        $reason = 'Not alphabetic';
-                    }
-
-                    break;
-
-                case 'd': // decimal, float point number, will convert integers
-
-                    $num_value = is_numeric($value) ? floatval($value) : null;
-                    $num_value = is_float($num_value) && $length > 0 ? number_format($num_value, $length) : $num_value;
-                    $reason = 'Not a decimal number';
-
-                    if($num_value !== null && count($range) == 2 && ($num_value < $range[0] || $num_value > $range[1])){
-                        $reason = "Out of range: {$range[0]} - {$range[1]}";
-                    }elseif($num_value !== null){
-                        $value = $num_value;
-                        $reason = '';
-                    }
-
-                    break;
-
-                case 'i': // integer, whole number, will conevrt float points
-
-                    $value = is_numeric($value) ? intval($value) : null;
-
-                    if(!is_int($value)){
-                        $reason = 'Not a integer';
-                    }elseif(count($range) == 2 && ($value < $range[0] || $value > $range[1])){
-                        $reason = "Out of range: {$range[0]} - {$range[1]}";
-                    }
-
-                    break;
-
-                case 'm': // mixed, alphanumeric no special characters
-
-                    $leng_regex = $length > 0 ? "{{1,$length}}" : '';
-                    $leng_regex = "~[\w\d]{$leng_regex}~";
-
-                    if(preg_match("~[^\w\d]~", $value) !== 1){
-                        $reason = 'Contains non-alphanumeric characters';
-                    }elseif(preg_match($leng_regex, $value, $mixed) === 1){
-                        $value = $mixed[0];
-                    }
-
-                    break;
-
-                case 'n': // numeric, any type of number
-
-                    $num_value = is_numeric($value) ? floatval($value) : null;
-                    $num_value = is_float($num_value) ? number_format($num_value, $length) : $num_value;
-                    $reason = 'Not numeric';
-
-                    if($num_value !== null && count($range) == 2 && ($num_value < $range[0] || $num_value > $range[1])){
-                        $reason = "Out of range: {$range[0]} - {$range[1]}";
-                    }elseif($num_value !== null){
-                        $value = $num_value;
-                        $reason = '';
-                    }
-
-                    break;
-
-                default:
-
-                    $invalid_type = true;
-                    break;
-            }
-
-            if($invalid_type){ // type not handled
+            if($reason === false){ // type not handled
                 $mask_invalid[$dtyID] = $mask;
                 continue;
             }elseif(!empty($reason)){ // value doesn't match the mask, leave value unchanged
@@ -3610,7 +3544,7 @@ function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
                     $result[$dtyID] = [ 'mask' => $mask ];
                 }
 
-                $result[$dtyID][] = ['value' => $value, 'reason' => $reason];
+                $result[$dtyID][] = ['value' => $org_value, 'reason' => $reason];
 
                 $values_invalid ++;
 
@@ -3646,5 +3580,97 @@ function recordUpdateMaskFields($system, $recID, $rtyID, $verbose = false){
     }
 
     return $result;
+}
+
+/**
+ * Process numeric related values
+ *
+ * @param string $type the specific numeric type [d, i, n]
+ * @param mixed $value the value being checked
+ * @param int $length the allotted number of decimal points for d & n
+ * @param array[int, int] $range the minimum and maximum range for the number
+ *
+ * @return array[numeric, string] the resulting [value, invalid reasoning]
+ */
+function updateMaskFieldsNumeric($type, $value, $length, $range) {
+
+    $type_text = $type === 'i' ? 'an integer' : 'numeric';
+    $type_text = $type === 'd' ? 'a decimal number' : $type_text;
+
+    if(is_numeric($value)){
+        $value = $type === 'i' ? intval($value) : floatval($value);
+    }
+
+    $reason = '';
+
+    if(!is_float($value) && !is_int($value)){
+        $reason = "Not {$type_text}";
+    }elseif(count($range) === 2 && ($value < $range[0] || $value > $range[1])){
+        $reason = "Out of range: {$range[0]} - {$range[1]}";
+    }elseif(is_float($value)){
+        $value = number_format($value, $length);
+    }
+
+    return [$value, $reason];
+}
+
+/**
+ * Process the value against the mask typing
+ *
+ * @param string $type the entry mask type [a, d, i, n, m]
+ * @param mixed $value the value being validated
+ * @param int $length the allotted length of the string [a, m] or number of decimal points [d, n]
+ * @param array[int, int] $range the minimum and maximum range for the number [a, d, n]
+ *
+ * @return array[mixed, string] the resulting [value, invalid reasoning] combination
+ */
+function updateMaskFields($type, $value, $length, $range){
+
+    $reason = '';
+
+    switch($type){
+
+        case 'a': // alphabetic, letters only
+
+            $leng_regex = $length > 0 ? "{{1,$length}}" : '';
+            $leng_regex = "~\w{$leng_regex}~";
+
+            if(preg_match($leng_regex, $value, $word) === 1){
+                $value = $word[0];
+            }else{
+                $reason = 'Not alphabetic';
+            }
+
+            break;
+
+        case 'd': // decimal, float point number, will convert integers
+        case 'i': // integer, whole number, will conevrt float points
+        case 'n': // numeric, any type of number
+
+            [$value, $reason] = updateMaskFieldsNumeric($type, $value, $length, $range);
+
+            break;
+
+        case 'm': // mixed, alphanumeric no special characters
+
+            $mixed_regex = '~[^\w\d]~';
+            $leng_regex = $length > 0 ? "{{1,$length}}" : '';
+            $leng_regex = "~[\w\d]{$leng_regex}~";
+
+            if(preg_match($mixed_regex, $value) !== 1){
+                $reason = 'Contains non-alphanumeric characters';
+            }elseif(preg_match($leng_regex, $value, $mixed) === 1){
+                $value = $mixed[0];
+            }
+
+            break;
+
+        default:
+
+            $reason = false;
+            break;
+    }
+
+    return [$value, $reason];
 }
 ?>

@@ -7030,6 +7030,27 @@ $.widget( "heurist.editing_input", {
 
     _editEntryMask: function(){
 
+        function handleNumbers(type, to_replace, value, length, range){
+
+            let output = type === 'i' ? Number.parseInt(value) : Number.parseFloat(value);
+            output = length > 0 ? Number(output).toFixed(length) : output;
+
+            let as_int = Number.parseInt(output);
+
+            let type_text = type === 'i' ? 'integer' : 'numeric';
+            type_text = type === 'd' ? 'decimal' : type_text;
+
+            if(output === 'NaN'){
+                output = `Input is not a ${type_text}`;
+            }else if(range?.length == 2 && (as_int < range[0] || as_int > range[1])){
+                output = `Input is out of range ${range[0]} - ${range[1]}`;
+            }else{
+                output = mask.replace(to_replace, output);
+            }
+
+            return output;
+        }
+
         function getTestOutput(to_replace, mask_type, value, length){
 
             let output = '';
@@ -7049,33 +7070,11 @@ $.widget( "heurist.editing_input", {
 
                     break;
 
-                case 'd': // Number.parseFloat().toFixed();
-                    
-                    output = Number.parseFloat(value);
-                    output = length > 0 ? Number(output).toFixed(length) : output;
-                    temp = Number.parseInt(output);
-
-                    if(output === 'NaN'){
-                        output = 'Input is not a decimal';
-                    }else if(range?.length == 2 && (temp < range[0] || temp > range[1])){
-                        output = `Input is out of range ${range[0]} - ${range[1]}`;
-                    }else{
-                        output = mask.replace(to_replace, output);
-                    }
-
-                    break;
-
+                case 'd':
                 case 'i':
+                case 'n':
 
-                    output = Number.parseInt(value);
-
-                    if(output === 'NaN'){
-                        output = 'Input is not an integer';
-                    }else if(range?.length == 2 && (output < range[0] || output > range[1])){
-                        output = `Input is out of range ${range[0]} - ${range[1]}`;
-                    }else{
-                        output = mask.replace(to_replace, output);
-                    }
+                    output = handleNumbers(mask_type, to_replace, value, length, range);
 
                     break;
 
@@ -7089,23 +7088,8 @@ $.widget( "heurist.editing_input", {
 
                     break;
 
-                case 'n':
-
-                    output = length > 0 ? Number.parseFloat(value).toFixed(length) : Number.parseFloat(value);
-                    temp = Number.parseInt(output);
-
-                    if(output === 'NaN'){
-                        output = 'Input is not numeric';
-                    }else if(range?.length == 2 && (temp < range[0] || temp > range[1])){
-                        output = `Input is out of range ${range[0]} - ${range[1]}`;
-                    }else{
-                        output = mask.replace(to_replace, output);
-                    }
-                    
-                    break;
-
                 default:
-                    output = `Mask's format is invalid`;
+                    output = 'Mask\'s format is invalid';
                     break;
             }
 
@@ -7186,7 +7170,7 @@ $.widget( "heurist.editing_input", {
                 let test_value = $dlg.find('#inp_TestInput').val();
                 let $output = $dlg.find('#txt_TestOutput').empty();
 
-                let matches = mask.match(/\$(a|d|i|m|n)(\d)*(\(\d,?\d*\))*\$/);
+                let matches = mask.match(/\$([adimn])(\d)*(\(\d,?\d*\))*\$/);
 
                 if(window.hWin.HEURIST4.util.isempty(mask) || !matches){
                     $output.text(window.hWin.HEURIST4.util.isempty(mask) ? 'Please enter a mask to test.' : 'Invalid mask provided');
