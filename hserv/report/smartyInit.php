@@ -48,7 +48,8 @@ class HeuristSecurityPolicy extends Security {
                     'setlocale','spacify', 'strcmp',
                     'strip', 'strstr', 'substr', 'strpos', 'string_format', 'strlen', 'strip_tags',
                     'arraysortby',
-                    'time','translate','truncate',
+                    'time','truncate',
+                    'translate','label','file_data',
                     'out','wrap',  
                     'upper','utf8_encode','wordwrap');
                     
@@ -131,7 +132,6 @@ function smartyInit($system, $smarty_templates_dir=null){
         
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_key_exists', 'heuristModifierArrayKeyExists');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_column', 'heuristModifierArrayColumn');
-        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'translate', 'heuristModifierTranslate');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'arraysortby', 'heuristModifierArraySortByFields');
 
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'array_multisort', 'heuristModifierArrayMultiSort');
@@ -139,6 +139,9 @@ function smartyInit($system, $smarty_templates_dir=null){
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'sort', 'heuristModifierArraySort');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'asort', 'heuristModifierArrayASort');
         $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'ksort', 'heuristModifierArrayKSort');
+
+        $smarty->registerPlugin(Smarty::PLUGIN_MODIFIER, 'translate', 'heuristModifierTranslate');
+
         
         return $smarty;
 }
@@ -176,6 +179,7 @@ function heuristModifierTranslate($input, $lang, $field=null)
 {
     return getTranslation($input, $lang, $field);//see ULocale
 }
+
 /**
 * Smarty Plugin - Array Sort
 * Sorts an array by supplied fields

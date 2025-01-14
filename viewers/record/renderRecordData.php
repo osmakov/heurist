@@ -1057,8 +1057,8 @@ if(!empty($import_webfonts)){
         .download_link{
             float: left;
             text-align: right;
-            padding: 15px 10px;
-            font-size: 0.85em; /*9px;*/
+            padding: 5px 10px 0px 5px;
+            font-size: 0.8em; /*9px;*/
             min-width: 80px;
             cursor: default;
         }
@@ -1805,7 +1805,7 @@ function print_public_details($bib) {
                             .' WHERE rdi_RecID='.$rec_id .' AND rdi_DetailTypeID IN ('.DT_DATE.','.$startDT.')');
 
                     if($row){
-                        $bd['order_by_date'] = htmlspecialchars($row[0]);
+                        $bd['order_by_date' ] = htmlspecialchars($row[0]);
                     }
 
 

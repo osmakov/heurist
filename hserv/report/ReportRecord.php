@@ -2,6 +2,8 @@
 namespace hserv\report;
 
 use hserv\structure\ConceptCode;
+use hserv\entity\DbDefRecStructure;
+use hserv\utilities\USanitize;
 
 require_once dirname(__FILE__).'/../../autoload.php';
 require_once dirname(__FILE__).'/../structure/search/dbsData.php';
@@ -12,6 +14,9 @@ require_once dirname(__FILE__).'/../structure/dbsTerms.php';
 require_once dirname(__FILE__).'/../utilities/Temporal.php';
 require_once dirname(__FILE__).'/../../vendor/autoload.php';//for geoPHP
 
+define('RAW','_originalvalue');
+define('ALLOWED_TAGS', '<i><b><u><em><strong><sup><sub><small><br>');//for recTitle
+
 /**
  * Class ReportRecord
  *
@@ -21,9 +26,10 @@ require_once dirname(__FILE__).'/../../vendor/autoload.php';//for geoPHP
 class ReportRecord
 {
     protected $recordsCache;  // Cache for loaded records
-    protected $rtyNames;    // Record type names
-    protected $dtyTypes;    // Detail types
-    protected $dtTerms = null;    // Detail terms
+    protected $rtyNames;      // Record type names
+    protected $dtyTypes;      // Detail types   dty_ID => dty_Type
+    protected $rstFields;     // Detail types   rty_ID => array(dty_ID => rst_DisplayName)
+    protected $dtTerms = null;    // Detail terms  
     protected $dbsTerms;     // Database terms object
     protected $system;       // System object
     protected $translations; // Cache for translated db definitions (terms,...)
@@ -39,9 +45,10 @@ class ReportRecord
     {
         $this->system = $system;
         $this->rtyNames = dbs_GetRectypeNames($system->getMysqli());
-        $this->dtyTypes = dbs_GetDetailTypes($system, null, 4);
+        $this->dtyTypes = dbs_GetDetailTypes($system, null, 4);   //dty_ID => dty_Type
         $this->recordsCache = array(); // Cache for loaded records
         $this->translations = array('trm' => array());
+        $this->$rstFields = array(); //Cache for rty structure
     }
 
     /**
@@ -279,7 +286,7 @@ class ReportRecord
      * @return array An array with keys 'linkedto' and 'linkedfrom' containing linked record IDs.
      */
     public function getLinkedRecords($rec, $rty_ID = null, $direction = null, $smarty_obj = null)
-    {
+    {                        
         $rec_ID = is_array($rec) && $rec['recID'] ? $rec['recID'] : $rec;
         $where = SQL_WHERE;
         $predicateRty = predicateId('rec_RecTypeID', $rty_ID, SQL_AND);
@@ -304,6 +311,7 @@ class ReportRecord
 
         return array('linkedto' => $to_records, 'linkedfrom' => $from_records);
     }
+    
 
     /**
      * Converts a record array into an array that can be assigned to a Smarty variable.
@@ -406,6 +414,16 @@ class ReportRecord
 
         $res = null;
 
+        // fNNN - concatenated value (or first for blocktext)
+        // fNNNs - prepared
+        //              date - array of human readable dates   see toHumanReadable
+        //              term - array of terms data (id, label, code, conceptid) see getDetailForEnum
+        //              file - array of urls
+        //              geo  - human readable link
+        //              
+        // fNNN_originalvalue 
+        //
+        
         switch ($detailType) {
             case 'enum':
             case 'relationtype':
@@ -417,15 +435,18 @@ class ReportRecord
 
                 $res = "";
                 $origvalues = array();
+                $preparedvalues = array();
                 foreach ($dtValue as $value){
                     if(strlen($res)>0) {$res = $res.", ";}
-                    $res = $res.\Temporal::toHumanReadable($value, true, 0, '|', 'native');
+                    $val = \Temporal::toHumanReadable($value, true, 0, '|', 'native');
+                    $res = $res.$val;
+                    array_push($preparedvalues, $val);
                     array_push($origvalues, $value);
                 }
                 if(strlen($res)==0){ //no valid terms
                     $res = null;
                 }else{
-                    $res = array( $dtname=>$res, $dtname."_originalvalue"=>$origvalues);
+                    $res = array( $dtname=>$res, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
                 }
                 break;
 
@@ -436,28 +457,34 @@ class ReportRecord
 
                 $res = array();//list of urls
                 $origvalues = array();
+                $preparedvalues = array();
 
                 foreach ($dtValue as $value){
-
+                    
+                    $link = $this->composeFileLink($value['file']);
+                    array_push($preparedvalues, $link);
+                    /*
                     $external_url = @$value['file']['ulf_ExternalFileReference'];
                     if ($external_url && strpos($external_url,'http://')!==0) {
-                        array_push($res, $external_url);//external
+                        array_push($preparedvalues, $external_url);//external
 
                     }elseif (@$value['file']['ulf_ObfuscatedFileID']) {
                         //local
-                        array_push($res, HEURIST_BASE_URL."?db=".$this->system->dbname()
+                        array_push($preparedvalues, HEURIST_BASE_URL."?db=".$this->system->dbname()
                                 ."&file=".$value['file']['ulf_ObfuscatedFileID']);
                     }
+                    */
                     //keep reference to record id
                     $value['file']['rec_ID'] = $recID;
 
                     //original value keeps the whole 'file' array
                     array_push($origvalues, $value['file']);
+                    $res = implode(', ',$preparedvalues);
                 }
                 if(empty($res)){
                     $res = null;
                 }else{
-                    $res = array($dtname=>implode(', ',$res), $dtname."_originalvalue"=>$origvalues);
+                    $res = array($dtname=>$res, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
                 }
 
                 break;
@@ -466,22 +493,56 @@ class ReportRecord
 
                 $res = "";
                 $arres = array();
+                $origvalues = array();
+                $preparedvalues = array();
+                
                 foreach ($dtValue as $key => $value){
 
                     //original value keeps whole geo array
-                    $dtname2 = $dtname."_originalvalue";
+                    $dtname2 = $dtname.RAW;
                     $value['geo']['recid'] = $recID;
                     $arres = array_merge($arres, array($dtname2=>$value['geo']));
+                    array_push($origvalues, $value['geo']);
 
                     $geom = \geoPHP::load($value['geo']['wkt'], 'wkt');
                     if(!$geom->isEmpty()){
                         $geojson_adapter = new \GeoJSON();
                         $json = $geojson_adapter->write($geom, true);
+                        
+                        //$geom->envelope();
+                        $bbox = $geom->getBBox();
+                        
+                        switch ($value['geo']['type']) {
+                            case "p": $type = "Point"; break;
+                            case "pl": $type = "Polygon"; break;
+                            case "c": $type = "Circle"; break;
+                            case "r": $type = "Rectangle"; break;
+                            case "l": $type = "Path"; break;
+                            case "m": $type = "Collection"; break;
+                            default: $type = "Collection";
+                        }
+                        
+                        if ($type == "Point"){
+                            $link = "<b>Point</b> ".($bbox['minx']!=null?round($bbox['minx'],7).", ".round($bbox['miny'],7):'');
+                        }else{
+                            $link = "<b>$type</b> X ".($bbox['minx']!=null?round($bbox['minx'],7).", ".round($bbox['maxx'],7).
+                            " Y ".round($bbox['miny'],7).", ".round($bbox['maxx'],7):'');
+                        }   
+
+                        $url = HEURIST_BASE_URL.'viewers/map/map.php?q=ids:'.$recID
+                            .'&db='.$this->system->dbname()
+                            .'&notimeline=1&nocluster=1&basemap=OpenStreetMap&controls=none&published=true&popup=none';
+                        
+                        $geoimage =
+                        '<img class="geo-image" style="vertical-align:top;" src="'.HEURIST_BASE_URL
+                            .'hclient/assets/geo.gif" onclick="{if(window.hWin && window.hWin.HEURIST4){window.hWin.HEURIST4.msg.showDialog(\''
+                            .$url.'\')}}">&nbsp;';
+                        
+                        array_push($preparedvalues, $geoimage.$link);
                     }
                     if(!$json) {$json = array();}
                     $dtname2 = $dtname."_geojson";
                     $arres = array_merge($arres, array($dtname2=>$json));
-
 
                     $res = $value['geo']['wkt'];
                     break; //only one geo location at the moment
@@ -490,13 +551,15 @@ class ReportRecord
                 if(strlen($res)==0){
                     $res = null;
                 }else{
-                    $res = array_merge($arres, array($dtname=>$res));
+                    //fNNN=>wkt, fNNNs=>human readable links, fNNN_originalvalue=>array(recid,wkt), fNNN_geojson=>json
+                    $res = array($dtname=>$res, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
+                    //array_merge($arres, array($dtname=>$res));
                 }
 
                 break;
 
             case 'separator':
-            case 'calculated':
+            //case 'calculated':
             case 'fieldsetmarker':
                 break;
 
@@ -508,13 +571,12 @@ class ReportRecord
                 if(empty($dtValue)){
                    break;
                 }
-
-                foreach ($dtValue as $key => $value){
-                    $recordID = $value['id'];
-                    array_push($res, $recordID);
+                
+                foreach ($dtValue as $value){
+                    array_push($res, $value['id']);
                 }
-
-                $res = array( $dtname =>$res[0], $dtname."s" =>$res );
+                
+                $res = array( $dtname =>$res[0], $dtname.'s' =>$res );
 
                 break;
 
@@ -522,26 +584,48 @@ class ReportRecord
                 // repeated basic detail types
                 $res = "";
                 $origvalues = array();
-                foreach ($dtValue as $key => $value){
-                    if(strlen($res)>0) {$res = $res.", ";}
-                    $res = $res.$value;
-                    array_push($origvalues, $value);
-                }
+                $preparedvalues = array();
 
-                if(count($dtValue)>1 && ($detailType=='freetext' || $detailType=='blocktext')){
-                    $translated_value = getCurrentTranslation($dtValue, $lang);
-                    if($translated_value!=null){
-                        $res = $translated_value;
+                if($detailType=='freetext' || $detailType=='blocktext'){
+                    $lang = getLangCode3($lang);
+                    $def = array();
+                
+                    //get trnaslated values
+                    foreach ($dtValue as $value){
+                        
+                            list($lang_, $val) = extractLangPrefix($value, $lang);    
+                            
+                            $val = USanitize::sanitizeString($val);
+                            
+                            if ($lang_!=null && $lang_==$lang){
+                                array_push($preparedvalues, $val);
+                            }elseif($lang_==null){
+                                //without prefix
+                                array_push($def, $val);
+                            }
+                            
+                            array_push($origvalues, $value); //all
                     }
+                    
+                    if(count($preparedvalues)==0 && count($def)>0){
+                        $preparedvalues = $def;
+                    }
+                    
+                    //USanitize::sanitizeString($rec_title,ALLOWED_TAGS)
+                    
+                }else{
+                    $origvalues = array_values($dtValue);
+                    $preparedvalues = $origvalues;
                 }
-
-                if(strlen($res)==0){ //no valid value
+                
+                if(count($preparedvalues)==0){ //no valid values
                     $res = null;
                 }else{
-                    $res = array( $dtname=>$res, $dtname."s" =>$origvalues, $dtname."_originalvalue"=>$origvalues);
+                    $res = implode(', ', $preparedvalues);
+                    $res = array( $dtname=>$res, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
                 }
 
-
+    
         }//end switch
 
         return $res;
@@ -571,7 +655,7 @@ class ReportRecord
         $res_label_full = '';
         $res_desc = "";
         $res = array();
-
+        $origvalues = array();
 
         foreach ($dtValue as $value){
 
@@ -601,11 +685,12 @@ class ReportRecord
                     "conceptid"=>$term[ $fi['trm_ConceptID'] ],
                     "desc"=>$term_desc
                 ));
+                array_push($origvalues, $value);
             }
         }
 
         if(!empty($res)){
-            $res = array( $dtname =>$res[0], $dtname."s" =>$res );
+            $res = array( $dtname =>$res[0], $dtname.'s'=>$res, $dtname.RAW=>$origvalues );
         }
 
         return $res;
@@ -885,5 +970,183 @@ class ReportRecord
 
         return count($results) == 1 ? $results[0] : $results;
     }
+    
+    /*
+    
+    1) ordered fields for given rectype
+    2) field label (DisplayName) for rectype+field  |modifier label
+    3) field value                                  |modifier raw  display  
+    4) formatted pairs: label+values based on given template
+    
+    */
 
+    /**
+    * Returns array of fields (DisplayNames) for given record ordered by rectype structure
+    *     
+    * @param mixed $rec - record values
+    */
+    public function getRecordStructure($rec){
+        
+        if(!($rec && @$rec['recTypeID']>0)){
+            return null;
+        }
+
+        $rty_ID = @$rec['recTypeID'];
+        
+        if(array_key_exists($rty_ID, $this->$rstFields)){
+            return $this->$rstFields[$rty_ID];
+        }
+        
+        //find record type structure
+        $defRecStructure = new DbDefRecStructure($this->system, array('details'=>'listshort','rst_RecTypeID'=>$rty_ID));
+        $structure = $defRecStructure->search();
+        
+        if(!$structure || @$structure['reccount']==0){ //not found
+            return null;
+        }
+        
+        //'rst_ID,rst_RecTypeID,rst_DetailTypeID,rst_DisplayName,dty_Type
+        $this->$rstFields[$rty_ID] = array();
+        foreach($structure['records'] as $rst){
+            $this->$rstFields[$rty_ID][$rst[2]] = $rst[3];
+        }
+        
+        return $this->$rstFields[$rty_ID];
+    }
+
+    /**
+    * Returns field label (DisplayName) for rectype and field
+    * 
+    * @param mixed $rec
+    * @param mixed $dty_ID
+    */
+    public function getFieldLabel($rec, $dty_ID){
+
+        $rst = $this->getRecordStructure($rec);
+        
+        if($rst==null || @$rst[$dty_ID]==null){
+            //structure not found or field is not standard
+            return 'Field '.$dty_ID;
+        }
+        
+        return @$rst[$dty_ID];
+    }
+    
+    public function getFieldType($dty_ID){
+        
+        $detailType = null;
+    
+        if($dty_ID<1){
+            $detailType =  'relmarker';
+        }elseif (@$this->dtyTypes[$dty_ID]) {
+            $detailType =  @$this->dtyTypes[ $dty_ID ];
+        }
+        return $detailType;
+    }
+    
+    /**
+    * 1. Finds empty groups
+    * 2. Prepare values - replace fNNN with array of
+    *      freetext, blocktext - translated value 
+    *      enum - labels
+    *      file    
+    * 
+    * @param mixed $rec
+    */
+    public function prepareRecord($rec, $lang=null){
+        
+        $rts = $this->getRecordStructure($rec);
+        
+        $sepKey = '';
+        $cntGroups = 0;
+        foreach ($rts as $dty_ID=>$label){
+  
+            $dtyKey ='f'.$dty_ID;
+            $dtyType = $this->getFieldType($dty_ID);
+            
+            if ($dtyType=='separator'){
+                
+                if ($sepKey!=''){
+                    if($isEmpty){
+                        $rec[$sepKey]='empty';
+                    }else{
+                        $cntGroups++;
+                    }
+                }
+                  
+                $sepKey = $dtyKey;
+                $isEmpty = true;
+                continue;
+            }
+
+            if ($rec[$dtyKey]!=null){ //&& count($rec[$dtyKey.'s']
+                $isEmpty = false;
+            }
+        }//for
+
+        if ($sepKey!=''){
+            if($isEmpty){
+                $rec[$sepKey]='empty';
+            }else{
+                $cntGroups++;
+            }
+        }
+        
+        $rec['recGroupCount'] = $cntGroups;
+        
+        return $rec;
+    }
+    
+    //
+    //
+    //
+    public function composeRecLink($rec_ID, $template_name){
+        
+        $rec = recordSearchByID($this->system, $rec_ID, false);
+        
+        if(!$rec){
+            return ''; //not found
+        }
+        
+        $recTitle = USanitize::sanitizeString($rec['rec_Title'], ALLOWED_TAGS);
+        
+        if($template_name==null || !$this->recordIsVisible($rec)){
+            return $recTitle;
+        }
+        
+        $url = HEURIST_BASE_URL.'?db='.$this->system->dbname()."&template=$template_name&q=ids:$rec_ID";
+        
+        print '<a href="'.$url.'" target="_popup" onclick="open_link(this)">'.$recTitle.'</a>';
+    }
+    
+    //
+    //
+    //
+    public function composeFileLink($fileinfo){
+        
+        $filepath = $fileinfo['fullPath'];
+        $external_url = $fileinfo['ulf_ExternalFileReference'];
+        $originalFileName = $fileinfo['ulf_OrigFileName'];
+        $fileSize = $fileinfo['ulf_FileSizeKB'];
+        $file_nonce = $fileinfo['ulf_ObfuscatedFileID'];
+                    
+        $file_URL   = HEURIST_BASE_URL.'?db='.$this->system->dbname()."&file=$file_nonce"; //download
+        
+        $link = '<a target="_surf" href="'.htmlspecialchars($external_url?$external_url:$file_URL).'">';
+
+        $link .= '<span style="padding-left: 16px;background-image: url('  //class="external-link" 
+                .HEURIST_BASE_URL.'hclient/assets/external_link_16x16.gif);vertical-align: bottom;"></span>';
+        if(strpos($originalFileName, ULF_IIIF)===0){
+            $link .= '<img src="'.HEURIST_BASE_URL.'hclient/assets/iiif_logo.png" style="width:16px"/>';
+            $originalFileName = null;
+        }
+
+        $link .= '<span>'.htmlspecialchars(($originalFileName && $originalFileName!=ULF_REMOTE)
+                            ?$originalFileName
+                            :($external_url?$external_url:$file_URL)).'</span></a> '
+                .($fileSize>0?'[' .htmlspecialchars($fileSize) . 'kB]':'');
+        
+        return $link;
+    }
+    
 }

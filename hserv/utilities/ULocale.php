@@ -165,6 +165,7 @@
 
     //
     // For smarty modifier "translate"
+    // $filed - label or desc - for terms
     //
     function getTranslation($input, $lang, $field=null){
         global $smarty;
@@ -202,6 +203,7 @@
     //
     // It returns translated value for multivalue field
     // if all values have language prefix (except default one)
+    // $input - array of values
     //
     function getCurrentTranslation($input, $lang){
 

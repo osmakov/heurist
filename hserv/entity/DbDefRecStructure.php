@@ -66,6 +66,10 @@ class DbDefRecStructure extends DbEntityBase
             case 'id': $this->searchMgr->setSelFields('rst_ID'); break;
             case 'name': $this->searchMgr->setSelFields('rst_ID,rst_DisplayName'); break;
             case 'rectype': $this->searchMgr->setSelFields('rst_ID,rst_RecTypeID,rst_DetailTypeID'); break;
+            case 'listshort':
+                $is_structure = true;
+                $this->searchMgr->setSelFields('rst_ID,rst_RecTypeID,rst_DetailTypeID,if(rst_DisplayName is not null and CHAR_LENGTH(rst_DisplayName)>0,rst_DisplayName,dty_Name) as rst_DisplayName,dty_Type');
+                break;
             case 'list':
                 $is_structure = true;
                 $this->searchMgr->setSelFields('rst_ID,rst_RecTypeID,rst_DetailTypeID,rst_DisplayName'

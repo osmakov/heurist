@@ -478,6 +478,15 @@ class ReportExecute
             }
         }
 
+        try {
+            $this->smarty->registerPlugin('modifier', 'label', [$heuristRec, 'getFieldLabel']);
+        } catch (\Exception $e) {
+            if (strpos($e, 'already registered') === false) {
+                $this->outputError('Cannot register smarty plugin. '.$e->getMessage());
+                return false;
+            }
+        }
+        
         // Handle activity logging if required
         //if (!$this->isHeadless && !isset($this->params['template_body']) && !$this->is_fetch) {
         //    log_smarty_activity($this->system, $results);
