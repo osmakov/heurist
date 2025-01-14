@@ -1703,6 +1703,39 @@ class DbUtils {
     */
     public static function databaseRename($db_source, $db_target, $createArchive=false){
 
+        /*
+        [db_source_full, db_source] = mysql__get_names(db_source)
+        [db_target_full, db_target] = mysql__get_names(db_target)
+
+        // Copy filestore
+        ...
+        setSessionVal(2)
+
+        // Create new database
+        "CREATE DATABASE db_target_full"
+        setSessionVal(3)
+
+        // InnoDB lets us just rename the table [MySQL 5.5 +]
+        $tables = "SHOW TABLES"
+        FOREACH tables as table:
+            "RENAME TABLE db_source_full.table TO db_target_full.table"
+        END FOR
+
+        // Add SQL triggers and constraints
+        databaseCreateConstraintsAndTriggers(db_target_full)
+        setSessionVal(5)
+
+        // Update ulf paths to new database
+        databaseUpdateFilePaths(db_source, db_target)
+        setSessionVal(6)
+
+        // Update registration
+        ...
+
+        // Drop original database
+        databaseDrop(false, db_source, createArchive)
+        */
+
         //copy all data to new database
         $res = DbUtils::databaseCloneFull($db_source, $db_target, false, false);
         //drop/archive previous database

@@ -386,6 +386,17 @@
                 }
             },
             {
+                "dtID": "rst_EntryMask",
+                "dtFields":{
+                    "dty_Type":"freetext",
+                    "rst_Class":"freetext integer float",
+                    "rst_DisplayWidth":60,
+                    "rst_DisplayName":"Entry mask:",
+                    "rst_DisplayHelpText":"Define an entry value mask to be applied to values entered into this field",
+                    "rst_Display":"hidden"
+                }
+            },
+            {
                 "groupHeader": "Additional",
                 "groupType": "accordion",
                 "groupHeaderClass": "ui-heurist-bg-light",

@@ -402,6 +402,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
     $is_insert = ($recID<1);
     $is_save_new_record = false;
     $missingParents = [];
+    $entryMaskIssues = [];
 
     // recDetails data
     if ( @$record['details'] ) {
@@ -746,6 +747,8 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
 
         recordUpdateCalcFields( $system, $recID, $rectype );//update calculated fields in this record
 
+        $entryMaskIssues = recordUpdateMaskFields($system, $recID, $rectype);
+
         //check that this record my affect other records with calculated fields
         //1. cfn_RecTypeIDs -> cfn_ID
         //2. defRecStructure where rst_CalcFunctionID  -> rst_RecTypeID+rst_DetailTypeID
@@ -837,6 +840,9 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
 
     if(!empty($missingParents)){
         $rtn['issues']['parents'] = $missingParents;
+    }
+    if(!empty($entryMaskIssues)){
+        $rtn['issues']['entryMask'] = $entryMaskIssues;
     }
 
     return $rtn;
@@ -3450,5 +3456,221 @@ function validateParentRecords($system, $child_record, &$new_child_details){
     }
 
     return $missing_parents;
+}
+
+/**
+ * Update field entry values for the provided record, reporting those that have been updated, skipped or are invalid (value or entry mask)
+ *
+ * @param hserv\System $system Initialised Heurist system instance and connected to the necessary database
+ * @param int $recID Record ID for the record being checked and updated
+ * @param int $rtyID Record type for the record
+ * @param bool $verbose Whether to include counts for action (values skipped, updated, or invalid)
+ *
+ * @return array resulting counts, for verbose = false an empty array means success
+ */
+function recordUpdateMaskFields($system, $recID, $rtyID = 0, $verbose = false){
+
+    $mysqli = $system->getMysqli();
+    $entryMaskFields = null;
+    $result = [];
+
+    if($recID > 0 && $rtyID <= 0){
+        $rtyID = mysql__select_value($mysqli, "SELECT rec_RecTypeID FROM Records WHERE rec_ID = {$recID}");
+    }
+
+    if($recID > 0 && $rtyID > 0){
+        $entryMaskFields = mysql__select_assoc2($mysqli, "SELECT rst_DetailTypeID, rst_EntryMask FROM defRecStructure WHERE rst_RecTypeID = {$rtyID} AND rst_EntryMask IS NOT NULL");
+    }
+
+    if(empty($entryMaskFields)){
+        return [];
+    }
+
+    $values_updated = 0;
+    $values_skipped = 0;
+    $values_invalid = 0;
+    $mask_invalid = [];
+
+    foreach($entryMaskFields as $dtyID => $mask){
+
+        $cur_vals = mysql__select_assoc2($mysqli, "SELECT dtl_ID, dtl_Value FROM recDetails WHERE dtl_RecID = {$recID} AND dtl_DetailTypeID = {$dtyID}");
+
+        preg_match('~\$([adimn])(\d)*(\(\d,?\d*\))*\$~', $mask, $matches);
+
+        if(count($matches) < 2){ // invalid mask
+
+            $values_skipped ++;
+            $mask_invalid[$dtyID] = $mask;
+
+            continue;
+        }
+
+        $to_replace = $matches[0]; // mask's logical substring, replaced with value
+        $check_for = substr($mask, 0, strpos($mask, $to_replace)); // used to check if mask has been applied
+        $type = $matches[1]; // mask type [a,d,i,m,n]
+
+        $length = count($matches) > 2 && is_numeric($matches[2]) ? intval($matches[2]) : 0;
+
+        // Number range
+        $range = count($matches) > 2 && is_string($matches[2]) && $matches[2][0] == '(' ? $matches[2] : [];
+        $range = count($matches) > 3 && is_string($matches[3]) && $matches[3][0] == '(' ? $matches[3] : $range;
+        $range = empty($range) ? [] : explode(',', str_replace(['(',')'], '', $range));
+
+        if(count($range) !== 2){ // only one number was provided
+            $range = null;
+        }elseif(count($range) == 2 && $range[0] > $range[1]){ // swap min and max
+            $temp = $range[0];
+            $range[0] = $range[1];
+            $range[1] = $temp;
+        }
+
+        foreach($cur_vals as $dtl_ID => $value){
+
+            if(strpos($value, $check_for) === 0){ // mask already applied
+                $values_skipped ++;
+                continue;
+            }
+
+            $org_value = $value;
+            $reason = false;
+
+            [$value, $reason] = updateMaskFields($type, $value, $length, $range);
+
+            if($reason === false){ // type not handled
+                $mask_invalid[$dtyID] = $mask;
+                continue;
+            }elseif(!empty($reason)){ // value doesn't match the mask, leave value unchanged
+                if(!array_key_exists($dtyID, $result)){
+                    $result[$dtyID] = [ 'mask' => $mask ];
+                }
+
+                $result[$dtyID][] = ['value' => $org_value, 'reason' => $reason];
+
+                $values_invalid ++;
+
+                continue;
+            }
+
+            // Valid value, update value using mask
+            $value = str_replace($to_replace, $value, $mask);
+
+            $res = mysql__insertupdate($mysqli, 'recDetails', 'dtl', ['dtl_ID' => $dtl_ID, 'dtl_Value' => $value]);
+            if(!$res){ // failed to update record detail
+                if(!array_key_exists($dtyID, $result)){
+                    $result[$dtyID] = [ 'mask' => $mask ];
+                }
+
+                $result[$dtyID][] = ['value' => $value, 'reason' => 'Failed to update record detail'];
+
+                $values_invalid ++;
+
+                continue;
+            }
+
+            $values_updated ++;
+        }
+    }
+
+    if($verbose){
+        $result['skipped'] = $values_skipped;
+        $result['updated'] = $values_updated;
+        $result['invalid'] = $values_invalid;
+
+        $result['invalid_masks'] = $mask_invalid;
+    }
+
+    return $result;
+}
+
+/**
+ * Process numeric related values
+ *
+ * @param string $type the specific numeric type [d, i, n]
+ * @param mixed $value the value being checked
+ * @param int $length the allotted number of decimal points for d & n
+ * @param array[int, int] $range the minimum and maximum range for the number
+ *
+ * @return array[numeric, string] the resulting [value, invalid reasoning]
+ */
+function updateMaskFieldsNumeric($type, $value, $length, $range) {
+
+    $type_text = $type === 'i' ? 'an integer' : 'numeric';
+    $type_text = $type === 'd' ? 'a decimal number' : $type_text;
+
+    if(is_numeric($value)){
+        $value = $type === 'i' ? intval($value) : floatval($value);
+    }
+
+    $reason = '';
+
+    if(!is_float($value) && !is_int($value)){
+        $reason = "Not {$type_text}";
+    }elseif(count($range) === 2 && ($value < $range[0] || $value > $range[1])){
+        $reason = "Out of range: {$range[0]} - {$range[1]}";
+    }elseif(is_float($value)){
+        $value = number_format($value, $length);
+    }
+
+    return [$value, $reason];
+}
+
+/**
+ * Process the value against the mask typing
+ *
+ * @param string $type the entry mask type [a, d, i, n, m]
+ * @param mixed $value the value being validated
+ * @param int $length the allotted length of the string [a, m] or number of decimal points [d, n]
+ * @param array[int, int] $range the minimum and maximum range for the number [a, d, n]
+ *
+ * @return array[mixed, string] the resulting [value, invalid reasoning] combination
+ */
+function updateMaskFields($type, $value, $length, $range){
+
+    $reason = '';
+
+    switch($type){
+
+        case 'a': // alphabetic, letters only
+
+            $leng_regex = $length > 0 ? "{{1,$length}}" : '';
+            $leng_regex = "~\w{$leng_regex}~";
+
+            if(preg_match($leng_regex, $value, $word) === 1){
+                $value = $word[0];
+            }else{
+                $reason = 'Not alphabetic';
+            }
+
+            break;
+
+        case 'd': // decimal, float point number, will convert integers
+        case 'i': // integer, whole number, will conevrt float points
+        case 'n': // numeric, any type of number
+
+            [$value, $reason] = updateMaskFieldsNumeric($type, $value, $length, $range);
+
+            break;
+
+        case 'm': // mixed, alphanumeric no special characters
+
+            $mixed_regex = '~[^\w\d]~';
+            $leng_regex = $length > 0 ? "{{1,$length}}" : '';
+            $leng_regex = "~[\w\d]{$leng_regex}~";
+
+            if(preg_match($mixed_regex, $value) !== 1){
+                $reason = 'Contains non-alphanumeric characters';
+            }elseif(preg_match($leng_regex, $value, $mixed) === 1){
+                $value = $mixed[0];
+            }
+
+            break;
+
+        default:
+
+            $reason = false;
+            break;
+    }
+
+    return [$value, $reason];
 }
 ?>

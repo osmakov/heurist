@@ -76,7 +76,7 @@ class DbDefRecStructure extends DbEntityBase
             .',if(rst_DisplayHelpText is not null and (dty_Type=\'separator\' OR CHAR_LENGTH(rst_DisplayHelpText)>0),rst_DisplayHelpText,dty_HelpText) as rst_DisplayHelpText'
             .',if(rst_DisplayExtendedDescription is not null and CHAR_LENGTH(rst_DisplayExtendedDescription)>0,rst_DisplayExtendedDescription,dty_ExtendedDescription) as rst_DisplayExtendedDescription'
             .',rst_RequirementType, rst_DisplayOrder, rst_DisplayWidth, rst_DisplayHeight, rst_DefaultValue, rst_MaxValues'
-            .',rst_CreateChildIfRecPtr, rst_PointerMode, rst_PointerBrowseFilter, rst_NonOwnerVisibility, rst_Status, rst_MayModify, rst_SemanticReferenceURL, rst_TermsAsButtons, rst_CalcFunctionID ');
+            .',rst_CreateChildIfRecPtr, rst_PointerMode, rst_PointerBrowseFilter, rst_NonOwnerVisibility, rst_Status, rst_MayModify, rst_SemanticReferenceURL, rst_TermsAsButtons, rst_CalcFunctionID, rst_EntryMask ');
                 break;
             case 'full':
                 $this->searchMgr->setSelFields(implode(',', $this->fieldNames));
@@ -92,7 +92,7 @@ class DbDefRecStructure extends DbEntityBase
             //here we check for an override in the recTypeStrucutre for ExtendedDescription which is a rectype specific ExtendedDescription, use detailType ExtendedDescription as default
             "if(rst_DisplayExtendedDescription is not null and CHAR_LENGTH(rst_DisplayExtendedDescription)>0,rst_DisplayExtendedDescription,dty_ExtendedDescription) as rst_DisplayExtendedDescription",
             "rst_RequirementType",
-            "rst_DisplayOrder", "rst_DisplayWidth", "rst_DisplayHeight", "rst_DefaultValue","rst_CalcFunctionID",
+            "rst_DisplayOrder", "rst_DisplayWidth", "rst_DisplayHeight", "rst_DefaultValue","rst_CalcFunctionID","rst_EntryMask",
             //XXX "rst_RecordMatchOrder"
 
             "rst_NonOwnerVisibility", "rst_Status", "rst_MayModify", "rst_OriginatingDBID", "rst_MaxValues", "rst_MinValues",
@@ -474,24 +474,13 @@ class DbDefRecStructure extends DbEntityBase
                                 $query = 'SELECT rl_TargetID '
                                     . 'FROM recLinks '
                                     . 'WHERE rl_RelationTypeID IN (' . implode(',', $terms) . ') AND rl_SourceID IN ('. $rec_ids .')';
-                                $rel_usage_from = mysql__select_list2($mysqli, $query);// returns count
+                                $rel_usage_to = mysql__select_list2($mysqli, $query);// returns count
                                 if(!empty($mysqli->error)){
                                     $this->system->addError(HEURIST_DB_ERROR, 'Cannot retrieve relationship marker usage for field #'.$dty_id.' from record type #'.$rty_ID, $mysqli->error);
                                     return false;
                                 }
 
-                                $query = 'SELECT rl_SourceID '
-                                . 'FROM recLinks '
-                                . 'WHERE rl_RelationTypeID IN (' . implode(',', $terms) . ') AND rl_TargetID IN ('. $rec_ids .')';
-                                $rel_usage_to = mysql__select_list2($mysqli, $query);// returns count
-                                if(!empty($mysqli->error)){
-                                    $this->system->addError(HEURIST_DB_ERROR, 'Cannot retrieve reverse relationship marker usage for field #'.$dty_id.' from record type #'.$rty_ID, $mysqli->error);
-                                    return false;
-                                }
-
-                                $rel_usages = array_merge($rel_usage_from, $rel_usage_to);
-
-                                foreach($rel_usages as $rec_id){
+                                foreach($rel_usage_to as $rec_id){
                                     if(in_array($rec_id, $allowed_recs)){
                                         $count ++;
                                         continue;

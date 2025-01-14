@@ -115,7 +115,7 @@ if(!$init_client || @$_REQUEST['session']>0){ //2a. init operation on client sid
 ?>
         //url to show affected records
         var sURL = window.hWin.HAPI4.baseURL
-                        +'?w=all&db='+window.hWin.HAPI4.database+'&nometadatadisplay=true&q=';
+                        +'?w=all&db='+window.hWin.HAPI4.database+'&q=';
 
         window.hWin.HEURIST4.util.sendRequest(action_url, request, null, function(response){
             window.hWin.HEURIST4.msg.hideProgress();
@@ -187,7 +187,7 @@ if($init_client){
                 them with the existing value and updates the field where the value has
                 changed.
                 At the end of the process it will display a list of records
-                for which the fields were changed, cleared and a list of errors if formula canot be executed.
+                for which the fields were changed, cleared and a list of errors if formula cannot be executed.
             </div>
             <p class="header_info">This will take some time for large databases</p>
 <?php
@@ -203,13 +203,13 @@ if($init_client){
 
     if($res['q_updates']){
         $q_updates = HEURIST_BASE_URL.'?w=all&q='.$res['q_updates']
-            .'&db='.HEURIST_DBNAME.'&nometadatadisplay=true';
+            .'&db='.HEURIST_DBNAME;
     }else{
         $q_updates = '';
     }
     if($res['q_cleared']){
         $q_cleared = HEURIST_BASE_URL.'?w=all&q='.$res['q_cleared']
-            .'&db='.HEURIST_DBNAME.'&nometadatadisplay=true';
+            .'&db='.HEURIST_DBNAME;
     }else{
         $q_cleared = '';
     }
