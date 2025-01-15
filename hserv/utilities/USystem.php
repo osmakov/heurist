@@ -785,6 +785,7 @@ class USystem {
       _paq.push(['setCustomDimension', 1, '' ]);  
       _paq.push(['setCustomDimension', 2, 'startup' ]);
       _paq.push(['setCustomDimension', 3, 'eng' ]);  
+      _paq.push(['setCustomDimension', 4, '' ]);  
       //per visit
       _paq.push(['resetUserId']);
       _paq.push(['setCustomDimension', 5, 'visitor' ]);

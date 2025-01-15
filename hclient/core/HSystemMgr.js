@@ -564,6 +564,7 @@ class HSystemMgr {
       _paq.push(['setCustomDimension', 1, this.hapi4.database ]);  
       _paq.push(['setCustomDimension', 2, pageType ]); // web|tpl|hml|view|edit|adm
       _paq.push(['setCustomDimension', 3, this.hapi4.getLocale() ]);  
+      _paq.push(['setCustomDimension', 4, (pageType=='web')?value:'' ]);  //website id
 
       //per visit
       const usrType = this.hapi4.getUserType()
