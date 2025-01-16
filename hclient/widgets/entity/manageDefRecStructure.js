@@ -1994,7 +1994,7 @@ console.log('onEditFormChange @todo check buttons!!!');
         
         
         this._super();
-        
+
         $.each(this.editForm.find('select'), (idx, select) => {
             select = $(select);
             if(select.hSelect('instance') === undefined){
@@ -2004,6 +2004,37 @@ console.log('onEditFormChange @todo check buttons!!!');
             select.hSelect('destroy');
             window.hWin.HEURIST4.ui.initHSelect(select, false);
         });
+
+        if(dt_type == 'enum' || dt_type == 'relmarker' || dt_type == 'relationtype'){
+
+            let termprev_ele = this._editing.getFieldByName('rst_TermPreview');
+            let $select = termprev_ele.find('select');
+
+            let defvalue_ele = this._editing.getFieldByName('rst_DefaultValue');
+
+            if($select.hSelect('instance') !== undefined){
+                $select.hSelect('destroy');
+            }
+
+            window.hWin.HEURIST4.ui.createTermSelect($select[0], {
+                vocab_id: this._editing.getValue('rst_FilteredJsonTermIDTree')[0] ?? this._editing.getValue('dty_TermIDTreeNonSelectableIDs')[0],
+                defaultTermID: this._editing.getValue('rst_TermPreview')[0] ?? this._editing.getValue('rst_DefaultValue')[0],
+                topOptions: [{key: '', title: '&nbsp;'}],
+                eventHandlers: {
+                    onSelectMenu: () => {
+
+                        // Set value for editing input field without triggering change (this would rebuild the field leading to issues)
+                        let new_term = $select.val();
+                        defvalue_ele.editing_input('setValue', new_term, false);
+                        defvalue_ele.editing_input('isChanged', true);
+
+                        // However, trigger modification for the edit form so users can save the change in default value
+                        this._editing.setModified(true);
+                        this.onEditFormChange();
+                    }
+                }
+            });
+        }
 
         //change default styles
         this.editForm.find('.text').css({background: '#ECF1FB'});
@@ -2125,8 +2156,6 @@ console.log('onEditFormChange @todo check buttons!!!');
         }
 
         //remove old content
-       
-       
 
         if(!window.hWin.HEURIST4.util.isempty(allTerms)) {
 
