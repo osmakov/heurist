@@ -1009,6 +1009,11 @@ function hRecordAction(_action_type, _scope_type, _field_type, _field_value) {
                             encodeURI(window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database
                                 +'&q=ids:'+response['fails_list'].join(','))+
                             '&nometadatadisplay=true" target="_blank">view</a></span>';
+                        }else if(key == 'limited' && action_type == 'add_detail' && response[key] > 0){
+                            tag_link = `<span style="display: block; font-size: 0.9em; padding: 5px 5px;">
+                                            For single value fields which were skipped because they already have a value,<br>
+                                            use "Recode > Replace field value" to replace all, or selected, existing values with the new value.
+                                        </span>`;
                         }
                         
                         sResult = sResult + '<div style="padding:4px"><span>'+lbl+'</span><span>&nbsp;&nbsp;'

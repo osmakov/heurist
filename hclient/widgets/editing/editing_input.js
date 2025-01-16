@@ -701,7 +701,7 @@ $.widget( "heurist.editing_input", {
                     if(that.detailType=='blocktext'){
                         let eid = '#'+input.attr('id')+'_editor';
                         //tinymce.remove('#'+input.attr('id')); 
-                        tinymce.remove(eid);
+                        if(typeof tinymce !== 'undefined') { tinymce.remove(eid); }
                         $(eid).parent().remove(); //remove editor element
                         //$(eid).remove(); 
 
