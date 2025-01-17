@@ -458,33 +458,37 @@ class ReportRecord
                 $res = array();//list of urls
                 $origvalues = array();
                 $preparedvalues = array();
+                $file_url=null;
 
                 foreach ($dtValue as $value){
                     
-                    $link = $this->composeFileLink($value['file']);
-                    array_push($preparedvalues, $link);
-                    /*
-                    $external_url = @$value['file']['ulf_ExternalFileReference'];
-                    if ($external_url && strpos($external_url,'http://')!==0) {
-                        array_push($preparedvalues, $external_url);//external
-
-                    }elseif (@$value['file']['ulf_ObfuscatedFileID']) {
-                        //local
-                        array_push($preparedvalues, HEURIST_BASE_URL."?db=".$this->system->dbname()
-                                ."&file=".$value['file']['ulf_ObfuscatedFileID']);
-                    }
-                    */
                     //keep reference to record id
                     $value['file']['rec_ID'] = $recID;
 
+                    $link = $this->composeFileLink($value['file']);
+                    array_push($preparedvalues, $link);
                     //original value keeps the whole 'file' array
                     array_push($origvalues, $value['file']);
-                    $res = implode(', ',$preparedvalues);
+                    
+                    if($file_url!=null){
+                        continue;
+                    }
+                    $external_url = @$value['file']['ulf_ExternalFileReference'];
+                    if ($external_url && strpos($external_url,'http://')!==0) {
+                        $file_url = $external_url;//external
+
+                    }elseif (@$value['file']['ulf_ObfuscatedFileID']) {
+                        //local
+                        $file_url = HEURIST_BASE_URL."?db=".$this->system->dbname()
+                                ."&file=".$value['file']['ulf_ObfuscatedFileID'];
+                    }
                 }
-                if(empty($res)){
+                //$res = implode(', ',$preparedvalues);
+                
+                if($file_url==null){
                     $res = null;
                 }else{
-                    $res = array($dtname=>$res, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
+                    $res = array($dtname=>$file_url, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
                 }
 
                 break;
