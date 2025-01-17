@@ -34,7 +34,7 @@ class DbSysBugreport extends DbEntityBase
 
     private $reportEmail = <<<EMAIL
     Your bug report has been successfully added to the Heurist Job tracker database.<br>
-    You can view your report at: __LINK__<br>
+    You can view your report at: <a href="__LINK__">__LINK__</a><br>
     See current and resolved issues list: <a href="https://heuristref.net/Heurist_Job_Tracker/web/64/1526">https://heuristref.net/Heurist_Job_Tracker</a><br><br>
     Bug description:<br>__DESC__
     EMAIL;
