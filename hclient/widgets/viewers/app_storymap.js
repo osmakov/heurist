@@ -210,11 +210,11 @@ $.widget( "heurist.app_storymap", {
 
         let placeholder = !window.hWin.HEURIST4.util.isempty(this.options.storyPlaceholder) && this.options.storyPlaceholder != 'def' ? 
                             this.options.storyPlaceholder : '';
-        placeholder = this.options.storyPlaceholder == 'def' ? 'Please select a story in the list' : placeholder;
+        placeholder = this.options.storyPlaceholder == 'def' 
+            ? '<br><h3 class="not-found" style="color:teal;display:inline-block">Please select a story in the list</h3>' : placeholder;
         
         this._initial_div_message = 
-        $('<div class="ent_wrapper" style="padding: 1em;background: white;"><br>'
-        +`<h3 class="not-found" style="color:teal;display:inline-block">${placeholder}</h3></div>`)
+        $(`<div class="ent_wrapper" style="padding: 1em;background: white;">${placeholder}</div>`)
         .appendTo(this.element);
         
         
@@ -456,17 +456,24 @@ $.widget( "heurist.app_storymap", {
                     }
                 }else if(e.type == window.hWin.HAPI4.Event.ON_REC_SEARCH_FINISH){
                 
+                    if(!that._initial_div_message){
+                        return;
+                    }
+                    
                     let recset = data.recordset; //record in main result set (for example Persons)
 
-                    let placeholder = !window.hWin.HEURIST4.util.isempty(that.options.storyPlaceholder) && that.options.storyPlaceholder != 'def' ? 
-                                        that.options.storyPlaceholder : '';
-                    placeholder = that.options.storyPlaceholder == 'def' ? 'Please select a story in the list' : placeholder;
-
-                    that._initial_div_message.find('h3')
-                        .html(recset.length()>0
-                            ?placeholder
-                            :'No records match the filter criteria');
-                    that._initial_div_message.show();
+                    let placeholder = (recset.length()>0)?'Please select a story in the list'
+                                                         :'No records match the filter criteria'
+                    if(!window.hWin.HEURIST4.util.isempty(that.options.storyPlaceholder) && that.options.storyPlaceholder != 'def'){
+                        placeholder = that.options.storyPlaceholder;
+                    }else{
+                        placeholder = `<br><h3 class="not-found" style="color:teal;display:inline-block">${placeholder}</h3>`;
+                    }
+                    
+console.log('on  search finish ', placeholder);
+                    if(that._initial_div_message.html()!=placeholder){
+                        that._initial_div_message.html(placeholder).show();    
+                    }
                     
                     that._resultset_main = recset;
                     
