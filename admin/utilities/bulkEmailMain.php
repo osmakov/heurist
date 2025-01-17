@@ -186,13 +186,13 @@ if (empty($emails)) {
     . "The Email record to be used must contain a title field and a short summary field - the latter will be used as the email's body. The title and body can be edited before sending. <br>"
     . "If you want to create your email on-the-fly, simply create a dummy record with placeholders for title and body to enable this function. <br><br>"
     . "Placeholders that will be replaced with proper values (case insensitive):<br><br>"
-    . "##firstname## &rarr User's First Name,<br>"
-    . "##lastname## &rarr User's Last Name,<br>"
-    . "##email## &rarr User's Email,<br>"
-    . "##database## &rarr Database Name,<br>"
-    . "##dburl## &rarr Database URL,<br>"
-    . "##records## &rarr Record Count, and<br>"
-    . "##lastmodified## &rarr Date of the Last Modified Record<br>";
+    . "##firstname## > User's First Name,<br>"
+    . "##lastname## > User's Last Name,<br>"
+    . "##email## > User's Email,<br>"
+    . "##database## > Database Name,<br>"
+    . "##dburl## > Database URL,<br>"
+    . "##records## > Record Count, and<br>"
+    . "##lastmodified## > Date of the Last Modified Record<br>";
     exit;
 }
 
@@ -346,7 +346,7 @@ $stmt->close();
 
             var all_emails = <?php echo json_encode($emails)?>;// Object of Email records id->title
 
-            var current_db = "<?php echo $current_db ?>";
+            var current_db = "<?php echo $currentDb ?>";
             var getting_databases = false; // Flag for database retrieval operation in progress; true - general, 1 - intial list, false - none
             var run_filter = false;
             var isFormSubmit = false;
