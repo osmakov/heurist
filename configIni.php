@@ -82,7 +82,7 @@ of the codebase and rename it to index.html
 // ---------------------------------------------------------------------------------
 // *** DO NOT CHANGE VERSION NUMBER, THIS IS SET BY THE HEURIST DEVELOPMENT TEAM ***
 
-$version = "6.6.3";// sets current program version number, determined by Heurist development lead
+$version = "6.6.4";// sets current program version number, determined by Heurist development lead
 
 // ---------------------------------------------------------------------------------
 
