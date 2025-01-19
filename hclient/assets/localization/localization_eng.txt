@@ -163,6 +163,7 @@
 #menu-cms-create#Create
 #menu-cms-edit#Edit
 #menu-cms-view#View
+#menu-statistics-cms#Statistics
 #menu-cms-embed#Standalone web page
 #menu-cms-create-hint#Create a new CMS website, stored in this database, with widgets to access data in the database
 #menu-cms-edit-hint#Edit a CMS website defined in this database

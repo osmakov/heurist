@@ -421,9 +421,6 @@ class ActionHandler {
         let is_supported = true;
         let contentURL;
 
-        //database action name
-        const s = actionid.substr(actionid.lastIndexOf('-') + 1);
-        const actionName = 'db' + s.capitalize();
         
         switch (actionid) {
             case "menu-database-create":
@@ -435,6 +432,9 @@ class ActionHandler {
             case "menu-database-register":
             case "menu-database-verify":
             case "menu-database-verifyURLs":
+                //database action name
+                const s = actionid.substr(actionid.lastIndexOf('-') + 1);
+                const actionName = 'db' + s.capitalize();
                 window.hWin.HEURIST4.ui.showRecordActionDialog(actionName, popup_dialog_options);
                 break;
             case "menu-lookup-config":
@@ -452,6 +452,11 @@ class ActionHandler {
                 popup_dialog_options['path'] = 'widgets/admin/';
 
                 window.hWin.HEURIST4.ui.showRecordActionDialog('repositoryConfig', popup_dialog_options);
+                break;
+                
+            case "menu-statistics-cms":
+                popup_dialog_options['path'] = 'widgets/cms/';
+                window.hWin.HEURIST4.ui.showRecordActionDialog('cmsStatistics', popup_dialog_options);
                 break;
                 
             case "menu-files-index":

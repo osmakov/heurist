@@ -243,6 +243,8 @@ require_once dirname(__FILE__).'/hclient/framecontent/initPage.php';
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/baseAction.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/baseConfig.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/database/dbAction.js"></script>
+<script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/cms/cmsStatistics.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordAction.js"></script>
 <script type="text/javascript" src="<?php echo PDIR;?>hclient/widgets/record/recordAccess.js"></script>

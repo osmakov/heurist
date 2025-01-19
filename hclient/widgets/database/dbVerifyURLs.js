@@ -1,6 +1,5 @@
 /**
-* dbAction.js - popup dialog or widget to define action parameters, 
-*               send request to server, show progress and final report
+* dbVerifyURLs.js - Verify URLs in record headers and fields
 *
 * @package     Heurist academic knowledge management system
 * @link        https://HeuristNetwork.org

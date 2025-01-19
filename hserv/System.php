@@ -979,7 +979,8 @@ class System {
         $common_languages_for_translation, $glb_lang_codes, $glb_lang_codes_index,
         $saml_service_provides, $hideStandardLogin,
         $accessToken_DeepLAPI, $useRewriteRulesForRecordLink,
-        $allowCMSCreation;
+        $allowCMSCreation,
+        $matomoUrl,$matomoSiteId,$accessToken_Matomo;
 
         if(!isset($needEncodeRecordDetails)){
             $needEncodeRecordDetails = 0;
@@ -1095,9 +1096,15 @@ class System {
                     'pwd_ReservedChanges' => (strlen(@$passwordForReservedChanges)>6),  //allow change reserved fields
                     'pwd_ServerFunctions' => (strlen(@$passwordForServerFunctions)>6),  //allow run multi-db server actions
                     'api_Translator' => (!empty($accessToken_DeepLAPI)), // an api key has been setup for Deepl
-                    'use_redirect' => @$useRewriteRulesForRecordLink
+                    'use_redirect' => @$useRewriteRulesForRecordLink,
                 )
-            );
+            );//end of array
+            
+            if(isset($accessToken_Matomo) && isset($accessToken_Matomo) && isset($matomoSiteId)){
+                $res['sysinfo']['matomo_url'] = $matomoUrl;
+                $res['sysinfo']['matomo_siteid'] = $matomoSiteId;
+                $res['sysinfo']['matomo_api_key'] = $accessToken_Matomo;
+            }
 
             if($include_reccount_and_dashboard_count){
                 $res2 = $this->getTotalRecordsAndDashboard();

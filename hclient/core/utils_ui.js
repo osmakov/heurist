@@ -3323,7 +3323,43 @@ window.hWin.HEURIST4.ui = {
         }
         
         return style;        
-    }
+    },
+    
+  
+    /**
+    * ptr_mode: browseonly, dropdown, addonly, addorbrowse
+    */
+  createRecordSelector: function(ele, options){
+    
+        let dtFields = {};
+        dtFields['dt_ID'] = 9999999;    
+        dtFields['rst_PtrFilteredIDs'] = null;
+        dtFields['rst_DisplayName'] = '';
+        dtFields['rst_RequirementType'] = 'optional';
+        dtFields['rst_MaxValues'] = 1;
+        dtFields['dty_Type'] = 'resource';
+        dtFields['rst_PointerMode'] = 'browseonly';
+
+        dtFields = $.extend(dtFields, options);
+        
+        let ed_options = {
+            recID: -1,
+            dtID: 9999999,
+            //rectypeID: rectypeID,
+            values: '',// init_value
+            readonly: false,
+
+            showclear_button: false,
+            suppress_prompts: true,
+            show_header: !window.hWin.HEURIST4.util.isempty(dtFields['rst_DisplayName']),
+            dtFields:dtFields,
+            
+            change: onchange
+        };
+        
+        ele.editing_input(ed_options);
+  },
+      
     
 }//end ui
 
@@ -3446,9 +3482,7 @@ $.widget( "heurist.hSelect", $.ui.selectmenu, {
         });
       
   },
-  
 
-  
 
 });
 

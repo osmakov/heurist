@@ -138,6 +138,7 @@ $accessToken_MapBox = 'OBTAIN THIS FROM MAPBOX';
 $accessToken_MapTiles = 'OBTAIN THIS FROM MAPTILER';
 $accessToken_GoogleAPI = 'OBTAIN THIS FROM GOOGLE MAPS';
 $accessToken_GeonamesAPI = 'OBTAIN THIS FROM GEONAMES';
+$accessToken_Matomo = 'OBTAIN THIS FROM MATOMO';
 
 // Opentheso Servers for external lookup
 // List of opentheso compaitable servers for user's to query
