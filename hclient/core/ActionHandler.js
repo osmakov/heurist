@@ -455,8 +455,16 @@ class ActionHandler {
                 break;
                 
             case "menu-statistics-cms":
-                popup_dialog_options['path'] = 'widgets/cms/';
-                window.hWin.HEURIST4.ui.showRecordActionDialog('cmsStatistics', popup_dialog_options);
+                //popup_dialog_options['path'] = 'widgets/cms/';
+                //window.hWin.HEURIST4.ui.showRecordActionDialog('cmsStatistics', popup_dialog_options);
+                let d = new Date();
+                d.setDate(d.getDate() - 1);
+                let yesterday = d.toISOString().split('T')[0];
+                
+                let url = `https://${window.hWin.HAPI4.sysinfo.matomo_url}/index.php?module=CoreHome&action=index&idSite=${window.hWin.HAPI4.sysinfo.matomo_siteid}&period=day&date=yesterday&updated=1#?period=week&date=${yesterday}&segment=pageUrl%3D%40%2F${window.hWin.HAPI4.database}&idSite=1&category=Dashboard_Dashboard&subcategory=1`;
+                
+                window.open(url, "_blank");
+                
                 break;
                 
             case "menu-files-index":

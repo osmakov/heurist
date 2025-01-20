@@ -31,7 +31,6 @@ $.widget( "heurist.cmsStatistics", $.heurist.baseAction, {
 
     
     _init: function() {
-        
         if(!window.hWin.HAPI4.sysinfo.matomo_api_key){
             this.element.text('Matomo credentials are not defined');
         }else if(this.options.htmlContent=='' && this.options.actionName){
@@ -50,7 +49,9 @@ $.widget( "heurist.cmsStatistics", $.heurist.baseAction, {
         this._$('button').button();
         this._on(this._$('button.ui-button-action'),{click:this.doAction});
         
-        this._$('#selDate').val((new Date()).toISOString().split('T')[0]);
+        let d = new Date();
+        d.setDate(d.getDate() - 1);
+        this._$('#selDate').val(d.toISOString().split('T')[0]);
         
         window.hWin.HEURIST4.ui.createRecordSelector( this._$('#selWebsite'), 
                     {'rst_PtrFilteredIDs':window.hWin.HAPI4.sysinfo['dbconst']['RT_CMS_HOME'],
