@@ -427,11 +427,15 @@ if($need_email){
                 $datetime2 = date_create($date);
 
                 $interval = date_diff($datetime1, $datetime2);
-                $diff = $interval->format('%y')*12 + $interval->format('%m');
-
-                if($diff>$diff2){
+                if($interval===false){
                     $sif_purge[$sif_id] = $imp_table;
+                }else{
+                    $diff = $interval->format('%y')*12 + $interval->format('%m');
+                    if($diff>$diff2){
+                        $sif_purge[$sif_id] = $imp_table;
+                    }
                 }
+
 
                 if($sif_count-count($sif_purge2)>20){
                     $sif_purge2[$sif_id] = $imp_table; //all except 20 recent ones
