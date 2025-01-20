@@ -1294,6 +1294,8 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
         */
         getUserType: function(){
             
+            let userType = 'visitor';
+
             if( that.has_access(2) ){
                userType = 'owner'; 
             }else if( window.hWin.HAPI4.is_admin() ){
@@ -1304,8 +1306,6 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
                userType = 'guest';
             }else if( that.currentUser['ugr_ID']>0 ){
                userType = 'user';
-            }else {
-               userType = 'visitor';
             }
             
             return userType;

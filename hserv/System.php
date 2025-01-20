@@ -1100,7 +1100,7 @@ class System {
                 )
             );//end of array
             
-            if(isset($accessToken_Matomo) && isset($accessToken_Matomo) && isset($matomoSiteId)){
+            if(isset($matomoUrl) && isset($accessToken_Matomo) && isset($matomoSiteId)){
                 $res['sysinfo']['matomo_url'] = $matomoUrl;
                 $res['sysinfo']['matomo_siteid'] = $matomoSiteId;
                 $res['sysinfo']['matomo_api_key'] = $accessToken_Matomo;
