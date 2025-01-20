@@ -138,11 +138,12 @@ $query = "
 
 // Prepare the statement to prevent SQL injection.
 $stmt = $mysqli->prepare($query);
+$ERR_EMAIL = "Unable to retrieve Email records from the current database. Please try again later.";
 
 if (!$stmt) {
     // Log the error and display a user-friendly message.
     error_log("Failed to prepare statement: " . $mysqli->error);
-    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    echo $ERR_EMAIL;
     exit;
 }
 
@@ -153,7 +154,7 @@ $stmt->bind_param('i', $emailRecTypeId);
 if (!$stmt->execute()) {
     // Log the error and display a user-friendly message.
     error_log("Failed to execute query: " . $stmt->error);
-    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    echo $ERR_EMAIL;
     exit;
 }
 
@@ -163,7 +164,7 @@ $result = $stmt->get_result();
 if (!$result) {
     // Log the error and display a user-friendly message.
     error_log("Failed to fetch result set: " . $stmt->error);
-    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    echo $ERR_EMAIL;
     exit;
 }
 
@@ -208,7 +209,6 @@ $stmt->close();
         <title>Heurist System Email</title>
 
         <!-- Style Sheets -->
-        <!--<link rel="stylesheet" type="text/css" href="../../external/jquery-ui-iconfont-master/jquery-ui.icon-font.css" />-->
         <link rel=icon href="<?php echo PDIR;?>favicon.ico" type="image/x-icon">
 
 <?php
@@ -367,7 +367,7 @@ $stmt->close();
 
                 //input[name="databases"]
                 $('#db_list').val(dbs.join(','));
-                
+
                 return dbs;
             }
 
@@ -1249,7 +1249,7 @@ $stmt->close();
                             Ago
                         </span>
 
-                        <!-- New Checkbox for Incomplete Descriptions 
+                        <!-- New Checkbox for Incomplete Descriptions
                         <label>
                             <input type="checkbox" name="filterIncompleteDesc" id="filterIncompleteDesc" value="1">
                             Include databases with incomplete descriptions

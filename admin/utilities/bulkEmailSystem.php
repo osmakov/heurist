@@ -58,7 +58,7 @@ class SystemEmailExt {
 
     public $rec_lastmod_period;// time period, default: 6
     public $rec_lastmod_unit; // unit of time, default: MONTH
-    public $rec_lastmod_logic; // logic, default: <=
+    public $rec_lastmod_logic; // logic, default: <= [more than]
     //public $filterIncompleteDesc; //New filter for databases w/ incomplete descriptions.
 
     private $records; // array of records+last modified information
@@ -101,16 +101,20 @@ class SystemEmailExt {
         }
 
         // Set record filtering options, applying defaults if not provided.
-        $this->rec_count = (isset($data["recTotal"]) && is_numeric($data["recTotal"]) && $data["recTotal"] >= 0) 
-            ? $data["recTotal"] 
+        $this->rec_count = (isset($data["recTotal"]) && is_numeric($data["recTotal"]) && $data["recTotal"] >= 0)
+            ? $data["recTotal"]
             : "none";
 
-        $this->rec_lastmod_period = (isset($data["recModVal"]) && is_numeric($data["recModVal"]) && $data["recModVal"] > 0) 
-            ? $data["recModVal"] 
+        $this->rec_lastmod_period = (isset($data["recModVal"]) && is_numeric($data["recModVal"]) && $data["recModVal"] > 0)
+            ? $data["recModVal"]
             : 6;
 
         $this->rec_lastmod_unit = $data["recModInt"] ?? "MONTH";
+
         $this->rec_lastmod_logic = $data["recModLogic"] ?? "<=";
+        $this->rec_lastmod_logic = $this->rec_lastmod_logic == 'more' || $this->rec_lastmod_logic == '<='
+            ? '<='
+            : '>=';
 
         // Initialize arrays and variables for user details and error handling.
         $this->user_details = [];
@@ -198,16 +202,16 @@ class SystemEmailExt {
         } else {
             // Generate an error message if 'users' is invalid or missing.
             $main_msg = 'No valid users have been provided.<br>users => '
-                . (isset($data["users"]) 
-                    ? htmlspecialchars(print_r($data["users"], true)) 
+                . (isset($data["users"])
+                    ? htmlspecialchars(print_r($data["users"], true))
                     : ' not defined');
             $this->set_error($main_msg);
             return false;
         }
 
         // Validate the email subject, ensuring it's a string or defaulting to null.
-        $this->email_subject = isset($data["emailTitle"]) && is_string($data["emailTitle"]) 
-            ? $data["emailTitle"] 
+        $this->email_subject = isset($data["emailTitle"]) && is_string($data["emailTitle"])
+            ? $data["emailTitle"]
             : null;
 
         // Ensure the email body is provided and is a string.
@@ -282,8 +286,8 @@ class SystemEmailExt {
         $mysqli = $system->getMysqli();
 
         // Prepare the query to fetch the user's email by their ID.
-        $query = "SELECT ugr.ugr_eMail 
-                  FROM " . HEURIST_DBNAME_FULL . ".sysUGrps AS ugr 
+        $query = "SELECT ugr.ugr_eMail
+                  FROM " . HEURIST_DBNAME_FULL . ".sysUGrps AS ugr
                   WHERE ugr.ugr_ID = ?";
 
         // Set email default value to false.
@@ -291,6 +295,9 @@ class SystemEmailExt {
 
         // Use a prepared statement to prevent SQL injection.
         if ($stmt = $mysqli->prepare($query)) {
+
+            $emailResult = '';
+
             $stmt->bind_param('i', $this->cur_user['ugr_ID']); // Bind the user ID as an integer.
             $stmt->execute();
             $stmt->bind_result($emailResult);
@@ -352,9 +359,6 @@ class SystemEmailExt {
         $mysqli = $system->getMysqli();
 
         $dbs = $this->databases;
-        $users = $this->users;
-
-        $wg_count = 0;
 
         foreach ($dbs as $db){
 
@@ -908,7 +912,6 @@ class SystemEmailExt {
     public function export_receipt() {
 
         global $system;
-        $mysqli = $system->getMysqli();
 
         // Get IDs
         $note_rectype_id = ConceptCode::getRecTypeLocalID("2-3");
@@ -998,9 +1001,7 @@ function sendSystemEmail($data) {
         }
 
         // create note record with that will contain the contents of log
-        $rtn_value = $email_obj->export_receipt();
-
-        return $rtn_value;
+        return $email_obj->export_receipt();
     } else {
         echo errorDiv('An error occurred with processing the form\'s data.'); //remarked due securiry reasons '<br>'.$email_obj->get_error());
         return -1;

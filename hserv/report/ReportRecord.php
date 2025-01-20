@@ -48,7 +48,7 @@ class ReportRecord
         $this->dtyTypes = dbs_GetDetailTypes($system, null, 4);   //dty_ID => dty_Type
         $this->recordsCache = array(); // Cache for loaded records
         $this->translations = array('trm' => array());
-        $this->$rstFields = array(); //Cache for rty structure
+        $this->rstFields = array(); //Cache for rty structure
     }
 
     /**
@@ -597,7 +597,7 @@ class ReportRecord
                     //get trnaslated values
                     foreach ($dtValue as $value){
                         
-                            list($lang_, $val) = extractLangPrefix($value, $lang);    
+                            list($lang_, $val) = extractLangPrefix($value);    
                             
                             $val = USanitize::sanitizeString($val);
                             
@@ -997,8 +997,8 @@ class ReportRecord
 
         $rty_ID = @$rec['recTypeID'];
         
-        if(array_key_exists($rty_ID, $this->$rstFields)){
-            return $this->$rstFields[$rty_ID];
+        if(array_key_exists($rty_ID, $this->rstFields)){
+            return $this->rstFields[$rty_ID];
         }
         
         //find record type structure
@@ -1010,12 +1010,12 @@ class ReportRecord
         }
         
         //'rst_ID,rst_RecTypeID,rst_DetailTypeID,rst_DisplayName,dty_Type
-        $this->$rstFields[$rty_ID] = array();
+        $this->rstFields[$rty_ID] = array();
         foreach($structure['records'] as $rst){
-            $this->$rstFields[$rty_ID][$rst[2]] = $rst[3];
+            $this->rstFields[$rty_ID][$rst[2]] = $rst[3];
         }
         
-        return $this->$rstFields[$rty_ID];
+        return $this->rstFields[$rty_ID];
     }
 
     /**
