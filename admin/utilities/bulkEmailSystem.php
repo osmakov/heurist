@@ -90,6 +90,8 @@ class SystemEmailExt {
         // Reset databases property to null for a fresh start.
         $this->databases = null;
 
+        $this->add_gdpr = !empty($data["add_gdpr"]);
+        
         // Validate database input from form data; return error code -1 if invalid.
         if (!$this->validateDatabaseInput($data)) {
             return -1;
@@ -125,7 +127,6 @@ class SystemEmailExt {
 
         // Set email processing options based on form input.
         $this->use_native_mail_function = !empty($data["use_native"]);
-        $this->add_gdpr = !empty($data["add_gdpr"]);
 
         // Create a list of users; return error code if it fails.
         $rtn = $this->createUserList();
@@ -224,7 +225,7 @@ class SystemEmailExt {
 
         // Add a GDPR statement to the email body if required.
         $this->addGDPRStatement();
-
+        
         return true; // All validations passed.
     }
 
@@ -258,15 +259,25 @@ class SystemEmailExt {
         $DOM = new \DOMDocument();
         $DOM->loadHTMLFile($GDPRFile, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
 
-        foreach (['title', 'meta'] as $tagName) {
-            $nodes = $DOM->getElementsByTagName($tagName);
-            while ($nodes->length > 0) {
-                $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+        $body = $DOM->getElementsByTagName('body');
+        if ( $body && 0<$body->length ) {
+            $body = $body->item(0);
+            $mock = new DOMDocument;
+            foreach ($body->childNodes as $child){
+                $mock->appendChild($mock->importNode($child, true));
+            }            
+            $GDPRContent = $mock->saveHTML();
+        }else{
+            foreach (['title', 'meta'] as $tagName) {
+                $nodes = $DOM->getElementsByTagName($tagName);
+                while ($nodes->length > 0) {
+                    $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+                }
             }
+            $GDPRContent = $DOM->saveHTML();
         }
 
         // Append the cleaned GDPR content to the email body.
-        $GDPRContent = $DOM->saveHTML();
         if (!empty($GDPRContent)) {
             $this->email_body .= "<br><br>{$GDPRContent}";
         }
