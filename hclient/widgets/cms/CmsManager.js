@@ -30,7 +30,7 @@
 class CmsManager {
 
     cms_home_counts = null;    
-
+    
     RT_CMS_HOME;
     RT_CMS_MENU;
 
@@ -386,12 +386,8 @@ class CmsManager {
 
             return;
         }
-
-        url = url + '?db=' + window.hWin.HAPI4.database + '&website';
-        if (rec_ID > 0) {
-            url = url + '&id=' + rec_ID;
-        }
-
+        
+        url = window.hWin.HEURIST4.ui.getCmsLink({mode:mode, websiteid:rec_ID});
         window.open(url, '_blank');
     }
 
@@ -488,7 +484,7 @@ class CmsManager {
             return;
         }
 
-        let sURL = window.hWin.HAPI4.baseURL + '?db=' + window.hWin.HAPI4.database + '&website&id=' + options.record_id + '&edit=2';
+        let sURL = window.hWin.HEURIST4.ui.getCmsLink({mode:'edit', websiteid:options.record_id})
 
         if (options.newlycreated) {
             sURL = sURL + '&newlycreated';

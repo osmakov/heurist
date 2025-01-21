@@ -210,18 +210,24 @@ $requestUri:
             define('PDIR', $host_params['baseURL']);
             
             $redirect .= '?db='.$database.'&website';
-                        //substr($_SERVER['SCRIPT_URI'],0,strpos($_SERVER['SCRIPT_URI'],$requestUri[0]))
-                        //.$requestUri[0].'/?website&db='.$requestUri[2];
-            $params['website'] = 1;
 
             if(intval(@$requestUri[3])>0){
-                $redirect .= '&id='.intval($requestUri[3]);
-                $params['id'] = intval($requestUri[3]);
+                $redirect .= '&website='.intval($requestUri[3]);
+                $params['website'] = intval($requestUri[3]);
+            }else{
+                $params['website'] = '0'; //default website
             }
             if(intval(@$requestUri[4])>0) { //it may be both website pageid and record id
                 $redirect .= '&pageid='.intval($requestUri[4]);
                 $params['pageid'] = intval($requestUri[4]);
             }
+            if(@$_REQUEST['edit']){
+                $params['edit'] = $_REQUEST['edit'];    
+            }
+            if(@$_REQUEST['newlycreated']){
+                $params['newlycreated'] = $_REQUEST['newlycreated'];    
+            }
+            
             //$_SERVER["REQUEST_URI"] = $host_params['install_dir'];
             $rewrite_path = dirname(__FILE__).'/../index.php';
 

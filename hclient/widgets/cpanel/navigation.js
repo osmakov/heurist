@@ -601,6 +601,8 @@ $.widget( "heurist.navigation", {
     _onMenuClickEvent: function(event){
 
         let $target = $(event.target);
+        
+        window.hWin.HEURIST4.util.stopEvent(event);
 
         if($target.is('span') || $target.is('img')){
             $target = $target.parents('[role="menuitem"]');

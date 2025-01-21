@@ -2597,21 +2597,69 @@ window.hWin.HEURIST4.ui = {
     },
 
     //
+    //
+    //    
+    getCmsLink: function( options ){
+        
+        if(window.hWin.HEURIST4.util.isnull(options)){
+            options = {};
+        }else if(window.hWin.HEURIST4.util.isPositiveInt( options )){
+            options = {website: options};
+        }
+        
+        const websiteid = options.websiteid; 
+        const pageid = (websiteid==options.pageid)?0:options.pageid;
+        
+        const mode = options.mode??'production';
+        
+        const use_redirect = options.use_redirect??window.hWin.HAPI4.sysinfo.use_redirect;
+        
+        let surl = window.hWin.HAPI4[(mode=='production')?'baseURL_pro':'baseURL'];
+        
+        if(use_redirect){
+            
+            if(mode=='production'){
+                surl = window.hWin.HAPI4.baseURL_pro.replace('/heurist/', '/');    
+            }
+            
+            surl += `${window.hWin.HAPI4.database}/web`;
+
+            if(websiteid>0){
+                surl += '/'+websiteid;
+                if(pageid>0){
+                    surl += '/'+pageid;
+                }
+                if(mode=='edit'){
+                    surl += '?edit=2';
+                }            
+            }
+            
+        }else{
+
+            surl += `?db=${window.hWin.HAPI4.database}&website`;
+            
+            if(websiteid>0){
+                surl += `=${websiteid}`;
+                if(pageid>0){
+                    surl += `&pageid=${pageid}`;
+                }
+                if(mode=='edit'){
+                    surl += '&edit=2';
+                }            
+            }
+        }
+        
+        return surl;
+    },
+    
+    //
     // show edit cms in new browser tab
     //
     showEditCMSwin: function( options ){
         
-        let surl = window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database+'&website&pageid=';
-       
-        if( window.hWin.HEURIST4.util.isNumber( options ) ){
-            surl = surl + options;
-        }else{
-            surl = surl + options.record_id;
-        }
+        let recid = window.hWin.HEURIST4.util.isPositiveInt( options )? options :options.record_id;
         
-        surl = surl + '&edit=2';
-            
-        window.open(surl, '_blank');
+        window.open(window.hWin.HEURIST4.ui.getCmsLink({websiteid:recid, mode:'edit'}), '_blank');
     },
     
     //

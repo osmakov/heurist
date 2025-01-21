@@ -357,9 +357,11 @@ function onPageInit(success)
     setTimeout(function(){
         //init main menu in page header
         //add menu definitions to main-menu
+        var topmenu = $('#main-menu');
 
         //callback function from init menu
-        function __onInitComplete(not_empty_page){
+        function __onInitComplete(not_empty_page)
+        {
             //load given page or home page content
             var load_initially = home_page_record_id;
             first_not_empty_page = not_empty_page; //assign to global
@@ -387,8 +389,6 @@ function onPageInit(success)
         if(current_language!='def'){
             window.hWin.HR = window.hWin.HAPI4.setLocale(current_language);
         }
-
-        var topmenu = $('#main-menu');
 
         if(topmenu.length==0){ //menu-less page
 
@@ -432,7 +432,7 @@ function initMainMenu( afterInitMainMenu ){
     window.hWin.HAPI4.LayoutMgr.appInitFromContainer( document, topmenu.parent(), lopts);
 
     topmenu.show();
-
+    
     $('#main-languages').find('a[data-lang]').removeClass('lang-selected');
     $('#main-languages').find(`a[data-lang=${current_language}]`).addClass('lang-selected');
 }
@@ -899,7 +899,7 @@ function afterPageLoad(document, pageid, eventdata){
     // add current page as url parameter in browser url
     if(!is_embed){
 
-        var spath= location.pathname;
+        var spath = location.pathname;
 
         while (spath.substring(0, 2) === '//') spath = spath.substring(1);
 
@@ -918,7 +918,7 @@ function afterPageLoad(document, pageid, eventdata){
             }else{
                 spath = spath.substring(0,spath.indexOf('/web/')+5);
             }
-
+            
             surl = spath + home_page_record_id;
             if(pageid!=home_page_record_id){
                 surl = surl + '/' + pageid;
@@ -946,9 +946,11 @@ function afterPageLoad(document, pageid, eventdata){
                 }
             }
 
-            if(current_language && current_language!='def'){ //!= current_language_def
+            if(current_language && current_language!=default_language){
                 surl += `${operator}lang=${current_language}`;
+                operator = '&';
             }
+            //surl += `${operator}edit=2`;
 
         }else{
             //usual url parameters
@@ -956,9 +958,12 @@ function afterPageLoad(document, pageid, eventdata){
             var params = window.hWin.HEURIST4.util.getUrlParams(location.href);
 
             params['db'] = window.hWin.HAPI4.database;
-            params['website'] = '';
-            params['id'] = home_page_record_id;
-            if(current_language && current_language!='def'){ //!= current_language_def
+            params['website'] = home_page_record_id;
+            //remove deprecated parameter
+            params['id'] = '';
+            delete params['id'];
+            
+            if(current_language && current_language!=default_language){
                 params['lang'] = current_language;
             }
 
@@ -1091,11 +1096,18 @@ function initLinksAndImages($container, search_data){
         var href = $(link).attr('href');
         var parts = href?href.split('/'):null;
 
+//console.log($(link).attr('href'), $(link).text());
+
+        if(href=='#' && window.hWin.HEURIST4.util.isPositiveInt($(link).attr('data-pageid'))){
+            //main menu link - create standard url for crawler and right-click
+            let rec_id = $(link).attr('data-pageid');
+            href = window.hWin.HEURIST4.ui.getCmsLink({websiteid:home_page_record_id, pageid:rec_id});
+            $(link).attr('href',href);
+        }else
         //1. special case for search links in smarty reports
         if($(link).attr('data-query') ){ //href && href.indexOf('q=')===0 ||
 
                 var query = $(link).attr('data-query');
-
 
                 var current_template = '__def';
                 var request = {detail:'ids', neadall:1, w:'a', q:query};
@@ -1112,9 +1124,15 @@ function initLinksAndImages($container, search_data){
                 if(!href || href=='#' || href.indexOf('q=')===0){
                     //change href for right click - to open this link in new tab
 
+                    /* old way
                     href = [window.hWin.HAPI4.baseURL,window.hWin.HAPI4.database,'web',
-                            home_page_record_id, current_page_id,encodeURIComponent(query)];
+                            home_page_record_id, current_page_id, encodeURIComponent(query)];
                     href = href.join('/');
+                    */
+                    
+                    href = window.hWin.HEURIST4.ui.getCmsLink({websiteid:home_page_record_id, pageid:current_page_id});
+                    href = href+'?q='+encodeURIComponent(query);
+                    
                     $(link).attr('href', href);
                 }
 
@@ -1179,13 +1197,16 @@ function initLinksAndImages($container, search_data){
             }else if(href.indexOf('./')===0){
                     //
                     rec_id = href.substring(2);
-            }else if(!isNaN(parseInt(href)) && href>0){ //integer
+            }else if(window.hWin.HEURIST4.util.isPositiveInt(href)){ //integer  !isNaN(parseInt(href)) && href>0
                     // href="123" - it can be record or page id
                     rec_id = href;
             }
 
-            if(!isNaN(parseInt(rec_id)) && rec_id>0){
-
+            if(window.hWin.HEURIST4.util.isPositiveInt(rec_id)){
+                
+                href = window.hWin.HEURIST4.ui.getCmsLink({websiteid:home_page_record_id, pageid:rec_id});
+                $(link).attr('href',href);
+ console.log(href);
                 $(link).attr('data-pageid', rec_id);
 
                 var eventdata = null;
@@ -1207,7 +1228,7 @@ function initLinksAndImages($container, search_data){
               $(link).attr('href',href);
         }
 
-    });
+    });                                                                                  
 
     // Ensure each image and embedded source is correct for current server + database
     $('img, embed').each(function(i,ele){window.hWin.HEURIST4.util.restoreRelativeURL(ele);});

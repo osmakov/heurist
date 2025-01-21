@@ -186,7 +186,8 @@ $allowWebAccessEntityFiles = false;
 
 // use [base_url]/[database]/view/[rec_id] links - Need to define RewriteRule in httpd.conf
 // see heuristConfigIni.php for more information
-$useRewriteRulesForRecordLink = false;
+// if null it checks for RewriteRule on every system init, set it to true or false to reduce workload
+$useRewriteRulesForRecordLink = null;
 
 
 // matomo tracking server

@@ -999,7 +999,12 @@ class System {
                 $common_languages[strtoupper($lang)] = $glb_lang_codes[$key];
             }
         }
-
+        
+        //$useRewriteRulesForRecordLink = true;
+        
+        if(!isset($useRewriteRulesForRecordLink)){
+            $useRewriteRulesForRecordLink = USystem::checkRewriteRuleEnabled();
+        }
 
         try{
 
@@ -1100,10 +1105,10 @@ class System {
                 )
             );//end of array
             
-            if(isset($matomoUrl) && isset($accessToken_Matomo) && isset($matomoSiteId)){
+            if(isset($matomoUrl) && isset($matomoSiteId)){
                 $res['sysinfo']['matomo_url'] = $matomoUrl;
                 $res['sysinfo']['matomo_siteid'] = $matomoSiteId;
-                $res['sysinfo']['matomo_api_key'] = $accessToken_Matomo;
+                $res['sysinfo']['matomo_api_key'] = isset($accessToken_Matomo)?$accessToken_Matomo:null;
             }
 
             if($include_reccount_and_dashboard_count){

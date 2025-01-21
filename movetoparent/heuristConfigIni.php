@@ -111,11 +111,12 @@ if (!@$websiteThumbnailYsize) {$websiteThumbnailYsize = 300;} // required
 
 // We STRONGLY  recommend setting the rewrite rules so that you can use short, clean URLs for websites etc.
 // use [base_url]/[database]/view/[rec_id] links - Need to define RewriteRule in httpd.conf
-$useRewriteRulesForRecordLink = false;
+// if null it checks for RewriteRule on every system init, set it to true or false to reduce workload
+$useRewriteRulesForRecordLink = null;
 // If apache redirects are properly set as in the example in server_scripts/apache_configurations.txt, 
 // URLs such as https://HeuristRef.net/MyDatabase or https://HeuristRef.net/MyDatabase/39 
 // will redirect to https://heurist.huma-num.fr/MyDatabase/web/39
-// which will in turn redirect to something like https://heurist.huma-num.fr/heurist/?db=MyDatabase&website&id=39. 
+// which will in turn redirect to something like https://heurist.huma-num.fr/heurist/?db=MyDatabase&website=39. 
 // Note that omitting the ID will redirect to the website with the lowest ID.
 
 // array of saml service providers

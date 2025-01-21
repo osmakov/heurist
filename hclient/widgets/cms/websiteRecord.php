@@ -140,6 +140,8 @@ if(isPositiveInt(@$_REQUEST['recID'])) {
     $rec_id = intval(@$_REQUEST['recid']);
 }elseif(isPositiveInt(@$_REQUEST['id'])) {
     $rec_id = intval(@$_REQUEST['id']);
+}elseif(isPositiveInt(@$_REQUEST['website'])) {
+    $rec_id = intval(@$_REQUEST['website']);
 }
 
 //find default website
@@ -263,7 +265,7 @@ if(defined('DT_LANGUAGES')){
                 array_push($website_languages_res, $lang_code);
             }
         }
-        $website_languages_links = $res;
+        $website_languages_links = count($website_languages_res)>1?$res:'';
         $website_languages = $website_languages_res;
     }
 }
