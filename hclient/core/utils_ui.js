@@ -2651,9 +2651,30 @@ window.hWin.HEURIST4.ui = {
         
         return surl;
     },
+
+    //
+    //
+    //    
+    getTemplateLink: function( smarty_template, query, is_relative){
+        
+        let surl = window.hWin.HAPI4.baseURL;
+        
+        if(window.hWin.HAPI4.sysinfo.use_redirect){
+            surl = surl + `/${window.hWin.HAPI4.database}/tpl/${smarty_template}/`+encodeURIComponent(query);
+        }else{
+            if(window.hWin.HEURIST4.util.isPositiveInt(query)){
+                query = 'ids:'+query;
+            }
+            
+            surl = surl + `?db=${window.hWin.HAPI4.database}&template=${smarty_template}&w=a&q=`+encodeURIComponent(query);
+        }
+        
+        return surl;
+    },
+
     
     //
-    // show edit cms in new browser tab
+    // show edit cms in new browser tab (from record edit) - not used
     //
     showEditCMSwin: function( options ){
         

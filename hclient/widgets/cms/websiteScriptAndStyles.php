@@ -671,7 +671,8 @@ function loadRecordContent(url_or_record_id, target){
 
         if(!window.hWin.HEURIST4.util.isempty(record_view_smarty_template)){
 
-            url = window.hWin.HAPI4.baseURL+window.hWin.HAPI4.database+'/tpl/'+record_view_smarty_template+'/'+record_id;
+            url = window.hWin.HEURIST4.ui.getTemplateLink(record_view_smarty_template, record_id);
+            //window.hWin.HAPI4.baseURL+window.hWin.HAPI4.database+'/tpl/'+record_view_smarty_template+'/'+record_id;
 
             is_smarty = true;
         }else{
@@ -1206,7 +1207,6 @@ function initLinksAndImages($container, search_data){
                 
                 href = window.hWin.HEURIST4.ui.getCmsLink({websiteid:home_page_record_id, pageid:rec_id});
                 $(link).attr('href',href);
- console.log(href);
                 $(link).attr('data-pageid', rec_id);
 
                 var eventdata = null;

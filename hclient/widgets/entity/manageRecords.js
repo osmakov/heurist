@@ -4536,7 +4536,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
         $(this.element).find('div.optional').parent().css({'display': (isfields_on?'table':'none')} ); 
         $(this.element).find('div.optional_hint').css({'display': (isfields_on?'none':'block')} ); 
         
-        //init cms open edit listener
+        //open cms content editor - not used
         $(this.element).find('span[data-cms-edit="1"]').on('click', function(event){
             that._saveEditAndClose(null, function(){
                 that.closeEditDialog();

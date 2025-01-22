@@ -465,7 +465,9 @@ $.widget( "heurist.recordListExt", {
                         
                         if(!href || href=='#' || href.indexOf('q=')===0){
                             //need for right click - open link in new tab
-                            href = '/' + window.hWin.HAPI4.database+'/tpl/'+smarty_template+'/'+encodeURIComponent(query);
+                            //href = '/' + window.hWin.HAPI4.database+'/tpl/'+smarty_template+'/'+encodeURIComponent(query);
+                            href = window.hWin.HEURIST4.ui.getTemplateLink(smarty_template, query);
+                            $(link).attr('href', href);
                         }
                                     
                         $(link).on('click', function(event){
