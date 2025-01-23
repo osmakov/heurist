@@ -249,7 +249,7 @@ that._dout('myOnShowEvent');
                         if(this.options.show_search){
                               dom = dom + 'f';
                         }
-                        dom = dom + 'rt';
+                        dom = dom + 'rt';  //t - table
                         if(this.options.show_counter){
                             dom = dom + 'i';
                         }                   

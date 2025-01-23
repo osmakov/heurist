@@ -2597,21 +2597,90 @@ window.hWin.HEURIST4.ui = {
     },
 
     //
-    // show edit cms in new browser tab
+    //
+    //    
+    getCmsLink: function( options ){
+        
+        if(window.hWin.HEURIST4.util.isnull(options)){
+            options = {};
+        }else if(window.hWin.HEURIST4.util.isPositiveInt( options )){
+            options = {website: options};
+        }
+        
+        const websiteid = options.websiteid; 
+        const pageid = (websiteid==options.pageid)?0:options.pageid;
+        
+        const mode = options.mode??'production';
+        
+        const use_redirect = options.use_redirect??window.hWin.HAPI4.sysinfo.use_redirect;
+        
+        let surl = window.hWin.HAPI4[(mode=='production')?'baseURL_pro':'baseURL'];
+        
+        if(use_redirect){
+            
+            if(mode=='production'){
+                surl = window.hWin.HAPI4.baseURL_pro.replace('/heurist/', '/');    
+            }
+            
+            surl += `${window.hWin.HAPI4.database}/web`;
+
+            if(websiteid>0){
+                surl += '/'+websiteid;
+                if(pageid>0){
+                    surl += '/'+pageid;
+                }
+                if(mode=='edit'){
+                    surl += '?edit=2';
+                }            
+            }
+            
+        }else{
+
+            surl += `?db=${window.hWin.HAPI4.database}&website`;
+            
+            if(websiteid>0){
+                surl += `=${websiteid}`;
+                if(pageid>0){
+                    surl += `&pageid=${pageid}`;
+                }
+                if(mode=='edit'){
+                    surl += '&edit=2';
+                }            
+            }
+        }
+        
+        return surl;
+    },
+
+    //
+    //
+    //    
+    getTemplateLink: function( smarty_template, query, is_relative){
+        
+        let surl = window.hWin.HAPI4.baseURL;
+        
+        if(window.hWin.HAPI4.sysinfo.use_redirect){
+            surl = surl + `/${window.hWin.HAPI4.database}/tpl/${smarty_template}/`+encodeURIComponent(query);
+        }else{
+            if(window.hWin.HEURIST4.util.isPositiveInt(query)){
+                query = 'ids:'+query;
+            }
+            
+            surl = surl + `?db=${window.hWin.HAPI4.database}&template=${smarty_template}&w=a&q=`+encodeURIComponent(query);
+        }
+        
+        return surl;
+    },
+
+    
+    //
+    // show edit cms in new browser tab (from record edit) - not used
     //
     showEditCMSwin: function( options ){
         
-        let surl = window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database+'&website&pageid=';
-       
-        if( window.hWin.HEURIST4.util.isNumber( options ) ){
-            surl = surl + options;
-        }else{
-            surl = surl + options.record_id;
-        }
+        let recid = window.hWin.HEURIST4.util.isPositiveInt( options )? options :options.record_id;
         
-        surl = surl + '&edit=2';
-            
-        window.open(surl, '_blank');
+        window.open(window.hWin.HEURIST4.ui.getCmsLink({websiteid:recid, mode:'edit'}), '_blank');
     },
     
     //
@@ -3323,7 +3392,43 @@ window.hWin.HEURIST4.ui = {
         }
         
         return style;        
-    }
+    },
+    
+  
+    /**
+    * ptr_mode: browseonly, dropdown, addonly, addorbrowse
+    */
+  createRecordSelector: function(ele, options){
+    
+        let dtFields = {};
+        dtFields['dt_ID'] = 9999999;    
+        dtFields['rst_PtrFilteredIDs'] = null;
+        dtFields['rst_DisplayName'] = '';
+        dtFields['rst_RequirementType'] = 'optional';
+        dtFields['rst_MaxValues'] = 1;
+        dtFields['dty_Type'] = 'resource';
+        dtFields['rst_PointerMode'] = 'browseonly';
+
+        dtFields = $.extend(dtFields, options);
+        
+        let ed_options = {
+            recID: -1,
+            dtID: 9999999,
+            //rectypeID: rectypeID,
+            values: '',// init_value
+            readonly: false,
+
+            showclear_button: false,
+            suppress_prompts: true,
+            show_header: !window.hWin.HEURIST4.util.isempty(dtFields['rst_DisplayName']),
+            dtFields:dtFields,
+            
+            change: onchange
+        };
+        
+        ele.editing_input(ed_options);
+  },
+      
     
 }//end ui
 
@@ -3446,9 +3551,7 @@ $.widget( "heurist.hSelect", $.ui.selectmenu, {
         });
       
   },
-  
 
-  
 
 });
 

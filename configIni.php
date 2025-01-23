@@ -82,7 +82,7 @@ of the codebase and rename it to index.html
 // ---------------------------------------------------------------------------------
 // *** DO NOT CHANGE VERSION NUMBER, THIS IS SET BY THE HEURIST DEVELOPMENT TEAM ***
 
-$version = "6.6.3";// sets current program version number, determined by Heurist development lead
+$version = "6.6.4";// sets current program version number, determined by Heurist development lead
 
 // ---------------------------------------------------------------------------------
 
@@ -186,7 +186,8 @@ $allowWebAccessEntityFiles = false;
 
 // use [base_url]/[database]/view/[rec_id] links - Need to define RewriteRule in httpd.conf
 // see heuristConfigIni.php for more information
-$useRewriteRulesForRecordLink = false;
+// if null it checks for RewriteRule on every system init, set it to true or false to reduce workload
+$useRewriteRulesForRecordLink = null;
 
 
 // matomo tracking server

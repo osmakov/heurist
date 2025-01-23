@@ -1030,6 +1030,7 @@ if(!empty($import_webfonts)){
 
         div.thumbnail{
             margin-left: 0px;
+            contain: layout;
         }
 
         div.thumbnail img {
@@ -1061,6 +1062,11 @@ if(!empty($import_webfonts)){
             font-size: 0.8em; /*9px;*/
             min-width: 80px;
             cursor: default;
+        }
+        .download_link a,
+        .download_link span{
+            display: block;
+            padding-bottom: 7.5px;
         }
         .prompt {
             color: #999999;
@@ -1331,7 +1337,7 @@ function print_header_line($bib) {
     }
     ?>
 
-    <div class=HeaderRow style="margin-bottom:<?php echo $is_map_popup?5:15?>px;min-height:0px;">
+    <div class=HeaderRow style="margin-bottom:5px;min-height:0px;">
         <h2 style="text-transform:none;line-height:16px;font-size:1.4em;margin-bottom:0;<?php echo ($is_map_popup)?'max-width: 380px;':'';?>">
                 <?php echo USanitize::sanitizeString($bib['rec_Title'],ALLOWED_TAGS);?>
         </h2>
@@ -1805,7 +1811,7 @@ function print_public_details($bib) {
                             .' WHERE rdi_RecID='.$rec_id .' AND rdi_DetailTypeID IN ('.DT_DATE.','.$startDT.')');
 
                     if($row){
-                        $bd['order_by_date' ] = htmlspecialchars($row[0]);
+                        $bd['order_by_date'] = htmlspecialchars($row[0]);
                     }
 
 
@@ -2077,13 +2083,13 @@ function print_public_details($bib) {
 
                 if($k==0 && $several_media>1){
                     print '<a href="#" onclick="displayImages(true);">'
-                    .'<span class="ui-icon ui-icon-menu" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;all images</a>'.BR2;
+                    .'<span class="ui-icon ui-icon-menu" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;all images</a>';
                 }
                 if(!empty($thumbs) && !$isAudioVideo){
                     print '<a href="#" data-id="'.htmlspecialchars($thumb['nonce']).'" class="mediaViewer_link">'
-                    .'<span class="ui-icon ui-icon-fullscreen" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;full screen</a>'.BR2;
+                    .'<span class="ui-icon ui-icon-fullscreen" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;full screen</a>';
                     print '<a href="#" data-id="'.htmlspecialchars($thumb['nonce']).'" class="popupMedia_link">'
-                    .'<span class="ui-icon ui-icon-popup" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;view in popup</a>'.BR2;
+                    .'<span class="ui-icon ui-icon-popup" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;view in popup</a>';
                 }
 
                 if(strpos($thumb['mimeType'],'image/')===0 || ($isAudioVideo &&
@@ -2094,7 +2100,7 @@ function print_public_details($bib) {
                     print '<a href="#" data-id="'.htmlspecialchars($thumb['nonce']).'" class="miradorViewer_link">'
                         .'<span class="ui-icon ui-icon-mirador" style="width:12px;height:12px;margin-left:5px;font-size:1em;display:inline-block;vertical-align: middle;'
                         .'filter: invert(35%) sepia(91%) saturate(792%) hue-rotate(174deg) brightness(96%) contrast(89%);'
-                        .'"></span>&nbsp;Mirador</a>'.BR2;
+                        .'"></span>&nbsp;Mirador</a>';
                 }
 
                 if(@$thumb['external_url']){
@@ -2103,11 +2109,10 @@ function print_public_details($bib) {
                                     . (@$thumb['linked']?'<br>(linked media)':'').'</a>';
                 }else{
                     print '<a href="' . htmlspecialchars($download_url)
-                                    . '" class=" image_tool" target="_surf">'
+                                    . '" class="image_tool" target="_surf">'
                                     . '<span class="ui-icon ui-icon-download" style="font-size:1.2em;display:inline-block;vertical-align: middle;"></span>&nbsp;'
                                     . 'download' . (@$thumb['linked']?'<br>(linked media)':'').'</a>';
                 }
-                print BR2;
 
                 $caption = !empty(@$thumb['caption']) ? linkifyValue($thumb['caption']) : '';
                 $description = !empty(@$thumb['description']) ? linkifyValue($thumb['description']) : '';
@@ -2122,7 +2127,7 @@ function print_public_details($bib) {
 
                     print '<span class="media-desc" style="cursor: pointer; color: #2080C0; padding-left: 7.5px;" '
                             . 'title="'.addslashes(htmlspecialchars($val)).'">'
-                            . 'description</span>'.BR2;
+                            . 'description</span>';
                 }
 
                 if(!empty($rights) || !empty($owner)){
@@ -2133,7 +2138,7 @@ function print_public_details($bib) {
 
                     print '<span class="media-right" style="cursor: pointer; color: #2080C0; padding-left: 7.5px;" '
                             . 'title="'.addslashes(htmlspecialchars($val)).'">'
-                            . 'rights</span>'.BR2;
+                            . 'rights</span>';
                 }
 
                 if($thumb['player'] && !$without_header){

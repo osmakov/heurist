@@ -138,11 +138,12 @@ $query = "
 
 // Prepare the statement to prevent SQL injection.
 $stmt = $mysqli->prepare($query);
+$ERR_EMAIL = "Unable to retrieve Email records from the current database. Please try again later.";
 
 if (!$stmt) {
     // Log the error and display a user-friendly message.
     error_log("Failed to prepare statement: " . $mysqli->error);
-    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    echo $ERR_EMAIL;
     exit;
 }
 
@@ -153,7 +154,7 @@ $stmt->bind_param('i', $emailRecTypeId);
 if (!$stmt->execute()) {
     // Log the error and display a user-friendly message.
     error_log("Failed to execute query: " . $stmt->error);
-    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    echo $ERR_EMAIL;
     exit;
 }
 
@@ -163,7 +164,7 @@ $result = $stmt->get_result();
 if (!$result) {
     // Log the error and display a user-friendly message.
     error_log("Failed to fetch result set: " . $stmt->error);
-    echo "Unable to retrieve Email records from the current database. Please try again later.";
+    echo $ERR_EMAIL;
     exit;
 }
 
@@ -186,13 +187,13 @@ if (empty($emails)) {
     . "The Email record to be used must contain a title field and a short summary field - the latter will be used as the email's body. The title and body can be edited before sending. <br>"
     . "If you want to create your email on-the-fly, simply create a dummy record with placeholders for title and body to enable this function. <br><br>"
     . "Placeholders that will be replaced with proper values (case insensitive):<br><br>"
-    . "##firstname## &rarr User's First Name,<br>"
-    . "##lastname## &rarr User's Last Name,<br>"
-    . "##email## &rarr User's Email,<br>"
-    . "##database## &rarr Database Name,<br>"
-    . "##dburl## &rarr Database URL,<br>"
-    . "##records## &rarr Record Count, and<br>"
-    . "##lastmodified## &rarr Date of the Last Modified Record<br>";
+    . "##firstname## > User's First Name,<br>"
+    . "##lastname## > User's Last Name,<br>"
+    . "##email## > User's Email,<br>"
+    . "##database## > Database Name,<br>"
+    . "##dburl## > Database URL,<br>"
+    . "##records## > Record Count, and<br>"
+    . "##lastmodified## > Date of the Last Modified Record<br>";
     exit;
 }
 
@@ -208,7 +209,6 @@ $stmt->close();
         <title>Heurist System Email</title>
 
         <!-- Style Sheets -->
-        <!--<link rel="stylesheet" type="text/css" href="../../external/jquery-ui-iconfont-master/jquery-ui.icon-font.css" />-->
         <link rel=icon href="<?php echo PDIR;?>favicon.ico" type="image/x-icon">
 
 <?php
@@ -346,7 +346,7 @@ $stmt->close();
 
             var all_emails = <?php echo json_encode($emails)?>;// Object of Email records id->title
 
-            var current_db = "<?php echo $current_db ?>";
+            var current_db = "<?php echo $currentDb ?>";
             var getting_databases = false; // Flag for database retrieval operation in progress; true - general, 1 - intial list, false - none
             var run_filter = false;
             var isFormSubmit = false;
@@ -367,7 +367,7 @@ $stmt->close();
 
                 //input[name="databases"]
                 $('#db_list').val(dbs.join(','));
-                
+
                 return dbs;
             }
 
@@ -1249,7 +1249,7 @@ $stmt->close();
                             Ago
                         </span>
 
-                        <!-- New Checkbox for Incomplete Descriptions 
+                        <!-- New Checkbox for Incomplete Descriptions
                         <label>
                             <input type="checkbox" name="filterIncompleteDesc" id="filterIncompleteDesc" value="1">
                             Include databases with incomplete descriptions

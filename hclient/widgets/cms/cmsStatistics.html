@@ -1,0 +1,44 @@
+<div id="div_header" class="ent_wrapper" style="margin-left:40px;font-size:0.95em;width:800px">
+        
+        <h3>Statistics for websites</h3>        
+
+        <div>
+            <label>Select website: </label>
+            <div id="selWebsite" style="width: 500px;display: inline-block;"></div>
+        </div>
+<!--        
+        <div>
+            <label>Select modes: </label>
+            <label><input type="checkbox" value="1" id="modeVisitors" checked="checked">Visitors</label>
+            <label><input type="checkbox" value="2" id="modePages" checked="checked">Pages</label>&nbsp;
+            <label><input type="checkbox" value="3" id="modeLocations" checked="checked">Locations</label>&nbsp;
+        </div>                       
+-->
+        <div>
+            <label for="selDate">Date: </label>
+            <input type="text" id="selDate" value="">
+            
+            <label for="selPeriod">Date range: </label>
+            <select id="selPeriod">
+                <option value="week">week</option>
+                <option value="day">day</option>
+                <option value="month">month</option>
+                <!-- option value="year">year</option>
+                <option value="year">range</option -->
+            </select>
+        </div>
+<!--
+        <div>
+            <label for="selSegment">selSegment: </label>
+            <input type="text" id="selSegment" value="dimension1==parramatta_region_food_cultures;dimension2==web" size="70">
+        </div>
+-->        
+        <div style="margin-top:20px;text-align:center;width:600px"> 
+            <button class="ui-button-action">Apply</button>
+        </div>
+</div>
+
+<div id="div_result" class="ent_wrapper" style="margin-top:75px;display: none;padding:10px; overflow:auto">
+<div id="myTable"></div>
+<div id="myGraph"></div>
+</div>

@@ -1483,6 +1483,11 @@ $.widget( "heurist.slidersMenu", {
                             item.css({'font-size':'10px', padding:'0 0 0 25px','margin-top':'-1px', 'margin-left': '0.25em'});
                         }else{
                             item.css({'font-size':'smaller', padding:'6px'})    
+
+                            if(action_id=='menu-statistics-cms' && !(window.hWin.HAPI4.sysinfo.matomo_siteid>0)){
+                                //window.hWin.HAPI4.sysinfo.matomo_api_key
+                                window.hWin.HEURIST4.util.setDisabled(item, true);
+                            }
                         }
 
                         let action_hint = window.hWin.HR( action_id+'-hint' ); 

@@ -48,7 +48,7 @@ class ReportRecord
         $this->dtyTypes = dbs_GetDetailTypes($system, null, 4);   //dty_ID => dty_Type
         $this->recordsCache = array(); // Cache for loaded records
         $this->translations = array('trm' => array());
-        $this->$rstFields = array(); //Cache for rty structure
+        $this->rstFields = array(); //Cache for rty structure
     }
 
     /**
@@ -458,33 +458,37 @@ class ReportRecord
                 $res = array();//list of urls
                 $origvalues = array();
                 $preparedvalues = array();
+                $file_url=null;
 
                 foreach ($dtValue as $value){
                     
-                    $link = $this->composeFileLink($value['file']);
-                    array_push($preparedvalues, $link);
-                    /*
-                    $external_url = @$value['file']['ulf_ExternalFileReference'];
-                    if ($external_url && strpos($external_url,'http://')!==0) {
-                        array_push($preparedvalues, $external_url);//external
-
-                    }elseif (@$value['file']['ulf_ObfuscatedFileID']) {
-                        //local
-                        array_push($preparedvalues, HEURIST_BASE_URL."?db=".$this->system->dbname()
-                                ."&file=".$value['file']['ulf_ObfuscatedFileID']);
-                    }
-                    */
                     //keep reference to record id
                     $value['file']['rec_ID'] = $recID;
 
+                    $link = $this->composeFileLink($value['file']);
+                    array_push($preparedvalues, $link);
                     //original value keeps the whole 'file' array
                     array_push($origvalues, $value['file']);
-                    $res = implode(', ',$preparedvalues);
+                    
+                    if($file_url!=null){
+                        continue;
+                    }
+                    $external_url = @$value['file']['ulf_ExternalFileReference'];
+                    if ($external_url && strpos($external_url,'http://')!==0) {
+                        $file_url = $external_url;//external
+
+                    }elseif (@$value['file']['ulf_ObfuscatedFileID']) {
+                        //local
+                        $file_url = HEURIST_BASE_URL."?db=".$this->system->dbname()
+                                ."&file=".$value['file']['ulf_ObfuscatedFileID'];
+                    }
                 }
-                if(empty($res)){
+                //$res = implode(', ',$preparedvalues);
+                
+                if($file_url==null){
                     $res = null;
                 }else{
-                    $res = array($dtname=>$res, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
+                    $res = array($dtname=>$file_url, $dtname.'s'=>$preparedvalues, $dtname.RAW=>$origvalues);
                 }
 
                 break;
@@ -593,7 +597,7 @@ class ReportRecord
                     //get trnaslated values
                     foreach ($dtValue as $value){
                         
-                            list($lang_, $val) = extractLangPrefix($value, $lang);    
+                            list($lang_, $val) = extractLangPrefix($value);    
                             
                             $val = USanitize::sanitizeString($val);
                             
@@ -993,8 +997,8 @@ class ReportRecord
 
         $rty_ID = @$rec['recTypeID'];
         
-        if(array_key_exists($rty_ID, $this->$rstFields)){
-            return $this->$rstFields[$rty_ID];
+        if(array_key_exists($rty_ID, $this->rstFields)){
+            return $this->rstFields[$rty_ID];
         }
         
         //find record type structure
@@ -1006,12 +1010,12 @@ class ReportRecord
         }
         
         //'rst_ID,rst_RecTypeID,rst_DetailTypeID,rst_DisplayName,dty_Type
-        $this->$rstFields[$rty_ID] = array();
+        $this->rstFields[$rty_ID] = array();
         foreach($structure['records'] as $rst){
-            $this->$rstFields[$rty_ID][$rst[2]] = $rst[3];
+            $this->rstFields[$rty_ID][$rst[2]] = $rst[3];
         }
         
-        return $this->$rstFields[$rty_ID];
+        return $this->rstFields[$rty_ID];
     }
 
     /**

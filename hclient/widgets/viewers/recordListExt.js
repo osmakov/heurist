@@ -465,7 +465,9 @@ $.widget( "heurist.recordListExt", {
                         
                         if(!href || href=='#' || href.indexOf('q=')===0){
                             //need for right click - open link in new tab
-                            href = '/' + window.hWin.HAPI4.database+'/tpl/'+smarty_template+'/'+encodeURIComponent(query);
+                            //href = '/' + window.hWin.HAPI4.database+'/tpl/'+smarty_template+'/'+encodeURIComponent(query);
+                            href = window.hWin.HEURIST4.ui.getTemplateLink(smarty_template, query);
+                            $(link).attr('href', href);
                         }
                                     
                         $(link).on('click', function(event){
@@ -807,7 +809,7 @@ $.widget( "heurist.recordListExt", {
 
         // remove generated elements
         if(this.dosframe) this.dosframe.remove();
-        this.div_content.remove();
+        if(this.div_content) this.div_content.empty();
     },
     
     //
@@ -858,14 +860,17 @@ $.widget( "heurist.recordListExt", {
                 rectype_first = this.options.recordset.fld(rec, 'rec_RecTypeID');
             }
 
-            recordset = {"resultCount":tot_cnt, "recordCount":recIDs_list.length,
-                          query_main:  query_string_main,
-                          "recIDs":recIDs_list.join(','), 'first_rt':rectype_first};
+            recordset = {
+                resultCount: tot_cnt, recordCount: recIDs_list.length,
+                query_main:  query_string_main,
+                recIDs: recIDs_list.join(','), recTypes: this.options.recordset.getRectypes(),
+                first_rt: rectype_first
+            };
 
         }else{
             window.hWin.HEURIST4.totalQueryResultRecordCount = 0;
             
-            recordset = {"resultCount":0,"recordCount":0,"recIDs":""};
+            recordset = {resultCount: 0, recordCount: 0, recIDs: "", recTypes: ""};
         }
 
         crosstabs.assignRecordset(recordset);

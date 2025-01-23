@@ -446,6 +446,26 @@ class USystem {
 
         return array($host_logo, $host_url, $mime_type);
     }
+    
+    
+    //
+    // Detect that rewrite rules are enabled
+    //
+    public static function checkRewriteRuleEnabled(){
+        
+        $url = HEURIST_SERVER_URL . '/abc/web'; 
+         
+        $rewriteRuleEnabled = true; 
+                    
+        $headers = @get_headers($url);
+        if(!$headers || $headers[0] == 'HTTP/1.1 404 Not Found'){
+            //Timeout out or 404
+            $rewriteRuleEnabled = false;
+        }
+        
+        return $rewriteRuleEnabled;
+    }
+       
 
     //======================= session routines =================================
     //

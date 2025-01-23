@@ -332,15 +332,8 @@ function editCMS2(website_document){
         }
         _editor_panel.find('.btn-website-addpage').on('click',_addNewRootMenu); // button({icon:'ui-icon-plus'}).
 
-        let url_part = window.hWin.HAPI4.sysinfo.use_redirect ?
-                            `${window.hWin.HAPI4.database}` :
-                            `?db=${window.hWin.HAPI4.database}&website`;
-
-        let url = `${window.hWin.HAPI4.baseURL_pro}${url_part}`;
-        url = window.hWin.HAPI4.sysinfo.use_redirect ? url.replace('heurist/', '') : url;
-        url += window.hWin.HAPI4.sysinfo.use_redirect && !is_main_website ? `/web/${home_page_record_id}` : '';
-        url += !window.hWin.HAPI4.sysinfo.use_redirect && !is_main_website ? `&id=${home_page_record_id}` : '';
-
+        let url = window.hWin.HEURIST4.ui.getCmsLink({websiteid:home_page_record_id});
+        
         _editor_panel.find('.website-url').text(url).attr('title', `Click to copy ${url} to clipboard`).on('click', function(){ // save website url to clipboard
             window.hWin.HEURIST4.util.copyStringToClipboard(`${url}`);
             window.hWin.HEURIST4.msg.showMsgFlash('Website URL saved to clipboard', 3000);

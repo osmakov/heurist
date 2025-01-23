@@ -256,6 +256,17 @@
         "text": "Edit"
     },
     {
+        "id": "menu-statistics-cms",
+        
+        "data": {
+            "user-admin-status": "1",
+            "header": "Statistics",
+            "icon": "ui-icon-chart-bars",
+            "container": "publish"
+        },
+        "text": "Edit"
+    },
+    {
         "id": "menu-cms-view-page",
         
         "data": {
