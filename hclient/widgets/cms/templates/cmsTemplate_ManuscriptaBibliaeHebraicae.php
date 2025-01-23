@@ -258,7 +258,7 @@ if($isWebPage){ //set in websiteRecord.php
                     <div class="container">
                         <section id="block-block-3" class="block block-block clearfix">
                             <p><span style="font-size: 13.008px;">©</span><span
-                                    style="font-size: 13.008px;">&nbsp;</span>MBH 2024 -
+                                    style="font-size: 13.008px;">&nbsp;</span>MBH 2024 - ISSN 3075-366X -
                                 All rights reserved&nbsp;-&nbsp;<a
                                     href="/?db=MBH_Manuscripta_Bibliae_Hebraicae&website&id=1408&pageid=1414"
                                     title="Legal information">Legal information</a> - <a
