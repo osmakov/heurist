@@ -809,7 +809,7 @@ $.widget( "heurist.recordListExt", {
 
         // remove generated elements
         if(this.dosframe) this.dosframe.remove();
-        this.div_content.remove();
+        if(this.div_content) this.div_content.empty();
     },
     
     //
