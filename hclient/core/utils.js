@@ -1074,6 +1074,19 @@ window.hWin.HEURIST4.util = {
         return -1;
     },
 
+    sameArrays: function(arr1, arr2){
+
+        if(!Array.isArray(arr1) || !Array.isArray(arr2)){
+            return false;
+        }else if(arr1.length == 0 || arr2.length == 0 || arr1.length != arr2.length){
+            return arr1.length == arr2.length;
+        }else if(arr1 === arr2){
+            return true;
+        }
+
+        return arr1.every((value, index) => value == arr2[index]);
+    },
+
     //
     // assumed that sdate is in UTC
     //

@@ -860,14 +860,17 @@ $.widget( "heurist.recordListExt", {
                 rectype_first = this.options.recordset.fld(rec, 'rec_RecTypeID');
             }
 
-            recordset = {"resultCount":tot_cnt, "recordCount":recIDs_list.length,
-                          query_main:  query_string_main,
-                          "recIDs":recIDs_list.join(','), 'first_rt':rectype_first};
+            recordset = {
+                resultCount: tot_cnt, recordCount: recIDs_list.length,
+                query_main:  query_string_main,
+                recIDs: recIDs_list.join(','), recTypes: this.options.recordset.getRectypes(),
+                first_rt: rectype_first
+            };
 
         }else{
             window.hWin.HEURIST4.totalQueryResultRecordCount = 0;
             
-            recordset = {"resultCount":0,"recordCount":0,"recIDs":""};
+            recordset = {resultCount: 0, recordCount: 0, recIDs: "", recTypes: ""};
         }
 
         crosstabs.assignRecordset(recordset);

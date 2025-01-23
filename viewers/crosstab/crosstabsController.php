@@ -42,6 +42,8 @@ ini_set('max_execution_time', '0');
 
             $response = getCrossTab( $params );
 
+    }elseif(@$_REQUEST['a'] == 'getRecTypes'){
+        $response = getRecTypesCrosstabs($params);
     }else{
             $response = array("status"=>HEURIST_INVALID_REQUEST, 'No proper action defined');
     }
@@ -299,5 +301,25 @@ if($dt_col){
 
 return $response;
 
+}
+
+function getRecTypesCrosstabs($params){
+
+    global $system;
+
+    $mysqli = $system->getMysqli();
+
+    $recIDs = prepareIds($params['recIDs']);
+
+    $response = ['status' => HEURIST_OK, 'data' => []];
+
+    if(count($recIDs) == 1){
+        $response['data'] = [mysql__select_value($mysqli, "SELECT rec_RecTypeID FROM Records WHERE rec_ID = ?", ['i', $recIDs[0]])];
+    }elseif(!empty($recIDs)){
+        $recIDs = implode(',', $recIDs);
+        $response['data'] = mysql__select_list2($mysqli, "SELECT rec_RecTypeID, COUNT(rec_RecTypeID) AS rty_Count FROM Records WHERE rec_ID IN ({$recIDs}) GROUP BY rec_RecTypeID ORDER BY rty_Count DESC", 'intval');
+    }
+
+    return $response;
 }
 ?>
