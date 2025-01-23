@@ -119,8 +119,8 @@ $isMediaRequest = false;
 // /db/record/1376-11613  or /db/record/1376-11613?fmt= 'hml','xml','json','rdf','gephi','geojson','iiif'
 // /db/rty/1376/10
 if( (count($requestUri)==3 || count($requestUri)==4)
-    && $requestUri[0]=='db' 
-    && in_array($requestUri[1], array('record','rec','rty','dty','rst','trm')) ) 
+    && $requestUri[0]=='db'
+    && in_array($requestUri[1], array('record','rec','rty','dty','rst','trm','file')) ) 
 {
     //redirect to record info
     if(count($requestUri)==4){
