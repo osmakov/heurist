@@ -148,7 +148,7 @@ $.widget( "heurist.searchBuilderSort", {
                     {key:'r', title:window.hWin.HR("personal rating")},
                     {key:'p', title:window.hWin.HR("popularity")}];
                     
-            let allowed_fieldtypes = ['enum','freetext','blocktext','year','date','integer','float'];
+            let allowed_fieldtypes = ['enum','freetext','blocktext','year','date','integer','float','resource'];
             
             //show field selector
             window.hWin.HEURIST4.ui.createRectypeDetailSelect(this.select_fields.get(0), this.options.rty_ID, 

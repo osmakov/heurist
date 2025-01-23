@@ -3207,7 +3207,7 @@ function CrosstabsAnalysis(_query, _query_domain) {
 
             //change value of rectype selector
             let rt = $recTypeSelector.val();
-            let replacePrev = !(rt > 0) || recordset.recTypes?.indexOf(rt) === -1;
+            let replacePrev = rt <= 0 || recordset.recTypes?.indexOf(rt) === -1;
             if(replacePrev && recordset['first_rt']>0){
                 $recTypeSelector.val(recordset['first_rt']);
                 _onRectypeChange();

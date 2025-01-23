@@ -30,7 +30,7 @@ use PHPMailer\PHPMailer\Exception;
 
 /**
  * Send multiple emails to users across several databases on this server, used primarily for system announcements
- * 
+ *
  * Integer returns are as follows:
  *  1 => Function Specific
  *  0 => No Error
@@ -38,7 +38,7 @@ use PHPMailer\PHPMailer\Exception;
  * -2 => SQL Error
  * -3 => phpMailer Error
  * -4 => File Error
- * 
+ *
  * @property array $databases list of databases
  * @property array $invalid_dbs list of invalid databases, missing required tables
  * @property string $users what type of users to email {owner,manager,user,admin,all}
