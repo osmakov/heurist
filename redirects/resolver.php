@@ -104,13 +104,31 @@ $isMediaRequest = false;
 
 // --------------- RECORD VIEW   in format db/record/[rec-id] 
 
-// Universal record resolver. Record id is concept code DBID+RECORD ID.
+// Define rules in apache config file
+//
+// RewriteRule /db/(record|rec|rty|dty|trm)/([0-9-]+\/?)([0-9]+)?$ /heurist/redirects/resolver.php
+// RewriteRule /db/file/([a-z0-9-]+\/?)$ /heurist/redirects/resolver.php
+// 
+
+// Universal record/definion resolver. Record id is concept code DBID+RECORD ID.
 // It returns in format specified by Content-type or by parameter fmt=
 
-// db/record/2312-123  or  db/record/2312-123.rdf  or db/record/123?db=somedb&fmt=rdf
-if(count($requestUri)==3 && $requestUri[0]=='db' && ($requestUri[1]=='record' || $requestUri[1]=='file')){
+// db/record/2312-123  or  db/record/2312-123.rdf  or db/record/123?db=somedb&fmt=rdf  
+// /db/file/2-26adca36f8e375ae0400b91c124aa04084c22e1e
+// 
+// /db/record/1376-11613  or /db/record/1376-11613?fmt= 'hml','xml','json','rdf','gephi','geojson','iiif'
+// /db/rty/1376/10
+if( (count($requestUri)==3 || count($requestUri)==4)
+    && $requestUri[0]=='db' 
+    && in_array($requestUri[1], array('record','rec','rty','dty','rst','trm')) ) 
+{
     //redirect to record info
-    $recID = $requestUri[2];
+    if(count($requestUri)==4){
+        $recID = $requestUri[2].'-'.$requestUri[3];
+    }else{
+        $recID = $requestUri[2];    
+    }
+    
 
     if(strpos($recID,'?')>0){
         list($recID, $query) = explode('?',$recID);
@@ -138,11 +156,18 @@ if(count($requestUri)==3 && $requestUri[0]=='db' && ($requestUri[1]=='record' ||
 
         $_REQUEST['fmt'] = $format;
     }
-    $_REQUEST['recID'] = $recID;
+    
 
     $redirection_path = '../../heurist/';
 
     $isMediaRequest = ($requestUri[1]=='file');
+    
+    if(in_array($requestUri[1], array('rty','dty','rst','trm'))){
+        $_REQUEST[$requestUri[1]] = $recID;    
+    }else{
+        $_REQUEST['recID'] = $recID;    
+    }
+    
 
     //redirectURL2('/h6-alpha/redirects/resolver.php?recID='.$requestUri[2].'&fmt='.$format);
 
@@ -423,6 +448,8 @@ $database_url = null;
 if ($database_id>0) {
     include_once dirname(__FILE__).'/../hserv/utilities/DbRegis.php';
 
+    require_once dirname(__FILE__).'/../autoload.php';
+    
     if(!isset($system)){
         $system = new hserv\System();//to keep error
     }

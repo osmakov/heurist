@@ -39,19 +39,33 @@ $db_version = getDbVersion($mysqli);
 
 define('HEURIST_DBID', $system->settings->get('sys_dbRegisteredID'));
 
+$is_subset = false;
 $rty_ID = @$_REQUEST["rty"];
 $dty_ID = @$_REQUEST["dty"];
 $trm_ID = @$_REQUEST["trm"];
 if($rty_ID!=null){
+    $is_subset = true;
     $rty_ID = intval(ConceptCode::getRecTypeLocalID($rty_ID));
 }
 if($dty_ID!=null){
+    $is_subset = true;
     $dty_ID = intval(ConceptCode::getDetailTypeLocalID($dty_ID));
 }
 if($trm_ID!=null){
+    $is_subset = true;
     $trm_ID = intval(ConceptCode::getTermLocalID($trm_ID));
 }
-$is_subset = ($rty_ID>0 || $dty_ID>0 || $trm_ID>0);
+if($is_subset){
+    $is_subset = ($rty_ID>0 || $dty_ID>0 || $trm_ID>0);
+    if(!$is_subset){
+print XML_HEADER;
+print "\n\n<hml_structure>";
+print "\n<error>Definition not found</error>";
+print "\n</hml_structure>";// end of file
+exit;
+    } 
+}
+
 
 
 // * IMPORTANT *
