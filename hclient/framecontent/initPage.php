@@ -360,7 +360,23 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
 
                         //verify definitions relevance every 20 seconds
                         if(!window.hWin.RefreshCacheInterval){
-                            window.hWin.RefreshCacheInterval = setInterval(function(){window.hWin.HAPI4.EntityMgr.relevanceEntityData()}, 600000);
+                            window.hWin.RefreshCacheInterval = setInterval(function(){window.hWin.HAPI4.EntityMgr.relevanceEntityData(null, (response) => {
+
+                                if(response.message === 'Error_Connection_Reset' && window.hWin.HEURIST4.util.isFunction(window.hWin.HR)){
+                                    // Add message about refreshing the page
+
+                                    let additional_msg = '<br><br><strong>This will occur after a period of inactivity : reload the page to continue</strong><br><br>';
+
+                                    let msg = window.hWin.HR('Error_Connection_Reset');
+                                    msg.replace('<br><br>', additional_msg);
+
+                                    response.message = msg;
+                                    response.error_title = 'Inactivity warning or timeout';
+                                }
+
+                                window.hWin.HEURIST4.msg.showMsgErr(response);
+                                clearInterval(window.hWin.RefreshCacheInterval);
+                            })}, 600000);
                         }
 
                         if(!window.hWin.HEURIST4.util.isnull(callback) && window.hWin.HEURIST4.util.isFunction(callback)){
