@@ -145,7 +145,9 @@ if($baseUrl==null){
         $_SERVER['SERVER_PORT'] === 80 ? '' : ':'.$_SERVER['SERVER_PORT'])));
 
 }
-    $baseUrl = $baseUrl.'/';
+    if(!(substr($baseUrl,-1)=='/' || substr($_SERVER['REQUEST_URI'],0,1)=='/')){
+        $baseUrl = $baseUrl.'/';    
+    }
     $url = $baseUrl . $_SERVER['REQUEST_URI'];
 
 if(@$_REQUEST['url']) { //direct url to manifest
