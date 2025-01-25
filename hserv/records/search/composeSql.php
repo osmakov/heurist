@@ -833,7 +833,7 @@ class HQuery {
                 case 'f': case 'field':
                     if($dty_ID>0 && !in_array($dty_ID, $sort_fields)) {
 
-                        $field_type = mysql__select_value($mysqli, 'select dty_Type from defDetailTypes where dty_ID = '.$dty_ID);
+                        $field_type = mysql__select_value($mysqli, 'select dty_Type from defDetailTypes WHERE dty_ID = '.$dty_ID);
 
                         if($field_type!=null){ //field type found
 
@@ -1478,10 +1478,10 @@ class HPredicate {
             $this->field_type = 'link';//integer without quotes
         }elseif($this->field_type=='file'){
 
-        }elseif(intval($this->field_id)>0){
+        }elseif(count($several_ids)==1 && intval($this->field_id)>0){
             //find field type - @todo from cache
 
-            $this->field_type = mysql__select_value($mysqli, 'select dty_Type from defDetailTypes where dty_ID = '.$this->field_id);
+            $this->field_type = mysql__select_value($mysqli, 'select dty_Type FROM defDetailTypes where dty_ID = '.$this->field_id);
 
             if($this->field_type=='relmarker'){
                 return $this->predicateRelatedDirect(false);

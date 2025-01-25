@@ -265,7 +265,7 @@ class RecordsBatch
     //
     private function getDetailType($dty_ID){
         return mysql__select_value($this->system->getMysqli(),
-                 'select dty_Type from defDetailTypes where dty_ID = '.$dty_ID);
+                 'Select dty_Type from defDetailTypes where dty_ID = '.$dty_ID);
     }
 
 
