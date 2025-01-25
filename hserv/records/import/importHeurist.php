@@ -368,7 +368,7 @@ class ImportHeurist {
             }
 
             //for not registered and the same - found missed
-            $dbsource_is_same = ( (!(@$data['heurist']['database']['id']>0)) ||
+            $dbsource_is_same = ( (!isPositiveInt(@$data['heurist']['database']['id'])) ||
                 (defined('HEURIST_DBID') && @$data['heurist']['database']['id']==HEURIST_DBID) );
 
             $imp_detailtypes = null;
@@ -701,14 +701,13 @@ EOD;
             // @$data['heurist']['database']['id']==HEURIST_DBID);
 
             $dbsource_is_registered = (@$data['heurist']['database']['id']>0);
-
+            
             if(defined('HEURIST_DBID') && HEURIST_DBID>0){ //target is registered
-                $dbsource_is_same = ( !$dbsource_is_registered ||
-                    @$data['heurist']['database']['id']==HEURIST_DBID);
+                $dbsource_is_same = !$dbsource_is_registered || @$data['heurist']['database']['id']==HEURIST_DBID;
             }else{
 
                 if(!$dbsource_is_registered){
-                    //if source is not smae, definitions with conceptcodes 0000-xx will be imported with concept codes 9999-xxx
+                    //if source is not same, definitions with conceptcodes 0000-xx will be imported with concept codes 9999-xxx
                     $dbsource_is_same = ($params['same_source']==1);
                 }else{
                     //if source is registered - source is different
@@ -837,10 +836,15 @@ EOD;
                 $target_RecID = 0;
 
                 if($dbsource_is_same){
-                    $recTypeID = DbsImport::getLocalCode('rectypes', $defs,
-                        $record_src['rec_RecTypeID']>0
-                        ?$record_src['rec_RecTypeID']
-                        :$record_src['rec_RecTypeConceptID'], false);
+                    
+                    if(@$record_src['rec_RecTypeConceptID'] && strpos($record_src['rec_RecTypeConceptID'],'0-')!==0){
+                        $rtyid = $record_src['rec_RecTypeConceptID'];
+                    }else{
+                        $rtyid = $record_src['rec_RecTypeID'];
+                    }
+                    
+                    $recTypeID = DbsImport::getLocalCode('rectypes', $defs, $rtyid, false);
+                        
                 }elseif($mapping_defs!=null){
 
                     $recTypeID = @$mapping_defs[$record_src['rec_RecTypeID']]['rty_ID'];
