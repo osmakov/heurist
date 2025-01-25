@@ -182,8 +182,10 @@ abstract class ExportRecords {
 
         // Handling depth and linked records
         $max_depth = 0;
-        if (@$params['depth'] !== null) {
-            $max_depth = (@$params['depth'] == 'all') ? 9999 : intval(@$params['depth']);
+        if (@$params['depth']=='all'){
+            $max_depth = 9999;
+        }elseif(isPositiveInt(@$params['depth'])) {
+            $max_depth = intval($params['depth']);
         }
 
         $direction = 0;
@@ -207,7 +209,7 @@ abstract class ExportRecords {
             }
         }
 
-        if ($max_depth > 0) {
+        if ($max_depth > 0 && $params['format']!='iiif') {
             $limit = ($params['format'] == 'gephi' && @$params['limit'] > 0) ? $params['limit'] : 0;
             recordSearchRelatedIds($this->system, $this->records, $direction, $no_relationships, 0, $max_depth, $limit);
         }

@@ -235,7 +235,6 @@
                 exit;
             }
         }
-
         $response = recordSearch($system, $search_params);//search ids
     }
 

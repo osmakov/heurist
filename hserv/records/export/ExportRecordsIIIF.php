@@ -45,6 +45,7 @@ protected function _outputPrepare($data, $params){
     if($res){
         $this->iiif_version = (@$params['version']==2 || @$params['v']==2)?2:3;
     }
+    
     return $res;
 }
 
@@ -222,9 +223,11 @@ public static function getIiifResource($system, $record, $iiif_version, $ulf_Obf
     //2. get file info
     if(!empty($info)){
         //$info = fileGetFullInfo($system, $file_ids);
+        
+        $fcnt = 0;
 
         foreach($info as $fileinfo){
-
+            
         $mimeType = $fileinfo['fxm_MimeType'];
 
         $resource_type = null;
@@ -257,8 +260,8 @@ public static function getIiifResource($system, $record, $iiif_version, $ulf_Obf
 
         $height = 800;
         $width = 1000;
-        if($resource_type=='Image' && $fileinfo['ulf_OrigFileName']!=ULF_IIIF_IMAGE){
-            $img_size = getimagesize($resource_url);
+        if($resource_type=='Image' && $external_url==null && $fileinfo['ulf_OrigFileName']!=ULF_IIIF_IMAGE){
+            $img_size = getimagesize($resource_url);  //it may delay the operation if there are many files $fcnt<5
             if(is_array($img_size)){
                 $width = $img_size[0];
                 $height = $img_size[1];
@@ -472,7 +475,8 @@ CANVAS3;
 
         $canvas = $canvas.$comma.$item;
         $comma =  ",\n";
-
+        
+        $fcnt++;
         }//for info in fileinfo
 
     }//!empty($file_ids)
