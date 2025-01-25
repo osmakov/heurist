@@ -340,7 +340,7 @@ if(!$system->hasAccess()){
                         }
 
                         let rec_title = link.innerHTML.indexOf('- >') === -1 ? link.innerHTML : link.innerHTML.split(' - > ')[1];
-                        let title = `${rec_title} <em style="font-size:0.9em;font-weight:normal;position:absolute;right:10em;top:25%;">${window.hWin.HR('drag to rescale')}</em>`;
+                        let title = `${rec_title} <em style="font-size:0.9em;font-weight:normal;position:absolute;right:11em;top:25%;">${window.hWin.HR('drag to rescale')}</em>`;
                         let cover = link.innerHTML; //innerText
 
                         let cur_params = window.hWin.HEURIST4.util.getUrlParams(location.href);
@@ -395,7 +395,7 @@ if(!$system->hasAccess()){
                                     let $titleBar = $dlg.parent().find('.ui-dialog-titlebar');
                                     if($titleBar.length > 0){
 
-                                        $('<button>', {style: 'position: absolute;font-size: 0.8em;right: 4em;top: 15%;'})
+                                        $('<button>', {style: 'position: absolute;font-size: 0.8em;right: 4em;top: 0.2em;'})
                                             .text('Close all')
                                             .insertBefore($titleBar.find('button'))
                                             .button()
@@ -655,7 +655,15 @@ if(!$system->hasAccess()){
 
                 // hide 'relation' section if there isn't any relmarkers to display
                 if($rel_section.find('div[data-id]:visible').length == 0){
+
                     $rel_section.hide();
+
+                    $rel_section.find('div[data-id]').each((idx, element) => {
+                        if($(element).css('display') !== 'none'){
+                            $rel_section.show();
+                            return false;
+                        }
+                    });
                 }
             }//end moveRelatedDetails
 
@@ -1295,7 +1303,7 @@ function print_details($bib) {
         ?>
         <div class="map_popup"><div class="detailRow moreRow"><div class=detailType>
             <a href="#more" oncontextmenu="return false;"
-                onClick='$(".fieldRow").css("display","table-row");$(".moreRow").hide();createRecordGroups(<?php echo json_encode($group_details, JSON_FORCE_OBJECT);?>);return false;' style="color:blue">
+                onClick='$(".fieldRow").css("display","");$(".moreRow").hide();createRecordGroups(<?php echo json_encode($group_details, JSON_FORCE_OBJECT);?>);return false;' style="color:blue">
                 more...
             </a>
             </div><div class="detail"></div></div></div>
@@ -2310,7 +2318,7 @@ function print_public_details($bib) {
         //echo '<div class=detailRow><div class=detailType><a href="#" onClick="$(\'.fieldRow\').show();$(event.target).hide()">more</a></div><div class="detail"></div></div>';
     }else{
         
-        echo '<script>$(".fieldRow").css("display","table-row");$(".moreRow").hide();</script>';
+        echo '<script>$(".fieldRow").css("display","");$(".moreRow").hide();</script>';
         
         if(is_array($group_details) && !empty($group_details)){
             echo '<script>createRecordGroups(', json_encode($group_details, JSON_FORCE_OBJECT), ');handleCMSContent();</script>';

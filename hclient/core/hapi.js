@@ -917,10 +917,10 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
             // For existing instances (ie in different browser window) it verifies the  relevance of definitions every 20 seconds.
             // see initialLoadDatabaseDefintions 
             //
-            relevanceEntityData: function (callback) {
+            relevanceEntityData: function (callback, errorCallback = null) {
                 
                 if(entity_timestamp>0){
-                    window.hWin.HAPI4.EntityMgr.refreshEntityData('relevance', callback)
+                    window.hWin.HAPI4.EntityMgr.refreshEntityData('relevance', callback, errorCallback);
                 }else if (window.hWin.HEURIST4.util.isFunction(callback)) {
                     callback(this, true);
                 }
@@ -929,7 +929,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
             //
             // refresh several entity data at once
             // 
-            refreshEntityData: function (entityName, callback) {
+            refreshEntityData: function (entityName, callback, errorCallback = null) {
 
                 let params = { a: 'structure', 'details': 'full'};
                 params['entity'] = entityName;
@@ -938,7 +938,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
                 let s_time = new Date().getTime() / 1000;
                 if(_msgOnRefreshEntityData) clearTimeout(_msgOnRefreshEntityData);
                 _msgOnRefreshEntityData = setTimeout(function(){
-                    window.hWin.HEURIST4.msg.showMsgFlash('Database definitions refresh', false);
+                    window.hWin.HEURIST4.msg.showMsgFlash('Database definitions refresh', false, { position: {my: 'left+100 top+100', at: 'left top', of: $(document)} });
                 }, 1000);
 
                  
@@ -966,8 +966,9 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
                             if (window.hWin.HEURIST4.util.isFunction(callback)) callback(this, true);
 
                         } else {
-                            console.log('ERROR: ',response);                            
-                            window.hWin.HEURIST4.msg.showMsgErr(response);
+                            console.log('ERROR: ',response);
+                            if(window.hWin.HEURIST4.util.isFunction(errorCallback)){ errorCallback(this, response); }
+                            else{ window.hWin.HEURIST4.msg.showMsgErr(response); }
                         }
                     }
 
