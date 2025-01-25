@@ -4875,7 +4875,28 @@ $.widget( "heurist.editing_input", {
     _openManageTerms: function( vocab_id ){
         
         let that = this;
-        
+
+        // Check whether the vocab group widget has been loaded (also vocab group's base widget)
+        if(!window.hWin.HEURIST4.util.isFunction($('body')['manageDefVocabularyGroups'])){
+
+            let scripts = ['manageDefVocabularyGroups.js'];
+
+            window.hWin.HEURIST4.util.isFunction($('body')['manageDefGroups']) || scripts.unshift('manageDefGroups.js');
+
+            $.getMultiScripts2(scripts, `${window.hWin.HAPI4.baseURL}hclient/widgets/entity/`).then(() => {
+                that._openManageTerms(vocab_id);
+            }).catch(() => {
+                window.hWin.HEURIST4.msg.showMsgErr({
+                    status: window.hWin.ResponseStatus.UNKNOWN_ERROR,
+                    error_title: 'Failed to load vocabulary groups widget',
+                    message: `Heurist failed to load the vocabulary groups widget required to manage terms.`
+                });
+            });
+
+            return;
+
+        }
+
         let rg_options = {
             height:800, width:1300,
             selection_on_init: vocab_id,
@@ -4893,7 +4914,7 @@ $.widget( "heurist.editing_input", {
                 that._recreateEnumField(vocab_id);
             }
         };
-        
+
         window.hWin.HEURIST4.ui.showEntityDialog('defTerms', rg_options);
     },
 
