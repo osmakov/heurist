@@ -161,7 +161,7 @@ class USanitize {
             $message = '';
         }else{
             if($allowed_tags==null) {
-                $allowed_tags = '<a><u><i><em><b><strong><sup><sub><small><br><h1><h2><h3><h4><h5><h6><p><ul><li><img><blockquote><pre><span>';
+                $allowed_tags = '<a><u><i><div><em><b><strong><sup><sub><small><br><h1><h2><h3><h4><h5><h6><p><ul><li><img><blockquote><pre><span>';
             }elseif($allowed_tags===false){
                 $allowed_tags = null;
             }

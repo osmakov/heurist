@@ -598,7 +598,7 @@ class ReportRecord
                     foreach ($dtValue as $value){
                         
                             list($lang_, $val) = extractLangPrefix($value);    
-                            
+
                             $val = USanitize::sanitizeString($val);
                             
                             if ($lang_!=null && $lang_==$lang){
