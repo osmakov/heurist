@@ -1024,6 +1024,11 @@ class HSystemMgr {
                   });
 
               },
+              'Skip': function () {
+                  let $dlg2 = window.hWin.HEURIST4.msg.getMsgDlg();
+                  $dlg2.dialog('close');
+                  if (window.hWin.HEURIST4.util.isFunction(callback)) callback.call();
+              },
               'Cancel': function () {
                   let $dlg2 = window.hWin.HEURIST4.msg.getMsgDlg();
                   $dlg2.dialog('close');
