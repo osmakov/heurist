@@ -1897,14 +1897,17 @@ class HPredicate {
     //
     //
     private function predicateKeywords(){
+        
+        global $mysqli;
 
         $this->field_type = "link";
+        $this->field_id = 'tag';
         $p = $this->qlevel;
 
         $where = '';
 
         if(false && !$this->field_list){
-            $where = "=0";
+            $where = '=0';
         }else{
 
             $isAll = false;
@@ -1918,68 +1921,91 @@ class HPredicate {
                 }
             }
 
-
             $cs_ids = getCommaSepIds($this->value);
-            if ($cs_ids) {
+            if ($cs_ids) {  // all values are int - search for tagID
 
                 if(strpos($cs_ids, '-')===0){
                     $this->negate = true;
                     $cs_ids = substr($cs_ids, 1);
                 }
+                
+                $ids = explode(',',$cs_ids);
+                
+                $pred = (($this->negate)?SQL_NOT:'')
+                            . ' IN (SELECT rtl_RecID FROM usrRecTagLinks WHERE '
+                            . predicateId('rtl_TagID', $ids);
 
-                if(strpos($cs_ids, ',')>0){  //more than one
-
-                    $where = (($this->negate)?SQL_NOT:'')
-                            . ' IN (SELECT rtl_RecID FROM usrRecTagLinks where '
-                            . 'rtl_TagID in ('.$cs_ids.')';
-                    if($isAll){
-                        $cnt = count(explode(',',$cs_ids));
-                        $where = $where.' GROUP BY rtl_RecID HAVING count(*)='.$cnt;
-                    }
-                    $where = $where.')';
-
-                }else{
-                    $where = (($this->negate)?SQL_NOT:'')
-                        . ' IN (SELECT rtl_RecID FROM usrRecTagLinks where rtl_TagID = '.$cs_ids.')';
+                $cnt = count($ids);
+                if($isAll && $cnt>1){
+                    $pred = $pred.' GROUP BY rtl_RecID HAVING count(*)='.$cnt;
                 }
-
+                $pred = $pred.')';
 
 //SELECT rtl_RecID as cnt FROM usrrectaglinks where rtl_TagID in (1,3) group by rtl_RecID having count(*)=2);
             }else{
-                $pred = null;
-
+                
+                // mixed values - search for tag_Text
+                $pred = 'IN (SELECT rtl_RecID FROM usrRecTagLinks, usrTags where rtl_TagID=tag_ID';
+                
+                $is_empty = false;
+                $values = null;
+                
                 if(is_array($this->value)){
                     $values = $this->value;
-                    $pred = array();
-                    foreach ($values as $val){
-                        $this->value = $val;
-                        $val = $this->getFieldValue();
-                        if($val) {array_push($pred,'tag_Text '.$val);}
+                }elseif(is_string($this->value)){
+                    $values = explode(',', $this->value);
+                }
+
+                if(empty($values)){
+                    $is_empty = true;
+                }elseif(is_string($values[0])){
+                    
+                    $value = $values[0];
+                    
+                    // -NULL - any tags, NULL - without tags
+                    if(trim($value)=='' || strtolower($value)=='-null'){ //record with any tag
+                        $is_empty = true;  //find any non empty value
+                    }elseif(strtolower($value)=='null'){ //records without tags
+                        $this->negate = true;
+                        $is_empty = true;
                     }
+                }
+                
+                if($is_empty){
+                    $pred = (($this->negate)?SQL_NOT:'').$pred.')';
+                }else{
+                    
+                    $tags = array();
+                    foreach ($values as $val){
 
-                    $cnt = count($pred);
-                    if($cnt>0){
-                        $pred = '('.implode(' OR ',$pred).')';
+                        if(strpos($val, '-')===0){
+                            $this->negate = true;
+                            $val = substr($val, 1); 
+                        }
 
-                        if($isAll){
-                            $pred = $pred.' GROUP BY rtl_RecID HAVING count(*)='.$cnt;
+                        if($val) {
+                            array_push($tags,'tag_Text ="'
+                                        . $mysqli->real_escape_string($val).'"');
                         }
                     }
 
-                }else{
-                    $val = $this->getFieldValue();
-                    if($val) {$pred = 'tag_Text '.$val;}
-                }
-
-                if($pred){
-                    $where = ' IN (SELECT rtl_RecID FROM usrRecTagLinks, usrTags where rtl_TagID=tag_ID and '.$pred.')';
-                }else{
-                    $where = '=0';
+                    $cnt = count($tags);
+                    
+                    if($cnt==0){
+                       $pred = '=0'; 
+                    }else{
+                    
+                        $pred = $pred.' and '.'('.implode(' OR ',$tags).')';
+                        
+                        if($cnt>1 && $isAll){
+                            $pred = $pred.' GROUP BY rtl_RecID HAVING count(*)='.$cnt;
+                        }
+                        $pred = (($this->negate)?SQL_NOT:'').$pred.')';
+                    }
                 }
             }
+            $where = "r$p.rec_ID ".$pred;
         }
-
-        $where = "r$p.rec_ID ".$where;
 
         return array("where"=>$where);
 
@@ -2929,7 +2955,8 @@ class HPredicate {
             }
             $res = ' in (select ulf_ID from recUploadedFiles where '.$res.')';
 
-        }elseif (($this->field_type=='float' || $this->field_type=='integer' || $this->field_type=='link') && (is_numeric($this->value) || strpos($this->value, "<>") !== false)) {
+        }
+        elseif (($this->field_type=='float' || $this->field_type=='integer' || $this->field_type=='link') && (is_numeric($this->value) || strpos($this->value, "<>") !== false)) {
 
             if (strpos($this->value,"<>")>0) {
                 $vals = explode("<>", $this->value);

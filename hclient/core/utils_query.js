@@ -776,7 +776,7 @@ window.hWin.HEURIST4.query = {
         let ext = '<em>__FIELD__</em> values';
 
         if(typeof value !== 'string' && typeof value !== 'number'){
-            res = '';
+            return '';
         }
 
         if(type === 'enum' && (window.hWin.HEURIST4.util.isPositiveInt(value) || value.match(/\d, ?\d/))){
