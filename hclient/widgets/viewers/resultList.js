@@ -141,6 +141,8 @@ $.widget( "heurist.resultList", {
 
         check_linked_media: true, // check linked records (only type "media") for an image
         
+        fontsize: 0, //base font size for renderRecordData otherwise it takes from user preferences
+        
         language: 'def'
     },
 
@@ -223,6 +225,10 @@ $.widget( "heurist.resultList", {
 
         this._is_publication = window.hWin.HAPI4.is_publish_mode;
 
+        if(this.options.fontsize==0 && this.element.css('font-size')){
+            this.options.fontsize = parseFloat(this.element.css('font-size'));
+        }
+        
         // Auto select record(s), retrieved from url
         let rec_ids = window.hWin.HEURIST4.util.getUrlParameter('rec_id', location.href);
         if(!rec_ids && window.hWin.HAPI4.sysinfo.use_redirect){
@@ -2471,6 +2477,10 @@ $.widget( "heurist.resultList", {
                     if(that.options.language && that.options.language!='def'){
                         infoURL = infoURL + '&lang='+that.options.language;
                     }
+                    if(this.options.fontsize>0){
+                        infoURL = infoURL + '&fontsize=' + this.options.fontsize;
+                    }
+                    
                     
                     //content is smarty report
                     if( this.options.rendererExpandInFrame ||  !isSmarty)
