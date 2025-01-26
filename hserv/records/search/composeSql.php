@@ -1478,7 +1478,7 @@ class HPredicate {
             $this->field_type = 'link';//integer without quotes
         }elseif($this->field_type=='file'){
 
-        }elseif(count($several_ids)==1 && intval($this->field_id)>0){
+        }elseif( ($several_ids==null || count($several_ids)==1) && intval($this->field_id)>0){
             //find field type - @todo from cache
 
             $this->field_type = mysql__select_value($mysqli, 'select dty_Type FROM defDetailTypes where dty_ID = '.$this->field_id);
