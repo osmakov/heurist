@@ -164,7 +164,7 @@ function editCMS2(website_document){
                                 +'<li><a href="#treeWebSite">Site</a></li><li><a href="#treePage">Page</a></li>'
                             +'</ul>'
 
-                            +'<div id="treeWebSite" style="display:none;top:80px;" class="ent_wrapper ui-cms-mainmenu">'
+                            +'<div id="treeWebSite" style="display:none;top:10.5em;" class="ent_wrapper ui-cms-mainmenu">'
                                 +'<div class="toolbarWebSite ent_header" style="height:85px;padding-top:15px;">'
 
                                     +'<span style="display:block;border-top:1px solid gray;padding:4px 8px;margin:4px 0px;">'
@@ -187,7 +187,7 @@ function editCMS2(website_document){
                                 
                                 +'<div class="treeWebSite ent_content_full" style="top:80px;padding:3px 10px;"></div>' //treeview - edit website menu
                             +'</div>'
-                            +`<div id="treePage" style="font-size:0.9em;top:${isWebPage ? '50' : '80'}px;" class="ent_wrapper ui-widget-content">`
+                            +`<div id="treePage" style="font-size:0.9em;top:${isWebPage ? '8' : '10.5'}em;" class="ent_wrapper ui-widget-content">`
                             
                                 +'<div class="treePageHeader ent_header" style="height:85px;line-height:normal;">'
                                     
