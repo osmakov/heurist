@@ -425,7 +425,11 @@ $.widget( "heurist.search_faceted", {
             if(this.options.params.ui_spatial_filter){
                 iAdd = -25;    
             }
-            this.facets_list_container.css({top: this.div_header.height()+iAdd});
+            if(this.element.css('position')=='absolute'){
+                this.facets_list_container.css({top: this.div_header.height()+iAdd});
+            }else{
+                this.facets_list_container.css({'margin-top': this.div_header.height()+iAdd});
+            }
         }
     },
     
