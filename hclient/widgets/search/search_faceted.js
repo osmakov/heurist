@@ -316,8 +316,14 @@ $.widget( "heurist.search_faceted", {
 
         this.facets_list_container = $( "<div>" )
         .attr('data-fid','facets_list_container')
-        .css({"top":((this.div_title)?'6em':'2em'),"bottom":0,"position":"absolute"}) //was top 3.6
         .appendTo( this.element );
+
+        if(this.element.css('position')=='absolute'){
+            this.facets_list_container.css({"top":((this.div_title)?'6em':'2em'),"bottom":0,"position":"absolute"}); //was top 3.6
+        }else{
+            this.facets_list_container.css({"margin-top":((this.div_title)?'6em':'2em'),"bottom":0,"position":"relative"});
+        }
+
         
         if(this.options.is_h6style && !this.options.is_publication){
             this.facets_list_container.css({left:0,right:0,'font-size':'0.9em'});    

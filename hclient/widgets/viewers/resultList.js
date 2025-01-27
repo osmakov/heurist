@@ -633,10 +633,14 @@ $.widget( "heurist.resultList", {
         .appendTo( this.element );
 
         this.div_content = $( "<div>" )
-        .addClass('div-result-list-content ent_content_full')
+        .addClass('div-result-list-content')
         //.css({'border-top':'1px solid #cccccc'})  //,'padding-top':'1em'
         .css({'overflow-y':'auto'})
         .appendTo( this.element );
+        
+        if(this.element.css('position')!='relative'){
+            this.div_content.addClass('ent_content_full');    
+        }
         
         
         if(window.hWin.HEURIST4.util.isFunction(this.options.onScroll)){
@@ -1021,7 +1025,12 @@ $.widget( "heurist.resultList", {
         }
    
         //move content down to leave space for header
-        this.div_content.css({'top': top+'px'});
+        if(this.div_content.css('position')=='absolute'){
+            this.div_content.css({'top': top+'px'});    
+        }else{
+            this.div_content.css({'margin-top': top+'px'});    
+        }
+        
 		
 		if(has_content_header){
             this.div_content_header
