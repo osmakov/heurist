@@ -107,6 +107,7 @@ $def_ut = array(
     'ce_helper'=>CLR_LIGHTGRAY,
     'ce_readonly'=>CLR_LIGHTGRAY,
     'ce_mandatory'=>'#CC0000',
+    'ce_border'=>CLR_BG_DARKGRAY,
     //clickable default
     'cd_corner'=>'0',
 
@@ -213,7 +214,7 @@ select.ui-heurist-header2, input.ui-heurist-header2{
 
 .ui-selectmenu-button{
     background:<?php uout('ce_input', CLR_WHITE);?>;
-    border: 1px solid  <?php uout('cd_bg', CLR_BG_DARKGRAY );?> !important;
+    border: 1px solid  <?php uout('ce_border', CLR_BG_DARKGRAY );?> !important;
     outline: none;
     padding: 1px;
 }
@@ -225,7 +226,7 @@ select.ui-heurist-header2, input.ui-heurist-header2{
 }
 .ent_wrapper.editor .text{
     background: none repeat scroll 0 0 <?php uout('ce_input', CLR_WHITE);?>;/* 0511 !important */
-    border: 1px solid  <?php uout('cd_bg', CLR_BG_DARKGRAY );?>;
+    border: 1px solid  <?php uout('ce_border', CLR_BG_DARKGRAY );?>;
 }
 .separator2{
     color: black; /* <?php uout('ce_helper', CLR_LIGHTGRAY);?>;*/

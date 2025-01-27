@@ -112,6 +112,14 @@
                     "rst_FieldConfig":{"colorpicker":"colorpicker"},
                     "rst_DefaultValue": "#6A7C99"
             }},
+            {"dtID": "ce_border",
+                "dtFields":{
+                    "dty_Type":"freetext",
+                    "rst_DisplayName": "Input border:",
+                    "rst_DisplayHelpText": "Border color for input elements",
+                    "rst_FieldConfig":{"colorpicker":"colorpicker"},
+                    "rst_DefaultValue": "#333333"
+            }},
             {"dtID": "ce_input",
                 "dtFields":{
                     "dty_Type":"freetext",
