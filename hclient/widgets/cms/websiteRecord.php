@@ -432,11 +432,11 @@ if(!$isWebPage){  //not standalone web page
         $is_page_footer_fixed = ($page_footer_type != ConceptCode::getTermLocalID('2-531'));
         $default_style = ";border-top:2px solid rgb(112,146,190);background:lightgray;";
         if ($is_page_footer_fixed) {
-            $footer_height = ($page_footers!=null) ? '80px' : '48px';
-            $page_footer_style = 'height:'.$footer_height.$default_style;
+            $page_footer_height = ($page_footers!=null) ? '80px' : '48px';
+            $page_footer_style = 'height:'.$page_footer_height.$default_style;
         } else {
-            $footer_height = 'auto';
-            $page_footer_style = 'height:'.$footer_height.(($page_footers!=null) ? '' : $default_style);
+            $page_footer_height = 'auto';
+            $page_footer_style = 'height:'.$page_footer_height.(($page_footers!=null) ? '' : $default_style);
         }
 
         $mailto = '';
