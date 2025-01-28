@@ -1469,8 +1469,7 @@ $.widget( "heurist.importStructure", {
         btns['Proceed'] = () => {
 
             that._is_rename_target = $dlg.find('#rename_target_entities').is(':checked');
-            that._is_conservative = $dlg.find('#import_new_rectypes_only').is(':checked');
-
+            that._is_conservative = !$dlg.find('#import_new_rectypes_only').is(':checked');
             if(that._is_rename_target){
 
                 let $dlg2, btn2 = {};
