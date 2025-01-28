@@ -132,7 +132,7 @@ $.widget( "heurist.importStructure", {
         +'</div>'
 
         //left - source                                
-        +'<div class="ent_wrapper" id="entity_wrapper" style="top:6.8em;right:225px;border-right:1px solid lightgray;">' //450px
+        +'<div class="ent_wrapper" id="entity_wrapper" style="top:6.8em;bottom:1em;right:225px;border-right:1px solid lightgray;">' //450px
             + '<ul>'
                 + '<li><a href="#rty_container">Record / entity types</a></li>'
                 + '<li><a href="#dty_container">Individual fields</a></li>'
@@ -214,7 +214,7 @@ $.widget( "heurist.importStructure", {
 
                 let panel = ui.newPanel;
                 let parent_height = panel.parent().height();
-                panel.height(parent_height - 31);
+                panel.height(parent_height - 38);
             },
             activate: function(event, ui){
 
@@ -1377,17 +1377,23 @@ $.widget( "heurist.importStructure", {
 
         let state = this.show_all.is(':checked');
         let search = this.general_search.val();
-
+        let ent = 'rty';
+        
         if(cur_acc == 2){ // trm
-            this.panel_trm_list.find('.searchForm #input_search').val(search);
-            this.panel_trm_list.find('.searchForm #chb_show_already_in_db').prop('checked', true).trigger('change'); // always show all
+            ent = 'trm';
+            state = true;// always show all
         }else if(cur_acc == 1){ // dty
-            this.panel_dty_list.find('.searchForm #input_search').val(search);
-            this.panel_dty_list.find('.searchForm #chb_show_already_in_db').prop('checked', false).trigger('change'); // always hide those already in db
-        }else{ // rty
-            this.panel_rty_list.find('.searchForm #input_search').val(search);
-            this.panel_rty_list.find('.searchForm #chb_show_already_in_db').prop('checked', state).trigger('change');
+            ent = 'dty';
+            state = false;// always hide those already in db
         }
+        let pnl = this.element.find(`#${ent}_container`);
+        ent = `panel_${ent}_list`;
+
+        this[ent].find('.searchForm #input_search').val(search);
+        this[ent].find('.searchForm #chb_show_already_in_db').prop('checked', state).trigger('change');
+
+        let parent_height = pnl.parent().height();
+        pnl.height(parent_height - 38);
     },
 
     /**
