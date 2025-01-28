@@ -217,9 +217,9 @@
 #menu-help-acknowledgements#Acknowledgements
 #menu-help-about#About
 #menu-help-bugreport-hint#Send email to the Heurist team such as additional bug information, comments or new feature requests
-#menu-help-emailteam-hint#
+#menu-help-emailteam-hint#Send an email to the Heurist team if you have any further questions
 #menu-help-emailadmin-hint#Send an email to the System Adminstrator for this installaton of Heurist - typically for probelms with this installation
-#menu-help-acknowledgements-hint#
+#menu-help-acknowledgements-hint#Acknowledgements
 #menu-help-about-hint#Version, Credits, Copyright, License
 #menu-subset-set#Set as subset
 #menu-subset-set-hint#Make the current filter the active subset to which all subsequent actions are applied

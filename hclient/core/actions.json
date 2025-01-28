@@ -668,8 +668,7 @@
         "target": "_blank",
         "id": "menu-help-emailteam",
         "data": {
-            "user-admin-status": "0",
-            "ext": "1"
+            "user-admin-status": "0"
         },
         "text": "Heurist Team"
     },
