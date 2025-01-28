@@ -142,29 +142,31 @@ class ActionHandler {
      */
     #handleHrefAction(action, popup_dialog_options) {
 
-         let href = action.href;
-         const target = action?.target;
-         
-         if (window.hWin.HEURIST4.util.isempty(href) || href == '#') {
-             return false;
-         }
+        let href = action.href;
+        const target = action?.target;
 
-         if (href.startsWith('mailto:')) {
-             window.open(href, 'emailWindow');
-             return;
-         }
+        if (action.id === 'menu-help-emailadmin') {
+            href = `mailto:${window.hWin.HAPI4.sysinfo.sysadmin_email}`;
+        } else if (window.hWin.HEURIST4.util.isempty(href) || href == '#') {
+            return false;
+        }
 
-         if (!(href.startsWith('http://') || href.startsWith('https://'))) {
-             href = window.hWin.HAPI4.baseURL + href + (href.indexOf('?') >= 0 ? '&' : '?') + 'db=' + window.hWin.HAPI4.database;
-         }
+        if (href.startsWith('mailto:')) {
+            window.open(href, 'emailWindow');
+            return;
+        }
 
-         if (target) {
-             window.open(href, target);
-         } else {
-             if (!popup_dialog_options.title) {
-                 popup_dialog_options.title = action.text;
-             }
-             let options = $.extend(popup_dialog_options, { width: 800, height: 600 });
+        if (!(href.startsWith('http://') || href.startsWith('https://'))) {
+            href = window.hWin.HAPI4.baseURL + href + (href.indexOf('?') >= 0 ? '&' : '?') + 'db=' + window.hWin.HAPI4.database;
+        }
+
+        if (target) {
+            window.open(href, target);
+        } else {
+            if (!popup_dialog_options.title) {
+                popup_dialog_options.title = action.text;
+            }
+            let options = $.extend(popup_dialog_options, { width: 800, height: 600 });
 
              /*                if (item.hasClass('upload_files')) {
              //beforeClose
@@ -186,9 +188,9 @@ class ActionHandler {
              }
              }
              */            
-             window.hWin.HEURIST4.msg.showDialog(href, options);
-         }
-         return true;
+            window.hWin.HEURIST4.msg.showDialog(href, options);
+        }
+        return true;
     }
 
     /**
