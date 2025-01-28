@@ -638,16 +638,15 @@ $.widget( "heurist.resultList", {
         .css({'overflow-y':'auto'})
         .appendTo( this.element );
         
-        if(this.element.css('position')!='relative'){
+        if(this.element.css('position')=='relative' && this.element[0].style.height=='100%'){
+            this.div_content.css('height','100%');
+        }else{                                          
             this.div_content.addClass('ent_content_full');    
         }
-        
         
         if(window.hWin.HEURIST4.util.isFunction(this.options.onScroll)){
             this._on(this.div_content, {'scroll':this.options.onScroll});
         }
-                          
-
         
         this.div_loading = $( "<div>" )
         .css({ 'width': '50%', 'height': '50%', 'top': '25%', 'margin': '0 auto', 'position': 'relative',

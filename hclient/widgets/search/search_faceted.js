@@ -229,7 +229,7 @@ $.widget( "heurist.search_faceted", {
         //this._focusable($element);   
 
         this.div_header = $( "<div>" ).css({height: 'auto',
-            position: 'absolute', left: 0, right: 0}).appendTo( this.element );
+            position: 'absolute', top:0, left: 0, right: 0}).appendTo( this.element );
         
         if(!this.options.ispreview){     
         
@@ -318,10 +318,17 @@ $.widget( "heurist.search_faceted", {
         .attr('data-fid','facets_list_container')
         .appendTo( this.element );
 
-        if(this.element.css('position')=='absolute'){
-            this.facets_list_container.css({"top":((this.div_title)?'6em':'2em'),"bottom":0,"position":"absolute"}); //was top 3.6
-        }else{
+        
+        let isRelative = false;
+        let ele_svslist = this.element.parent('[data-widgetname="svs_list"]');
+        if(ele_svslist.length>0){
+             isRelative = ele_svslist.css('position')=='relative' &&  ele_svslist[0].style.height=='100%';
+        }
+
+        if(isRelative){
             this.facets_list_container.css({"margin-top":((this.div_title)?'6em':'2em'),"bottom":0,"position":"relative"});
+        }else{
+            this.facets_list_container.css({"top":((this.div_title)?'6em':'2em'),"bottom":0,"position":"absolute"}); //was top 3.6
         }
 
         
@@ -425,10 +432,10 @@ $.widget( "heurist.search_faceted", {
             if(this.options.params.ui_spatial_filter){
                 iAdd = -25;    
             }
-            if(this.element.css('position')=='absolute'){
-                this.facets_list_container.css({top: this.div_header.height()+iAdd});
-            }else{
+            if(this.facets_list_container.css('position')=='relative'){
                 this.facets_list_container.css({'margin-top': this.div_header.height()+iAdd});
+            }else{
+                this.facets_list_container.css({top: this.div_header.height()+iAdd});
             }
         }
     },

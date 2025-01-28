@@ -1628,7 +1628,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
 
                 if (_regional[_region] && _regional[_region][key]) {
                     return _regional[_region][key];
-                } else if (_region != 'ENG' && _regional['ENG'][key])
+                } else if (_region != 'ENG' && _regional['ENG'] && _regional['ENG'][key])
                 {
                     return _regional['ENG'][key];
                 }else{
