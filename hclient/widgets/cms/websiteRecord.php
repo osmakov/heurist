@@ -239,7 +239,7 @@ $title_alt = __getValue($rec, '3-1009');//DT_CMS_ALT_TITLE
 $title_alt2 = __getValue($rec, '2-1052');
 $image_banner = __getFile($rec, '99-951', null);//DT_CMS_BANNER
 
-$image_logo = $image_logo?'<img style="max-width:270px;" src="'.$image_logo.'">':'';
+$image_logo = $image_logo?'<img src="'.$image_logo.'">':'';
 
 $meta_keywords = htmlspecialchars(strip_tags(__getValue($rec, DT_CMS_KEYWORDS)));
 $meta_description = htmlspecialchars(strip_tags(__getValue($rec, DT_SHORT_SUMMARY)));

@@ -101,6 +101,7 @@ if (isLocalHost() && !@$_REQUEST['embed'])  {
     var isJsAllowed = <?php echo $website_custom_javascript_allowed?'true':'false';?>;
     var first_not_empty_page = 0;
     var website_title = <?php echo $website_title; ?>;
+    var is_custom_header = <?php echo ($page_header!==null && $page_header!=='')?'true':'false';?>;
 
     var record_view_smarty_template = '<?php echo $record_view_smarty_template!=null?$record_view_smarty_template:'';?>';
     var record_view_target = '<?php echo $record_view_target!=null?$record_view_target:'';?>';
@@ -1359,7 +1360,7 @@ $website_languages_links ->#main-languages
                 $('#main-title').fadeIn(500);
                 $('#main-title').attr('data-adjusted',1)
             });
-        }else  if(img.length == 0){
+        }else  if(img.length == 0 && !is_custom_header){
             $('#main-title').css({
                 left: '10px',
                 top: '30px'

@@ -19,7 +19,6 @@
                     <div id="main-menu" class="mceNonEditable header-element"
                         style="width:100%;min-height:40px;color:black;font-size:1.1em;"
                         data-heurist-app-id="heurist_Navigation" data-generated="1">
-                        <?php print $page_header_menu; ?>
                     </div>
                 </div>
                 <div id="main-content"
@@ -49,7 +48,6 @@
     * $open_page_or_record_on_init - record id for cms menu/page to be loaded on init
     *
     * $image_banner - header background banner image
-    * $page_header_menu - code to define main menu widget, leave it unchanged as content of main-menu div
     * $page_header - custom content for main-header defined in website home page record
     * $page_footer - custom content for footer
     *
@@ -104,6 +102,9 @@
     height:144px;
     padding: 0.5em;
     padding-bottom:0;
+}
+#main-logo > img{
+    max-width:270px;
 }
 #main-title > h2{
     font-size:1.7em;
@@ -208,7 +209,7 @@ if($isWebPage){ //set in websiteRecord.php
       print '<div style="position: absolute;text-align: center;width: 100%;color: red;">Web site record is not public. It will not be visible to the public</div>';
     }
 
-    if($page_header!=null && $page_header!=''){ //custom header content
+    if($page_header!==null && $page_header!==''){ //custom header content
         print $page_header;
     } else {
 ?>
