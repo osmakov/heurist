@@ -151,20 +151,23 @@ function editCMS2(website_document){
                 
                 
                 _editor_panel = $('<div class="ui-layout-'+options.editor_pos+'">'
-                        +'<div class="ent_wrapper editStructure" id="tabsEditCMS">' 
+                        +'<div class="ent_wrapper editStructure" id="tabsEditCMS"><div class="ent_header" style="height:5.5em">' 
 
-                            +(!isWebPage ? '<div class="btn-website-edit" style="font-weight:normal !important; width: fit-content;">Website layout / properties</div><br>' : '')
-                            +`<span class="btn-website-url" style="display:inline-block;font-size:9px;color:black;margin-bottom:5px;padding-right:5px;">Website URL</span>`
-                            +`<a href="#" class="website-url truncate" style="font-size:9px;color: blue;display: inline-block;width: ${isWebPage ? '65' : '70'}%;vertical-align: -1px;"></a>`
+                            +(!isWebPage ? '<div class="btn-website-edit" style="font-weight:normal !important; width: fit-content;margin:0.7em 0px;">Website layout / properties</div>' : '')
+                            +`<div style="line-height: 1em;font-size: smaller;"><span class="btn-website-url" style="display:inline-block;color:black;padding-right:5px;">Website URL</span>`
+                            +`<a href="#" class="website-url truncate" style="color: blue;display: inline-block;width: ${isWebPage ? '65' : '70'}%;vertical-align: -1px;"></a></div>`
 
-                            +'<span style="position:absolute;top:22px;width:32px;height:24px;font-size:29px;cursor:pointer;'+(options.editor_pos=='west'?'right:5px':'')+'" '
+                            +'<span style="position:absolute;top: 0.3em; width: 1em; height: 1em; font-size: 3em; cursor: pointer;'
+                                        +(options.editor_pos=='west'?'right:0.05em':'')+'" '
                             +'class="bnt-cms-hidepanel ui-icon ui-icon-carat-2-'+(options.editor_pos=='west'?'w':'e')+'"></span>'
 
+                            +'</div><div class="ent_content_full" style="top:5.5em">'
+                            
                             +'<ul style="margin-'+(options.editor_pos=='west'?'right':'left')+':40px;font-size:9px;">'
                                 +'<li><a href="#treeWebSite">Site</a></li><li><a href="#treePage">Page</a></li>'
-                            +'</ul>'
+                            +'</ul>'      
 
-                            +'<div id="treeWebSite" style="display:none;top:10.5em;" class="ent_wrapper ui-cms-mainmenu">'
+                            +'<div id="treeWebSite" style="display:none;top:2.5em" class="ent_wrapper ui-cms-mainmenu">'
                                 +'<div class="toolbarWebSite ent_header" style="height:85px;padding-top:15px;">'
 
                                     +'<span style="display:block;border-top:1px solid gray;padding:4px 8px;margin:4px 0px;">'
@@ -186,8 +189,8 @@ function editCMS2(website_document){
                                 +'</div>'
                                 
                                 +'<div class="treeWebSite ent_content_full" style="top:80px;padding:3px 10px;"></div>' //treeview - edit website menu
-                            +'</div>'
-                            +`<div id="treePage" style="font-size:0.9em;top:${isWebPage ? '8' : '10.5'}em;" class="ent_wrapper ui-widget-content">`
+                            +'</div>'                                   //
+                            +`<div id="treePage" style="font-size:0.9em;top:${isWebPage ? '0' : '2.5'}em;" class="ent_wrapper ui-widget-content">`
                             
                                 +'<div class="treePageHeader ent_header" style="height:85px;line-height:normal;">'
                                     
@@ -206,6 +209,7 @@ function editCMS2(website_document){
                                 +'<div class="propertyView ent_content_full ui-widget-content-gray" '
                                     +' style="top:190px;padding:10px 0px;display:none;"></div>' //edit properties for element
                                 
+                            +'</div>'
                             +'</div>'
                         +'</div></div>').appendTo(_ws_body);
            
@@ -325,7 +329,7 @@ function editCMS2(website_document){
         if(!isWebPage){
             _editor_panel.find('.btn-website-edit')
                          .button({classes:{'ui-button': 'ui-button-action'}})
-                         .css({'padding':'5px','font-size':'9px','margin-bottom':'5px'})
+                         .css({'padding':'5px','font-size':'smaller'})
                          .on('click', _editHomePageRecord);
         }else{
             _editor_panel.find('.btn-website-edit').on('click',_editHomePageRecord);
