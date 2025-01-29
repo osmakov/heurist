@@ -1486,6 +1486,7 @@ function HMapLayer2( _options ) {
         applyStyle: function( newStyle, newTheme ){
             if(_nativelayer_id>0){
                 options.mapwidget.mapping('applyStyle', _nativelayer_id, newStyle, newTheme);
+                options.imageFilter = newStyle;
             }
         },
 
