@@ -449,9 +449,11 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
                     window.hWin.HEURIST4.ui.initEditSymbologyControl($dlg.find('#def_map_symbology'), opts.def_map_symbology);
                     window.hWin.HEURIST4.ui.initEditSymbologyControl($dlg.find('#def_story_symbology'), opts.def_story_symbology);
                     $dlg.find('#placeholder_text').val(opts['storyPlaceholder']);
+                    $dlg.find('#elementsPlaceholder').val(opts['elementsPlaceholder']);
                 }
 
                 if(_def_labels[widget_name]){ // fill in default labels
+
                     let def_placeholder = window.hWin.HR(_def_labels[widget_name]['placeholder_def']);
 
                     let def_remark = window.hWin.HR(_def_labels[widget_name]['empty_remark_def']);
@@ -1152,7 +1154,8 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
                 }
             }
 
-            $dlg.find(`div.${widget_name} input, div.${widget_name} select, div.${widget_name} textarea`).on('change', on_change);
+            $dlg.find(`div.${widget_name} select`).on('change', on_change);
+            $dlg.find(`div.${widget_name} input, div.${widget_name} textarea`).on('input', on_change);
         }
     }
     
@@ -1425,6 +1428,7 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
             opts['storyPlaceholder'] = placeholder;
             delete opts['placeholder_text'];
 
+            opts['elementsPlaceholder'] = $dlg.find('#elementsPlaceholder').val();
             if(window.hWin.HEURIST4.util.isempty(opts['elementsPlaceholder']) && !opts['blank_elementsPlaceholder']){
                 // replace with default
                 opts['elementsPlaceholder'] = 'def';
@@ -1468,7 +1472,7 @@ function editCMS_WidgetCfg( widget_cfg, _layout_content, $dlg, main_callback, on
         opts['init_at_once'] = true;
         opts['search_realm'] = $dlg.find('input[name="search_realm"]').val();
         opts['search_page'] = $dlg.find('select[name="search_page"]').val();
-        opts['widget_id'] = $dlg.find('input[name="widget_id"]').val();    
+        opts['widget_id'] = $dlg.find('input[name="widget_id"]').val();
 
         return opts;
     }//_getValues
