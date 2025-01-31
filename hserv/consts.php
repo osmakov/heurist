@@ -490,8 +490,8 @@ function getNow(){
 }
 
 function isEmptyStr($val){
-    // !empty is analogous to isset($foo) && $foo
-    return empty($val) || $val=='';
+    // !empty is analogous to isset($foo) && $foo, unforntunately it returns true for '0'
+    return !isset($val) || $val===null || $val==='';
 }
 
 function isEmptyArray($val){
