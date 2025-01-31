@@ -4255,7 +4255,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
                 +'<div style="padding:10px 50px 0px 0px;float:right">'
                     +'<span class="btn-edit-rt btns-admin-only">Attributes</span>'
                     +'<span class="btn-update-struct btns-admin-only">Update structure from source</span>'
-                    +'<span class="btn-refresh-struct">Refresh structure</span>'
+                    +'<span class="btn-refresh-struct btns-admin-only">Refresh structure</span>'
                     +'<span class="btn-rec-history btns-admin-only">History</span>'
                     +'<span class="btn-edit-rt-template btns-admin-only">Template</span>'
                     +'<span class="btn-bugreport">Bug report</span>'
@@ -5369,18 +5369,16 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
         let swf_mode = this.element.find('.sel_workflow_stages').val();
         let opts_swf_stages = '';
         const dtyID = window.hWin.HAPI4.sysinfo['dbconst']['DT_WORKFLOW_STAGE']; //$Db.getLocalID('dty', '2-1080'); //workflow stage field
-        let save_lbl = 'Save changes';
 
         if(!fields){
             fields = this._editing.getValues(false);
-           
         }
 
         let curr_stage = fields[dtyID];
-        
+
         //TRM_SWF_IMPORT should we disable it?
 
-        for (let i=0; i<this._swf_rules.length; i++){
+        for (let i = 0; i < this._swf_rules.length; i++){
             let is_disabled = '';
             if(this._swf_rules[i]['swf_StageRestrictedTo']){
                 const grps = this._swf_rules[i]['swf_StageRestrictedTo'];
@@ -5398,27 +5396,27 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
         }
 
         let $ele = this.element.find('.div_workflow_stages');
-        
+
         let $dlg;
         let btns = {};
 
-        btns[window.hWin.HR(save_lbl)] = function(){
+        btns[window.hWin.HR('Save change')] = function(){
 
-            fields[dtyID] = $dlg.find('#dlg-prompt-value').val();
+            fields[dtyID] = $dlg.find('.sel-current-stage').val();
             that._saveEditAndClose( fields, _callback );
 
             $dlg.dialog('close');
         };
-        btns[window.hWin.HR('No change')] = function(){
+        btns[window.hWin.HR('Cancel')] = function(){
             $dlg.dialog('close');
         };
 
         $dlg = window.hWin.HEURIST4.msg.showMsgDlg(
         '<div class="heurist-helper3">Changing this setting will determine actions to be taken such as visibility settings, marking for publication or email notifications</div>'
-        +'<p style="margin: 20px 0px 0px"><label>Workflow stage: </label><select id="dlg-prompt-value" class="text ui-corner-all">'
+        +'<p style="margin: 20px 0px 0px"><label>Workflow stage: </label><select class="text ui-corner-all sel_current_stage">'
             + opts_swf_stages
         +'</select>&nbsp;&nbsp;<button id="btn_advance">Advance</button></p>', btns, 
-        {title: window.hWin.HR('Set workflow stage'), yes: window.hWin.HR(save_lbl), no: window.hWin.HR('No change')},
+        {title: window.hWin.HR('Set workflow stage'), yes: window.hWin.HR('Save change'), no: window.hWin.HR('Cancel')},
         {default_palette_class: this.options.default_palette_class}); //'ui-heurist-populate'
 
         if($ele.length == 1){
@@ -5439,16 +5437,31 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
             })
         }
 
+        let $swf_popup = $dlg.find('.sel_workflow_stages');
+        let $stage = $dlg.find('.sel_current_stage');
+
         $dlg.find('#btn_advance').button({icon:'ui-icon-caret-1-e',iconPosition:'end'})
                 .css('font-size','0.9em')
         .on('click', function(){  //select next
-            $dlg.find('#dlg-prompt-value')[0].selectedIndex++;    
-            if($dlg.find('#dlg-prompt-value')[0].selectedIndex<0){
-                $dlg.find('#dlg-prompt-value')[0].selectedIndex=0;            
+            $stage[0].selectedIndex++;    
+            if($stage[0].selectedIndex < 0){
+                $stage[0].selectedIndex = 0;            
             }
+            $stage.trigger('change');
         });
 
         $dlg.parent().find('.ui-dialog-buttonpane .ui-button').css('margin-right', '20px');
+
+        // Disable save button until the values are changed
+        let $save_btn = $($dlg.parent().find('.ui-dialog-buttonpane .ui-button')[0]);
+        window.hWin.HEURIST4.util.setDisabled($save_btn, true);
+
+        let stage_popup = $swf_popup.val();
+        let stage = $stage.val();
+
+        $dlg.find('select').on('change', () => {
+            window.hWin.HEURIST4.util.setDisabled($save_btn, $stage.val() == stage && $swf_popup.val() == stage_popup);
+        });
     },
 	
     //
@@ -6799,7 +6812,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
 
         const that = this;
 
-        if(this._source_db.id == -1){ // was unable to get source
+        if(this._source_db.id == -1 || !window.hWin.HAPI4.is_admin()){ // was unable to get source
             return;
         }
 

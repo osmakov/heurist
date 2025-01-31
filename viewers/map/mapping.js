@@ -406,7 +406,7 @@ $.widget( "heurist.mapping", {
               ,visible_basemaps: this.options.layout_params?this.options.layout_params['basemaps']:null
               ,visible_mapdocuments: this.options.layout_params?this.options.layout_params['mapdocuments']:null
             });
-        
+
         this.updateLayout();
 
         $(window).on('onresize',function(){
@@ -543,9 +543,11 @@ $.widget( "heurist.mapping", {
     //
     //
     //
-    applyImageMapFilter: function(layerClassName, image_filter=null)
-    {
+    applyImageMapFilter: function(layerClassName, image_filter=null, layer_id = null){
+
         let filter = '';
+        let layer = window.hWin.HEURIST4.util.isPositiveInt(layer_id) ? this.all_layers[layer_id] : null;
+
         if(image_filter==null){
             image_filter = this.basemaplayer_filter;
         }
@@ -565,6 +567,10 @@ $.widget( "heurist.mapping", {
         }
 
         $img.css('filter', filter);
+
+        if(layer && Object.hasOwn(image_filter, 'opacity')){
+            layer.setOpacity(image_filter.opacity);
+        }
     },
 
     //
@@ -1965,7 +1971,7 @@ $.widget( "heurist.mapping", {
         let affected_layer = this.all_layers[layer_id];
         
         if(this.isImageLayer(affected_layer)){
-            
+
             if( affected_layer instanceof GeoRasterLayer ){
                 L.setOptions(affected_layer, newStyle);
                 return;
@@ -1986,8 +1992,10 @@ $.widget( "heurist.mapping", {
                 }
 
                 if(!window.hWin.HEURIST4.util.isempty(layer_class)){
-                    this.applyImageMapFilter(layer_class, newStyle); // apply image filter
+                    this.applyImageMapFilter(layer_class, newStyle, layer_id); // apply image filter
                 }
+            }else if(affected_layer && Object.hasOwn(newStyle, 'opacity')){
+                affected_layer.setOpacity(newStyle.opacity);
             }
 
             return;  
@@ -3591,7 +3599,7 @@ $.widget( "heurist.mapping", {
             controls.push('addmapdoc'); //add map doc is always visible for "non published" ui
             controls.push('help');
         }
-        
+
         function __controls(val){
             let is_visible = (controls.indexOf('all')>=0  
                                 || controls.indexOf(val)>=0);
