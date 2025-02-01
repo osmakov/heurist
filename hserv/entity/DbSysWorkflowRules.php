@@ -1,6 +1,7 @@
 <?php
 namespace hserv\entity;
 use hserv\entity\DbEntityBase;
+use hserv\utilities\USanitize;
 
     /**
     * db access to usrReminders table
@@ -73,7 +74,7 @@ class DbSysWorkflowRules extends DbEntityBase
 
         }elseif(@$this->data['details']=='name' || @$this->data['details']=='list' || @$this->data['details']=='full'){
 
-            $this->data['details'] = 'swf_ID,swf_RecTypeID,swf_Stage,swf_Order,swf_StageRestrictedTo,swf_SetOwnership,swf_SetVisibility,swf_SendEmail';
+            $this->data['details'] = 'swf_ID,swf_RecTypeID,swf_Stage,swf_Order,swf_StageRestrictedTo,swf_SetOwnership,swf_SetVisibility,swf_SendEmail,swf_EmailList,swf_RecEmailField,swf_EmailText';
 
         }else{
             $needCheck = true;
@@ -123,23 +124,42 @@ class DbSysWorkflowRules extends DbEntityBase
         //add specific field values
         foreach($this->records as $idx=>$record){
 
-                if($this->records[$idx]['swf_StageRestrictedTo']==''){
-                    $this->records[$idx]['swf_StageRestrictedTo'] = null;
-                }
-                if($this->records[$idx]['swf_SetOwnership']==''){
-                    $this->records[$idx]['swf_SetOwnership'] = null;
-                }
-                if($this->records[$idx]['swf_SetVisibility']==''){
-                    $this->records[$idx]['swf_SetVisibility'] = null;
-                }
-                if($this->records[$idx]['swf_SendEmail']==''){
-                    $this->records[$idx]['swf_SendEmail'] = null;
-                }
-                if($this->records[$idx]['swf_Order']=='' || $this->records[$idx]['swf_Order']<0){
-                    $this->records[$idx]['swf_Order'] = 0;
-                }elseif($this->records[$idx]['swf_Order']>255){
-                    $this->records[$idx]['swf_Order'] = 255;
-                }
+            if($this->records[$idx]['swf_StageRestrictedTo']==''){
+                $this->records[$idx]['swf_StageRestrictedTo'] = null;
+            }
+            if($this->records[$idx]['swf_SetOwnership']==''){
+                $this->records[$idx]['swf_SetOwnership'] = null;
+            }
+            if($this->records[$idx]['swf_SetVisibility']==''){
+                $this->records[$idx]['swf_SetVisibility'] = null;
+            }
+            if($this->records[$idx]['swf_SendEmail']==''){
+                $this->records[$idx]['swf_SendEmail'] = null;
+            }
+            if($this->records[$idx]['swf_Order']=='' || $this->records[$idx]['swf_Order']<0){
+                $this->records[$idx]['swf_Order'] = 0;
+            }elseif($this->records[$idx]['swf_Order']>255){
+                $this->records[$idx]['swf_Order'] = 255;
+            }
+
+            if(intval($this->records[$idx]['swf_RecEmailField']) <= 0){
+                $this->records[$idx]['swf_RecEmailField'] = null;
+            }
+
+            if($this->records[$idx]['swf_EmailList'] == ''){
+                $this->records[$idx]['swf_EmailList'] = null;
+            }else{
+                $list = explode(',', $this->records[$idx]['swf_EmailList']);
+                $list = array_filter($list, function($email){
+                    return filter_var($email, FILTER_VALIDATE_EMAIL);
+                });
+                $this->records[$idx]['swf_EmailList'] = empty($list) ? null : implode(',', $list);
+            }
+
+            if(!empty($this->records[$idx]['swf_EmailText'])){
+                $this->records[$idx]['swf_EmailText'] = USanitize::sanitizeString($this->records[$idx]['swf_EmailText']);
+                $this->records[$idx]['swf_EmailText'] = str_replace(["\r\n", "\r", "\n"], "<br>", $this->records[$idx]['swf_EmailText']);
+            }
         }
 
         return $ret;

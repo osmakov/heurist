@@ -24,7 +24,7 @@ use \hserv\utilities\USystem;
 */
 
 define('HEURIST_VERSION', $version);//code version is defined congigIni.php
-define('HEURIST_MIN_DBVERSION', "1.3.17");//minimal version of db for current version of code
+define('HEURIST_MIN_DBVERSION', "1.3.18");//minimal version of db for current version of code
 
 // The reference server is the location of the Heurist Reference Index database (HEURIST_INDEX_DATABASE), the Heurist_Help database,
 

@@ -487,6 +487,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
     //workflow stages
     $new_swf_stage = 0;
     $swf_emails = null;
+    $swf_body = null;
     $stage_field_idx = -1;
     $is_new_record = $is_insert || $is_save_new_record;
     if($record['FlagTemporary']!=1 && $system->defineConstant('DT_WORKFLOW_STAGE')){
@@ -523,6 +524,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
                 }
             }else{
                 $swf_emails = @$swf_res['emails'];
+                $swf_body = @$swf_res['body'];
                 if($stage_field_idx<0){
                     array_push($detailValues,array('dtl_DetailTypeID'=>DT_WORKFLOW_STAGE, 'dtl_Value'=>$new_swf_stage));
                 }
@@ -812,7 +814,7 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         $user = @$user['ugr_FullName'];
 
         $title = HEURIST_DBNAME . ", ID: $recID >> workflow: $stage_name";
-        $msg = '<b>'.$title.'</b> '
+        $msg = !empty($swf_body) ? $swf_body : '<b>'.$title.'</b> '
         .'<a href="'.HEURIST_BASE_URL.'hclient/framecontent/recordEdit.php?db='.HEURIST_DBNAME.'&recID='.$recID.'">Record #'.$recID
         .'  "'.USanitize::sanitizeString($newTitle, false).'"</a><br>'
         .' has been changed to "'.$stage_name
@@ -821,6 +823,8 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
         if($total_record_count > 1){
             $msg = $msg . '<br><br><i>This is the first of multiple records'. ($modeImport > 0 ? ' imported' : '') .'. Please visit database for additional records.</i>';
         }
+
+        $msg = str_replace('#title#', $newTitle, $msg);
 
         $res = sendPHPMailer(HEURIST_MAIL_TO_ADMIN, 'Heurist DB '.HEURIST_DBNAME.'. ID: '.$recID, //'Workflow stage update notification',
                     $swf_emails, $title, $msg, null, true);
@@ -3311,14 +3315,14 @@ function isValidTerm($system, $term_tocheck, $domain, $dtyID, $rectype)
 *
 * @param mixed $system
 * @param mixed $record
-* @return array( new_value, curr_value, emails )
+* @return array( new_value, curr_value, emails, body )
 */
 function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
 
     $current_value = 0;
-    $emails = null;
+    $emails = [];
 
-    $res = array('new_value'=>$new_value, 'curr_value'=>$current_value, 'emails'=>$emails);
+    $res = array('new_value'=>$new_value, 'curr_value'=>$current_value, 'emails'=>$emails, 'body'=>null);
 
     if (!($new_value>0 && @$record['FlagTemporary']!=1)) {
         return $res;
@@ -3343,55 +3347,136 @@ function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
     }
 
 
-        //if stage is changed - assign new values for rec_OwnerUGrpID and rec_NonOwnerVisibility
-            $query = 'SELECT swf_StageRestrictedTo, swf_SetOwnership, swf_SetVisibility, swf_SendEmail FROM sysWorkflowRules '
-            .'WHERE swf_RecTypeID='.$record['RecTypeID'].' AND swf_Stage='.$new_value;
-            $rule = mysql__select_row_assoc($mysqli, $query);
+    //if stage is changed - assign new values for rec_OwnerUGrpID and rec_NonOwnerVisibility
+    $query = 'SELECT swf_StageRestrictedTo, swf_SetOwnership, swf_SetVisibility, swf_SendEmail, swf_EmailList, swf_RecEmailField, swf_EmailText FROM sysWorkflowRules '
+    .'WHERE swf_RecTypeID='.$record['RecTypeID'].' AND swf_Stage='.$new_value;
+    $rule = mysql__select_row_assoc($mysqli, $query);
 
-            //check that current user can change workflow stage
-            $is_allowed = false;
-            if($rule!=null &&
-                ($rule['swf_StageRestrictedTo']==null
-                || $system->isAdmin()
-                || $system->isMember($rule['swf_StageRestrictedTo']))
-            ){
+    //check that current user can change workflow stage
+    $is_allowed = false;
+    if($rule!=null &&
+        ($rule['swf_StageRestrictedTo']==null
+        || $system->isAdmin()
+        || $system->isMember($rule['swf_StageRestrictedTo']))
+    ){
 
-                $is_allowed = true;
+        $is_allowed = true;
+    }
+
+    if($is_allowed){
+
+        //changing ownership
+        if($rule['swf_SetOwnership']!=null && $rule['swf_SetOwnership']>=0){
+            $record['OwnerUGrpID'] = $rule['swf_SetOwnership'];
+            $record['swf'] = true; //marker that ownership is change by workflow stage - it will not check that current user has rights
+        }
+        //changing visibility
+        if($rule['swf_SetVisibility']!=null){
+            if($rule['swf_SetVisibility']=='public' ||
+                $rule['swf_SetVisibility']=='viewable' ||
+                $rule['swf_SetVisibility']=='hidden'){
+                $record['NonOwnerVisibility'] = $rule['swf_SetVisibility'];
+            }else{
+                $record['NonOwnerVisibility'] = 'viewable';
+                $record['NonOwnerVisibilityGroups'] = $rule['swf_SetVisibility'];
             }
+        }
 
-            if($is_allowed){
+        //get email addresses for notification
 
-                //changing ownership
-                if($rule['swf_SetOwnership']!=null && $rule['swf_SetOwnership']>=0){
-                    $record['OwnerUGrpID'] = $rule['swf_SetOwnership'];
-                    $record['swf'] = true; //marker that ownership is change by workflow stage - it will not check that current user has rights
+        if($rule['swf_SendEmail']!=null){
+
+            $query = 'SELECT ugr_eMail FROM sysUGrps '
+            .'WHERE ugr_ID IN ('.$rule['swf_SendEmail'].')';
+
+            $res['emails'] = mysql__select_list2($mysqli, $query);
+        }
+
+        if($rule['swf_EmailList'] != null){
+
+            $list = explode(',', $rule['swf_EmailList']);
+
+            $list = array_filter($list, function($email){
+                return filter_var($email, FILTER_VALIDATE_EMAIL);
+            });
+
+            $res['emails'] = array_merge_unique($res['emails'], $list);
+        }
+
+        $recordField = intval($rule['swf_RecEmailField']);
+        if($recordField > 0 && array_key_exists($recordField, $record['details'])){
+            foreach($record['details'][$recordField] as $email){
+                if(!filter_var($email, FILTER_VALIDATE_EMAIL) || array_search($email, $res['emails']) !== false){
+                    continue;
                 }
-                //changing visibility
-                if($rule['swf_SetVisibility']!=null){
-                    if($rule['swf_SetVisibility']=='public' ||
-                       $rule['swf_SetVisibility']=='viewable' ||
-                       $rule['swf_SetVisibility']=='hidden'){
-                       $record['NonOwnerVisibility'] = $rule['swf_SetVisibility'];
-                    }else{
-                       $record['NonOwnerVisibility'] = 'viewable';
-                       $record['NonOwnerVisibilityGroups'] = $rule['swf_SetVisibility'];
+                $res['emails'][] = $email;
+            }
+        }
+
+        if(!empty($rule['swf_EmailText'])){
+
+            $new_stage_name = mysql__select_value($mysqli, "select trm_Label from defTerms where trm_ID = {$new_value}");
+            $cur_user = $system->getCurrentUser()['ugr_FullName'];
+
+            $res['body'] = str_replace(['#stage#', '#user#'], [$new_stage_name, $cur_user], $rule['swf_EmailText']);
+
+            $res['body'] = mb_ereg_replace_callback('#(\d+)#', function($matches) use ($record, $mysqli){
+
+                $name = mysql__select_value($mysqli, "SELECT rst_DisplayName FROM defRecStructure WHERE rst_RecTypeID = ? AND rst_DetailTypeID = ?", ['ii', $record['RecTypeID'], $matches[1]]);
+                $type = mysql__select_value($mysqli, "SELECT dty_Type FROM defDetailTypes WHERE dty_ID = ?", ['i', $matches[1]]);
+
+                if(!array_key_exists($matches[1], $record['details']) || empty($record['details'][$matches[1]])){
+                    return "No {$name} values";
+                }
+
+                $replace = [];
+                $values = !is_array($record['details'][$matches[1]]) ? [$record['details'][$matches[1]]] : $record['details'][$matches[1]];
+
+                foreach($values as $value){
+
+                    switch($type){
+    
+                        case 'freetext':
+                        case 'blocktext':
+                        case 'float':
+                        case 'integer':
+                            $replace[] = $value;
+                            break;
+    
+                        case 'date':
+                            $replace[] = Temporal::toHumanReadable($value, true, 1);
+                            break;
+    
+                        case 'enum':
+                            $replace[] = mysql__select_value($mysqli, "SELECT trm_Label FROM defTerms WHERE trm_ID = ?", ['i', $value]);
+                            break;
+    
+                        case 'resource':
+                            $replace[] = mysql__select_value($mysqli, "SELECT rec_Title FROM Records WHERE rec_ID = ?", ['i', $value]);
+                            break;
+    
+                        case 'file':
+                            $file_details = mysql__select_row($mysqli, "SELECT ulf_OrigFileName, ulf_ExternalFileReference FROM recUploadedFiles WHERE ulf_ID = ?", ['i', $value]);
+                            $replace[] = strpos($file_details[0], '_') === 0 && !empty($file_details[1]) ? $file_details[1] : $file_details[0] ;
+                            break;
+    
+                        default:
+                            break;
                     }
                 }
 
-                //get email addresses for notification
+                return empty($replace) ? "No {$name} values" : implode(' | ', $replace);
 
-                if($rule['swf_SendEmail']!=null){
+            }, $res['body']);
+        }
 
-                    $query = 'SELECT ugr_eMail FROM sysUGrps '
-                    .'WHERE ugr_ID IN ('.$rule['swf_SendEmail'].')';
+    }else{
+        $res['new_value'] = 0; //not allowed
+    }
 
-                    $res['emails'] = mysql__select_list2($mysqli, $query);
-                }
-
-            }else{
-                $res['new_value'] = 0; //not allowed
-            }
-
+    if(!empty($res['emails'])){
+        $res['emails'] = array_filter(array_map(function($email){ return filter_var($email, FILTER_SANITIZE_EMAIL); }, $res['emails']));
+    }
 
     return $res;
 }

@@ -125,6 +125,33 @@
                         "rst_DisplayHelpText": "Users that are emailed about setting this stage",
                         "rst_FieldConfig": {"entity":"sysUsers","csv":true}
                     }
+                },
+                {
+                    "dtID": "swf_RecEmailField",
+                    "dtFields":{
+                        "dty_Type": "freetext",
+                        "rst_DisplayName": "Send to other emails:",
+                        "rst_DefaultValue": "1",
+                        "rst_DisplayHelpText": ""
+                    }
+                },
+                {
+                    "dtID": "swf_EmailList",
+                    "dtFields":{
+                        "dty_Type": "freetext",
+                        "rst_DisplayName": "Send to email in record:",
+                        "rst_DisplayWidth": 67,
+                        "rst_DisplayHelpText": "separate with commas"
+                    }
+                },
+                {
+                    "dtID": "swf_EmailText",
+                    "dtFields":{
+                        "dty_Type": "blocktext",
+                        "rst_DisplayName": "Email text:",
+                        "rst_DisplayWidth": 67,
+                        "rst_DisplayHelpText": "Email text to include, leave blank to use the default message"
+                    }
                 }
                 
      ]

@@ -615,6 +615,9 @@ CREATE TABLE sysWorkflowRules  (
   swf_SetOwnership smallint NULL default NULL COMMENT 'Workgroup to be set as the owner group, Null = No change, 0=everyone',
   swf_SetVisibility  varchar(255) default NULL COMMENT 'public=anyone, viewable=all logged in, hidden = private, hidden may be followed by comma separated list of ugr_ID that should be set to have view permission',
   swf_SendEmail  varchar(255) default NULL COMMENT 'Comma separated list of ugr_ID that will be emailed on stage change',
+  swf_EmailList varchar(255) default NULL COMMENT 'Comma separated list of extra email address that will be emailed on stage change',
+  swf_RecEmailField smallint NULL default NULL COMMET 'Field within the record structure that contains an email to also be emailed',
+  swf_EmailText varchar(255) default NULL COMMENT 'Email body text to be sent on stage change, allows field value substitutions',
 PRIMARY KEY  (swf_ID),
 UNIQUE KEY swf_StageKey (swf_RecTypeID, swf_Stage)
 ) ENGINE=InnoDB COMMENT='Describes the rules to be applied when the value of the Workflow stage field is changed to this value';
@@ -1031,7 +1034,7 @@ CREATE TABLE usrWorkingSubsets (
   sys_dbSubSubVersion,sys_eMailImapServer,sys_eMailImapPort,
   sys_eMailImapProtocol,sys_eMailImapUsername,sys_eMailImapPassword,
   sys_UGrpsdatabase,sys_OwnerGroupID,sys_ConstraintDefaultBehavior,sys_MediaFolders)
-  VALUES (1,0,1,3,17,NULL,NULL,NULL,NULL,NULL,NULL,1,'locktypetotype','uploaded_files');
+  VALUES (1,0,1,3,18,NULL,NULL,NULL,NULL,NULL,NULL,1,'locktypetotype','uploaded_files');
 
   -- Note: database sub version updated manually to '1' at 6pm 22/8/12
   -- 0 is everyone, 1 is the owning admins group, 2 is default dbAdmin user

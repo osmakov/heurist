@@ -5402,7 +5402,7 @@ $Db.rty(rectypeID, 'rty_Name') + ' is defined as a child of <b>'+names.join(', '
 
         btns[window.hWin.HR('Save change')] = function(){
 
-            fields[dtyID] = $dlg.find('.sel-current-stage').val();
+            fields[dtyID] = $dlg.find('.sel_current_stage').val();
             that._saveEditAndClose( fields, _callback );
 
             $dlg.dialog('close');

@@ -29,11 +29,11 @@
 use hserv\structure\ConceptCode;
 
 
-    function updateDatabseTo_v1_3_17($system, $dbname=null){
+    function updateDatabseTo_v1_3_18($system, $dbname=null){
 
         $mysqli = $system->getMysqli();
         
-        $currentSubSubVersion = 17;
+        $currentSubSubVersion = 18;
 
         if($dbname){
             mysql__usedatabase($mysqli, $dbname);
@@ -217,6 +217,15 @@ EXP
             list($is_added,$report[]) = alterTable($system, 'sysUGrps', 'ugr_Password', "ALTER TABLE `sysUGrps` ADD COLUMN `ugr_Password` varchar(255) NOT NULL COMMENT 'Encrypted password string'", true);
 
             $report[] = 'Upgraded to 1.3.17';
+       }
+
+       if($dbVerSubSub<18){
+
+            [$is_added, $report[]] = alterTable($system, 'sysWorkflowRules', 'swf_EmailList', "ALTER TABLE `sysWorkflowRules` ADD COLUMN `swf_EmailList` varchar(255) default NULL COMMENT 'Comma separated list of email addresses that will be emailed on stage change'", true);
+            [$is_added, $report[]] = alterTable($system, 'sysWorkflowRules', 'swf_RecEmailField', "ALTER TABLE `sysWorkflowRules` ADD COLUMN `swf_RecEmailField` smallint default NULL COMMENT 'Field within the record structure that contains an email to also be emailed'", true);
+            [$is_added, $report[]] = alterTable($system, 'sysWorkflowRules', 'swf_EmailText', "ALTER TABLE `sysWorkflowRules` ADD COLUMN `swf_EmailText` varchar(255) default NULL COMMENT 'Email body text to be sent on stage change, allows field value substitutions'", true);
+
+            $report[] = 'Upgraded to 1.3.18';
        }
        
        
