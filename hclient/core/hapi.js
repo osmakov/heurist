@@ -967,7 +967,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
 
                         } else {
                             console.log('ERROR: ',response);
-                            if(window.hWin.HEURIST4.util.isFunction(errorCallback)){ errorCallback(this, response); }
+                            if(window.hWin.HEURIST4.util.isFunction(errorCallback)){ errorCallback.call(this, response); }
                             else{ window.hWin.HEURIST4.msg.showMsgErr(response); }
                         }
                     }
