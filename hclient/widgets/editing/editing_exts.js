@@ -1784,6 +1784,7 @@ function browseTerms(_editing_input, $input, value){
         }
 
         $input.empty();
+        window.hWin.HEURIST4.ui.addoption($input[0], '', '&nbsp;');
         if(window.hWin.HEURIST4.util.isNumber(trm_ID) && trm_ID>0){
             
             let trm_Label = $Db.trm_getLabel(trm_ID, lang_code);
@@ -1802,7 +1803,6 @@ function browseTerms(_editing_input, $input, value){
             window.hWin.HEURIST4.ui.addoption($input[0], trm_ID, trm_Label);
             $input.css('min-width', '');
         }else{
-            window.hWin.HEURIST4.ui.addoption($input[0], '', '&nbsp;');
             $input.css('min-width', '230px');
             trm_ID = '';
         }
