@@ -50,44 +50,39 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
         exit;
     }
 
-    $action_filter = array();
+    $action_filter = [];
     $is_all_actions = false;
     $fileprefix = "interaction";
 
     switch ($_REQUEST['actionType']) {
         case 'recuse': // record use [Edit Record, View Record, Custom Report]
-            array_push($action_filter, 'editRec', 'viewRec', 'custRep');
+            $action_filter = ['rec', 'editRec', 'viewRec', 'custRep'];
             $filename = "record";
             break;
 
         case 'website': // end user visiting a CMS webpage/homepage
-            array_push($action_filter, 'VisitPage', 'cmsNew', 'cmsEdit');
+            $action_filter = ['VisitPage', 'cms'];
             $fileprefix = "website";
             break;
 
         case 'accounts': // account actions [Log in, Log off, Reset Password]
-            array_push($action_filter, 'Login', 'Logout', 'ResetPassword', 'profPrefs', 'profTags', 'profReminders', 'profUserinfo', 'profWorkgroups', 'profUsers', 'profImportUser');
+            $action_filter = ['Login', 'Logout', 'ResetPassword'];
             $fileprefix = "account";
             break;
 
         case 'database': // database actions
-            array_push($action_filter, 'dbBrowse', 'dbNew', 'dbClone',
-                'dbRename', 'dbRestore', 'dbProperties',
-                'dbRegister', 'dbClear', 'dbArchive', 'dbArchiveRepository',
-                'stRebuildTitles', 'stRebuildFields', 'profFiles');
+            $action_filter = ['db', 'st', 'configure'];
 
             $fileprefix = "database";
             break;
 
         case 'import':  // importing actions
-            array_push($action_filter, 'impDelimed', 'syncZotero', 'impKML', 'impRecords', 'impSt',
-                'impBaseFields', 'impRecordTypes', 'impVocabulary', 'impTerms', 'impTermTranslations', 'impExtMedia', 'impFileData');
-
+            $action_filter = ['imp', 'sync'];
             $fileprefix = "import";
             break;
 
         case 'export':  // exporting actions
-            array_push($action_filter, 'expCSV', 'expHML', 'expJSON', 'expRDF', 'expGeoJSON', 'expKML', 'expGEPHI', 'expIIIF', 'expXMLHuNI');
+            $action_filter = ['exp'];
             $fileprefix = "export";
             break;
 
@@ -140,7 +135,15 @@ if(@$_REQUEST['actionType']){ // filter and download interaction log as CSV file
         $line = rtrim($line, "\n");// remove trailing newlines, interaction log only uses \n
         $line_chunks = explode(',', $line);
 
-        if(count($line_chunks) < 3 || (!$is_all_actions && !in_array($line_chunks[1], $action_filter))){ // check for valid entry (userID, action, timestamp) and apply action filter
+        $allowed_action = false;
+        foreach($action_filter as $action){
+            if(strpos($action, $line_chunks[1]) === 0){
+                $allowed_action = true;
+                break;
+            }
+        }
+
+        if(count($line_chunks) < 3 || (!$is_all_actions && !$allowed_action)){ // check for valid entry (userID, action, timestamp) and apply action filter
             continue;
         }elseif(count($line_chunks) >= 4 && strpos($line_chunks[3], 'recs') !== false){ // contains a listing of rec ids + rec count, re-make indexes
             $part_chunks = explode(' ', $line_chunks[3]);// [0] => count, [1] => 'recs:', [2] => rec id
