@@ -84,6 +84,10 @@ protected function _outputPrepareFields($params){
         $need_rec_type = false;
 
         //for datatable convert  $params['columns'] to array
+            if(array_key_exists('columns', $params) && is_string($params['columns'])){
+                $params['columns'] = json_decode($params['columns'], true);
+            }
+            
 
         /*
 0: ["rec_ID","rec_Title"],
@@ -95,8 +99,12 @@ protected function _outputPrepareFields($params){
         $this->retrieve_header_fields = array();//header fields
         $retrieve_relmarker_fields = array();
 
-        if(is_array($params['columns'])){
+        if(array_key_exists('columns', $params) && is_array($params['columns'])){
             foreach($params['columns'] as $idx=>$column){
+                
+                if(!array_key_exists('data', $column)){
+                    continue;
+                }
                 $col_name = $column['data'];
 
                 if(strpos($col_name,'.')>0){

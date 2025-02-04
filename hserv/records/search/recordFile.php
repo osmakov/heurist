@@ -326,6 +326,10 @@ function fileGetFullInfo($system, $file_ids, $all_fields=false){
 * @param mixed $recIDs
 */
 function fileGetThumbnailURL($system, $recID, $get_bgcolor, $check_linked_media = false){
+    
+    if(!isPositiveInt($recID)){
+        return null;
+    }
 
     $thumb_url = null;
     $bg_color = null;

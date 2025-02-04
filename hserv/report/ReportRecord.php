@@ -157,25 +157,53 @@ class ReportRecord
      * @param mixed|null $smarty_obj Unused Smarty object reference.
      * @return array|null The record information formatted for Smarty.
      */
-    public function getRecord($rec, $smarty_obj = null)
+    public function getRecord($rec, $details=true, $smarty_obj = null)
     {
         $rec_ID = is_array($rec) && $rec['recID'] ? $rec['recID'] : $rec;
 
-        if (@$this->recordsCache[$rec_ID]) {
+        if ($details===true && @$this->recordsCache[$rec_ID]) {
             return $this->recordsCache[$rec_ID];
         }
 
-        $rec = recordSearchByID($this->system, $rec_ID);
-        if ($rec) {
+        $rec = recordSearchByID($this->system, $rec_ID, $details);
+        if ($details===true && $rec) {
             $rec['rec_Tags'] = recordSearchPersonalTags($this->system, $rec_ID);
             if (is_array($rec['rec_Tags'])) {
                 $rec['rec_Tags'] = implode(',', $rec['rec_Tags']);
             }
             $rec['rec_IsVisible'] = $this->recordIsVisible($rec);
         }
+        
+        //converts to array suitable for smarty  r.title, r.fNNN
+        $record = $this->getRecordForSmarty($rec);
+        if($record){
+            $this->recordsCache[$recordID] = $record;
+        }
+        return $record;
 
-        return $this->getRecordForSmarty($rec);
     }
+    
+    
+    /**
+    * Returns default thumbnail for given record
+    * 
+    * @param mixed $rec
+    * @param mixed $smarty_obj
+    */
+    public function getRecordThumbnail($rec, $smarty_obj = null){
+        
+        $rec_ID = is_array($rec) && $rec['recID'] ? $rec['recID'] : $rec;
+        
+        $file_details = fileGetThumbnailURL($this->system, $rec_ID, false);
+        
+        if(!empty($file_details) && !empty($file_details['url'])){
+                return $file_details['url'];
+        }
+
+        return null;
+    }
+            
+            
 
     /**
      * Returns whether a record is visible to the current user.
@@ -347,7 +375,6 @@ class ReportRecord
             $this->recordsCache = array(); // Reset cache if too many records are loaded
         }
 
-        $this->recordsCache[$recordID] = $record;
         return $record;
     }
 

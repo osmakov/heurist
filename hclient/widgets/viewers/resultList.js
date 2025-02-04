@@ -1902,7 +1902,7 @@ $.widget( "heurist.resultList", {
     },
 
     //
-    //
+    // assign tooltip (title) for recordDiv
     //
     _recordDivOnHover: function(event){
         

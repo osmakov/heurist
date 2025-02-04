@@ -32,8 +32,8 @@
     *
     * prefs for json,xml
     *           zip  : 0|1  compress
-    *           file : 0|1  output as file or ptintout
-    *           defs : 0|1  include database definitions
+    *           file : 0|1  output as file or printout (force download in browser)
+    *           defs : 0|1  include database definitions - NOT USED
     *           restapi: 0|1  not include db description and heurist header
     *
     * prefs for geojson, json
