@@ -403,7 +403,7 @@
 #Delete Records#
 #Record type not defined or wrong#
 #Error_Title#Heurist
-#Error_Empty_Message#No error message was supplied, please report to Heurist developers.
+#Error_Empty_Message#No error message was supplied, please report to Heurist developers. <br><br>If this happens after a long period of inactivity try realoading the page.
 #Error_Report_Code#Report this code to Heurist team
 #Error_Report_Team#If this error occurs repeatedly, please contact your system administrator (#sysadmin_email#) or email us (support at HeuristNetwork dot org) and describe the circumstances under which it occurs so that we/they can find a solution
 #Error_Wrong_Request#The value, number and/or set of request parameters is not valid.
@@ -461,7 +461,7 @@
 #Error_Mail_Registration#Your registration info is added to database. However, it is not possible to approve it since registration email cannot be sent.
 #Error_Mail_Approvement#Cannot send registration approval email - please contact Heurist developers.
 #Error_Server_Side#The server responded with a status of 500 (Internal Server Error).<br><br>This may be due to uncought exception in server side code. If the problem persists, please email a bug report to the Heurist team so we can investigate.
-#Error_Connection_Reset#Timeout on response from Heurist server.<br><br>This may be due to an internet outage (the most common source), or due to server load or to requesting too large a result set, or a query that fails to resolve. If the problem persists, please email a bug report to the Heurist team so we can investigate.
+#Error_Connection_Reset#Timeout on response from Heurist server.<br><br><b>This will occur after a period of inactivity : reload the page to continue</b><br><br>This may be due to an internet outage (the most common source), or due to server load or to requesting too large a result set, or a query that fails to resolve. If the problem persists, please email a bug report to the Heurist team so we can investigate.
 #New_Function_Conversion#This function has not yet been converted from Heurist version 4 to version 5 (2018). 
 #New_Function_Contact_Team#If you need this function please send an email to heuristnetwork dot org or click on the Bug report/feature request entry in the Help menu - we may already have an alpha version that you can use or can prioritise development.
 #mailto_fail#You have not set an email handler for mailto: links. <br>Please set this in your  browser (it is normally in the content settings under Privacy).
