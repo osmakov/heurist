@@ -5,7 +5,9 @@ use hserv\System;
 use hserv\entity\DbRecUploadedFiles;
 
     /**
-    * db access to usrUGrps table for users
+    * Function specific to the Heurist_Job_Tracker database on HeuristRef.net
+    *  Queries user for issue details and populates a Type 56 (concept ID 8-23) 
+    *  Task (Features, Bug, Issue) record in the database
     *
     *
     * @package     Heurist academic knowledge management system
@@ -23,6 +25,7 @@ use hserv\entity\DbRecUploadedFiles;
     * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
     * See the License for the specific language governing permissions and limitations under the License.
     */
+    
 require_once dirname(__FILE__).'/../records/search/recordFile.php';
 
 define('DT_FILE','type:2-38');
@@ -33,9 +36,12 @@ class DbSysBugreport extends DbEntityBase
     private $performLogout = false; // perform logout after completing the required action
 
     private $reportEmail = <<<EMAIL
-    Your bug report has been successfully added to the Heurist Job tracker database.<br>
-    You can view your report at: <a href="__LINK__">__LINK__</a><br>
-    See current and resolved issues list: <a href="https://heuristref.net/Heurist_Job_Tracker/web/64/1526">https://heuristref.net/Heurist_Job_Tracker</a><br><br>
+    Your bug report has been successfully added to the Heurist Job tracker database.<br> <br>
+    
+    You can view your report at: <a href="__LINK__">__LINK__</a><br><br>
+    
+    For current and resolved issues list see: <a href="https://heuristref.net/Heurist_Job_Tracker/web/64/1526">https://heuristref.net/Heurist_Job_Tracker</a><br><br>
+    <br>
     Reporter: __NAME__ [__EMAIL__]<br>
     Database: __DBLINK__<br>
     Bug description:<br>__DESC__
@@ -184,34 +190,35 @@ class DbSysBugreport extends DbEntityBase
         $type_term = [];
         $arr_types = explode(',', $types);
 
+        // Sets labels for (internal) term codes in the Heurist_Job_Tracker database
         foreach($arr_types as $type){
             switch($type){
                 case 'Suggestion / feature request':
-                    $type_term[] = 6983;
+                    $type_term[] = 6983;  // term = 09 New feature
                     break;
 
-                case 'Minor annoyance':
-                    $type_term[] = 6987;
+                case 'Minor annoyance, workflow or cosmetic issue':
+                    $type_term[] = 6981;  // term = 06 Workflow
                     break;
 
-                case 'Major annoyance':
-                    $type_term[] = 6980;
+                case 'Major annoyance / unexpected behaviour':
+                    $type_term[] = 6980;  // term = 05 Unexpected
                     break;
 
                 case 'Minor bug':
-                    $type_term[] = 6978;
+                    $type_term[] = 6982;  // term = 07 Minor bug
                     break;
 
                 case 'Significant bug':
-                    $type_term[] = 6977;
+                    $type_term[] = 6977;  // term = 02 Severe
                     break;
 
-                case 'Urgent bug':
-                    $type_term[] = 6976;
+                case 'Urgent / severe bug':
+                    $type_term[] = 6976;  // term = 01 Fatal
                     break;
 
                 default:
-                    $type_term[] = 6986;
+                    $type_term[] = 6986;   // term = ? (unassinged)
                     break;
             }
         }
