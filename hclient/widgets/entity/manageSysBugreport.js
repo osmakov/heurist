@@ -6,7 +6,7 @@
 * @copyright   (C) 2005-2023 University of Sydney
 * @author      Artem Osmakov   <osmakov@gmail.com>
 * @license     https://www.gnu.org/licenses/gpl-3.0.txt GNU License 3.0
-* @version     4.0
+* @version     6.6.5
 */
 
 /*  
@@ -20,6 +20,7 @@
 //
 // there is no search, select mode for bug report - only add and send by email
 //
+
 $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
    
     _entityName:'sysBugreport',
@@ -121,6 +122,7 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
     },
     
 //---------------------------------------------------------------------------------- 
+
     _afterSaveEventHandler: function(message){
         window.hWin.HEURIST4.msg.showMsgDlg(message, null, {title: 'Bug report sent'}, {default_palette_class: 'ui-heurist-admin'});
         this.closeDialog(true); //force to avoid warning
@@ -155,12 +157,13 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
 
                 let $input = $ele.find('input');
 
-                let report_types = '<label><input type="checkbox" name="report_types" value="Suggestion / feature request" checked="checked">Suggestion / feature request</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Minor annoyance">Minor annoyance</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Major annoyance">Major annoyance</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Minor bug">Minor bug</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Significant bug">Significant bug</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Urgent bug">Urgent bug</label>';
+                let report_types = '<label><input type="checkbox" name="report_types" value="Suggestion or feature request">Suggestion or feature request</label>'
+                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Minor annoyance">Minor annoyance, workflow or cosmetic issue</label>'
+                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Major annoyance">Major annoyance or unexpected behaviour</label>'
+                                 + <br>
+                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Minor bug">Minor bug or small glitch</label>'
+                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Significant bug">Significant bug or problematic behaviour</label>'
+                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Urgent bug">Urgent and/or severe bug</label>';
 
                 let $types = $('<div>', {
                     html: report_types,

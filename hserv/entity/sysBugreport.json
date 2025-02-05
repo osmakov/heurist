@@ -5,16 +5,6 @@
 
     "fields": [
         {
-            "dtID": "2-2",
-            "dtFields":{
-                "dty_Type":"freetext",
-                "dty_Size":60,
-                "rst_DisplayWidth":0,
-                "rst_DisplayName": "Feedback type",
-                "rst_DisplayHelpText": ""
-            }
-        },
-        {
             "dtID": "2-1",
             "dtFields":{
                 "dty_Type":"freetext",
@@ -26,16 +16,37 @@
             }
         },
         {
+            "dtID": "2-2",
+            "dtFields":{
+                "dty_Type":"freetext",
+                "dty_Size":60,
+                "rst_DisplayWidth":0,
+                "rst_DisplayName": "Feedback type",
+                "rst_DisplayHelpText": ""
+            }
+        },
+        {
             "dtID": "2-3",
             "dtFields":{
                 "dty_Type":"blocktext",
                 "rst_DisplayWidth":70,
                 "rst_DisplayHeight":14,
                 "rst_DisplayName": "Full description",
-                "rst_DisplayHelpText": "Please give a detailed description of the bug or feature request.<br>A couple of sentences is recommended here.",
+                "rst_DisplayHelpText": "Please give a detailed description of the bug or feature request, including steps to reproduce.<br>Please be comprehensive in your description.",
                 "rst_RequirementType":"required"
             },
             "force_displayheight": 14
+        },
+        {
+            "dtID": "2-38",
+            "dtFields":{
+                "dty_Type":"file",
+                "rst_DisplayName":"Screenshot",
+                "rst_DisplayHelpText": "Upload a screen capture or document showing the bug or describing the feature in more detail", 
+                "rst_FieldConfig":{"entity":"sysBugreport", "accept":".png,.jpg,.gif", "size":1200},
+                "dty_Role":"virtual",
+                "rst_MaxValues":0
+            }
         },
         {
             "dtID": "3-1058",
@@ -44,29 +55,7 @@
                 "dty_Size":2046,
                 "rst_DisplayWidth":70,
                 "rst_DisplayName": "URL",
-                "rst_DisplayHelpText": "Please copy the URL that you were using when you encountered the problem"
-            }
-        },
-        {
-            "dtID": "2-4",
-            "dtFields":{
-                "dty_Type":"blocktext",
-                "rst_DisplayWidth":70,
-                "rst_DisplayHeight":7,
-                "rst_DisplayName": "Steps to reproduce<br>(for bugs/annoyances)",
-                "rst_DisplayHelpText": "Describe in detail what actions led up to the bug, or how you would get to the feature"
-            },
-            "force_displayheight": 7
-        },
-        {
-            "dtID": "2-38",
-            "dtFields":{
-                "dty_Type":"file",
-                "rst_DisplayName":"Screenshot",
-                "rst_DisplayHelpText": "Upload a screen capture or document showing the bug or describing the feature in more detail (optional)", 
-                "rst_FieldConfig":{"entity":"sysBugreport", "accept":".png,.jpg,.gif", "size":1200},
-                "dty_Role":"virtual",
-                "rst_MaxValues":0
+                "rst_DisplayHelpText": "Please copy and paste the URL that you were using when you encountered the problem"
             }
         }
     ]

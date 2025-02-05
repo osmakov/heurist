@@ -15,7 +15,7 @@ use hserv\entity\DbRecUploadedFiles;
     * @copyright   (C) 2005-2023 University of Sydney
     * @author      Artem Osmakov   <osmakov@gmail.com>
     * @license     https://www.gnu.org/licenses/gpl-3.0.txt GNU License 3.0
-    * @version     4.0
+    * @version     6.6.5
     */
 
     /*
@@ -190,30 +190,30 @@ class DbSysBugreport extends DbEntityBase
         $type_term = [];
         $arr_types = explode(',', $types);
 
-        // Sets labels for (internal) term codes in the Heurist_Job_Tracker database
+        // Sets form return values associated with (internal) term codes in the Heurist_Job_Tracker database
         foreach($arr_types as $type){
             switch($type){
                 case 'Suggestion / feature request':
                     $type_term[] = 6983;  // term = 09 New feature
                     break;
 
-                case 'Minor annoyance, workflow or cosmetic issue':
-                    $type_term[] = 6981;  // term = 06 Workflow
+                case 'Minor annoyance':
+                    $type_term[] = 6981;  // term = 06 Workflow or minor annoyance
                     break;
 
-                case 'Major annoyance / unexpected behaviour':
-                    $type_term[] = 6980;  // term = 05 Unexpected
+                case 'Major annoyance':
+                    $type_term[] = 6980;  // term = 05 Unexpected behaviour or major annoyance
                     break;
 
                 case 'Minor bug':
-                    $type_term[] = 6982;  // term = 07 Minor bug
+                    $type_term[] = 6982;  // term = 07 Minor bug or cosmetic issue
                     break;
 
                 case 'Significant bug':
                     $type_term[] = 6977;  // term = 02 Severe
                     break;
-
-                case 'Urgent / severe bug':
+                              
+                case 'Urgent bug':
                     $type_term[] = 6976;  // term = 01 Fatal
                     break;
 
