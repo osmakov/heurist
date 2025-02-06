@@ -362,20 +362,20 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
                         if(!window.hWin.RefreshCacheInterval){
                             window.hWin.RefreshCacheInterval = setInterval(function(){window.hWin.HAPI4.EntityMgr.relevanceEntityData(null, (response) => {
 
-                                if(response.message === 'Error_Connection_Reset' && window.hWin.HEURIST4.util.isFunction(window.hWin.HR)){
-                                    // Add message about refreshing the page
+                                let show_login = response.message === 'Error_Connection_Reset';
 
-                                    let additional_msg = '<br><br><strong>This will occur after a period of inactivity : reload the page to continue</strong><br><br>';
+                                window.hWin.HEURIST4.msg.showMsgErr(response, false, {
+                                    close: () => {
+                                        if(show_login){                                            
+                                            window.hWin.HEURIST4.ui.checkAndLogin(true, (is_logged_in) => {
+                                                if(!is_logged_in){
+                                                    clearInterval(window.hWin.RefreshCacheInterval);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
 
-                                    let msg = window.hWin.HR('Error_Connection_Reset');
-                                    msg.replace('<br><br>', additional_msg);
-
-                                    response.message = msg;
-                                    response.error_title = 'Inactivity warning or timeout';
-                                }
-
-                                window.hWin.HEURIST4.msg.showMsgErr(response);
-                                clearInterval(window.hWin.RefreshCacheInterval);
                             })}, 600000);
                         }
 
