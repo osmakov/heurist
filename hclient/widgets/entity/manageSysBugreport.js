@@ -29,15 +29,17 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
     _keepRequest:null,
 
     _checkDescription: true, // check if bug description is over 20 characters long
-    
+
+    _program_area: null,
+
     _init: function() {
         
         this.options.title = 'Heurist feedback';
         this.options.edit_mode = 'editonly';
         this.options.select_mode = 'manager';
         this.options.layout_mode = 'editonly';
-        this.options.width = 750;
-        this.options.height = 912;
+        this.options.width = 900;
+        this.options.height = 932;
 
         this._super();
     },
@@ -83,9 +85,8 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
         }
 
         // Check for a usable description (a min of 20 words) or the inclusion of steps to reproduce
-        let desc = res['2-3'];
-        let steps = res['2-4'];
-        if(this._checkDescription && desc.split(' ').length < 20 && window.hWin.HEURIST4.util.isempty(steps)){
+        let desc = res['bug_Description'];
+        if(this._checkDescription && desc.split(' ').length < 20){
 
             let $dlg;
             let msg = 'In order for bugs to be found and fixed as quickly as possible, the team requires as many details about the issue you are encountering.<br>'
@@ -109,12 +110,12 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
             return null;
         }
 
-        res['2-38'] = [];
-        let $img_div = this._editing.getFieldByName('2-38');
+        res['bug_Image'] = [];
+        let $img_div = this._editing.getFieldByName('bug_Image');
         $img_div.find('img').each((idx, img) => {
             let matches = img.src.match(/(~\d*)\.png/);
             if(matches?.length == 2){
-                res['2-38'].push(matches[1]);
+                res['bug_Image'].push(matches[1]);
             }
         });
 
@@ -122,7 +123,6 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
     },
     
 //---------------------------------------------------------------------------------- 
-
     _afterSaveEventHandler: function(message){
         window.hWin.HEURIST4.msg.showMsgDlg(message, null, {title: 'Bug report sent'}, {default_palette_class: 'ui-heurist-admin'});
         this.closeDialog(true); //force to avoid warning
@@ -135,12 +135,11 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
         //find file uploader and make entire dialogue as a paste zone - to catch Ctrl+V globally
         let ele = this._as_dialog.find('input[type=file]');
         if(ele.length>0){
-            ele.fileupload('option','pasteZone',this._as_dialog);
+            ele.fileupload('option', 'pasteZone', this._as_dialog);
         }
 
-        // Add default values to report type and url
-        this._editing.getFieldByName('2-2', 'Suggestion / feature request', false);
-        this._editing.getFieldByName('3-1058', location.href, false);
+        // Add default values to url
+        this._editing.setFieldValueByName('bug_URL', location.href, false);
 
 		// Add spacing between fields, and give textarea's larger height
         let eles = this._editing.getAllFields();
@@ -149,69 +148,190 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
 
             let $ele = $(eles[i]);
 
-            if($ele.find('textarea').length != 0 || $ele.find('.fileupload').length != 0){
+            if($ele.find('textarea,input.text,.fileupload').length != 0){
                 $ele.css({'padding-top': '10px', 'display': 'block'});
-            }else if($ele.attr('data-dtid') == '2-2'){
+            }else if($ele.attr('data-dtid') == 'bug_Type'){
+                $ele.find('.header').hide();
 
-                $ele.hide();
+            }
+            
+            if(help === ''){
 
-                let $input = $ele.find('input');
+                let padding = `padding: 0px 15px 20px;`;
+                help = 'We value your feedback and do our best to fix bugs rapidly and to incorporate your suggestions into our development process.<br>'
+                     + 'Please don\'t hesitate to let us know about anything which annoys you or which you feel could be improved.<br><br>'
+                     + 'We pop this form up monthly to encourage your feedback. It is accessible at any time through Help > Feedback / bug report.<br>'
+                     + 'You can also paste an image which will be added to the screenshots.';
 
-                let report_types = '<label><input type="checkbox" name="report_types" value="Suggestion or feature request">Suggestion or feature request</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Minor annoyance">Minor annoyance, workflow or cosmetic issue</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Major annoyance">Major annoyance or unexpected behaviour</label>'
-                                 + <br>
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Minor bug">Minor bug or small glitch</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Significant bug">Significant bug or problematic behaviour</label>'
-                                 + '<label style="margin-left: 5px"><input type="checkbox" name="report_types" value="Urgent bug">Urgent and/or severe bug</label>';
-
-                let $types = $('<div>', {
-                    html: report_types,
-                    style: 'font-weight: bold;display: block;text-align: center;margin-bottom: 15px;',
-                    id: 'report_types_sel'
-                }).insertBefore($ele);
-
-                this._on($types, {
-                    change: function(event){
-
-                        let val = $(event.target).val();
-                        let cur_val = $input.val();
-                        let remove = !$(event.target).is(':checked');
-
-                        if(remove && cur_val.indexOf(val) === -1){
-                            return;
-                        }
-                        if(!remove){
-                            cur_val = cur_val == '' ? val : `${cur_val}, ${val}`;
-                        }else{
-                            cur_val = cur_val.split(', ');
-                            let idx = cur_val.indexOf(val);
-                            cur_val.splice(idx, 1);
-                            cur_val = cur_val.join(', ');
-                        }
-
-                        $input.val(cur_val).trigger('change');
-                    }
-                });
-            }else{
-
-                let $before = help === '' ? this._as_dialog.find('#report_types_sel') : $ele;
-                let padding = `padding: ${help === '' ? '0px' : '10px'} 15px 20px;`;
-                if(help === ''){
-                    help = 'We value your feedback and do our best to fix bugs rapidly and to incorporate your suggestions into our development process.<br>'
-                         + 'Please don\'t hesitate to let us know about anything which annoys you or which you feel could be improved.<br><br>'
-                         + 'We pop this form up monthly to encourage your feedback. It is accessible at any time through Help > Feedback / bug report.';
-                }else{
-                    help = 'It is very helpful if you can provide a screen capture for annoyances and bug reports,<br>'
-                         + 'or an annotated screen capture or drawing for feature requests.';
-                }
                 // add extra info at top
 				$('<div>', {
                     html: help,
                     style: `${padding} display: block;font-size: 12px;`
-                }).insertBefore($before);
+                }).insertBefore($ele);
             }
         }
-    },    
+
+        ele = this._editing.getFieldByName('bug_Image');
+        let padding = `padding: 10px 15px 20px;`;
+        $('<div>', {
+            html: 'It is very helpful if you can provide a screen capture for annoyances and bug reports,<br>'
+                + 'or an annotated screen capture or drawing for feature requests.',
+            style: `${padding} display: block;font-size: 12px;`
+        }).insertBefore($(ele));
+
+        this._formatBugTypeField();
+        this._formatBugImageField();
+
+        this._setupProgramArea();
+    },
+
+    _setupProgramArea: function(){
+
+        let ele = this._editing.getFieldByName('bug_Location');
+        let $input = ele.find('input');
+
+        if(this._program_area === null){
+
+            let request = {
+                terms: '6988',
+                mode: 2,
+                remote: `${window.hWin.HAPI4.sysinfo.referenceServerURL}?db=Heurist_Job_Tracker`
+            };
+
+            window.hWin.HAPI4.SystemMgr.get_defs(request, (response) => {
+
+                if(response.status != window.hWin.ResponseStatus.OK){
+
+                    window.hWin.HEURIST4.msg.showMsgErr(response);
+
+                    this._program_area = false;
+
+                    $input.val('7105');
+                    ele.hide();
+
+                    return;
+                }
+
+                this._bugDBTerms = response.data.terms;
+                this._program_area = [{key: '', title: 'Please select...'}];
+
+                this._processProgramArea(6988);
+                this._setupProgramArea();
+            });
+
+            return;
+        }
+
+        let $select = $('<select>').insertAfter($input);
+
+        window.hWin.HEURIST4.ui.createSelector($select[0], this._program_area);
+        window.hWin.HEURIST4.ui.initHSelect($select, false, null, {
+            onSelectMenu: (e) => {
+                $input.val($select.val()).trigger('change');
+            }
+        });
+
+        $input.hide();
+    },
+
+    _processProgramArea: function(parent_term_id, depth = 0){
+
+        let that = this;
+        let trm_Label_idx = this._bugDBTerms.fieldNamesToIndex.trm_Label;
+        let trm_Order_idx = this._bugDBTerms.fieldNamesToIndex.trm_OrderInBranch;
+
+        function sortProgramArea(a, b){
+
+            let a_name = that._bugDBTerms.termsByDomainLookup.enum[a][trm_Label_idx].toLocaleUpperCase();
+            let b_name = that._bugDBTerms.termsByDomainLookup.enum[b][trm_Label_idx].toLocaleUpperCase();
+            let a_order = parseInt(that._bugDBTerms.termsByDomainLookup.enum[a][trm_Order_idx], 10);
+            let b_order = parseInt(that._bugDBTerms.termsByDomainLookup.enum[b][trm_Order_idx], 10);
+    
+            a_order = (!a_order || a_order < 1 || isNaN(a_order)) ? null : a_order;
+            b_order = (!b_order || b_order < 1 || isNaN(b_order)) ? null : b_order;
+    
+            if(a_order == null && b_order == null){ // alphabetic
+                return a_name.localeCompare(b_name);
+            }else if(a_order == null || b_order == null){ // null is first
+                return a_order == null;
+            }else{ // branch order
+                return (a_order - b_order);
+            }
+        }
+
+        let terms = this._bugDBTerms.trm_Links[parent_term_id];
+
+        terms.sort(sortProgramArea);
+
+        for(let trm_ID of terms){
+
+            let term = this._bugDBTerms.termsByDomainLookup.enum[trm_ID];
+
+            this._program_area.push({key: trm_ID, title: term[trm_Label_idx], depth: depth});
+
+            if(window.hWin.HEURIST4.util.isArrayNotEmpty(this._bugDBTerms.trm_Links[trm_ID])){
+                this._processProgramArea(trm_ID, depth + 1);
+            }
+        }
+    },
+
+    _formatBugTypeField: function(){
+
+        // Format widths
+        let ele = this._editing.getFieldByName('bug_Type');
+        $.each(ele.find('label.enum_input'), (idx, label) => {
+
+            label = $(label);
+            let width = idx % 3 === 0 ? '17' : '25';
+            width = idx % 3 === 2 ? '23' : width;
+
+            label.css({
+                width: `${width}em`,
+                'min-width': `${width}em`,
+                'max-width': '',
+                'margin-right': ''
+            });
+        });
+
+        // Bold values
+        ele.find('.input-div').css('font-weight', 'bold');
+
+        // Hide field name
+        ele.find('.header').hide();
+    },
+
+    _formatBugImageField: function(){
+
+        let ele = this._editing.getFieldByName('bug_Image');
+
+        if(!ele){
+            return;
+        }
+
+        ele.find('.input-div').css({
+            display: 'inline-block',
+            'padding-right': '30px'
+        });
+
+        ele.find('.btn_input_move').remove();
+    },
+
+    onEditFormChange: function(changed_element){
+
+        this._super(changed_element);
+
+        if(changed_element?.enum_buttons !== null){
+            this._formatBugTypeField();
+        }else if(changed_element?.detailType === 'file'){
+            this._formatBugImageField();
+        }
+    },
+
+    onEditFormNewInput: function(added_element){
+
+        if(added_element?.detailType === 'file'){
+            this._formatBugImageField();
+        }
+    }
     
 });

@@ -5,28 +5,47 @@
 
     "fields": [
         {
-            "dtID": "2-1",
+            "dtID": "bug_Title",
             "dtFields":{
                 "dty_Type":"freetext",
-                "dty_Size":80,
+                "dty_Size":120,
                 "rst_DisplayWidth":70,
                 "rst_DisplayName": "Concise summary",
-                "rst_DisplayHelpText": "Please give a concise but descriptive title for the bug or feature request.<br><strong><em>Limit of 80 characters</em></strong>",
+                "rst_DisplayHelpText": "Please give a concise but descriptive title for the bug or feature request.<br><strong><em>Limit of 120 characters</em></strong>",
                 "rst_RequirementType":"required"
             }
         },
         {
-            "dtID": "2-2",
+            "dtID": "bug_Type",
             "dtFields":{
-                "dty_Type":"freetext",
-                "dty_Size":60,
-                "rst_DisplayWidth":0,
+                "dty_Type":"enum",
                 "rst_DisplayName": "Feedback type",
-                "rst_DisplayHelpText": ""
+                "rst_DisplayHelpText": "",
+                "rst_MaxValues": 0,
+                "rst_TermsAsButtons": 1,
+                "rst_RequirementType":"required",
+                "rst_FieldConfig": [
+                    {"key": "6983", "title": "Suggestion or feature request"},
+                    {"key": "6981", "title": "Minor annoyance, workflow or cosmetic issue"},
+                    {"key": "6980", "title": "Major annoyance or unexpected behaviour"},
+                    {"key": "6982", "title": "Minor bug or small glitch"},
+                    {"key": "6977", "title": "Significant bug or problematic behaviour"},
+                    {"key": "6976", "title": "Urgent and/or severe bug"}
+                ]
             }
         },
         {
-            "dtID": "2-3",
+            "dtID": "bug_Location",
+            "dtFields":{
+                "dty_Type": "freetext",
+                "rst_DisplayName": "Program area",
+                "rst_DisplayHelpText": "Where did the bug occurr",
+                "rst_MaxValues": 1,
+                "rst_RequirementType": "required"
+            }
+        },
+        {
+            "dtID": "bug_Description",
             "dtFields":{
                 "dty_Type":"blocktext",
                 "rst_DisplayWidth":70,
@@ -38,7 +57,7 @@
             "force_displayheight": 14
         },
         {
-            "dtID": "2-38",
+            "dtID": "bug_Image",
             "dtFields":{
                 "dty_Type":"file",
                 "rst_DisplayName":"Screenshot",
@@ -49,7 +68,7 @@
             }
         },
         {
-            "dtID": "3-1058",
+            "dtID": "bug_URL",
             "dtFields":{
                 "dty_Type":"freetext",
                 "dty_Size":2046,

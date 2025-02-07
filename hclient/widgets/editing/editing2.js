@@ -30,7 +30,8 @@ function HEditing(_options) {
          onChangeCallBack=null,
          entityConfig = null,
          options = {},
-         _editStructureMode = false;
+         _editStructureMode = false,
+         onNewInputCallBack=null;
 
     /**
     * Initialization
@@ -67,6 +68,7 @@ function HEditing(_options) {
         }
         
         onChangeCallBack = _options.onchange;
+        onNewInputCallBack = _options.onrecreate;
         
         if(!_options.className && $container.parents('.editor').length>0) {
                 _options.className = '';
@@ -488,6 +490,7 @@ function HEditing(_options) {
                         fields[idx].recordset = recdata;
                         fields[idx].editing = that;
                         fields[idx].change = _onChange;
+                        fields[idx].onrecreate = onNewInputCallBack;
                         fields[idx].is_insert_mode = _is_insert;
                         
                         

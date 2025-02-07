@@ -178,7 +178,7 @@ if($response!=null){
         $options = array(
                 'upload_dir' => $entityDir,
                 'upload_url' => $system->getSysUrl(DIR_ENTITY.$entity_name),
-                'unique_filename' => false,
+                'unique_filename' => $entity_name === 'sysBugreport',
                 'newfilename' => $temp_file_name,
                 'correct_image_extensions' => true,
                 'image_versions' => array(

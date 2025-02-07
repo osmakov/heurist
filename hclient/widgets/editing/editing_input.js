@@ -1767,8 +1767,6 @@ $.widget( "heurist.editing_input", {
                 if (!(window.hWin.HEURIST4.util.isempty(allTerms) && 
                     this.options.dtID==window.hWin.HAPI4.sysinfo['dbconst']['DT_RELATION_TYPE'])) {
 
-                    let isVocabulary = !isNaN(Number(allTerms)); 
-
                     let $btn_termsel = $( '<span>', {title: 'Select Term By Picture'})
                     .addClass('smallicon ui-icon ui-icon-image show-onhover')
                     .css({
@@ -1782,7 +1780,7 @@ $.widget( "heurist.editing_input", {
                         
                         const vocab_id = that.f('rst_FilteredJsonTermIDTree');    
                         that.child_terms = $Db.trm_TreeData(vocab_id, 'set');
-                        
+
                         that._checkTermsWithImages(); //show hide $btn_termsel
                     }else if(that._enumsHasImages){
                         $btn_termsel.show();
@@ -1794,30 +1792,29 @@ $.widget( "heurist.editing_input", {
                         
                         if(this.is_disabled || !(vocab_id>0)) return;
 
-                            let selectmode = that.enum_buttons == 'checkbox' ? 'select_multi' : 'select_single';
-                            let dlg_title = 'Term selection for ' + that.f('rst_DisplayName');
+                        let selectmode = that.enum_buttons == 'checkbox' ? 'select_multi' : 'select_single';
+                        let dlg_title = 'Term selection for ' + that.f('rst_DisplayName');
 
-                            window.hWin.HEURIST4.ui.showEntityDialog('defTerms', {
-                                empty_remark: 'No terms available',
-                                title: dlg_title,
-                                hide_searchForm: true,
-                                select_mode: selectmode, 
-                                view_mode: 'icons',
-                                initial_filter: vocab_id,
-                                default_palette_class: 'ui-heurist-populate',
-                                onselect:function(event, data){
-                                    if(data && data.selection && data.selection.length > 0){
+                        window.hWin.HEURIST4.ui.showEntityDialog('defTerms', {
+                            empty_remark: 'No terms available',
+                            title: dlg_title,
+                            hide_searchForm: true,
+                            select_mode: selectmode, 
+                            view_mode: 'icons',
+                            initial_filter: vocab_id,
+                            default_palette_class: 'ui-heurist-populate',
+                            onselect:function(event, data){
+                                if(data && data.selection && data.selection.length > 0){
 
-                                        if(selectmode == 'select_multi'){
-                                            that.setValue(data.selection, false);
-                                        }else{
-                                            browseTerms(that, $input, data.selection[0]);                                    
-                                        }
-                                        that.onChange();
+                                    if(selectmode == 'select_multi'){
+                                        that.setValue(data.selection, false);
+                                    }else{
+                                        browseTerms(that, $input, data.selection[0]);                                    
                                     }
+                                    that.onChange();
                                 }
-                            });
-                                                                    
+                            }
+                        });
                     }});
 
                     let vocab_id = Number(allTerms);
@@ -1868,45 +1865,46 @@ $.widget( "heurist.editing_input", {
                     }//not guest user                    
                 }
             }//allow edit terms only for true defTerms enum
-            
+
+            this.child_terms = this.child_terms ? this.child_terms : allTerms;
+
             // Display term selector as radio buttons/checkboxes
-            let asButtons = this._isForRecords && this.f('rst_TermsAsButtons') == 1;
-            if(asButtons && this.child_terms  && this.child_terms.length<=20){
+            if(this.f('rst_TermsAsButtons') == 1 && this.child_terms && this.child_terms.length<=20){
 
-                    this.enum_buttons = (Number(this.f('rst_MaxValues')) != 1) ? 'checkbox' : 'radio';
-                    let inpt_id = $input.attr('id');
-                    let dtb_res = false;
+                this.enum_buttons = (Number(this.f('rst_MaxValues')) != 1) ? 'checkbox' : 'radio';
+                let inpt_id = $input.attr('id');
+                let dtb_res = false;
 
-                    if(this.enum_buttons == 'checkbox' && $inputdiv.parent().find('input:checkbox').length > 0){ // Multi value, check if checkboxes exist
+                if(this.enum_buttons == 'checkbox' && $inputdiv.parent().find('input:checkbox').length > 0){ // Multi value, check if checkboxes exist
 
-                        $inputdiv.parent().find('input:checkbox[data-id="'+value+'"]').prop('checked', true); // Check additional value
-                        $inputdiv.hide();
+                    $inputdiv.parent().find('input:checkbox[data-id="'+value+'"]').prop('checked', true); // Check additional value
+                    $inputdiv.hide();
 
-                        dtb_res = true;
-                    }else{ // Create input elements
-                        dtb_res = this._createEnumButtons(false, $inputdiv, [value]);
+                    dtb_res = true;
+                }else{ // Create input elements
+                    dtb_res = this._createEnumButtons(false, $inputdiv, [value]);
+                }
+
+                if(dtb_res){
+
+                    if($input.hSelect('instance') != undefined){
+                        $input.hSelect('destroy');
                     }
+                    this._off($input, 'change');
+                    $input.remove();
 
-                    if(dtb_res){
+                    $input = $('<input type="text" class="text ui-widget-content ui-corner-all">')
+                                .attr('id', inpt_id)
+                                .val(value)
+                                .prependTo($inputdiv)
+                                .hide();
 
-                        if($input.hSelect('instance') != undefined){
-                            $input.hSelect('destroy');
-                        }
-                        this._off($input, 'change');
-                        $input.remove();
+                    this._on( $input, {change:this.onChange} );
 
-                        $input = $('<input type="text" class="text ui-widget-content ui-corner-all">')
-                                    .attr('id', inpt_id)
-                                    .val(value)
-                                    .prependTo($inputdiv)
-                                    .hide();
-
-                        this._on( $input, {change:this.onChange} );
-
-                        if(this.btn_add){
-                            this.btn_add.hide(); // Hide repeat button, removeClass('smallbutton ui-icon-circlesmall-plus')
-                        }
+                    if(this.btn_add){
+                        this.btn_add.hide(); // Hide repeat button, removeClass('smallbutton ui-icon-circlesmall-plus')
                     }
+                }
             }
         }
         else if(this.detailType=='boolean'){//----------------------------------------------------
@@ -3241,6 +3239,7 @@ $.widget( "heurist.editing_input", {
             if( this.detailType=='file' ){ //----------------------------------------------------
                 
                         let fileHandle = null; //to support file upload cancel
+                        let using_temp_file = false;
                 
                         this.options.showclear_button = (this.configMode.hideclear!=1);
                         
@@ -3249,8 +3248,21 @@ $.widget( "heurist.editing_input", {
                         //url for thumb
                         let urlThumb = window.hWin.HAPI4.getImageUrl(this.configMode.entity, 
                                                         this.options.recID, this.configMode.version, 1);
-                        let dt = new Date();
-                        urlThumb = urlThumb+'&ts='+dt.getTime();
+
+                        // Check if value is for a temp file
+                        if(this.configMode.entity === 'sysBugreport'
+                            && !window.hWin.HEURIST4.util.isempty(value)
+                            && value.indexOf(this.configMode.entity) > 0
+                            && value.match(/~\d{10}(?:%20%28\d+%29)?\.(?:png|gif|jpg)\?\d{13}$/)){
+
+                            urlThumb = value;
+                            using_temp_file = true;
+                        }else{
+
+                            let dt = new Date();
+                            urlThumb = urlThumb+'&ts='+dt.getTime();
+                        }
+
                         
                         $input.css({'padding-left':'30px'});
                         $('<span class="ui-icon ui-icon-folder-open"></span>')
@@ -3271,14 +3283,18 @@ $.widget( "heurist.editing_input", {
                            this.input_img.css({'min-height':'320px','min-width':'320px'});
                            this.input_img.find('img').css({'max-height':'320px','max-width':'320px'});
                         }
-                         
-                        window.hWin.HAPI4.checkImage(this.configMode.entity, this.options.recID, 
-                            this.configMode.version,
-                            function(response){
-                                  if(response.data=='ok'){
-                                      that.entity_image_already_uploaded = true;
-                                  }
-                        });
+                        
+                        if(!using_temp_file){
+
+                            window.hWin.HAPI4.checkImage(this.configMode.entity, this.options.recID, 
+                                this.configMode.version,
+                                function(response){
+                                    if(response.data=='ok'){
+                                        that.entity_image_already_uploaded = true;
+                                    }
+                                }
+                            );
+                        }
                         
                         //change parent div style - to allow special style for image selector
                         if(that.configMode.css){
@@ -3347,6 +3363,8 @@ $.widget( "heurist.editing_input", {
                         });
                         
         let max_file_size = Math.min(window.hWin.HAPI4.sysinfo['max_post_size'], window.hWin.HAPI4.sysinfo['max_file_size']);
+        let upload_count = 0; // for paste/drop of multiple files
+        let uploaded_urls = []; // uploaded files, for multiple files at once
 
         let fileupload_opts = {
     url: window.hWin.HAPI4.baseURL + 'hserv/controller/fileUpload.php',
@@ -3366,7 +3384,18 @@ $.widget( "heurist.editing_input", {
     dataType: 'json',
     pasteZone: $input_img,
     dropZone: $input_img,
-    
+    paste: function(e, data){
+        upload_count = that.f('rst_DefaultValue') != 1 ? data.files.length : 1;
+    },
+    drag: function(e, data){
+        upload_count = that.f('rst_DefaultValue') != 1 ? data.files.length : 1;
+    },
+    always: function(){
+        if(uploaded_urls.length === upload_count){
+            let values = Object.values(that.newvalues).concat(...uploaded_urls);
+            that.setValue(values);
+        }
+    },
     add: function (e, data) {
         if (e.isDefaultPrevented()) {
             return false;
@@ -3391,7 +3420,7 @@ $.widget( "heurist.editing_input", {
 
     },
     submit: function (e, data) { //start upload
-    
+
         $progress_dlg = $progress_dlg.dialog({
             autoOpen: false,
             modal: true,
@@ -3403,60 +3432,69 @@ $.widget( "heurist.editing_input", {
         $progress_dlg.parent().find('.ui-dialog-titlebar-close').hide();
     },
     done: function (e, response) {
-        
-            //hide progress bar
-            $progress_dlg.dialog( "close" );
-        
-            if(response.result){//file upload places our data to 'result'
-                response = response.result;
-            }
-            if(response.status==window.hWin.ResponseStatus.OK){
-                let data = response.data;
 
-                $.each(data.files, function (index, file) {
-                    if(file.error){ //it is not possible we should cought it on server side - just in case
-                        $input_img.find('img').prop('src', '');
-                        if(that.linkedImgContainer !== null){
-                            that.linkedImgContainer.find('img').prop('src', '');
-                        }
+        //hide progress bar
+        $progress_dlg.dialog( "close" );
 
-                        window.hWin.HEURIST4.msg.showMsgErr({message: file.error, error_title: 'File upload error'});
-                    }else{
+        if(response.result){//file upload places our data to 'result'
+            response = response.result;
+        }
 
-                        if(file.ulf_ID>0){ //file is registered at once and it returns ulf_ID
-                            that.newvalues[$input.attr('id')] = file.ulf_ID;
-                            if(that.linkedImgInput !== null){
-                                that.newvalues[that.linkedImgInput.attr('id')] = file.ulf_ID;
-                            }
-                        }else{
-                            let urlThumb =
-                            (that.configMode.entity=='recUploadedFiles'
-                                ?file.url
-                                :file[(that.configMode.version=='icon')?'iconUrl':'thumbnailUrl'])
-                                +'?'+(new Date()).getTime();
-                            
-                            // file.thumbnailUrl - is correct but inaccessible for heurist server
-                            // we get image via fileGet.php
-                            $input_img.find('img').prop('src', '');
-                            $input_img.find('img').prop('src', urlThumb);
-                            if(that.configMode.entity=='recUploadedFiles'){
-                                that.newvalues[$input.attr('id')] = file;
-                            }else{
-                                //unique temp name to store uploaded file before record's save - then it will be renamed to recId.ext
-                                that.newvalues[$input.attr('id')] = file.tempname;  //it will be renamed on save
-                            }
-                        }
-                        $input.attr('title', file.name);
-                        that.onChange();//need call it manually since onchange event is redifined by fileupload widget
+        if(response.status == window.hWin.ResponseStatus.OK){
+            let data = response.data;
+
+            $.each(data.files, function (index, file) {
+                if(file.error){ //it is not possible we should cought it on server side - just in case
+                    $input_img.find('img').prop('src', '');
+                    if(that.linkedImgContainer !== null){
+                        that.linkedImgContainer.find('img').prop('src', '');
                     }
+
+                    window.hWin.HEURIST4.msg.showMsgErr({message: file.error, error_title: 'File upload error'});
+
+                    return;
+                }
+
+                if(file.ulf_ID>0){ //file is registered at once and it returns ulf_ID
+                    that.newvalues[$input.attr('id')] = file.ulf_ID;
+                    if(that.linkedImgInput !== null){
+                        that.newvalues[that.linkedImgInput.attr('id')] = file.ulf_ID;
+                    }
+                }else{
+
+                    let urlThumb =
+                    (that.configMode.entity=='recUploadedFiles'
+                        ?file.url
+                        :file[(that.configMode.version=='icon')?'iconUrl':'thumbnailUrl'])
+                        +'?'+(new Date()).getTime();
+
+                    if(upload_count > 1){
+                        uploaded_urls.push(urlThumb);
+                        return;
+                    }
+
+                    // file.thumbnailUrl - is correct but inaccessible for heurist server
+                    // we get image via fileGet.php
+                    $input_img.find('img').prop('src', '');
+                    $input_img.find('img').prop('src', urlThumb);
+                    if(that.configMode.entity=='recUploadedFiles'){
+                        that.newvalues[$input.attr('id')] = file;
+                    }else{
+                        //unique temp name to store uploaded file before record's save - then it will be renamed to recId.ext
+                        that.newvalues[$input.attr('id')] = file.tempname;  //it will be renamed on save
+                    }
+                }
+                $input.attr('title', file.name);
+                that.onChange();//need call it manually since onchange event is redifined by fileupload widget
                 });
             }else{
                 window.hWin.HEURIST4.msg.showMsgErr(response);// .message
             }
+
             let inpt = this;
             $input_img.off('click');
             $input_img.on({click: function(){
-                        $(inpt).trigger('click');
+                $(inpt).trigger('click');
             }});
     },
     fail: function(e, data){
@@ -6738,8 +6776,7 @@ $.widget( "heurist.editing_input", {
 
         for(let i = 0; i < terms_list.length; i++){
 
-            let trm_label = $Db.trm(terms_list[i], 'trm_Label');
-            let trm_id = terms_list[i];
+            let [trm_id, trm_label] = Number.isInteger(terms_list[i]) ? [terms_list[i], $Db.trm(terms_list[i], 'trm_Label')] : [terms_list[i]['key'], terms_list[i]['title']];
             let isChecked = (values && values.includes(trm_id)) ? true : false;
 
             let $btn = $('<input>', {'type': this.enum_buttons, 'title': trm_label, 'value': trm_id, 'data-id': trm_id, 'checked': isChecked, name: this.options.dtID})

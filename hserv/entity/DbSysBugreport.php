@@ -25,10 +25,8 @@ use hserv\entity\DbRecUploadedFiles;
     * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
     * See the License for the specific language governing permissions and limitations under the License.
     */
-    
-require_once dirname(__FILE__).'/../records/search/recordFile.php';
 
-define('DT_FILE','type:2-38');
+require_once dirname(__FILE__).'/../records/search/recordFile.php';
 
 class DbSysBugreport extends DbEntityBase
 {
@@ -46,6 +44,8 @@ class DbSysBugreport extends DbEntityBase
     Database: __DBLINK__<br>
     Bug description:<br>__DESC__
     EMAIL;
+
+    private $bugReportType = 56;
 
     public function __construct( $system, $data=null ) {
        parent::__construct( $system, $data );
@@ -149,31 +149,25 @@ class DbSysBugreport extends DbEntityBase
 
         $new_record = [
             'ID' => 0,// New record
-            'RecTypeID' => 56,// Task (Feature, Bug, Issue) rectype on Heurist_Job_Tracker
+            'RecTypeID' => $this->bugReportType,// Task (Feature, Bug, Issue) rectype on Heurist_Job_Tracker
             'NonOwnerVisibility' => 'public',// Force visibility to public
             'NonOwnerVisibilityGroups' => 0,// Force group visibility to everyone
             'OwnerUGrpID' => 0,// Force ownership to DB admins later
             'details' => []
         ];
 
-        $report_title = htmlspecialchars($record['2-1']);
+        $report_title = htmlspecialchars($record['bug_Title']);
         $bug_title = "Bug report or feature request: $report_title";
         $new_record['details']['1'] = $report_title;
 
         //keep new line
-        $bug_descr = htmlspecialchars($record['2-3']);
+        $bug_descr = htmlspecialchars($record['bug_Description']);
         if(!empty($bug_descr)){
 
             $bug_descr = '<p>' . str_replace("\n",'<br>', $bug_descr) . '</p>';
 
             $new_record['details']['3'] = $bug_descr;
             $sMessage = $bug_descr;
-        }
-
-        $repro_steps = $record['2-4'];
-        if(!empty($repro_steps)){
-            $sMessage = $sMessage.'<p>Reproduction steps:<br>'.implode('<br>',$repro_steps).'</p>';
-            $new_record['details']['4'] = $repro_steps;
         }
 
         //add current system information into message
@@ -186,47 +180,11 @@ class DbSysBugreport extends DbEntityBase
         array_push($ext_info, "   Heurist dbversion: ".getDbVersion($mysqli));
 
         //extra information
-        $types = array_key_exists('2-2', $record) ? $record['2-2'] : 'None provided';
-        $type_term = [];
-        $arr_types = explode(',', $types);
+        $new_record['details']['960'] = array_key_exists('bug_Type', $record) ? $record['bug_Type'] : [6986];
 
-        // Sets form return values associated with (internal) term codes in the Heurist_Job_Tracker database
-        foreach($arr_types as $type){
-            switch($type){
-                case 'Suggestion / feature request':
-                    $type_term[] = 6983;  // term = 09 New feature
-                    break;
+        $new_record['details']['958'] = array_key_exists('bug_Location', $record) ? $record['bug_Location'] : [7105];
 
-                case 'Minor annoyance':
-                    $type_term[] = 6981;  // term = 06 Workflow or minor annoyance
-                    break;
-
-                case 'Major annoyance':
-                    $type_term[] = 6980;  // term = 05 Unexpected behaviour or major annoyance
-                    break;
-
-                case 'Minor bug':
-                    $type_term[] = 6982;  // term = 07 Minor bug or cosmetic issue
-                    break;
-
-                case 'Significant bug':
-                    $type_term[] = 6977;  // term = 02 Severe
-                    break;
-                              
-                case 'Urgent bug':
-                    $type_term[] = 6976;  // term = 01 Fatal
-                    break;
-
-                default:
-                    $type_term[] = 6986;   // term = ? (unassinged)
-                    break;
-            }
-        }
-
-        $new_record['details']['960'] = empty($type_term) ? 6986 : $type_term;
-        array_push($ext_info, "   Report type: $types");
-
-        $url = @$record['3-1058'];
+        $url = @$record['bug_Image'];
         $cur_url = HEURIST_BASE_URL.'?db='.HEURIST_DBNAME;
         if(!empty($url)){
             array_push($ext_info, "   Provided url: $url   Base url: $cur_url");
@@ -246,11 +204,10 @@ class DbSysBugreport extends DbEntityBase
             $new_record['details']['956'] = $user['ugr_eMail'];
         }
 
-        //$new_record['details']['2-51'] = $ext_info;
         $ext_info = '<p>'.implode('<br>',$ext_info).'</p>';
 
         $filename = null;
-        $attachment_temp_name = @$record['2-38'];
+        $attachment_temp_name = @$record['bug_Image'];
         if(!empty($attachment_temp_name)){
 
             if(!is_array($attachment_temp_name)){
@@ -308,7 +265,7 @@ class DbSysBugreport extends DbEntityBase
 
             if($rec_ID > 0){
 
-                $bug_title = "Heurist tracker #$rec_ID: {$record['2-1']}";
+                $bug_title = "Heurist tracker #$rec_ID: {$record['bug_Title']}";
                 $report_link = HEURIST_MAIN_SERVER . "/" . HEURIST_BUGREPORT_DATABASE . "/view/$rec_ID";
                 $sMessage .= "<p>Link: $report_link</p>";
 
@@ -392,6 +349,8 @@ class DbSysBugreport extends DbEntityBase
         $mysqli = $report_system->getMysqli();
         $guest_user = user_getByField($mysqli, 'ugr_Name', 'extern');// to update AddedBy value in new record
         $uid = is_array($guest_user) ? $guest_user['ugr_ID'] : 0;
+
+        $this->_addDefaultValues($report_system, $record);
 
         $res = recordSave($report_system, $record, true, false, 0, 2);// set total recs to 2 to avoid sending the swf email, we will send a more specific email instead
         $sent_email = false;
@@ -532,6 +491,23 @@ class DbSysBugreport extends DbEntityBase
     //
     public function batch_action(){
          return false;
+    }
+
+    //
+    // Add missing values that have a default value
+    //
+    private function _addDefaultValues($system, $record){
+
+        $def_values = mysql__select_assoc2($system->getMysqli(), "SELECT rst_DetailTypeID, rst_DefaultValue FROM defRecStructure WHERE rst_RecTypeID = {$this->bugReportType}");
+
+        foreach($def_values as $dty_ID => $def_value){
+
+            if($def_value == null || $def_value == '' || (array_key_exists($dty_ID, $record['details']) && !empty($record['details'][$dty_ID]))){
+                continue;
+            }
+
+            $record['details'][$dty_ID] = $def_value;
+        }
     }
 }
 ?>

@@ -1646,6 +1646,13 @@ $.widget( "heurist.manageEntity", {
             }*/
         }
     },
+
+    //
+    // to override
+    //
+    onEditFormNewInput: function(added_element){
+        return;
+    },
     
     //
     //
@@ -1719,6 +1726,9 @@ $.widget( "heurist.manageEntity", {
                 oninit:function(){
                     that._editing = this;
                     that._initEditForm_step2(recID);        
+                },
+                onrecreate: function(){
+                    that.onEditFormNewInput(this);
                 }
             }); //pass container
             
