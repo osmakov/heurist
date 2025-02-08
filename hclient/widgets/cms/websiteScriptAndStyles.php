@@ -1270,10 +1270,12 @@ function onHapiInit(success){
                                                 window.hWin.HAPI4.sysinfo.db_version);
     if(res==-2){ //-2= db_version_req newer
         window.hWin.HEURIST4.msg.showMsgErr({
-            message: '<h3>Old version database</h3>'
-                    +'<p>You are trying to load a website using a more recent version of Heurist than the one used for the database being accessed.</p>'
-                    +'<p>Please ask the owner of the database to open it in the latest version of Heurist which will apply the necessary updates.</p>',
-            error_title: 'Database is out-of-date'
+            message: '<p>You are trying to load a website using a more recent version of Heurist than the one used for the database being accessed.</p>'
+                    +'<p>Please ask the owner of the database to <a href="'
+                    +window.hWin.HAPI4.baseURL+'?db='+window.hWin.HAPI4.database
+                    +'">open the database in Heurist</a> which will apply the necessary updates.</p>'
+                    +'<p>We apologise for this temporary inconvenience</p>',
+            error_title: 'Database format requires updating'
         });
         window.hWin.HEURIST4.msg.sendCoverallToBack();
         return;
