@@ -616,7 +616,7 @@ CREATE TABLE sysWorkflowRules  (
   swf_SetVisibility  varchar(255) default NULL COMMENT 'public=anyone, viewable=all logged in, hidden = private, hidden may be followed by comma separated list of ugr_ID that should be set to have view permission',
   swf_SendEmail  varchar(255) default NULL COMMENT 'Comma separated list of ugr_ID that will be emailed on stage change',
   swf_EmailList varchar(255) default NULL COMMENT 'Comma separated list of extra email address that will be emailed on stage change',
-  swf_RecEmailField smallint NULL default NULL COMMET 'Field within the record structure that contains an email to also be emailed',
+  swf_RecEmailField smallint NULL default NULL COMMENT 'Field within the record structure that contains an email to also be emailed',
   swf_EmailText varchar(255) default NULL COMMENT 'Email body text to be sent on stage change, allows field value substitutions',
 PRIMARY KEY  (swf_ID),
 UNIQUE KEY swf_StageKey (swf_RecTypeID, swf_Stage)
