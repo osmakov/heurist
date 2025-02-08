@@ -25,6 +25,10 @@ $.widget( "heurist.manageSysWorkflowRules", $.heurist.manageEntity, {
     _entityName:'sysWorkflowRules',
     
     is_first: true,
+
+    options: {
+        edit_height: 600
+    },
     
     //keep to refresh after modifications
     _keepRequest:null,
@@ -482,7 +486,10 @@ $.widget( "heurist.manageSysWorkflowRules", $.heurist.manageEntity, {
             let list_Fields = {
                 title: 'Record title',
                 stage: 'Workflow stage',
-                user: 'Modifying user'
+                user: 'Modifying user',
+                link_v: 'Record viewer link',
+                link_e: 'Record editor link',
+                url: 'Record url'
             };
             !has_FreetextFld || $Db.rst(rty_ID).each2((rst_ID, record) => {
                 switch ($Db.dty(rst_ID, 'dty_Type')) {
@@ -583,7 +590,7 @@ $.widget( "heurist.manageSysWorkflowRules", $.heurist.manageEntity, {
                 list += `<span style="display: inline-block; padding-bottom: 7.5px;">
                     <button class="ui-icon ui-icon-plus" data-dtyid="${dty_ID}" title="Add field code to message"></button>
                     <span style="${shared_styles} width: 150px; padding-left: 5px;" class="truncate" title="${list_Fields[dty_ID]}">${list_Fields[dty_ID]}</span> 
-                    <span style="${shared_styles} width: 65px;" class="truncate" title="${id}">(ID #${id})</span> 
+                    <span style="${shared_styles} width: 65px;" class="truncate" title="${id}">(${id})</span> 
                     <span style="${shared_styles} width: 65px;" class="truncate">[ ${type} ]</span>
                 </span><br>`;
             }
