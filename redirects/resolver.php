@@ -336,6 +336,9 @@ $requestUri:
                 //$rewrite_path = dirname(__FILE__).'/../index.php';
             }
             elseif($action=='tpl'){ // call FrontController from index.php
+            
+                //   /tpl/template-name/query    /tpl/person-all/t:10 or /tpl/person-view/123
+            
                 $query = null;
 
                 if(@$requestUri[3]){

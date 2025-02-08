@@ -299,7 +299,7 @@ function hRecordAction(_action_type, _scope_type, _field_type, _field_value) {
                 }
 
                 allSelectedRectypes = rtyIDs;
-
+                                                
             }else{
                 rtyIDs = [scope_type];
             }

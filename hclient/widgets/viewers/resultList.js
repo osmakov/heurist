@@ -42,7 +42,7 @@ $.widget( "heurist.resultList", {
 
         show_toolbar: true,   //toolbar contains menu,savefilter,counter,viewmode and pagination
         show_search_form: false,
-        show_menu: false,       //@todo ? - replace to action_select and action_buttons
+        show_menu: false,       //resultListMenu   @todo ? - replace to action_select and action_buttons
         support_collection: false,
         support_reorder: false,  // show separate reorder button
         show_counter: true,
@@ -599,7 +599,7 @@ $.widget( "heurist.resultList", {
         }
         
         
-        //add label to display number of selected, button and selected onlu checkbox
+        //add label to display number of selected, button and selected only checkbox
         if(this.options.select_mode=='select_multi'){
             this.show_selected_only = $( "<div>" )
             .addClass('ent_select_multi')  //ui-widget-content 
@@ -653,6 +653,7 @@ $.widget( "heurist.resultList", {
             'z-index':'99999999', 'background':'url('+window.hWin.HAPI4.baseURL+'hclient/assets/loading-animation-white.gif) no-repeat center center' })
         .appendTo( this.element ).hide();
 
+        // not implemented - to remove
         if(window.hWin.HEURIST4.util.isArrayNotEmpty(this.options.action_buttons)){
 
             this.action_buttons_div.css({'display':'inline-block', 'padding':'0 0 4px 1em'})

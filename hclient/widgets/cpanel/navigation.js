@@ -69,7 +69,7 @@ $.widget( "heurist.navigation", {
             }
            
         }else{
-            this.element.css('height','100%');    
+            this.element.css('height','100%');
             if(this.element.parents('.main-header').length>0){
                 this.element.addClass('ui-heurist-header2');
             }

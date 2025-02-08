@@ -22,6 +22,11 @@ $.widget( "heurist.baseAction", {
     // default options
     options: {
         actionName: '',
+
+        path: '',  // non default path to html content 
+        htmlContent: '', //general layout
+        helpContent: null, //if false help button is hidden, if null it sets name of help file to widgetName,
+                           // help file must be in context_help folder
     
         default_palette_class: 'ui-heurist-admin', 
         //DIALOG section       
@@ -35,10 +40,6 @@ $.widget( "heurist.baseAction", {
         title:  '',
         innerTitle: false, //show title as top panel 
         
-        path: '',  // non default path to html content 
-        htmlContent: '', //general layout
-        helpContent: null, //if false help button is hidden, if null it sets name of help file to widgetName,
-                           // help file must be in context_help folder
         
         //listeners
         onInitFinished:null,  // event listener when dialog is fully inited

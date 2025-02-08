@@ -797,8 +797,6 @@ $.widget( "heurist.manageEntity", {
         
         request[this.options.entity.keyField] = arr_ids;
         
-       
-        
         window.hWin.HAPI4.EntityMgr.doRequest(request, callback);
     },
     
