@@ -824,7 +824,12 @@ function recordSave($system, $record, $use_transaction=true, $suppress_parent_ch
             $msg = $msg . '<br><br><i>This is the first of multiple records'. ($modeImport > 0 ? ' imported' : '') .'. Please visit database for additional records.</i>';
         }
 
-        $msg = str_replace('#title#', $newTitle, $msg);
+        $rec_view = $system->recordLink($recID);
+        $rec_edit = strpos($rec_view, '/view/') !== false
+                        ? str_replace('/view/', '/edit/', $rec_view)
+                        : HEURIST_BASE_URL_PRO . "?fmt=edit&recID={$recID}&db=" . HEURIST_DBNAME;
+
+        $msg = str_replace(['#title#', '#link_v#', '#link_e#'], [$newTitle, $rec_view, $rec_edit], $msg);
 
         $res = sendPHPMailer(HEURIST_MAIL_TO_ADMIN, 'Heurist DB '.HEURIST_DBNAME.'. ID: '.$recID, //'Workflow stage update notification',
                     $swf_emails, $title, $msg, null, true);
@@ -3418,7 +3423,7 @@ function recordWorkFlowStage($system, &$record, $new_value, $is_insert){
             $new_stage_name = mysql__select_value($mysqli, "select trm_Label from defTerms where trm_ID = {$new_value}");
             $cur_user = $system->getCurrentUser()['ugr_FullName'];
 
-            $res['body'] = str_replace(['#stage#', '#user#'], [$new_stage_name, $cur_user], $rule['swf_EmailText']);
+            $res['body'] = str_replace(['#stage#', '#user#', '#url#'], [$new_stage_name, $cur_user, $record['URL']], $rule['swf_EmailText']);
 
             $res['body'] = mb_ereg_replace_callback('#(\d+)#', function($matches) use ($record, $mysqli){
 

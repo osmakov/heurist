@@ -793,7 +793,8 @@ if(!$system->hasAccess()){
 
                 $('.media-content').show();
                 if(hide_images == 1){ // hide linked media
-                    $('.linked-media:not(:first)').hide();
+                    let selector = $('.media_container:not(.linked-media)').length == 0 ? '.linked-media:not(:first)' : '.linked-media';
+                    $(selector).hide();
                 }else{
                     $('.linked-media').show();
                 }
@@ -1055,6 +1056,9 @@ if(!empty($import_webfonts)){
         }
         .thumb_image {
             margin: 5px 5px 10px;
+            contain: layout;
+        }
+        .thumb_image img {
             cursor: url('<?=HEURIST_BASE_URL?>hclient/assets/zoom-in.png'),pointer;
         }
         div.thumbnail .fullSize img {
@@ -2066,7 +2070,7 @@ function print_public_details($bib) {
                     .($is_production?'margin-left:100px':'')
                     .($k>0?CSS_HIDDEN:'').'">';
             }else{
-                print '<div class="thumb_image media-content'. ($thumb['linked'] == true ? ' linked-media' : '') .'"  style="'.($isImageOrPdf?'':'cursor:default;')
+                print '<div class="thumb_image media-content media_container'. ($thumb['linked'] == true ? ' linked-media' : '') .'"  style="'.($isImageOrPdf?'':'cursor:default;')
                     .($k>0?CSS_HIDDEN:'').'">';
             }
 
