@@ -934,6 +934,17 @@ class HSystemMgr {
   }
 
   /**
+   * Upload file to Nakala
+   * @param {Request} request 
+   * @param {callserverCallback} callback 
+   */
+  upload_to_nakala(request, callback){
+      if (!request) callback.call(this, false);
+      if (!request.a) request.a = 'upload_file_nakala';
+      window.hWin.HAPI4.callserver('usr_info', request, callback);
+  }
+
+  /**
   * 1. verifies that given rty_IDs (concept codes) exist in this database
   * 2. If rectype is missed - download from given db_ID (registration ID)
   * 3. Show warning of info report

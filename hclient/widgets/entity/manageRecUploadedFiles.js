@@ -1436,7 +1436,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
 
                         let length_valid = (created.length == 4 || created.length == 7 || created.length == 10);
                         let dash_valid = (created.length == 4 || created.indexOf('-') !== false);
-                        let year_valid = (created.length == 4 && Number.isNaN(created));
+                        let year_valid = (created.length > 4 || !Number.isNaN(created));
                         let err_msg = '';
 
                         if(!length_valid || !year_valid){
@@ -1510,31 +1510,7 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
 
                 // Click handler for author search
                 $dlg.find('#lookup_author').on('click',() => {
-                    let dlg_opts = {
-                        mapping: {
-                            dialog: 'lookupNakalaAuthor',
-                            service: 'nakala_author',
-                            service_id: 'nakala_author_gen',
-                            fields: {
-                                givenname: 1,
-                                surname: 2,
-                                orcid: 3,
-                                authorId: 4,
-                                fullName: 5 // ignore field
-                            },
-                            rty_ID: 0
-                        }, 
-                        path: 'widgets/lookup/',
-                        onClose: (recset) => {
-                            if(Object.keys(recset).length > 0){ // has response
-                                $dlg.find('#fcreator').val(recset[1]);
-                                $dlg.find('#lcreator').val(recset[2]);
-                                $dlg.find('#idcreator').val(recset[4]);
-                                $dlg.find('#orcid').val(recset[3]);
-                            }
-                        }
-                    };
-                    window.hWin.HEURIST4.ui.showRecordActionDialog('lookupNakalaAuthor', dlg_opts);
+                    this._loadAuthorLookup();
                 });
 
                 // Hide dialog while getting license and type values
@@ -1553,7 +1529,12 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
                     serviceType: 'nakala',
                     service: 'nakala_get_metadata' // file types used by Nakala
                 };
+
+                window.hWin.HEURIST4.msg.bringCoverallToFront($('body'));
+
                 window.hWin.HAPI4.RecordMgr.lookup_external_service(request, (data) => {
+
+                    window.hWin.HEURIST4.msg.sendCoverallToBack();
 
                     data = window.hWin.HEURIST4.util.isJSON(data);
                     let can_assign = 0;
@@ -2055,5 +2036,49 @@ window.hWin.HAPI4.baseURL+'?db=' + window.hWin.HAPI4.database  //(needplayer?'&p
         });
     },
     
-    
+    _loadAuthorLookup: function(){
+
+        let that = this;
+
+        if(!window.hWin.HEURIST4.util.isFunction($('body')['lookupBase'])){
+
+            $.getScript(`${window.hWin.HAPI4.baseURL}hclient/widgets/lookup/lookupBase.js`, () => {
+                that._loadAuthorLookup(lookup_name, dialog_options);
+            }).fail(() => {
+                window.hWin.HEURIST4.msg.showMsgErr({
+                    status: window.hWin.ResponseStatus.UNKNOWN_ERROR,
+                    error_title: 'Failed to load lookup base',
+                    message: `Heurist failed to load the base lookup script needed for all external lookups.`
+                });
+            });
+
+            return;
+        }
+
+        let dlg_opts = {
+            mapping: {
+                dialog: 'lookupNakalaAuthor',
+                service: 'nakala_author',
+                service_id: 'nakala_author_gen',
+                fields: {
+                    givenname: 1,
+                    surname: 2,
+                    orcid: 3,
+                    authorId: 4,
+                    fullName: 5 // ignore field
+                },
+                rty_ID: 0
+            }, 
+            path: 'widgets/lookup/',
+            onClose: (recset) => {
+                if(Object.keys(recset).length > 0){ // has response
+                    $dlg.find('#fcreator').val(recset[1]);
+                    $dlg.find('#lcreator').val(recset[2]);
+                    $dlg.find('#idcreator').val(recset[4]);
+                    $dlg.find('#orcid').val(recset[3]);
+                }
+            }
+        };
+        window.hWin.HEURIST4.ui.showRecordActionDialog('lookupNakalaAuthor', dlg_opts);
+    }
 });

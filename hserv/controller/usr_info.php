@@ -722,8 +722,10 @@
                 // load ONE file to ext.repository - from manageRecUploadedFiles
                 // see also local_to_repository in record_batch
 
-                $credentials = user_getRepositoryCredentials2($system, $req_params['api_key']);
-                if($credentials === null || !@$credentials[$service_id]['params']['writeApiKey']){
+                $repo_id = $req_params['api_key'];
+                $credentials = user_getRepositoryCredentials2($system, $repo_id);
+
+                if($credentials === null || !@$credentials[$repo_id]['params']['writeApiKey']){
                     $system->addError(HEURIST_INVALID_REQUEST, 'We were unable to retrieve the specified Nakala API key, please ensure you have entered the API key into Design > External repositories');
                 }else{
 
@@ -810,9 +812,9 @@
                     );
 
                     // User API Key
-                    $params['api_key'] = $credentials[$req_params['api_key']]['params']['writeApiKey'];
+                    $params['api_key'] = $credentials[$repo_id]['params']['writeApiKey'];
 
-                    $params['use_test_url'] = @$req_params['use_test_url'] == 1 || strpos($req_params['api_key'],'nakala')===1 ? 1 : 0;
+                    $params['use_test_url'] = @$req_params['use_test_url'] == 1 || strpos($repo_id,'nakala')===1 ? 1 : 0;
 
                     $params['status'] = 'published';// publish uploaded file, return url to newly uploaded file on Nakala
 
