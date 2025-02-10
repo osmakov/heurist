@@ -358,6 +358,10 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
                     if(arguments){
                     if(arguments[1]){
 
+                        /* ARTEM - this feature is disabled since it duplicate
+                        db defs check in hapi.js. see _callserver. It checks dbdef relevance 
+                        before each request (3 seconds cooldown)
+                        
                         //verify definitions relevance every 20 seconds
                         if(!window.hWin.RefreshCacheInterval){
                             window.hWin.RefreshCacheInterval = setInterval(function(){window.hWin.HAPI4.EntityMgr.relevanceEntityData(null, (response) => {
@@ -378,6 +382,7 @@ if(!$invalid_access && (defined('CREATE_RECORDS') || defined('DELETE_RECORDS')))
 
                             })}, 600000);
                         }
+                        */
 
                         if(!window.hWin.HEURIST4.util.isnull(callback) && window.hWin.HEURIST4.util.isFunction(callback)){
                             callback(true);
