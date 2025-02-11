@@ -62,6 +62,14 @@
     // relevance - compare filetime with timestamp,
     //                      if filetime is later - returns definitions
     //                      otherwise file time
+    if( @$req_params['a']=='structure' && @$req_params['entity']=='relevance' &&
+            ($dbdef_cache==null || !file_exists($dbdef_cache)) ){
+            //ignore relevance check if file is missed
+            header(CTYPE_JSON);
+            print json_encode( array('uptodate'=>1, 'cachefile'=>$dbdef_cache));
+            exit;
+    }
+    
     if( @$req_params['a']=='structure'
         && (@$req_params['entity']=='all' || @$req_params['entity']=='relevance')
         && $dbdef_cache!=null && file_exists($dbdef_cache)

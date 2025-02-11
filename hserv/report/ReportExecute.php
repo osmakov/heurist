@@ -998,6 +998,9 @@ class ReportExecute
                     'src' => 'URI',
                     'type' => 'Text',
                 ));
+                
+                //$config->set('HTML.AllowedAttributes','*.data-heurist-rec');
+                $def->addAttribute('div', 'data-heurist-rec', 'Number');
 
                 /* to test it
                 if ($def = $config->maybeGetRawHTMLDefinition()) {

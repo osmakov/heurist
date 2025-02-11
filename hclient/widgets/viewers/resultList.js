@@ -2052,9 +2052,9 @@ $.widget( "heurist.resultList", {
     //
     _recordDivOnClick: function(event){
 
-        let $target = $(event.target),
-        that = this,
-        $rdiv;
+        let $target = $(event.target);
+        let that = this;
+        let $rdiv;
 
         if($target.is('a')) return;
 

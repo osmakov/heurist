@@ -258,7 +258,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
         _is_callserver_in_progress = true;
         
         if(window.hWin.HAPI4 && action!='entityScrud' && action!='usr_info'
-            && (new Date().getTime())-_last_check_dbcache_relevance> 3000){ //7 seconds
+            && (new Date().getTime())-_last_check_dbcache_relevance> 7000){ //7 seconds
             _last_check_dbcache_relevance = new Date().getTime();
             
             //ignore if record structure editor or Design panel is opened
