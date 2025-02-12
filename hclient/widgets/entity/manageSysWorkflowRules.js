@@ -687,7 +687,7 @@ $.widget( "heurist.manageSysWorkflowRules", $.heurist.manageEntity, {
                 }
 
                 if(field){
-                    extra_val += `${val === '' ? '' : '<br>'}Values from: ${$Db.rst(rty_ID, field, 'rst_DisplayName')}`;
+                    extra_val += `${extra_val === '' ? '' : '<br>'}Values from: ${$Db.rst(rty_ID, field, 'rst_DisplayName')}`;
                 }
             }
 
