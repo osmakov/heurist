@@ -6776,7 +6776,10 @@ $.widget( "heurist.editing_input", {
 
         for(let i = 0; i < terms_list.length; i++){
 
-            let [trm_id, trm_label] = Number.isInteger(terms_list[i]) ? [terms_list[i], $Db.trm(terms_list[i], 'trm_Label')] : [terms_list[i]['key'], terms_list[i]['title']];
+            let [trm_id, trm_label] = window.hWin.HEURIST4.util.isPositiveInt(terms_list[i])
+                ? [terms_list[i], $Db.trm(terms_list[i], 'trm_Label')]
+                : [terms_list[i]['key'], terms_list[i]['title']];
+
             let isChecked = (values && values.includes(trm_id)) ? true : false;
 
             let $btn = $('<input>', {'type': this.enum_buttons, 'title': trm_label, 'value': trm_id, 'data-id': trm_id, 'checked': isChecked, name: this.options.dtID})
