@@ -843,12 +843,14 @@ $.widget( "heurist.manageRecUploadedFiles", $.heurist.manageEntity, {
                 ele2.editing_input('showErrorMsg', ''); //hide
             }
 
-            let $img = that.mediaviewer.find('img');
-            if(window.hWin.HEURIST4.util.isempty(msg_error) && !window.hWin.HEURIST4.util.isempty(ext) &&
-               response.data.mimeType.indexOf('image') === 0 && $img.length > 0){
+            if(that.mediaviewer){
+                let $img = that.mediaviewer.find('img');
+                if(window.hWin.HEURIST4.util.isempty(msg_error) && !window.hWin.HEURIST4.util.isempty(ext) &&
+                   response.data.mimeType.indexOf('image') === 0 && $img && $img.length > 0){
 
-                $('<h4 style="padding: 15px 75px;position: absolute;cursor: default;">Preview image:</h4>').insertBefore(that.mediaviewer);
-                that.mediaviewer.find('img').attr('src', url);
+                    $('<h4 style="padding: 15px 75px;position: absolute;cursor: default;">Preview image:</h4>').insertBefore(that.mediaviewer);
+                    that.mediaviewer.find('img').attr('src', url);
+                }
             }
 
             window.hWin.HEURIST4.msg.closeMsgFlash();

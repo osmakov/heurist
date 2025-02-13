@@ -146,9 +146,13 @@ if($baseUrl==null){
 
 }
     if(!(substr($baseUrl,-1)=='/' || substr($_SERVER['REQUEST_URI'],0,1)=='/')){
-        $baseUrl = $baseUrl.'/';    
+        $baseUrl = $baseUrl.'/';
     }
     $url = $baseUrl . $_SERVER['REQUEST_URI'];
+    
+    if(substr($baseUrl,-1)!='/'){
+        $baseUrl = $baseUrl.'/';
+    }
 
 if(@$_REQUEST['url']) { //direct url to manifest
 
