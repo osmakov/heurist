@@ -177,7 +177,7 @@ class ReportRecord
         //converts to array suitable for smarty  r.title, r.fNNN
         $record = $this->getRecordForSmarty($rec);
         if($record){
-            $this->recordsCache[$recordID] = $record;
+            $this->recordsCache[$rec_ID] = $record;
         }
         return $record;
 
@@ -1090,6 +1090,8 @@ class ReportRecord
         
         $sepKey = '';
         $cntGroups = 0;
+        $isEmpty = false;
+
         foreach ($rts as $dty_ID=>$label){
   
             $dtyKey ='f'.$dty_ID;

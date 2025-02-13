@@ -144,9 +144,9 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
 		// Add spacing between fields, and give textarea's larger height
         let eles = this._editing.getAllFields();
         let help = '';
-        for(let i = 0; i < eles.length; i++){ // ignore last element (image field)
+        for(const ele of eles){ // ignore last element (image field)
 
-            let $ele = $(eles[i]);
+            let $ele = $(ele);
 
             if($ele.find('textarea,input.text,.fileupload').length != 0){
                 $ele.css({'padding-top': '10px', 'display': 'block'});
