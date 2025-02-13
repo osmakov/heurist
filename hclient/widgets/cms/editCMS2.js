@@ -326,14 +326,14 @@ function editCMS2(website_document){
     function _initEditControls(need_callback){
 
         _editor_panel.find('.btn-website-homepage').on('click',_editHomePage);
+
+        _editor_panel.find('.btn-website-edit').on('click', _editHomePageRecord);
         if(!isWebPage){
             _editor_panel.find('.btn-website-edit')
                          .button({classes:{'ui-button': 'ui-button-action'}})
-                         .css({'padding':'5px','font-size':'smaller'})
-                         .on('click', _editHomePageRecord);
-        }else{
-            _editor_panel.find('.btn-website-edit').on('click',_editHomePageRecord);
+                         .css({'padding':'5px','font-size':'smaller'});
         }
+
         _editor_panel.find('.btn-website-addpage').on('click',_addNewRootMenu); // button({icon:'ui-icon-plus'}).
 
         let url = window.hWin.HEURIST4.ui.getCmsLink({websiteid:home_page_record_id});
@@ -409,7 +409,7 @@ function editCMS2(website_document){
 
         if(_warningOnExit( _editHomePageRecord )) return;
 
-        if(!_editCMS_SiteMenu)
+        if(!_editCMS_SiteMenu && !isWebPage)
             _editCMS_SiteMenu = editCMS_SiteMenu( _panel_treeWebSite, that );
         
         //edit menu item
@@ -422,7 +422,7 @@ function editCMS2(website_document){
                 onselect:function(event, data){
                     if( window.hWin.HEURIST4.util.isRecordSet(data.selection) ){
                         //reload entire site
-                        if(_editCMS_SiteMenu) _editCMS_SiteMenu.refreshWebsite();
+                        _editCMS_SiteMenu ? _editCMS_SiteMenu.refreshWebsite() : window.hWin.location.reload();
                     }
         }});
     }

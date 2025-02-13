@@ -113,7 +113,7 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
         res['bug_Image'] = [];
         let $img_div = this._editing.getFieldByName('bug_Image');
         $img_div.find('img').each((idx, img) => {
-            let matches = img.src.match(/(~\d*)\.png/);
+            let matches = img.src.match(/~\d{10}(?:%20%28\d+%29)?\.(?:png|gif|jpg)/);
             if(matches?.length == 2){
                 res['bug_Image'].push(matches[1]);
             }
@@ -144,9 +144,9 @@ $.widget( "heurist.manageSysBugreport", $.heurist.manageEntity, {
 		// Add spacing between fields, and give textarea's larger height
         let eles = this._editing.getAllFields();
         let help = '';
-        for(let i = 0; i < eles.length; i++){ // ignore last element (image field)
+        for(const ele of eles){ // ignore last element (image field)
 
-            let $ele = $(eles[i]);
+            let $ele = $(ele);
 
             if($ele.find('textarea,input.text,.fileupload').length != 0){
                 $ele.css({'padding-top': '10px', 'display': 'block'});

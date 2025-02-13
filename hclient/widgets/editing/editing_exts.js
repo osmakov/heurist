@@ -1049,13 +1049,11 @@ function openSearchMenu(that, $select, has_filter=true, is_terms=false){
  
             let start_pos = 0;
 
-			that._on($menu.find('li.ui-menu-item:first'), {
-				click: function(event){ // stop click for menu filter option
-                    if ($(event.target).parents('.show-select-dialog').length==0){
-					    window.hWin.HEURIST4.util.stopEvent(event);
-					    return false;
-                    }
-				},
+            let $search_li = $menu.find('li.ui-menu-item:first');
+            $search_li.removeClass('ui-menu-item').addClass('ui-menu-search');
+            $search_li.find('[role="option"]').attr('role', '');
+
+            that._on($search_li, {
                 keydown: function(event){ // allow hotkeys for input filter
 
                     /**
@@ -1088,25 +1086,35 @@ function openSearchMenu(that, $select, has_filter=true, is_terms=false){
                         window.hWin.HEURIST4.util.stopEvent(event);
                         event.stopImmediatePropagation();
 
-                        $input.val(cur_val + ' ');
-                        start_pos = ++cur_val.length;
+                        let value = $input.val();
+                        let start = $input[0].selectionStart;
+                        let end = $input[0].selectionEnd;
+
+                        // Add space and update value
+                        value = `${value.substring(0, start)} ${value.substring(end)}`;
+                        $input.val(value);
+
+                        // Correct cursor position
+                        start_pos = ++start;
+                        $input[0].setSelectionRange(start_pos, start_pos);
                     }else if(is_enter && $menu.find('.ui-menu-item:visible').length == 2){ // auto select only result
 
                         window.hWin.HEURIST4.util.stopEvent(event);
                         event.stopImmediatePropagation();
 
-                        $($menu.find('.ui-menu-item:visible')[1]).trigger('click');
+                        $($menu.find('.ui-menu-item:visible')[1]).trigger('click'); // trigger selection
                     }else if(is_tab && $menu.find('.ui-menu-item:visible').length > 1){ // focus first item
 
                         window.hWin.HEURIST4.util.stopEvent(event);
                         event.stopImmediatePropagation();
 
-                        $($menu.find('.ui-menu-item:visible')[1]).trigger('mouseover');
+                        $($menu.find('.ui-menu-item:visible')[1]).trigger('mouseover'); // change focus to options
                     }else if((event.key == "A" || code == 13) && ctrl_pressed){
 
                         window.hWin.HEURIST4.util.stopEvent(event);
                         event.stopImmediatePropagation();
 
+                        // Highlight input text
                         $input[0].setSelectionRange(0, cur_val.length);
                         start_pos = cur_val.length;
                     }else if(left_arrow || right_arrow){

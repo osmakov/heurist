@@ -6,7 +6,7 @@ use hserv\entity\DbRecUploadedFiles;
 
     /**
     * Function specific to the Heurist_Job_Tracker database on HeuristRef.net
-    *  Queries user for issue details and populates a Type 56 (concept ID 8-23) 
+    *  Queries user for issue details and populates a Type 56 (concept ID 8-23)
     *  Task (Features, Bug, Issue) record in the database
     *
     *
@@ -350,7 +350,7 @@ class DbSysBugreport extends DbEntityBase
         $guest_user = user_getByField($mysqli, 'ugr_Name', 'extern');// to update AddedBy value in new record
         $uid = is_array($guest_user) ? $guest_user['ugr_ID'] : 0;
 
-        $this->_addDefaultValues($report_system, $record);
+        $this->addDefaultValues($report_system, $record);
 
         $res = recordSave($report_system, $record, true, false, 0, 2);// set total recs to 2 to avoid sending the swf email, we will send a more specific email instead
         $sent_email = false;
@@ -496,7 +496,7 @@ class DbSysBugreport extends DbEntityBase
     //
     // Add missing values that have a default value
     //
-    private function _addDefaultValues($system, $record){
+    private function addDefaultValues($system, $record){
 
         $def_values = mysql__select_assoc2($system->getMysqli(), "SELECT rst_DetailTypeID, rst_DefaultValue FROM defRecStructure WHERE rst_RecTypeID = {$this->bugReportType}");
 

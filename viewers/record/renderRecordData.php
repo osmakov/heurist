@@ -2070,7 +2070,7 @@ function print_public_details($bib) {
                     .($is_production?'margin-left:100px':'')
                     .($k>0?CSS_HIDDEN:'').'">';
             }else{
-                print '<div class="thumb_image media-content media_container'. ($thumb['linked'] == true ? ' linked-media' : '') .'"  style="'.($isImageOrPdf?'':'cursor:default;')
+                print '<div class="thumb_image media-content media_container'. ($thumb['linked'] === true ? ' linked-media' : '') .'"  style="'.($isImageOrPdf?'':'cursor:default;')
                     .($k>0?CSS_HIDDEN:'').'">';
             }
 
@@ -2079,7 +2079,7 @@ function print_public_details($bib) {
                 $checked_status = $hide_images == 0 ? ' checked="checked"' : '';
                 $media_control_chkbx = " <label class='media-control'><input type='checkbox' id='show-linked-media' onchange='displayImages(false);' $checked_status> show all linked media</label>";
 
-                if($thumb['linked'] == true){
+                if($thumb['linked'] === true){
                     print "<h5 style='margin-block:1.5em'>Linked Media Only: $media_control_chkbx</h5>";
                     $media_control_chkbx = '';
                 }
@@ -2172,7 +2172,7 @@ function print_public_details($bib) {
                     .($k>0?CSS_HIDDEN:'').'">';
             }
 
-            if($thumb['linked'] == true){
+            if($thumb['linked'] === true){
                 print "<h5 style='margin-block:0.5em;'>LINKED MEDIA</h5>";
             }else{
                 print "<h5 style='margin-block:0.5em;'>MEDIA $media_control_chkbx</h5>";
