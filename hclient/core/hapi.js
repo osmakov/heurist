@@ -951,6 +951,7 @@ function hAPI(_db, _oninit, _baseURL) { //, _currentUser
                         
                         if (response && response['uptodate']) { //relevance db definitions
                             //definitions are up to date
+                            entity_timestamp = response['uptodate'];
                             if (window.hWin.HEURIST4.util.isFunction(callback)) callback(this, true);
                             
                         }else if (response && response.status == window.hWin.ResponseStatus.OK || response['defRecTypes']) {
